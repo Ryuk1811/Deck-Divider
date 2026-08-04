@@ -23,6 +23,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
 }) => {
   const [allExpansions, setAllExpansions] = useState<CardSet[]>(propSets.length > 0 ? propSets : []);
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
+  const [loadedCardsMap, setLoadedCardsMap] = useState<Record<string, PokemonCard[]>>({});
   const [setCards, setSetCards] = useState<PokemonCard[]>([]);
   const [isLoadingSetCards, setIsLoadingSetCards] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,34 +50,58 @@ export const SetsView: React.FC<SetsViewProps> = ({
 
   const activeSet = allExpansions.find((s) => s.id === selectedSetId) || allExpansions[0];
 
-  // Fetch cards for selected set
+  // Fetch cards for selected set without loops
   useEffect(() => {
     if (!activeSet?.id) return;
+    const setId = activeSet.id;
 
-    // Check if we already have these cards in propCards
-    const existing = propCards.filter((c) => c.set?.id === activeSet.id);
-    if (existing.length > 0) {
-      setSetCards(existing);
+    if (loadedCardsMap[setId]) {
+      setSetCards(loadedCardsMap[setId]);
       return;
     }
 
     setIsLoadingSetCards(true);
-    getCardsBySetCatalog(activeSet.id)
+    getCardsBySetCatalog(setId)
       .then((fetchedCards) => {
+        setLoadedCardsMap((prev) => ({ ...prev, [setId]: fetchedCards }));
         setSetCards(fetchedCards);
+      })
+      .catch((err) => {
+        console.error(`Error loading cards for set ${setId}:`, err);
       })
       .finally(() => {
         setIsLoadingSetCards(false);
       });
-  }, [activeSet?.id, propCards]);
+  }, [activeSet?.id]);
 
-  // Filter expansions by search query
-  const filteredExpansions = allExpansions.filter(
-    (s) =>
+  const [selectedSeriesFilter, setSelectedSeriesFilter] = useState<string>('All');
+
+  // Series categories list
+  const seriesCategories = [
+    'All',
+    'Scarlet & Violet',
+    'Sword & Shield',
+    'Sun & Moon',
+    'XY Series',
+    'Black & White',
+    "McDonald's Collection",
+    'Promos & Special',
+  ];
+
+  // Filter expansions by series filter & search query
+  const filteredExpansions = allExpansions.filter((s) => {
+    const matchesSearch =
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.series.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      s.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (!matchesSearch) return false;
+    if (selectedSeriesFilter === 'All') return true;
+    if (selectedSeriesFilter === "McDonald's Collection") {
+      return s.series === "McDonald's Collection" || s.name.toLowerCase().includes('mcdonald');
+    }
+    return s.series.toLowerCase() === selectedSeriesFilter.toLowerCase();
+  });
 
   // Calculate set completion percentage based on owned cards in user's decks
   const ownedCardIds = new Set<string>();
@@ -113,6 +138,27 @@ export const SetsView: React.FC<SetsViewProps> = ({
             className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#E2E8F0] bg-white font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-colors"
           />
         </div>
+      </div>
+
+      {/* SERIES FILTER PILLS */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+        {seriesCategories.map((cat) => {
+          const isActive = selectedSeriesFilter === cat;
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedSeriesFilter(cat)}
+              className={`px-3 py-1.5 rounded-md font-mono text-xs font-bold whitespace-nowrap transition-all border ${
+                isActive
+                  ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-xs'
+                  : 'bg-white text-[#475569] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
+              }`}
+            >
+              {cat}
+            </button>
+          );
+        })}
       </div>
 
       {/* SETS LIST GRID */}

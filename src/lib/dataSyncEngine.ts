@@ -34,17 +34,50 @@ function notifySyncListeners(state: SyncProgressState) {
   syncListeners.forEach((l) => l(state));
 }
 
+// Helper to format image URLs
+function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): string {
+  if (!imageStr) return 'https://images.pokemontcg.io/cardback.png';
+  if (imageStr.includes('/high.') || imageStr.includes('/low.')) return imageStr;
+  const clean = imageStr.replace(/\.(png|webp|jpg)$/i, '');
+  return `${clean}/${quality}.png`;
+}
+
+function inferSeries(set: any): string {
+  if (set.series && set.series !== 'Unknown' && set.series !== 'Pokémon TCG') return set.series;
+  if (set.serie?.name) return set.serie.name;
+  const name = set.name || '';
+  const id = set.id || '';
+  const nLower = name.toLowerCase();
+  const idLower = id.toLowerCase();
+  if (nLower.includes('mcdonald')) return "McDonald's Collection";
+  if (idLower.includes('sv') || nLower.includes('scarlet') || nLower.includes('paldea') || nLower.includes('151') || nLower.includes('stellar') || nLower.includes('surging') || nLower.includes('shrouded') || nLower.includes('temporal') || nLower.includes('twilight')) return 'Scarlet & Violet';
+  if (idLower.includes('swsh') || nLower.includes('sword') || nLower.includes('shield') || nLower.includes('evolving') || nLower.includes('brilliant') || nLower.includes('zenith') || nLower.includes('astral') || nLower.includes('lost origin') || nLower.includes('silver tempest')) return 'Sword & Shield';
+  if (idLower.includes('sm') || nLower.includes('sun') || nLower.includes('moon') || nLower.includes('team up') || nLower.includes('unbroken') || nLower.includes('unified')) return 'Sun & Moon';
+  if (idLower.includes('xy') || nLower.includes('xy') || nLower.includes('evolutions') || nLower.includes('roaring') || nLower.includes('primal')) return 'XY Series';
+  if (idLower.includes('bw') || nLower.includes('black') || nLower.includes('plasma')) return 'Black & White';
+  if (idLower.includes('hgss') || idLower.includes('col') || nLower.includes('heartgold') || nLower.includes('soulsilver')) return 'HeartGold & SoulSilver';
+  if (idLower.includes('dp') || idLower.includes('pl') || nLower.includes('diamond') || nLower.includes('platinum')) return 'Diamond & Pearl';
+  if (idLower.startsWith('ex') || nLower.includes('ex ')) return 'EX Series';
+  if (idLower.startsWith('neo') || nLower.includes('neo ')) return 'Neo Series';
+  if (idLower.startsWith('gym') || nLower.includes('gym ')) return 'Gym Series';
+  if (idLower.startsWith('base') || nLower.includes('base') || nLower.includes('jungle') || nLower.includes('fossil')) return 'Base Series';
+  if (idLower.startsWith('pop') || nLower.includes('pop ')) return 'POP Series';
+  return 'Promos & Special';
+}
+
 // Map TCGdex Set schema to app CardSet schema
 function mapTCGdexSet(set: any): CardSet {
+  const symbol = set.symbol ? (set.symbol.endsWith('.png') || set.symbol.endsWith('.webp') ? set.symbol : `${set.symbol}.png`) : '';
+  const logo = set.logo ? (set.logo.endsWith('.png') || set.logo.endsWith('.webp') ? set.logo : `${set.logo}.png`) : '';
   return {
     id: set.id,
     name: set.name,
-    series: set.series || 'Pokémon TCG',
+    series: inferSeries(set),
     printedTotal: set.cardCount?.official || set.cardCount?.total || 100,
     total: set.cardCount?.total || set.cardCount?.official || 100,
     releaseDate: set.releaseDate || '2020-01-01',
-    symbolUrl: set.symbol ? `${set.symbol}.png` : 'https://images.pokemontcg.io/base1/symbol.png',
-    logoUrl: set.logo ? `${set.logo}.png` : 'https://images.pokemontcg.io/base1/logo.png',
+    symbolUrl: symbol || 'https://images.pokemontcg.io/base1/symbol.png',
+    logoUrl: logo || 'https://images.pokemontcg.io/base1/logo.png',
   };
 }
 
@@ -59,6 +92,9 @@ export function mapTCGdexCard(card: any): PokemonCard {
   }) as EnergyType[];
 
   const hpVal = typeof card.hp === 'number' ? card.hp : parseInt(String(card.hp || 0), 10) || undefined;
+
+  const smallImage = formatTCGdexImage(card.image, 'low');
+  const largeImage = formatTCGdexImage(card.image, 'high');
 
   return {
     id: card.id,
@@ -108,8 +144,8 @@ export function mapTCGdexCard(card: any): PokemonCard {
       expanded: card.legalities?.expanded ?? true,
     },
     images: {
-      small: card.image ? `${card.image}/low.png` : `https://images.pokemontcg.io/${card.set?.id || 'base1'}/${card.localId || '1'}.png`,
-      large: card.image ? `${card.image}/high.png` : `https://images.pokemontcg.io/${card.set?.id || 'base1'}/${card.localId || '1'}_hires.png`,
+      small: smallImage,
+      large: largeImage,
     },
     cardmarket: {
       url: card.pricing?.cardmarket?.url || '',
@@ -180,12 +216,36 @@ async function refreshExpansionsInBackground() {
   } catch (e) {}
 }
 
-// 2. Get Cards By Set
+// 2. Get Cards By Set (IndexedDB -> Server Proxy -> TCGdex Direct -> Fallback)
 export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]> {
   const cachedCards = await idbGetCardsBySet(setId);
   if (cachedCards && cachedCards.length > 0) {
     return cachedCards;
   }
+
+  try {
+    const proxyRes = await fetch(`/api/tcg/sets/${encodeURIComponent(setId)}`);
+    if (proxyRes.ok) {
+      const setDetail = await proxyRes.json();
+      if (setDetail && Array.isArray(setDetail.cards)) {
+        const mappedCards: PokemonCard[] = setDetail.cards.map((c: any) =>
+          mapTCGdexCard({
+            ...c,
+            set: {
+              id: setDetail.id,
+              name: setDetail.name,
+              series: setDetail.series,
+              cardCount: setDetail.cardCount,
+              logo: setDetail.logo,
+              symbol: setDetail.symbol,
+            },
+          })
+        );
+        await idbSaveCards(mappedCards);
+        return mappedCards;
+      }
+    }
+  } catch (e) {}
 
   try {
     const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`);
@@ -250,81 +310,35 @@ export async function getCardDetailCatalog(cardId: string): Promise<PokemonCard 
   return cached || MOCK_CARDS.find((c) => c.id === cardId) || null;
 }
 
-// 4. Background Lazy Loading Catalog Sync
+// 4. Background Lazy Loading Catalog Sync (Non-blocking & Loop-Free)
 export async function startFullCatalogBackgroundSync() {
   const meta = await idbGetSyncMeta();
   if (meta.isSyncing) return;
-
-  await idbUpdateSyncMeta({ isSyncing: true, syncProgress: 5 });
-  notifySyncListeners({
-    isSyncing: true,
-    progress: 5,
-    message: 'Indexing official TCG sets...',
-    cardCount: await idbGetCardCount(),
-    expansionCount: await idbGetExpansionCount(),
-  });
 
   try {
     const expansions = await getExpansionsCatalog();
     await idbSaveExpansions(expansions);
 
-    fetch('/api/tcg/sync/trigger', { method: 'POST' }).catch(() => {});
-
-    if (MOCK_CARDS.length > 0) {
-      await idbSaveCards(MOCK_CARDS);
-    }
-
-    let processedSets = 0;
-    const totalSetsToPreload = Math.min(expansions.length, 30);
-
-    for (let i = 0; i < totalSetsToPreload; i++) {
-      const set = expansions[i];
-      try {
-        const cards = await getCardsBySetCatalog(set.id);
-        processedSets++;
-        const pct = Math.min(99, Math.round(10 + (processedSets / totalSetsToPreload) * 85));
-        const totalCardsCount = await idbGetCardCount();
-        const totalExpCount = await idbGetExpansionCount();
-
-        await idbUpdateSyncMeta({
-          syncProgress: pct,
-          cardCount: totalCardsCount,
-          expansionCount: totalExpCount,
-        });
-
-        notifySyncListeners({
-          isSyncing: true,
-          progress: pct,
-          message: `Indexed set ${processedSets}/${totalSetsToPreload}: ${set.name}`,
-          cardCount: totalCardsCount,
-          expansionCount: totalExpCount,
-        });
-
-        await new Promise((r) => setTimeout(r, 100));
-      } catch (e) {}
-    }
-
-    const finalCardCount = await idbGetCardCount();
-    const finalExpCount = await idbGetExpansionCount();
+    const expCount = await idbGetExpansionCount();
+    const cardCount = await idbGetCardCount();
 
     await idbUpdateSyncMeta({
       isSyncing: false,
       syncProgress: 100,
       lastSyncedAt: Date.now(),
-      cardCount: finalCardCount,
-      expansionCount: finalExpCount,
+      cardCount,
+      expansionCount: expCount,
+      message: 'Expansion library ready',
     });
 
     notifySyncListeners({
       isSyncing: false,
       progress: 100,
-      message: 'Full TCG Catalog synced locally in IndexedDB',
-      cardCount: finalCardCount,
-      expansionCount: finalExpCount,
+      message: 'Expansion library ready',
+      cardCount,
+      expansionCount: expCount,
     });
   } catch (err: any) {
-    await idbUpdateSyncMeta({
-      isSyncing: false,
-    });
+    await idbUpdateSyncMeta({ isSyncing: false });
   }
 }

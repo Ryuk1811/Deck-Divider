@@ -27,6 +27,7 @@ import {
 } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
+import { DropdownMenu } from '../components/DropdownMenu';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -310,93 +311,62 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           </div>
 
           <div className="flex items-center gap-3 font-mono text-xs">
-            <div className="px-3 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md text-[#0F172A]">
-              <span className="text-[#64748B]">Total Value: </span>
-              <strong className="font-num text-sm text-[#DC143C] font-bold">
-                {formatCurrency(totalValuation, currency)}
-              </strong>
-            </div>
-          </div>
-        </div>
+            {/* Bubble Menus */}
+            <DropdownMenu align="right" triggerLabel="View Mode" triggerIcon={<Grid className="w-3.5 h-3.5 text-[#DC143C]" />}>
+              <div className="flex flex-col p-2 space-y-1">
+                {[
+                  { id: 'grid', label: 'Grid View', icon: Grid },
+                  { id: 'binder', label: '3x3 Binder', icon: BookOpen },
+                  { id: 'table', label: 'Data Table', icon: Table },
+                ].map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => setViewMode(mode.id as any)}
+                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all ${
+                      viewMode === mode.id ? 'bg-[#DC143C] text-white font-bold' : 'text-[#0F172A] hover:bg-[#F8FAFC]'
+                    }`}
+                  >
+                    <mode.icon className="w-4 h-4" />
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
+            </DropdownMenu>
 
-        {/* CONTROLS ROW: View Mode Switcher, Grouping Dropdown, Filter Panel Toggle */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#E2E8F0]">
-          {/* Left: View Modes */}
-          <div className="flex items-center gap-1 bg-[#F8FAFC] p-1 border border-[#E2E8F0] rounded-md">
-            <button
-              type="button"
-              onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold rounded-md transition-all ${
-                viewMode === 'grid'
-                  ? 'bg-white text-[#DC143C] shadow-xs border border-[#E2E8F0] font-bold'
-                  : 'text-[#64748B] hover:text-[#0F172A]'
-              }`}
-            >
-              <Grid className="w-3.5 h-3.5" />
-              <span>Grid View</span>
-            </button>
+            <DropdownMenu align="right" triggerLabel="Group By" triggerIcon={<Layers className="w-3.5 h-3.5 text-[#DC143C]" />}>
+              <div className="flex flex-col p-2 space-y-1">
+                {[
+                  { id: 'none', label: 'No Grouping' },
+                  { id: 'type', label: 'Energy Type' },
+                  { id: 'rarity', label: 'Rarity Tier' },
+                  { id: 'set', label: 'Expansion Set' },
+                  { id: 'deck', label: 'Assigned Deck' },
+                  { id: 'supertype', label: 'Supertype' },
+                ].map((g) => (
+                  <button
+                    key={g.id}
+                    onClick={() => setGroupBy(g.id as any)}
+                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all ${
+                      groupBy === g.id ? 'bg-[#DC143C] text-white font-bold' : 'text-[#0F172A] hover:bg-[#F8FAFC]'
+                    }`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </DropdownMenu>
 
-            <button
-              type="button"
-              onClick={() => setViewMode('binder')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold rounded-md transition-all ${
-                viewMode === 'binder'
-                  ? 'bg-white text-[#DC143C] shadow-xs border border-[#E2E8F0] font-bold'
-                  : 'text-[#64748B] hover:text-[#0F172A]'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>3x3 Binder</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold rounded-md transition-all ${
-                viewMode === 'table'
-                  ? 'bg-white text-[#DC143C] shadow-xs border border-[#E2E8F0] font-bold'
-                  : 'text-[#64748B] hover:text-[#0F172A]'
-              }`}
-            >
-              <Table className="w-3.5 h-3.5" />
-              <span>Data Table</span>
-            </button>
-          </div>
-
-          {/* Center: Grouping Dropdown */}
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-semibold text-[#64748B]">
-              Group Collection By:
-            </span>
-            <select
-              value={groupBy}
-              onChange={(e) => setGroupBy(e.target.value as GroupByOption)}
-              className="bg-white border border-[#E2E8F0] text-[#0F172A] text-xs font-mono font-bold px-3 py-1.5 rounded-md focus:border-[#DC143C] focus:outline-none shadow-xs"
-            >
-              <option value="none">No Grouping (Flat View)</option>
-              <option value="type">Energy Type</option>
-              <option value="rarity">Rarity Tier</option>
-              <option value="set">Expansion Set</option>
-              <option value="deck">Assigned Deck / Binder</option>
-              <option value="supertype">Supertype (Pokémon/Trainer/Energy)</option>
-            </select>
-          </div>
-
-          {/* Right: Filters & Search Toggle */}
-          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold rounded-md border transition-all shadow-xs ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold rounded-md border transition-all shadow-xs ${
                 hasActiveFilters || isFilterPanelOpen
                   ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]'
-                  : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
               }`}
             >
-              <SlidersHorizontal className="w-4 h-4 text-[#DC143C]" />
-              <span>
-                {isFilterPanelOpen ? 'Close Filter Panel' : 'Segregation & Filters'}
-              </span>
+              <SlidersHorizontal className="w-3.5 h-3.5 text-[#DC143C]" />
+              <span>Filters</span>
               {hasActiveFilters && (
                 <span className="w-2 h-2 rounded-full bg-[#DC143C]" />
               )}
@@ -732,15 +702,6 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                       {group.items.length} Cards
                     </span>
                   </div>
-                  <span className="font-mono text-xs text-[#64748B]">
-                    Group Valuation:{' '}
-                    <strong className="font-num text-[#0F172A] font-bold">
-                      {formatCurrency(
-                        group.items.reduce((acc, i) => acc + i.card.prices.raw * i.entry.quantity, 0),
-                        currency
-                      )}
-                    </strong>
-                  </span>
                 </div>
               )}
 

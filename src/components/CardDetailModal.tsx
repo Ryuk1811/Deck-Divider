@@ -21,6 +21,7 @@ import {
   PortfolioCardEntry,
 } from '../types';
 import { formatCurrency, ENERGY_COLORS } from '../utils/formatters';
+import { generatePriceHistory, getCardByIdFromEngine, mapToPokemonCard } from '../lib/searchEngine';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface CardDetailModalProps {
@@ -79,74 +80,152 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   const [isFetchingFull, setIsFetchingFull] = useState(false);
 
   React.useEffect(() => {
-    if (!card) return;
+    if (!card) {
+      setFullCardData(null);
+      return;
+    }
+
+    // 1. Instantly construct initial fullCardData from card + local engine index so modal opens IMMEDIATELY
+    const engineDoc = getCardByIdFromEngine(card.id);
+    const enrichedLocal = engineDoc ? mapToPokemonCard(engineDoc) : null;
     
-    // We already have the card basic info from the index, but let's fetch the full record from TCGdex
+    const initialData: PokemonCard = {
+      ...card,
+      ...(enrichedLocal || {}),
+      prices: {
+        ...card.prices,
+        ...(enrichedLocal?.prices || {}),
+      },
+    };
+
+    setFullCardData(initialData);
+    setPurchasePrice(initialData.prices?.raw || 0);
+    setQuantity(1);
+    setNotes('');
+    setDuplicateCheckPrompt(null);
+    setCertNumber('');
+
+    // 2. Async background fetch with AbortController & 3s timeout
+    let isMounted = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
     const fetchFullData = async () => {
       try {
         setIsFetchingFull(true);
-        const res = await fetch(`/api/tcgdex/cards/${card.id}`);
+        const res = await fetch(`/api/tcgdex/cards/${card.id}`, { signal: controller.signal });
         if (res.ok) {
           const data = await res.json();
-          setFullCardData({
-            ...card,
-            supertype: data.category || card.supertype,
-            subtypes: data.stage ? [data.stage] : card.subtypes,
-            category: data.category,
-            stage: data.stage,
-            hp: data.hp || card.hp,
-            types: data.types || card.types,
-            attacks: data.attacks?.map((a: any) => ({
-              name: a.name,
-              cost: a.cost || [],
-              damage: a.damage || '',
-              text: a.effect || ''
-            })),
-            weaknesses: data.weaknesses?.map((w: any) => ({
-              type: w.type,
-              value: w.value
-            })),
-            retreatCost: Array(data.retreat || 0).fill('Colorless'),
-            dexId: data.dexId,
-            description: data.description || data.effect,
-            regulationMark: data.regulationMark,
-            legalities: data.legal ? {
-              standard: Boolean(data.legal.standard),
-              expanded: Boolean(data.legal.expanded)
-            } : card.legalities,
-            variants: data.variants || card.variants,
-            cardmarket: data.cardmarket ? {
-              url: data.cardmarket.url,
-              updatedAt: data.cardmarket.updatedAt,
-              price: data.cardmarket.prices?.trendPrice || data.cardmarket.prices?.averageSellPrice,
-              lowPrice: data.cardmarket.prices?.lowPrice,
-              trendPrice: data.cardmarket.prices?.trendPrice,
-              avgSellPrice: data.cardmarket.prices?.averageSellPrice,
-            } : undefined,
-            tcgplayer: data.tcgplayer ? {
-              url: data.tcgplayer.url,
-              updatedAt: data.tcgplayer.updatedAt,
-            } : undefined,
-            set: {
-              ...card.set,
-              name: data.set?.name || card.set.name,
-              series: data.set?.serie?.name || card.set.series,
-              printedTotal: data.set?.cardCount?.official || card.set.printedTotal,
-              total: data.set?.cardCount?.total || card.set.total,
-              logoUrl: data.set?.logo ? `/api/tcgdex/image${data.set.logo.replace('https://assets.tcgdex.net', '')}.png` : card.set.logoUrl,
-              symbolUrl: data.set?.symbol ? `/api/tcgdex/image${data.set.symbol.replace('https://assets.tcgdex.net', '')}.png` : card.set.symbolUrl,
+          if (!isMounted) return;
+
+          let extractedRawPrice = initialData.prices?.raw || 0;
+          let cmData = data.pricing?.cardmarket;
+          let tcgData = data.pricing?.tcgplayer;
+
+          if (tcgData) {
+            const variantPrice = tcgData.holofoil?.marketPrice || tcgData.normal?.marketPrice || tcgData['reverse-holofoil']?.marketPrice || tcgData.holofoil?.midPrice || tcgData.normal?.midPrice;
+            if (variantPrice && variantPrice > 0) {
+              extractedRawPrice = variantPrice;
             }
+          } else if (cmData) {
+            const cmPrice = cmData.trend || cmData.avg || cmData.avg1;
+            if (cmPrice && cmPrice > 0) {
+              extractedRawPrice = cmPrice;
+            }
+          }
+
+          if (extractedRawPrice <= 0) {
+            extractedRawPrice = initialData.prices?.raw || 1.50;
+          }
+
+          const psa10Est = Number((extractedRawPrice * 3.2).toFixed(2));
+          const psa9Est = Number((extractedRawPrice * 1.6).toFixed(2));
+
+          setFullCardData((prev) => {
+            if (!prev || prev.id !== card.id) return prev;
+            return {
+              ...prev,
+              supertype: data.category || prev.supertype,
+              subtypes: data.stage ? [data.stage] : prev.subtypes,
+              category: data.category,
+              stage: data.stage,
+              hp: data.hp || prev.hp,
+              types: data.types || prev.types,
+              attacks: data.attacks?.map((a: any) => ({
+                name: a.name,
+                cost: a.cost || [],
+                damage: a.damage || '',
+                text: a.effect || ''
+              })) || prev.attacks,
+              weaknesses: data.weaknesses?.map((w: any) => ({
+                type: w.type,
+                value: w.value
+              })) || prev.weaknesses,
+              retreatCost: data.retreat ? Array(data.retreat).fill('Colorless') : prev.retreatCost,
+              dexId: data.dexId || prev.dexId,
+              description: data.description || data.effect || prev.description,
+              regulationMark: data.regulationMark || prev.regulationMark,
+              legalities: data.legal ? {
+                standard: Boolean(data.legal.standard),
+                expanded: Boolean(data.legal.expanded)
+              } : prev.legalities,
+              variants: data.variants || prev.variants,
+              cardmarket: cmData ? {
+                url: cmData.url,
+                updatedAt: cmData.updated,
+                price: cmData.trend || cmData.avg,
+                lowPrice: cmData.low,
+                trendPrice: cmData.trend,
+                avgSellPrice: cmData.avg,
+              } : prev.cardmarket,
+              tcgplayer: tcgData ? {
+                url: tcgData.url,
+                updatedAt: tcgData.updated,
+              } : prev.tcgplayer,
+              prices: {
+                raw: extractedRawPrice,
+                psa10Estimate: psa10Est,
+                psa9Estimate: psa9Est,
+                priceHistory: prev.prices?.priceHistory && prev.prices.priceHistory.length > 0
+                  ? prev.prices.priceHistory
+                  : generatePriceHistory(card.id, extractedRawPrice, 30)
+              },
+              set: {
+                ...prev.set,
+                name: data.set?.name || prev.set.name,
+                series: data.set?.serie?.name || prev.set.series,
+                printedTotal: data.set?.cardCount?.official || prev.set.printedTotal,
+                total: data.set?.cardCount?.total || prev.set.total,
+                logoUrl: data.set?.logo ? `/api/tcgdex/image${data.set.logo.replace('https://assets.tcgdex.net', '')}.png` : prev.set.logoUrl,
+                symbolUrl: data.set?.symbol ? `/api/tcgdex/image${data.set.symbol.replace('https://assets.tcgdex.net', '')}.png` : prev.set.symbolUrl,
+              }
+            };
           });
         }
-      } catch (e) {
-        console.error('Failed to fetch full card details', e);
+      } catch (e: any) {
+        if (e.name !== 'AbortError') {
+          console.warn('Network detail fetch bypassed, using local card metrics', e);
+        }
       } finally {
-        setIsFetchingFull(false);
+        clearTimeout(timeoutId);
+        if (isMounted) setIsFetchingFull(false);
       }
     };
 
     fetchFullData();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [card]);
+
+  const chartData = React.useMemo(() => {
+    if (!fullCardData) return [];
+    const days = timeRange === '7D' ? 7 : timeRange === '30D' ? 30 : timeRange === '90D' ? 90 : 180;
+    return generatePriceHistory(fullCardData.id, fullCardData.prices.raw, days);
+  }, [fullCardData, timeRange]);
 
   if (!card || !fullCardData) return null;
 
@@ -518,7 +597,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                     </div>
                     <div className="h-36 w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={fullCardData.prices.priceHistory}>
+                        <LineChart data={chartData}>
                           <XAxis dataKey="date" hide />
                           <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
                           <Tooltip

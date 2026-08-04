@@ -137,28 +137,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* 3. Footer Settings & Account */}
       <div className="p-4 border-t border-[#E2E8F0] space-y-3 flex-shrink-0 bg-white">
-        {/* Local IndexedDB Proxy Buffer Indicator */}
-        <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md font-mono text-[10px] space-y-1.5">
-          <div className="flex items-center justify-between text-[#0F172A] font-bold">
-            <span className="flex items-center gap-1.5">
-              <Database className="w-3 h-3 text-[#DC143C]" />
-              IndexedDB Buffer
-            </span>
-            <span className="text-[#16A34A] text-[9px] font-bold">ONLINE</span>
-          </div>
-          <div className="text-[#64748B] text-[9px] truncate">
-            {syncState.isSyncing ? syncState.message : 'Full TCG catalog local proxy ready'}
-          </div>
-          {syncState.isSyncing && (
-            <div className="w-full h-1 bg-[#E2E8F0] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#DC143C] transition-all duration-300"
-                style={{ width: `${syncState.progress}%` }}
-              />
-            </div>
-          )}
-        </div>
-
         <button
           type="button"
           onClick={() => setActiveTab('settings')}

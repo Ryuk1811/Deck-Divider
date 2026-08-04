@@ -15,6 +15,7 @@ import {
   DisplayCurrency,
 } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
+import { DropdownMenu } from '../components/DropdownMenu';
 import { searchCards, mapToPokemonCard } from '../lib/searchEngine';
 
 interface SearchViewProps {
@@ -24,8 +25,6 @@ interface SearchViewProps {
   onUpdateFilters: (filters: SearchFilters) => void;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
-  toggleFilterSignal?: number;
-  onFilterStateChange?: (isOpen: boolean) => void;
 }
 
 const ALL_ENERGY_TYPES: EnergyType[] = [
@@ -59,21 +58,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
   onUpdateFilters,
   onSelectCard,
   onQuickLookCard,
-  toggleFilterSignal,
-  onFilterStateChange,
 }) => {
   const [filters, setFilters] = useState<SearchFilters>(savedFilters);
-  const [isFilterOpen, setIsFilterOpen] = useState(true);
-
-  useEffect(() => {
-    if (toggleFilterSignal && toggleFilterSignal > 0) {
-      setIsFilterOpen((prev) => !prev);
-    }
-  }, [toggleFilterSignal]);
-
-  useEffect(() => {
-    onFilterStateChange?.(isFilterOpen);
-  }, [isFilterOpen, onFilterStateChange]);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
   // Sync state changes upward so search state survives navigation
   const updateLocalFilters = (newF: SearchFilters) => {
@@ -113,6 +100,22 @@ export const SearchView: React.FC<SearchViewProps> = ({
     updateLocalFilters(resetF);
   };
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.category) count++;
+    if (filters.stage) count++;
+    if (filters.variant) count++;
+    if (filters.legality) count++;
+    if (filters.regulationMark) count++;
+    if (filters.artist || filters.illustrator) count++;
+    if (filters.types.length > 0) count += filters.types.length;
+    if (filters.rarities.length > 0) count += filters.rarities.length;
+    if (filters.setId) count++;
+    if (filters.hpMin !== undefined || filters.hpMax !== undefined) count++;
+    if (filters.priceMin !== undefined || filters.priceMax !== undefined) count++;
+    return count;
+  }, [filters]);
+
   // Run the actual local search engine query!
   const filteredCards = useMemo(() => {
     const rawResults = searchCards(filters);
@@ -130,51 +133,72 @@ export const SearchView: React.FC<SearchViewProps> = ({
   return (
     <div className="space-y-6 animate-fade-in p-6 max-w-7xl mx-auto">
       {/* Main Search Input bar */}
-      <div className="flex items-center gap-3 p-3 chamfer-corner-sm bg-white border border-[#E2E8F0] shadow-xs">
-        <SearchIcon className="w-5 h-5 text-[#DC143C]" />
-        <input
-          type="text"
-          value={filters.query}
-          onChange={(e) => updateLocalFilters({ ...filters, query: e.target.value })}
-          placeholder="Search Pokemon cards by name, set, or artist..."
-          className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B]"
-        />
-        {filters.query && (
-          <button
-            type="button"
-            onClick={() => updateLocalFilters({ ...filters, query: '' })}
-            className="p-1 text-[#64748B] hover:text-[#0F172A]"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 chamfer-corner-sm bg-white border border-[#E2E8F0] shadow-xs">
+        <div className="flex-1 flex items-center gap-3 px-2">
+          <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
+          <input
+            type="text"
+            value={filters.query}
+            onChange={(e) => updateLocalFilters({ ...filters, query: e.target.value })}
+            placeholder="Search Pokemon cards by name, set, or artist..."
+            className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B]"
+          />
+          {filters.query && (
+            <button
+              type="button"
+              onClick={() => updateLocalFilters({ ...filters, query: '' })}
+              className="p-1 text-[#64748B] hover:text-[#0F172A]"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+          className={`h-10 px-4 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-md border transition-all cursor-pointer ${
+            isFilterPanelOpen || activeFilterCount > 0
+              ? 'bg-[#0F172A] text-white border-[#0F172A]'
+              : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
+          }`}
+        >
+          <SlidersHorizontal className="w-4 h-4 text-[#DC143C]" />
+          <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="px-1.5 py-0.5 bg-[#DC143C] text-white rounded-full text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* Collapsible Filter Panel */}
-      {isFilterOpen && (
-        <div className="neo-card p-5 space-y-4 bg-white border border-[#E2E8F0] chamfer-corner-sm">
+      {/* Expandable Inline Filter Panel */}
+      {isFilterPanelOpen && (
+        <div className="p-6 bg-white border border-[#E2E8F0] rounded-md shadow-sm space-y-6 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
-            <span className="font-heading font-bold text-sm text-[#0F172A]">
-              Refine Search Metrics
-            </span>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-[#DC143C]" />
+              <span className="font-heading font-bold text-base text-[#0F172A]">Refine Search Metrics</span>
+            </div>
             <button
               type="button"
               onClick={handleReset}
-              className="font-mono text-xs text-[#DC143C] hover:underline flex items-center gap-1"
+              className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1.5"
             >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset Filters</span>
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset All Filters</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Category & Stage Filters */}
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Card Category</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Category & Stage */}
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Category</label>
               <select
                 value={filters.category || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, category: e.target.value })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Categories (Pokémon, Trainer, Energy)</option>
                 <option value="Pokemon">Pokémon</option>
@@ -183,12 +207,12 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </select>
             </div>
 
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Stage / Form</label>
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Stage / Form</label>
               <select
                 value={filters.stage || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, stage: e.target.value })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Stages</option>
                 <option value="Basic">Basic</option>
@@ -202,12 +226,12 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </select>
             </div>
 
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Card Printing Variant</label>
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Printing Variant</label>
               <select
                 value={filters.variant || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, variant: e.target.value })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Printings</option>
                 <option value="normal">Normal / Standard</option>
@@ -220,12 +244,12 @@ export const SearchView: React.FC<SearchViewProps> = ({
             </div>
 
             {/* Format Legality & Regulation Mark & Illustrator */}
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Format Legality</label>
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Format Legality</label>
               <select
                 value={filters.legality || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, legality: (e.target.value as any) || undefined })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Formats</option>
                 <option value="standard">Standard Format Legal</option>
@@ -233,12 +257,12 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </select>
             </div>
 
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Regulation Mark</label>
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Regulation Mark</label>
               <select
                 value={filters.regulationMark || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, regulationMark: e.target.value })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Regulation Marks</option>
                 <option value="D">Regulation D</option>
@@ -250,20 +274,81 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </select>
             </div>
 
-            <div className="md:col-span-4 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Illustrator / Artist</label>
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Illustrator / Artist</label>
               <input
                 type="text"
                 placeholder="Filter by Artist (e.g. Ken Sugimori)"
                 value={filters.artist || filters.illustrator || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, artist: e.target.value, illustrator: e.target.value })}
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               />
             </div>
 
+            {/* Set & Sort */}
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Expansion Set</label>
+              <select
+                value={filters.setId || ''}
+                onChange={(e) =>
+                  updateLocalFilters({ ...filters, setId: e.target.value || undefined })
+                }
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              >
+                <option value="">All Pokemon Sets</option>
+                {sets.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.series})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Sort Ordering</label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) =>
+                  updateLocalFilters({ ...filters, sortBy: e.target.value as any })
+                }
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              >
+                <option value="price-desc">Highest Price First</option>
+                <option value="price-asc">Lowest Price First</option>
+                <option value="name">Alphabetical (A-Z)</option>
+                <option value="hp">Highest HP First</option>
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Price Range ($)</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  placeholder="Min Price"
+                  value={filters.priceMin ?? ''}
+                  onChange={(e) =>
+                    updateLocalFilters({ ...filters, priceMin: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+                />
+                <span className="text-[#64748B]">-</span>
+                <input
+                  type="number"
+                  placeholder="Max Price"
+                  value={filters.priceMax ?? ''}
+                  onChange={(e) =>
+                    updateLocalFilters({ ...filters, priceMax: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+                />
+              </div>
+            </div>
+
             {/* Energy Types Multi-Select */}
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Energy Types</label>
+            <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Energy Types</label>
               <div className="flex flex-wrap gap-1.5">
                 {ALL_ENERGY_TYPES.map((type) => {
                   const isSelected = filters.types.includes(type);
@@ -272,7 +357,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                       key={type}
                       type="button"
                       onClick={() => handleToggleType(type)}
-                      className={`px-2.5 py-1 text-xs font-mono font-semibold border transition-all rounded-md ${
+                      className={`px-3 py-1 text-xs font-mono font-bold border transition-all rounded-md cursor-pointer ${
                         isSelected
                           ? 'bg-[#0F172A] text-white border-[#0F172A]'
                           : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
@@ -286,8 +371,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             </div>
 
             {/* Rarities Filter */}
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Rarity Tiers</label>
+            <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Rarity Tiers</label>
               <div className="flex flex-wrap gap-1.5">
                 {ALL_RARITIES.map((rarity) => {
                   const isSelected = filters.rarities.includes(rarity);
@@ -296,7 +381,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                       key={rarity}
                       type="button"
                       onClick={() => handleToggleRarity(rarity)}
-                      className={`px-2 py-1 text-[11px] font-mono font-semibold border transition-all rounded-md ${
+                      className={`px-2.5 py-1 text-xs font-mono font-bold border transition-all rounded-md cursor-pointer ${
                         isSelected
                           ? 'bg-[#DC143C] text-white border-[#DC143C]'
                           : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
@@ -306,92 +391,6 @@ export const SearchView: React.FC<SearchViewProps> = ({
                     </button>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Set & Sort select */}
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Expansion Set</label>
-              <select
-                value={filters.setId || ''}
-                onChange={(e) =>
-                  updateLocalFilters({ ...filters, setId: e.target.value || undefined })
-                }
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
-              >
-                <option value="">All Pokemon Sets</option>
-                {sets.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.series})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Sort Ordering</label>
-              <select
-                value={filters.sortBy}
-                onChange={(e) =>
-                  updateLocalFilters({ ...filters, sortBy: e.target.value as any })
-                }
-                className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md"
-              >
-                <option value="price-desc">Highest Price First</option>
-                <option value="price-asc">Lowest Price First</option>
-                <option value="name">Alphabetical (A-Z)</option>
-                <option value="hp">Highest HP First</option>
-              </select>
-            </div>
-
-            {/* HP Range and Price Range inputs */}
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">HP Range</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min HP"
-                  value={filters.hpMin ?? ''}
-                  onChange={(e) =>
-                    updateLocalFilters({ ...filters, hpMin: e.target.value ? Number(e.target.value) : undefined })
-                  }
-                  className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
-                />
-                <span className="text-[#64748B]">-</span>
-                <input
-                  type="number"
-                  placeholder="Max HP"
-                  value={filters.hpMax ?? ''}
-                  onChange={(e) =>
-                    updateLocalFilters({ ...filters, hpMax: e.target.value ? Number(e.target.value) : undefined })
-                  }
-                  className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-6 space-y-2">
-              <label className="font-mono text-xs font-bold text-[#0F172A]">Price Range</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min Price"
-                  value={filters.priceMin ?? ''}
-                  onChange={(e) =>
-                    updateLocalFilters({ ...filters, priceMin: e.target.value ? Number(e.target.value) : undefined })
-                  }
-                  className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
-                />
-                <span className="text-[#64748B]">-</span>
-                <input
-                  type="number"
-                  placeholder="Max Price"
-                  value={filters.priceMax ?? ''}
-                  onChange={(e) =>
-                    updateLocalFilters({ ...filters, priceMax: e.target.value ? Number(e.target.value) : undefined })
-                  }
-                  className="w-full p-2.5 bg-white border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md"
-                />
               </div>
             </div>
           </div>

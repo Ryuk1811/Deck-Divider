@@ -31,6 +31,7 @@ import {
 } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
+import { DropdownMenu } from '../components/DropdownMenu';
 
 interface DecksViewProps {
   decks: Deck[];
@@ -382,46 +383,37 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
         {/* View Mode Switcher Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E2E8F0]">
-          <div className="flex items-center gap-1 bg-[#F8FAFC] p-1 border border-[#E2E8F0] rounded-lg">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-xs font-bold text-[#64748B] mr-1">Display Mode:</span>
             {[
               { id: 'binder', label: 'Binder View', icon: Grid },
-              { id: 'table', label: 'Data Table', icon: Table },
+              { id: 'table', label: 'Ledger Table', icon: Table },
               { id: 'segregation', label: 'By Expansion', icon: FolderTree },
-              { id: 'sold', label: 'Sold Log', icon: DollarSign },
+              { id: 'sold', label: 'Sales Log', icon: DollarSign },
             ].map((mode) => {
-              const Icon = mode.icon;
               const isActive = viewMode === mode.id;
+              const Icon = mode.icon;
               return (
                 <button
                   key={mode.id}
                   type="button"
                   onClick={() => setViewMode(mode.id as any)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all rounded-md ${
+                  className={`px-3 py-1.5 text-xs font-mono font-bold rounded-md border flex items-center gap-1.5 transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#0F172A] text-white font-bold'
-                      : 'text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
+                      : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#DC143C]' : 'text-[#64748B]'}`} />
                   <span>{mode.label}</span>
                 </button>
               );
             })}
           </div>
 
-          {currentDeck && (
-            <div className="flex items-center gap-4 font-mono text-xs">
-              <span className="text-[#64748B]">
-                Active Deck Valuation:{' '}
-                <strong className="font-num text-[#DC143C] font-bold">
-                  {formatCurrency(
-                    currentDeck.entries.reduce((acc, e) => acc + e.card.prices.raw * e.quantity, 0),
-                    currency
-                  )}
-                </strong>
-              </span>
-            </div>
-          )}
+          <div className="font-mono text-xs text-[#64748B]">
+            {activeEntries.length} Active • {soldEntries.length} Sold
+          </div>
         </div>
       </div>
 

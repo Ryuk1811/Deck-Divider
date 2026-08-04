@@ -207,6 +207,33 @@ export async function getCardDetail(cardId: string): Promise<any> {
   }
 }
 
+// 3.5. Get Set Detail (Cached on disk)
+export async function getSetDetail(setId: string): Promise<any> {
+  const safeFileId = setId.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const cacheFile = path.join(CACHE_DIR, `set_${safeFileId}.json`);
+  if (fs.existsSync(cacheFile)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+      if (data && Array.isArray(data.cards)) {
+        return data;
+      }
+    } catch (e) {}
+  }
+
+  try {
+    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`);
+    if (!res.ok) return null;
+    const setDetail = await res.json();
+    if (setDetail && Array.isArray(setDetail.cards)) {
+      fs.writeFileSync(cacheFile, JSON.stringify(setDetail, null, 2));
+    }
+    return setDetail;
+  } catch (err) {
+    console.error(`Failed to fetch set detail for ${setId}:`, err);
+    return null;
+  }
+}
+
 // 4. Background Full Catalog Sync Engine
 export async function triggerBackgroundSync() {
   if (isSyncing) return syncProgress;

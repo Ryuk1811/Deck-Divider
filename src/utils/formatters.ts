@@ -6,15 +6,22 @@ import {
   CardRarity,
 } from '../types';
 
+export function setLiveExchangeRates(rates: Record<string, number>): void {
+  if (rates && typeof rates === 'object') {
+    Object.assign(CURRENCY_RATES, rates);
+  }
+}
+
 export function formatCurrency(
   amountInUSD: number,
   targetCurrency: DisplayCurrency = 'USD'
 ): string {
-  const rate = CURRENCY_RATES[targetCurrency] || 1.0;
+  const code = (targetCurrency || 'USD').toUpperCase();
+  const rate = CURRENCY_RATES[code] ?? 1.0;
   const converted = amountInUSD * rate;
-  const symbol = CURRENCY_SYMBOLS[targetCurrency] || '$';
+  const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
 
-  if (targetCurrency === 'JPY') {
+  if (code === 'JPY' || code === 'KRW') {
     return `${symbol}${Math.round(converted).toLocaleString()}`;
   }
   return `${symbol}${converted.toLocaleString(undefined, {

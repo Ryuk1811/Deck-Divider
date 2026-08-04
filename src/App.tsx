@@ -11,6 +11,7 @@ import {
   CustomList,
   PortfolioCardEntry,
   PokemonCard,
+  CardSet,
   SearchFilters,
   TIER_LIMITS,
 } from './types';
@@ -23,6 +24,7 @@ import {
   DollarSign,
   Zap,
 } from 'lucide-react';
+import { setLiveExchangeRates } from './utils/formatters';
 import {
   MOCK_CARDS,
   MOCK_SETS,
@@ -36,6 +38,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { CardDetailModal } from './components/CardDetailModal';
 import { QuickLookModal } from './components/QuickLookModal';
 import { LimitReachedModal } from './components/LimitReachedModal';
+import { PayPalSubscriptionModal } from './components/PayPalSubscriptionModal';
 
 import { CollectionView } from './views/CollectionView';
 import { MetricsView } from './views/MetricsView';
@@ -47,32 +50,147 @@ import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
-import { startFullCatalogBackgroundSync } from './lib/dataSyncEngine';
+import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
 import { Loader2 } from 'lucide-react';
+import { db, auth } from './lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function App() {
   const { user, profile, subscription, loading: authLoading } = useAuth();
   const [engineReady, setEngineReady] = useState(false);
+  const [liveSets, setLiveSets] = useState<CardSet[]>([]);
 
   React.useEffect(() => {
     initSearchEngine().then(() => setEngineReady(true));
+    getExpansionsCatalog().then((sets) => {
+      if (sets && sets.length > 0) setLiveSets(sets);
+    });
     startFullCatalogBackgroundSync();
   }, []);
 
-  const allCards = React.useMemo(() => engineReady ? searchCards({}).slice(0, 300).map(mapToPokemonCard) : [], [engineReady]);
-  const allSets = React.useMemo(() => engineReady ? getAvailableSets() : [], [engineReady]);
+  const allCards = React.useMemo(
+    () => (engineReady ? searchCards({}).slice(0, 300).map(mapToPokemonCard) : []),
+    [engineReady]
+  );
+  const allSets = React.useMemo(
+    () => (liveSets.length > 0 ? liveSets : engineReady ? getAvailableSets() : []),
+    [engineReady, liveSets]
+  );
+  const effectiveCards = allCards.length > 0 ? allCards : MOCK_CARDS;
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('collection');
 
-  // Account State
+  // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
-  const displayCurrency = profile?.displayCurrency || 'USD';
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<DisplayCurrency>(() => {
+    return (localStorage.getItem('displayCurrency') as DisplayCurrency) || profile?.displayCurrency || 'USD';
+  });
   
-  // Stub functions for phase 1 components until they are connected
-  const setDisplayCurrency = (c: DisplayCurrency) => {};
+  const displayCurrency = selectedCurrency;
+
+  const setDisplayCurrency = (c: DisplayCurrency) => {
+    setSelectedCurrency(c);
+    localStorage.setItem('displayCurrency', c);
+    triggerSyncPulse();
+  };
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [paypalConfig, setPaypalConfig] = useState<{
+    clientId: string;
+    mode: string;
+    planIds: Record<string, string>;
+  } | null>(null);
+  const [paypalModalTier, setPaypalModalTier] = useState<AccountTier | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/billing/paypal-config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.planIds) {
+          setPaypalConfig(data);
+        }
+      })
+      .catch((err) => console.warn('Failed to load PayPal config:', err));
+  }, []);
+
+  const handleChangeTier = async (newTier: AccountTier) => {
+    if (!user) return alert("Must be logged in to upgrade");
+    triggerSyncPulse();
+    if (newTier === 'Starter') {
+       alert("To cancel your subscription, please visit your PayPal account dashboard.");
+       return;
+    }
+    setPaypalModalTier(newTier);
+  };
+
+  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier) => {
+    const token = await auth.currentUser?.getIdToken();
+    const res = await fetch('/api/billing/execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ subscriptionId, tier }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to process subscription');
+    }
+    alert(`🎉 Successfully activated ${tier} Tier subscription!`);
+    window.location.reload();
+  };
+
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paypalSuccess = urlParams.get('paypal_success');
+    const subscriptionId = urlParams.get('subscription_id');
+    const tier = urlParams.get('tier');
+    
+    if (paypalSuccess && subscriptionId && tier && user) {
+       auth.currentUser?.getIdToken().then(token => {
+         fetch('/api/billing/execute', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+           body: JSON.stringify({ subscriptionId, tier })
+         }).then(() => {
+           window.location.href = '/';
+         });
+       });
+    }
+  }, [user]);
+
   const setCurrentTier = (t: AccountTier) => {};
+
+  // Fetch live exchange rates on mount
+  React.useEffect(() => {
+    fetch('/api/exchange-rates')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.rates) {
+          setLiveExchangeRates(data.rates);
+        }
+      })
+      .catch((err) => console.warn('Failed to load initial forex rates', err));
+  }, []);
+
+
+  React.useEffect(() => {
+    if (!user) {
+      setDecks(INITIAL_DECKS);
+      setSoldEntries(INITIAL_SOLD_ENTRIES);
+      setCustomLists(INITIAL_LISTS);
+      return;
+    }
+    const unsubDecks = onSnapshot(collection(db, 'users', user.uid, 'decks'), (snap) => {
+      const liveDecks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setDecks(liveDecks.length > 0 ? liveDecks : INITIAL_DECKS);
+    });
+    return () => {
+      unsubDecks();
+    };
+  }, [user]);
 
   // Core Data Collections
   const [decks, setDecks] = useState<Deck[]>(INITIAL_DECKS);
@@ -91,8 +209,6 @@ export default function App() {
   // Top Bar Action Signals
   const [createDeckSignal, setCreateDeckSignal] = useState(0);
   const [createListSignal, setCreateListSignal] = useState(0);
-  const [toggleSearchFilterSignal, setToggleSearchFilterSignal] = useState(0);
-  const [isSearchFilterOpen, setIsSearchFilterOpen] = useState(true);
   const [exportDataSignal, setExportDataSignal] = useState(0);
 
   const sectionMeta: Record<ActiveTab, { tag: string; title: string }> = {
@@ -129,31 +245,38 @@ export default function App() {
   };
 
   // Deck Management Handlers
-  const handleCreateDeck = (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
+  
+  const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
     triggerSyncPulse();
-    const newDeck: Deck = {
-      id: `deck-${Date.now()}`,
-      ...deckData,
-      entries: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setDecks([newDeck, ...decks]);
-    setRecentActivities([
-      {
-        id: `act-${Date.now()}`,
-        type: 'DECK_CREATED',
-        title: `Created "${newDeck.name}"`,
-        subtitle: `New deck configured with color ${newDeck.colorHex}`,
-        timestamp: new Date().toISOString(),
-      },
-      ...recentActivities,
-    ]);
+    if (user) {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch('/api/decks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(deckData)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || 'Failed to create deck');
+      }
+    } else {
+      const newDeck: Deck = {
+        id: `deck-${Date.now()}`,
+        ...deckData,
+        entries: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setDecks([newDeck, ...decks]);
+    }
   };
 
+
+
+  
   const handleUpdateDeck = (updatedDeck: Deck) => {
+    setDecks(prev => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
     triggerSyncPulse();
-    setDecks(decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d)));
   };
 
   const handleDeleteDeck = (deckId: string) => {
@@ -161,33 +284,45 @@ export default function App() {
     setDecks(decks.filter((d) => d.id !== deckId));
   };
 
-  const handleSplitDeckGroup = (
+  
+  const handleSplitDeckGroup = async (
     sourceDeckId: string,
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
     triggerSyncPulse();
-    const sourceDeck = decks.find((d) => d.id === sourceDeckId);
-    if (!sourceDeck) return;
-
-    const entriesToMove = sourceDeck.entries.filter((e) => cardIdsToSplit.includes(e.cardId));
-    const remainingEntries = sourceDeck.entries.filter((e) => !cardIdsToSplit.includes(e.cardId));
-
-    const newSplitDeck: Deck = {
-      id: `deck-split-${Date.now()}`,
-      name: newDeckName,
-      description: `Split group from ${sourceDeck.name}`,
-      colorHex: sourceDeck.colorHex,
-      isPublic: false,
-      entries: entriesToMove,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setDecks([
-      newSplitDeck,
-      ...decks.map((d) => (d.id === sourceDeckId ? { ...d, entries: remainingEntries } : d)),
-    ]);
+    if (user) {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/decks/${sourceDeckId}/split`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ cardIdsToSplit, newDeckName })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || 'Failed to split deck');
+      }
+    } else {
+      // Local fallback
+      const sourceDeck = decks.find((d) => d.id === sourceDeckId);
+      if (!sourceDeck) return;
+      const entriesToMove = sourceDeck.entries.filter((e) => cardIdsToSplit.includes(e.cardId));
+      const remainingEntries = sourceDeck.entries.filter((e) => !cardIdsToSplit.includes(e.cardId));
+      const newSplitDeck: Deck = {
+        id: `deck-split-${Date.now()}`,
+        name: newDeckName,
+        description: `Split group from ${sourceDeck.name}`,
+        colorHex: sourceDeck.colorHex,
+        isPublic: sourceDeck.isPublic,
+        entries: entriesToMove,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setDecks([
+        ...decks.map((d) => (d.id === sourceDeckId ? { ...d, entries: remainingEntries } : d)),
+        newSplitDeck,
+      ]);
+    }
   };
 
   const handleAddCardToDeck = (
@@ -411,21 +546,10 @@ export default function App() {
               </button>
             )}
 
-            {activeTab === 'search' && (
-              <button
-                type="button"
-                onClick={() => setToggleSearchFilterSignal((s) => s + 1)}
-                className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] hover:border-[#DC143C] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <SlidersHorizontal className="w-4 h-4 text-[#DC143C]" />
-                <span>{isSearchFilterOpen ? 'Hide Filters' : 'Show Filters'}</span>
-              </button>
-            )}
-
             {activeTab === 'sets' && (
               <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs">
                 <Boxes className="w-4 h-4 text-[#DC143C]" />
-                <span>{MOCK_SETS.length} Sets Tracked</span>
+                <span>{allSets.length} Sets Tracked</span>
               </div>
             )}
 
@@ -450,17 +574,6 @@ export default function App() {
                 <span>Export Collection Data</span>
               </button>
             )}
-
-            {/* Valuation and Tier Badges - Identical Height (h-9) & Symmetric */}
-            <div className="h-9 px-3 bg-white border border-[#E2E8F0] text-[#0F172A] font-mono text-xs font-bold rounded-md shadow-xs flex items-center gap-1.5">
-              <DollarSign className="w-3.5 h-3.5 text-[#DC143C]" />
-              <span>Valuation: {displayCurrency}</span>
-            </div>
-
-            <div className="h-9 px-3 bg-[#0F172A] text-white font-mono text-xs font-bold rounded-md flex items-center gap-1.5 shadow-xs">
-              <Zap className="w-3.5 h-3.5 text-[#FFD700]" />
-              <span>Tier: {currentTier}</span>
-            </div>
           </div>
         </header>
 
@@ -469,13 +582,13 @@ export default function App() {
           {activeTab === 'collection' && (
             <CollectionView
               decks={decks}
-              allCards={MOCK_CARDS}
+              allCards={effectiveCards}
               currency={displayCurrency}
               customLists={customLists}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
-                setQuickLookCardList(MOCK_CARDS);
+                setQuickLookCardList(effectiveCards);
               }}
               onSelectDeck={(deckId) => {
                 setTargetDeckIdForView(deckId);
@@ -489,9 +602,10 @@ export default function App() {
             <MetricsView
               decks={decks}
               soldEntries={soldEntries}
+              customLists={customLists}
               currency={displayCurrency}
               recentActivities={recentActivities}
-              allCards={MOCK_CARDS}
+              allCards={effectiveCards}
               onSelectDeck={(deckId) => {
                 setTargetDeckIdForView(deckId);
                 setActiveTab('decks');
@@ -514,7 +628,7 @@ export default function App() {
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
-                setQuickLookCardList(MOCK_CARDS);
+                setQuickLookCardList(effectiveCards);
               }}
               onTriggerLimitModal={(action, details) =>
                 setLimitModalConfig({ isOpen: true, action, details })
@@ -526,30 +640,28 @@ export default function App() {
 
           {activeTab === 'search' && (
             <SearchView
-              sets={MOCK_SETS}
+              sets={allSets}
               currency={displayCurrency}
               savedFilters={savedFilters}
               onUpdateFilters={setSavedFilters}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
-                setQuickLookCardList(MOCK_CARDS);
+                setQuickLookCardList(effectiveCards);
               }}
-              toggleFilterSignal={toggleSearchFilterSignal}
-              onFilterStateChange={setIsSearchFilterOpen}
             />
           )}
 
           {activeTab === 'sets' && (
             <SetsView
-              sets={MOCK_SETS}
-              cards={MOCK_CARDS}
+              sets={allSets}
+              cards={effectiveCards}
               decks={decks}
               currency={displayCurrency}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
-                setQuickLookCardList(MOCK_CARDS);
+                setQuickLookCardList(effectiveCards);
               }}
             />
           )}
@@ -557,7 +669,7 @@ export default function App() {
           {activeTab === 'lists' && (
             <ListsView
               lists={customLists}
-              cards={MOCK_CARDS}
+              cards={effectiveCards}
               currency={displayCurrency}
               onCreateList={handleCreateList}
               onDeleteList={handleDeleteList}
@@ -565,7 +677,7 @@ export default function App() {
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
-                setQuickLookCardList(MOCK_CARDS);
+                setQuickLookCardList(effectiveCards);
               }}
               createListSignal={createListSignal}
             />
@@ -576,12 +688,10 @@ export default function App() {
               currency={displayCurrency}
               onSelectCurrency={setDisplayCurrency}
               currentTier={currentTier}
-              onChangeTier={(t) => {
-                setCurrentTier(t);
-                triggerSyncPulse();
-              }}
+              onChangeTier={handleChangeTier}
               decks={decks}
               soldEntries={soldEntries}
+              customLists={customLists}
               exportDataSignal={exportDataSignal}
             />
           )}
@@ -592,9 +702,9 @@ export default function App() {
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
-        cards={MOCK_CARDS}
+        cards={effectiveCards}
         decks={decks}
-        sets={MOCK_SETS}
+        sets={allSets}
         onSelectCard={(card) => setSelectedDetailCard(card)}
         onSelectDeck={(deckId) => {
           setTargetDeckIdForView(deckId);
@@ -628,9 +738,24 @@ export default function App() {
         attemptedAction={limitModalConfig.action}
         attemptedDetails={limitModalConfig.details}
         onUpgradeToTier={(tier) => {
-          setCurrentTier(tier);
+          handleChangeTier(tier as AccountTier);
           triggerSyncPulse();
         }}
+      />
+
+      <PayPalSubscriptionModal
+        isOpen={!!paypalModalTier}
+        onClose={() => setPaypalModalTier(null)}
+        tierName={paypalModalTier || 'Bunch'}
+        planId={
+          (paypalModalTier && paypalConfig?.planIds?.[paypalModalTier]) ||
+          'P-86F48638UK390893LNJY5FHQ'
+        }
+        clientId={
+          paypalConfig?.clientId ||
+          'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ'
+        }
+        onApproveSubscription={handleApproveSubscription}
       />
     </div>
   );

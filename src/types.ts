@@ -172,7 +172,28 @@ export interface PokemonCard {
 }
 
 export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'Damaged';
-export type DisplayCurrency = 'USD' | 'EUR' | 'GBP' | 'JPY';
+export type DisplayCurrency =
+  | 'USD'
+  | 'EUR'
+  | 'GBP'
+  | 'JPY'
+  | 'CAD'
+  | 'AUD'
+  | 'CHF'
+  | 'INR'
+  | 'SGD'
+  | 'HKD'
+  | 'NZD'
+  | 'BRL'
+  | 'CNY'
+  | 'KRW'
+  | 'MXN'
+  | 'SEK'
+  | 'NOK'
+  | 'DKK'
+  | 'PLN'
+  | 'TRY'
+  | (string & {});
 
 export interface GradingInfo {
   company: 'PSA' | 'BGS' | 'CGC' | 'ACE' | 'SGC' | 'Other';
@@ -271,16 +292,48 @@ export interface RecentActivityItem {
   cardImage?: string;
 }
 
-export const CURRENCY_SYMBOLS: Record<DisplayCurrency, string> = {
+export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: '$',
   EUR: '€',
   GBP: '£',
   JPY: '¥',
+  CAD: 'CA$',
+  AUD: 'A$',
+  CHF: 'CHF ',
+  INR: '₹',
+  SGD: 'S$',
+  HKD: 'HK$',
+  NZD: 'NZ$',
+  BRL: 'R$',
+  CNY: '¥',
+  KRW: '₩',
+  MXN: 'MX$',
+  SEK: 'kr ',
+  NOK: 'kr ',
+  DKK: 'kr ',
+  PLN: 'zł ',
+  TRY: '₺',
 };
 
-export const CURRENCY_RATES: Record<DisplayCurrency, number> = {
+export const CURRENCY_RATES: Record<string, number> = {
   USD: 1.0,
   EUR: 0.92,
   GBP: 0.78,
   JPY: 155.0,
+  CAD: 1.38,
+  AUD: 1.52,
+  CHF: 0.89,
+  INR: 83.5,
+  SGD: 1.35,
+  HKD: 7.82,
+  NZD: 1.65,
+  BRL: 5.65,
+  CNY: 7.25,
+  KRW: 1380.0,
+  MXN: 18.5,
+  SEK: 10.6,
+  NOK: 10.8,
+  DKK: 6.85,
+  PLN: 3.95,
+  TRY: 33.0,
 };

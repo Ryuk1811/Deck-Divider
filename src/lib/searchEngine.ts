@@ -141,11 +141,42 @@ export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
     },
     prices: {
       raw: generateDeterministicPrice(card.id),
-      psa10Estimate: generateDeterministicPrice(card.id) * 3,
-      psa9Estimate: generateDeterministicPrice(card.id) * 1.5,
-      priceHistory: []
+      psa10Estimate: Number((generateDeterministicPrice(card.id) * 3.2).toFixed(2)),
+      psa9Estimate: Number((generateDeterministicPrice(card.id) * 1.6).toFixed(2)),
+      priceHistory: generatePriceHistory(card.id, generateDeterministicPrice(card.id))
     }
   };
+};
+
+export const generatePriceHistory = (cardId: string, basePrice: number, daysCount: number = 30): { date: string; price: number }[] => {
+  const points: { date: string; price: number }[] = [];
+  const now = new Date();
+  
+  // Hash function helper for deterministic noise
+  let hash = 0;
+  for (let i = 0; i < cardId.length; i++) {
+    hash = ((hash << 5) - hash) + cardId.charCodeAt(i);
+    hash |= 0;
+  }
+
+  // Create smooth trend curve leading up to basePrice today
+  const trendSlope = (((Math.abs(hash) % 20) - 10) / 100); // -10% to +10% overall 30d movement
+  
+  for (let i = daysCount - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    
+    // Sine wave + pseudo noise
+    const dayProgress = (daysCount - 1 - i) / (daysCount - 1);
+    const noise = Math.sin((i + Math.abs(hash % 17)) * 0.7) * 0.04;
+    const factor = 1 - (1 - dayProgress) * trendSlope + noise;
+    
+    const calculatedPrice = Number(Math.max(0.10, basePrice * factor).toFixed(2));
+    points.push({ date: dateStr, price: calculatedPrice });
+  }
+
+  return points;
 };
 
 const generateDeterministicPrice = (id: string): number => {
@@ -175,6 +206,11 @@ export interface SearchFilters {
   variant?: string;
   legality?: 'standard' | 'expanded';
 }
+
+export const getCardByIdFromEngine = (id: string): TCGdexCard | null => {
+  const doc = allDocsData.find((d) => d.id === id);
+  return doc || null;
+};
 
 export const getAvailableSets = (): CardSet[] => {
   const setsMap = new Map<string, CardSet>();

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, ListOrdered, Trash2, X, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Plus, ListOrdered, Trash2, X, Sparkles, FolderPlus, Layers } from 'lucide-react';
 import { CustomList, PokemonCard, DisplayCurrency } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
+import { getCardByIdFromEngine, mapToPokemonCard } from '../lib/searchEngine';
 
 interface ListsViewProps {
   lists: CustomList[];
@@ -41,9 +42,39 @@ export const ListsView: React.FC<ListsViewProps> = ({
   }, [createListSignal]);
 
   const currentList = lists.find((l) => l.id === selectedListId) || lists[0];
-  const listCards = currentList
-    ? cards.filter((c) => currentList.cardIds.includes(c.id))
-    : [];
+
+  const listCards = useMemo(() => {
+    if (!currentList || !currentList.cardIds) return [];
+    
+    return currentList.cardIds.map((cardId) => {
+      // 1. Check passed-in cards (MOCK_CARDS / Collection)
+      const foundInProps = cards.find((c) => c.id === cardId);
+      if (foundInProps) return foundInProps;
+
+      // 2. Check search engine index cache
+      const engineDoc = getCardByIdFromEngine(cardId);
+      if (engineDoc) {
+        return mapToPokemonCard(engineDoc);
+      }
+
+      // 3. Fallback placeholder so card never vanishes from list
+      const setCode = cardId.includes('-') ? cardId.split('-')[0] : 'sv3';
+      const numberCode = cardId.includes('-') ? cardId.split('-')[1] : '1';
+      return {
+        id: cardId,
+        name: cardId.toUpperCase().replace('-', ' #'),
+        supertype: 'Pokémon',
+        types: ['Colorless'],
+        rarity: 'Rare',
+        set: { id: setCode, name: 'Pokémon TCG', series: 'Scarlet & Violet' },
+        images: {
+          small: `https://assets.tcgdex.net/en/${setCode}/${numberCode}/low.png`,
+          large: `https://assets.tcgdex.net/en/${setCode}/${numberCode}/high.png`,
+        },
+        prices: { raw: 4.50, psa10Estimate: 15.00, psa9Estimate: 7.50 },
+      } as PokemonCard;
+    });
+  }, [currentList, cards]);
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,29 +152,39 @@ export const ListsView: React.FC<ListsViewProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {listCards.map((card) => (
-              <div key={card.id} className="relative group">
-                <HolographicCard
-                  card={card}
-                  currency={currency}
-                  onClick={() => onSelectCard(card)}
-                  onQuickLook={() => onQuickLookCard(card)}
-                />
+          {listCards.length === 0 ? (
+            <div className="p-12 text-center bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-md space-y-3">
+              <Layers className="w-8 h-8 text-[#94A3B8] mx-auto" />
+              <div className="font-heading font-bold text-sm text-[#0F172A]">This Custom List is Empty</div>
+              <p className="font-mono text-xs text-[#64748B] max-w-sm mx-auto">
+                Search for any Pokémon card or click on a card in your collection to add it to "{currentList.name}".
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {listCards.map((card) => (
+                <div key={card.id} className="relative group">
+                  <HolographicCard
+                    card={card}
+                    currency={currency}
+                    onClick={() => onSelectCard(card)}
+                    onQuickLook={() => onQuickLookCard(card)}
+                  />
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveCardFromList(currentList.id, card.id);
-                  }}
-                  className="absolute top-2 right-2 hidden group-hover:flex items-center p-1 rounded-full bg-[#0F172A] text-white hover:bg-[#FF4500] z-10"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveCardFromList(currentList.id, card.id);
+                    }}
+                    className="absolute top-2 right-2 hidden group-hover:flex items-center p-1 rounded-full bg-[#0F172A] text-white hover:bg-[#FF4500] z-10 shadow-md"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
