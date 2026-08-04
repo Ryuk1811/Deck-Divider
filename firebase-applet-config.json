@@ -1,0 +1,12 @@
+{
+  "projectId": "deckdivider1",
+  "appId": "1:117584496178:web:c13131c44c0f1735dd9e2b",
+  "apiKey": "AIzaSyDFS0JIrRYbVBkbOvthQtHpngmOeDVj8cs",
+  "authDomain": "deckdivider1.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "deckdivider1.firebasestorage.app",
+  "messagingSenderId": "117584496178",
+  "measurementId": "G-W83PHH9QFN",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

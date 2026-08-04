@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user is accessing their own data
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    match /tcg_expansions/{setId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /tcg_cards/{cardId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    match /subscriptions/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      // Explicitly reject direct writes from clients
+      allow write: if false; 
+    }
+    
+    match /decks/{deckId} {
+      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || resource.data.isPublic == true);
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+    
+    match /portfolioItems/{itemId} {
+      allow read, update, delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    match /listItems/{itemId} {
+      allow read, update, delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+    
+    match /customLists/{listId} {
+      allow read, update, delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    match /cardCatalog/{cardId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /expansions/{expansionId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

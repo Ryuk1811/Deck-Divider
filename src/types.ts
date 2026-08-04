@@ -1,0 +1,286 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+export type AccountTier = 'Starter' | 'Bunch' | 'Stack' | 'Deck' | 'Collection';
+
+export interface TierLimit {
+  name: AccountTier;
+  priceMonthly: number; // 0, 11, 22, 33, 44
+  maxDecks: number; // Infinity for Collection
+  maxCardsPerDeck: number; // Infinity for Collection
+  canSharePublicLinks: boolean;
+  tagline: string;
+}
+
+export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
+  Starter: {
+    name: 'Starter',
+    priceMonthly: 0,
+    maxDecks: 4,
+    maxCardsPerDeck: 25,
+    canSharePublicLinks: false,
+    tagline: 'Entry point for casual collectors',
+  },
+  Bunch: {
+    name: 'Bunch',
+    priceMonthly: 11,
+    maxDecks: 9,
+    maxCardsPerDeck: 40,
+    canSharePublicLinks: false,
+    tagline: 'For active player bundles',
+  },
+  Stack: {
+    name: 'Stack',
+    priceMonthly: 22,
+    maxDecks: 15,
+    maxCardsPerDeck: 50,
+    canSharePublicLinks: true,
+    tagline: 'Unlocks public deck share links',
+  },
+  Deck: {
+    name: 'Deck',
+    priceMonthly: 33,
+    maxDecks: 18,
+    maxCardsPerDeck: 60,
+    canSharePublicLinks: true,
+    tagline: 'Full tournament specs',
+  },
+  Collection: {
+    name: 'Collection',
+    priceMonthly: 44,
+    maxDecks: Infinity,
+    maxCardsPerDeck: Infinity,
+    canSharePublicLinks: true,
+    tagline: 'Hold your whole collection with zero limits',
+  },
+};
+
+export type EnergyType =
+  | 'Fire'
+  | 'Water'
+  | 'Grass'
+  | 'Electric'
+  | 'Lightning'
+  | 'Psychic'
+  | 'Fighting'
+  | 'Darkness'
+  | 'Steel'
+  | 'Metal'
+  | 'Dragon'
+  | 'Colorless'
+  | 'Fairy';
+
+export type CardRarity =
+  | 'Common'
+  | 'Uncommon'
+  | 'Rare'
+  | 'Rare Holo'
+  | 'Ultra Rare'
+  | 'Secret Rare'
+  | 'Illustration Rare'
+  | 'Special Illustration Rare';
+
+export interface CardAttack {
+  name: string;
+  cost: EnergyType[];
+  damage: string;
+  text: string;
+}
+
+export interface CardWeakness {
+  type: EnergyType;
+  value: string;
+}
+
+export interface CardSet {
+  id: string;
+  name: string;
+  series: string;
+  printedTotal: number;
+  total: number;
+  releaseDate: string;
+  symbolUrl?: string;
+  logoUrl?: string;
+}
+
+export interface CardVariants {
+  normal?: boolean;
+  reverse?: boolean;
+  holo?: boolean;
+  firstEdition?: boolean;
+  wPrerelease?: boolean;
+  secret100?: boolean;
+  [key: string]: boolean | undefined;
+}
+
+export interface CardLegalities {
+  standard?: boolean;
+  expanded?: boolean;
+}
+
+export interface CardMarketLink {
+  url?: string;
+  updatedAt?: string;
+  price?: number;
+  lowPrice?: number;
+  trendPrice?: number;
+  avgSellPrice?: number;
+}
+
+export interface PricePoint {
+  date: string;
+  price: number;
+}
+
+export interface PokemonCard {
+  id: string;
+  name: string;
+  supertype: 'Pokémon' | 'Trainer' | 'Energy' | string;
+  subtypes: string[];
+  category?: string;
+  stage?: string;
+  hp?: number;
+  types?: EnergyType[];
+  attacks?: CardAttack[];
+  weaknesses?: CardWeakness[];
+  resistances?: CardWeakness[];
+  retreatCost?: EnergyType[];
+  rarity: CardRarity | string;
+  set: CardSet;
+  artist: string;
+  number: string;
+  flavorText?: string;
+  description?: string;
+  dexId?: number[];
+  regulationMark?: string;
+  legalities?: CardLegalities;
+  variants?: CardVariants;
+  cardmarket?: CardMarketLink;
+  tcgplayer?: CardMarketLink;
+  prices: {
+    raw: number;
+    psa10Estimate: number;
+    psa9Estimate: number;
+    priceHistory: PricePoint[];
+  };
+  images: {
+    small: string;
+    large: string;
+  };
+}
+
+export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'Damaged';
+export type DisplayCurrency = 'USD' | 'EUR' | 'GBP' | 'JPY';
+
+export interface GradingInfo {
+  company: 'PSA' | 'BGS' | 'CGC' | 'ACE' | 'SGC' | 'Other';
+  grade: string;
+  certNumber: string;
+}
+
+export interface PortfolioCardEntry {
+  id: string;
+  ownerId?: string; // Firebase Owner UID
+  deckId?: string; // Associated Deck ID
+  cardId: string;
+  card: PokemonCard;
+  condition: CardCondition;
+  quantity: number;
+  purchasePrice: number;
+  purchaseCurrency: DisplayCurrency;
+  purchaseDate: string;
+  notes?: string;
+  gradingInfo?: GradingInfo;
+  isSold: boolean;
+  salePrice?: number;
+  saleCurrency?: DisplayCurrency;
+  saleDate?: string;
+  salePlatform?: string;
+}
+
+export interface Deck {
+  id: string;
+  ownerId?: string; // Firebase Owner UID
+  name: string;
+  description: string;
+  colorHex: string;
+  isPublic: boolean;
+  publicShareCode?: string;
+  entries: PortfolioCardEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CustomList {
+  id: string;
+  ownerId?: string; // Firebase Owner UID
+  name: string;
+  description: string;
+  cardIds: string[];
+  createdAt: string;
+}
+
+export interface UserProfile {
+  id: string; // auth.uid
+  displayName: string;
+  email: string;
+  avatar: string;
+  displayCurrency: DisplayCurrency;
+  createdAt: string;
+}
+
+export interface SubscriptionRecord {
+  id: string; // auth.uid
+  tierName: AccountTier;
+  billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid';
+  paypalSubscriptionId?: string;
+  updatedAt: string;
+}
+
+export interface SearchFilters {
+  query: string;
+  types: EnergyType[];
+  supertype?: string;
+  category?: string;
+  stage?: string;
+  hpMin?: number;
+  hpMax?: number;
+  rarities: (CardRarity | string)[];
+  setId?: string;
+  series?: string;
+  artist?: string;
+  illustrator?: string;
+  regulationMark?: string;
+  variant?: string;
+  legality?: 'standard' | 'expanded';
+  priceMin?: number;
+  priceMax?: number;
+  sortBy: 'price-desc' | 'price-asc' | 'name' | 'set' | 'hp';
+}
+
+export interface RecentActivityItem {
+  id: string;
+  type: 'ADDED' | 'SOLD' | 'DECK_CREATED' | 'LIST_CREATED' | 'GRADED';
+  title: string;
+  subtitle: string;
+  timestamp: string;
+  amount?: number;
+  currency?: DisplayCurrency;
+  cardImage?: string;
+}
+
+export const CURRENCY_SYMBOLS: Record<DisplayCurrency, string> = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+};
+
+export const CURRENCY_RATES: Record<DisplayCurrency, number> = {
+  USD: 1.0,
+  EUR: 0.92,
+  GBP: 0.78,
+  JPY: 155.0,
+};

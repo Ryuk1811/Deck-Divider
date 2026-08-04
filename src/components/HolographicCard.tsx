@@ -1,0 +1,209 @@
+import React, { useEffect, useRef } from 'react';
+import { PokemonCard, DisplayCurrency } from '../types';
+import { holographicEngine } from '../utils/holographicEngine';
+import { formatCurrency, RARITY_BADGE_STYLE, ENERGY_COLORS } from '../utils/formatters';
+import { Sparkles, Eye } from 'lucide-react';
+
+interface HolographicCardProps {
+  card: PokemonCard;
+  currency?: DisplayCurrency;
+  quantity?: number;
+  deckName?: string;
+  deckColor?: string;
+  onClick?: () => void;
+  onQuickLook?: () => void;
+  showPrice?: boolean;
+  className?: string;
+  isFocused?: boolean;
+}
+
+export const HolographicCard: React.FC<HolographicCardProps> = ({
+  card,
+  currency = 'USD',
+  quantity,
+  deckName,
+  deckColor,
+  onClick,
+  onQuickLook,
+  showPrice = true,
+  className = '',
+  isFocused = false,
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (el) {
+      holographicEngine.register(el);
+    }
+    return () => {
+      if (el) holographicEngine.unregister(el);
+    };
+  }, []);
+
+  const isHolo =
+    card.rarity === 'Rare Holo' ||
+    card.rarity === 'Ultra Rare' ||
+    card.rarity === 'Secret Rare' ||
+    card.rarity === 'Illustration Rare' ||
+    card.rarity === 'Special Illustration Rare';
+
+  const isGlitter = card.rarity === 'Ultra Rare' || card.rarity === 'Secret Rare' || card.rarity === 'Special Illustration Rare';
+  const rarityBadge = RARITY_BADGE_STYLE[card.rarity] || RARITY_BADGE_STYLE['Common'];
+
+  return (
+    <div
+      ref={cardRef}
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === ' ' && onQuickLook) {
+          e.preventDefault();
+          onQuickLook();
+        } else if (e.key === 'Enter' && onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      style={{
+        transform: 'perspective(1000px) scale(var(--card-scale, 1)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
+        transition: 'var(--card-transition, transform 220ms cubic-bezier(0.4, 0, 0.2, 1))',
+      }}
+      className={`group relative bg-white px-3 pt-3 pb-3.5 border border-[#E2E8F0] hover:border-[#CBD5E1] shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 select-none overflow-hidden rounded-2xl ${
+        isFocused ? 'ring-2 ring-[#DC143C] ring-offset-2' : ''
+      } ${className}`}
+    >
+      {/* Card Header Info */}
+      <div className="flex items-center justify-between gap-1 mb-2">
+        <span className="font-heading font-semibold text-xs text-[#0F172A] truncate max-w-[120px]">
+          {card.name}
+        </span>
+        {card.hp && (
+          <span className="font-num font-bold text-xs text-[#DC143C] flex-shrink-0">
+            {card.hp} HP
+          </span>
+        )}
+      </div>
+
+      {/* Card Image Container with Holographic Shimmer and Glare */}
+      <div className="relative aspect-[0.718] w-full overflow-hidden rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+        <img
+          src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
+          alt={card.name}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        />
+
+        {/* Glare Layer */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-200"
+          style={{
+            background:
+              'radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%)',
+          }}
+        />
+
+        {/* Standard Shimmer Layer */}
+        {isHolo && (
+          <div
+            className="pointer-events-none absolute inset-0 mix-blend-color-dodge opacity-30 group-hover:opacity-80 transition-opacity duration-300 holo-shimmer animate-holo-idle"
+            style={{
+              backgroundPosition: 'var(--shimmer-x, 0%) center',
+            }}
+          />
+        )}
+
+        {/* Glitter Layer */}
+        {isGlitter && (
+          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300 bg-[radial-gradient(#FFD700_1px,transparent_1px)] [background-size:12px_12px]" />
+        )}
+
+        {/* Quantity Badge - Continuous State */}
+        {quantity !== undefined && quantity > 1 && (
+          <div className="absolute top-2 right-2 rounded-md bg-[#0F172A] px-2 py-0.5 font-num text-xs font-bold text-white shadow-xs">
+            x{quantity}
+          </div>
+        )}
+
+        {/* Quick Look hover prompt - Continuous State */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onQuickLook) onQuickLook();
+          }}
+          className="absolute bottom-2 right-2 hidden group-hover:flex items-center gap-1 rounded-md bg-white/95 backdrop-blur-md px-2 py-1 text-[10px] font-mono font-medium text-[#0F172A] border border-[#E2E8F0] shadow-xs hover:bg-[#FFF0F3] hover:text-[#DC143C]"
+        >
+          <Eye className="w-3 h-3" />
+          Space
+        </button>
+      </div>
+
+      {/* Card Footer: Set, Rarity & Price - Continuous Detail State */}
+      <div className="mt-2.5 flex items-center justify-between gap-1.5 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+          <span
+            className={`inline-block rounded-md px-1.5 py-0.5 text-[10px] font-mono font-semibold border flex-shrink-0 ${rarityBadge.style}`}
+          >
+            {rarityBadge.label}
+          </span>
+          <span className="font-mono text-[11px] text-[#64748B] truncate">
+            {card.set.name}
+          </span>
+        </div>
+
+        {showPrice && (
+          <div className="font-num font-bold text-xs text-[#0F172A] flex-shrink-0 pl-1">
+            {formatCurrency(card.prices.raw, currency as DisplayCurrency)}
+          </div>
+        )}
+      </div>
+
+      {/* Energy Types, Category & Stage Row & Deck Badge - Continuous Detail State */}
+      <div className="mt-1.5 flex items-center justify-between gap-1 flex-wrap">
+        <div className="flex flex-wrap items-center gap-1">
+          {card.category && card.category !== 'Pokemon' && card.category !== 'Pokémon' && (
+            <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-bold bg-[#F1F5F9] text-[#0F172A] border border-[#CBD5E1]">
+              {card.category}
+            </span>
+          )}
+
+          {card.stage && (
+            <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-bold bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20">
+              {card.stage}
+            </span>
+          )}
+
+          {card.types && card.types.length > 0 && card.types.map((type) => {
+            const style = ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
+            const displayTypeName = type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type;
+            return (
+              <span
+                key={type}
+                className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-semibold border ${style.bg} ${style.text} ${style.border}`}
+              >
+                {displayTypeName}
+              </span>
+            );
+          })}
+
+          {card.legalities?.standard && (
+            <span className="inline-flex items-center rounded-md px-1 py-0.5 text-[8px] font-mono font-bold bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]" title="Standard Format Legal">
+              STD
+            </span>
+          )}
+        </div>
+
+        {deckName && (
+          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#F8FAFC] border border-[#E2E8F0] text-[9px] font-mono text-[#64748B] max-w-[110px] truncate">
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: deckColor || '#0F172A' }}
+            />
+            <span className="truncate font-semibold">{deckName}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
