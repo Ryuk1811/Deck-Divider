@@ -352,7 +352,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
       {/* SECTION 3: SUBSCRIPTION MANAGEMENT & TIER COMPARISON */}
       <div className="neo-card p-6 space-y-6 chamfer-corner-sm bg-white border border-[#E2E8F0]">
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#E2E8F0] pb-4 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-[#FFFBEB] text-[#854D0E] border border-[#FFD700]">
               <Zap className="w-5 h-5 text-[#CA8A04]" />
@@ -362,8 +362,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <h2 className="font-heading font-bold text-lg text-[#0F172A]">
                   Account Tier: {currentTier}
                 </h2>
-                <span className="font-mono text-[10px] font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded-md">
-                  Current Plan
+                <span className="font-mono text-[10px] font-bold bg-[#16A34A] text-white px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  PayPal Live
                 </span>
               </div>
               <p className="font-mono text-xs text-[#64748B]">
@@ -378,11 +378,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </span>
             <span className="font-mono text-xs text-[#64748B]">/mo</span>
           </div>
-        </div>
-
-        {/* Note on Collection Top Tier Name Pun */}
-        <div className="p-3.5 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 font-mono text-xs text-[#0F172A] leading-relaxed">
-          <span className="font-bold text-[#DC143C]">Note on Top Tier "Collection":</span> The top tier removes every deck and per-deck card limit so you can finally hold your whole collection in one place!
         </div>
 
         {/* 5 TIERS COMPARISON CARDS */}

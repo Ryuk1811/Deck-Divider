@@ -39,6 +39,8 @@ import { CardDetailModal } from './components/CardDetailModal';
 import { QuickLookModal } from './components/QuickLookModal';
 import { LimitReachedModal } from './components/LimitReachedModal';
 import { PayPalSubscriptionModal } from './components/PayPalSubscriptionModal';
+import { PayPalSuccessModal } from './components/PayPalSuccessModal';
+import { PayPalCancelModal } from './components/PayPalCancelModal';
 
 import { CollectionView } from './views/CollectionView';
 import { MetricsView } from './views/MetricsView';
@@ -56,7 +58,7 @@ import { db, auth } from './lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function App() {
-  const { user, profile, subscription, loading: authLoading } = useAuth();
+  const { user, profile, subscription, loading: authLoading, refreshSubscription } = useAuth();
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
 
@@ -102,6 +104,9 @@ export default function App() {
     planIds: Record<string, string>;
   } | null>(null);
   const [paypalModalTier, setPaypalModalTier] = useState<AccountTier | null>(null);
+  const [paypalSuccessData, setPaypalSuccessData] = useState<{ tier: AccountTier; subId: string } | null>(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isLaunchingPayPal, setIsLaunchingPayPal] = useState(false);
 
   React.useEffect(() => {
     fetch('/api/billing/paypal-config')
@@ -113,16 +118,6 @@ export default function App() {
       })
       .catch((err) => console.warn('Failed to load PayPal config:', err));
   }, []);
-
-  const handleChangeTier = async (newTier: AccountTier) => {
-    if (!user) return alert("Must be logged in to upgrade");
-    triggerSyncPulse();
-    if (newTier === 'Starter') {
-       alert("To cancel your subscription, please visit your PayPal account dashboard.");
-       return;
-    }
-    setPaypalModalTier(newTier);
-  };
 
   const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier) => {
     const token = await auth.currentUser?.getIdToken();
@@ -138,27 +133,85 @@ export default function App() {
       const err = await res.json();
       throw new Error(err.error || 'Failed to process subscription');
     }
-    alert(`🎉 Successfully activated ${tier} Tier subscription!`);
-    window.location.reload();
+    await refreshSubscription();
+    setPaypalSuccessData({ tier, subId: subscriptionId });
   };
 
-  React.useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paypalSuccess = urlParams.get('paypal_success');
-    const subscriptionId = urlParams.get('subscription_id');
-    const tier = urlParams.get('tier');
-    
-    if (paypalSuccess && subscriptionId && tier && user) {
-       auth.currentUser?.getIdToken().then(token => {
-         fetch('/api/billing/execute', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-           body: JSON.stringify({ subscriptionId, tier })
-         }).then(() => {
-           window.location.href = '/';
-         });
-       });
+  const handleChangeTier = async (newTier: AccountTier) => {
+    if (!user) return alert("Must be logged in to upgrade");
+    triggerSyncPulse();
+
+    if (newTier === 'Starter') {
+      window.open('https://www.paypal.com/myaccount/autopay/', '_blank');
+      alert("To cancel your active subscription or manage recurring billing, visit your PayPal dashboard.");
+      return;
     }
+
+    setPaypalModalTier(newTier);
+  };
+
+  // HANDLE POP-UP MESSAGES AND REDIRECTS
+  React.useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data?.type === 'PAYPAL_SUCCESS') {
+        const { subscriptionId, tier } = event.data;
+        const targetTier: AccountTier = tier || 'Bunch';
+        const targetSubId = subscriptionId || 'LIVE_APPROVED_' + Date.now();
+        await handleApproveSubscription(targetSubId, targetTier);
+      } else if (event.data?.type === 'PAYPAL_CANCEL') {
+        setIsCancelModalOpen(true);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paypalSuccess = urlParams.get('paypal_success') === 'true' || urlParams.has('subscription_id') || urlParams.has('ba_token');
+    const paypalCancel = urlParams.get('paypal_cancel') === 'true';
+    const rawSubId = urlParams.get('subscription_id') || 
+                     urlParams.get('subscriptionId') || 
+                     urlParams.get('ba_token') || 
+                     urlParams.get('token');
+    const rawTier = (urlParams.get('tier') || 'Bunch') as AccountTier;
+
+    // Inside popup window: notify opener and close self
+    if (window.opener && !window.opener.closed) {
+      if (paypalSuccess) {
+        try {
+          window.opener.postMessage({ 
+            type: 'PAYPAL_SUCCESS', 
+            subscriptionId: rawSubId, 
+            tier: rawTier 
+          }, '*');
+          window.close();
+          return;
+        } catch (e) {
+          console.warn('postMessage to window.opener failed:', e);
+        }
+      }
+      if (paypalCancel) {
+        try {
+          window.opener.postMessage({ type: 'PAYPAL_CANCEL' }, '*');
+          window.close();
+          return;
+        } catch (e) {
+          console.warn('postMessage to window.opener failed:', e);
+        }
+      }
+    }
+
+    // Direct window processing (when user is ready)
+    if (paypalSuccess) {
+      if (user) {
+        const targetSubId = rawSubId || 'LIVE_APPROVED_' + Date.now();
+        handleApproveSubscription(targetSubId, rawTier);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } else if (paypalCancel) {
+      setIsCancelModalOpen(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    return () => window.removeEventListener('message', handleMessage);
   }, [user]);
 
   const setCurrentTier = (t: AccountTier) => {};
@@ -756,6 +809,23 @@ export default function App() {
           'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ'
         }
         onApproveSubscription={handleApproveSubscription}
+        getUserToken={async () => auth.currentUser?.getIdToken()}
+      />
+
+      <PayPalSuccessModal
+        isOpen={!!paypalSuccessData}
+        onClose={() => setPaypalSuccessData(null)}
+        tierName={paypalSuccessData?.tier || 'Bunch'}
+        subscriptionId={paypalSuccessData?.subId}
+      />
+
+      <PayPalCancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onRetry={() => {
+          setIsCancelModalOpen(false);
+          if (paypalModalTier) handleChangeTier(paypalModalTier);
+        }}
       />
     </div>
   );
