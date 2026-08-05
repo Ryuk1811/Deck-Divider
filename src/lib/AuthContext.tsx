@@ -40,11 +40,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfileAndSubscription = async (userObj: FirebaseUser) => {
     const uid = userObj.uid;
+    const googleName = userObj.displayName || userObj.email?.split('@')[0] || 'Collector';
+    const googlePhoto = userObj.photoURL || '';
+
     const defaultProf: UserProfile = {
       id: uid,
-      displayName: userObj.displayName || userObj.email?.split('@')[0] || 'Collector',
+      displayName: googleName,
       email: userObj.email || '',
-      avatar: userObj.photoURL || '',
+      avatar: googlePhoto,
       displayCurrency: 'USD',
       createdAt: new Date().toISOString()
     };
@@ -59,7 +62,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userRef = doc(db, 'users', uid);
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
-        setProfile(userDoc.data() as UserProfile);
+        const existingData = userDoc.data() as UserProfile;
+        const mergedProf: UserProfile = {
+          ...existingData,
+          displayName: googleName || existingData.displayName,
+          avatar: googlePhoto || existingData.avatar,
+          email: userObj.email || existingData.email,
+        };
+        setProfile(mergedProf);
+        // Persist updated Google OAuth profile info
+        if (googleName !== existingData.displayName || googlePhoto !== existingData.avatar) {
+          await setDoc(userRef, { displayName: googleName, avatar: googlePhoto }, { merge: true });
+        }
       } else {
         await setDoc(userRef, defaultProf, { merge: true });
         setProfile(defaultProf);

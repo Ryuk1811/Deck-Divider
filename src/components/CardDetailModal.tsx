@@ -20,9 +20,12 @@ import {
   GradingInfo,
   PortfolioCardEntry,
 } from '../types';
-import { formatCurrency, ENERGY_COLORS } from '../utils/formatters';
+import { formatCurrency, ENERGY_COLORS, convertUSDToCurrency, convertCurrencyToUSD, getCurrencySymbol } from '../utils/formatters';
 import { generatePriceHistory, getCardByIdFromEngine, mapToPokemonCard } from '../lib/searchEngine';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+
+import { CardImage } from './CardImage';
+import { GlassSlabFrame } from './GlassSlabFrame';
 
 interface CardDetailModalProps {
   card: PokemonCard | null;
@@ -99,7 +102,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
     };
 
     setFullCardData(initialData);
-    setPurchasePrice(initialData.prices?.raw || 0);
+    setPurchasePrice(convertUSDToCurrency(initialData.prices?.raw || 0, currency));
     setQuantity(1);
     setNotes('');
     setDuplicateCheckPrompt(null);
@@ -251,13 +254,15 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
       (e) => !e.isSold && e.cardId === fullCardData.id && e.condition === condition
     );
 
+    const priceInUSD = convertCurrencyToUSD(purchasePrice, currency);
+
     const entryData: Omit<PortfolioCardEntry, 'id' | 'isSold'> = {
       cardId: fullCardData.id,
       card: fullCardData,
       condition,
       quantity,
-      purchasePrice,
-      purchaseCurrency,
+      purchasePrice: priceInUSD,
+      purchaseCurrency: currency,
       purchaseDate,
       notes,
       gradingInfo: certNumber ? { company: gradingCompany, grade, certNumber } : undefined,
@@ -301,14 +306,19 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
         {/* Modal Body Grid */}
         <div className="py-4 grid grid-cols-1 md:grid-cols-12 gap-6 overflow-hidden flex-1 min-h-0">
           {/* Left Column: Dead-Centered Tidally Locked Pokemon Card */}
-          <div className="md:col-span-5 flex flex-col items-center justify-center p-4 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/60 rounded-xl border border-[#E2E8F0] flex-shrink-0">
-            <div className="w-full max-w-[260px] aspect-[0.718] rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-lg relative group bg-white flex items-center justify-center transition-transform duration-300 hover:scale-[1.02]">
-              <img
-                src={fullCardData.images.large || 'https://images.pokemontcg.io/cardback.png'}
+          <div className="md:col-span-5 flex flex-col items-center justify-center p-3 sm:p-4 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/60 rounded-xl border border-[#E2E8F0] overflow-y-auto max-h-full">
+            <GlassSlabFrame className="w-full max-w-[230px] sm:max-w-[245px] shadow-2xl my-auto">
+              <CardImage
+                src={fullCardData.images.large || fullCardData.images.small}
                 alt={fullCardData.name}
+                cardName={fullCardData.name}
+                cardNumber={fullCardData.number}
+                setName={fullCardData.set?.name}
+                rarity={fullCardData.rarity}
+                setId={fullCardData.set?.id}
                 className="w-full h-full object-cover"
               />
-            </div>
+            </GlassSlabFrame>
 
             <div className="mt-4 text-center space-y-1">
               <div className="font-mono text-xs text-[#64748B]">
@@ -809,7 +819,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="font-mono text-[10px] text-[#64748B]">Purchase Price</label>
+                    <label className="font-mono text-[10px] text-[#64748B]">Purchase Price ({getCurrencySymbol(currency)} {currency})</label>
                     <input
                       type="number"
                       step="0.01"

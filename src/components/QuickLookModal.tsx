@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { PokemonCard, DisplayCurrency } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { CardImage } from './CardImage';
+import { GlassSlabFrame } from './GlassSlabFrame';
 
 interface QuickLookModalProps {
   card: PokemonCard | null;
@@ -90,13 +92,18 @@ export const QuickLookModal: React.FC<QuickLookModalProps> = ({
             </button>
           )}
 
-          <div className="w-56 aspect-[0.718] rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-md bg-white">
-            <img
-              src={card.images.large || 'https://images.pokemontcg.io/cardback.png'}
+          <GlassSlabFrame className="w-56 sm:w-60 shadow-2xl">
+            <CardImage
+              src={card.images.large || card.images.small}
               alt={card.name}
+              cardName={card.name}
+              cardNumber={card.number}
+              setName={card.set?.name}
+              rarity={card.rarity}
+              setId={card.set?.id}
               className="w-full h-full object-cover"
             />
-          </div>
+          </GlassSlabFrame>
 
           <div className="mt-4 text-center space-y-2">
             <h3 className="font-heading font-bold text-lg text-[#0F172A]">

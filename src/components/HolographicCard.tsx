@@ -3,6 +3,7 @@ import { PokemonCard, DisplayCurrency } from '../types';
 import { holographicEngine } from '../utils/holographicEngine';
 import { formatCurrency, RARITY_BADGE_STYLE, ENERGY_COLORS } from '../utils/formatters';
 import { Sparkles, Eye } from 'lucide-react';
+import { CardImage } from './CardImage';
 
 interface HolographicCardProps {
   card: PokemonCard;
@@ -69,10 +70,13 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         transform: 'perspective(1000px) scale(var(--card-scale, 1)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
         transition: 'var(--card-transition, transform 220ms cubic-bezier(0.4, 0, 0.2, 1))',
       }}
-      className={`group relative bg-white px-3 pt-3 pb-3.5 border border-[#E2E8F0] hover:border-[#CBD5E1] shadow-xs hover:shadow-md cursor-pointer transition-all duration-200 select-none overflow-hidden rounded-2xl ${
+      className={`group relative bg-gradient-to-b from-white/95 via-white/85 to-white/90 backdrop-blur-md px-3 pt-3 pb-3.5 border border-white/80 ring-1 ring-[#0F172A]/10 shadow-[0_6px_20px_-4px_rgba(15,23,42,0.1),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_12px_32px_-6px_rgba(220,20,60,0.16),inset_0_1.5px_1px_rgba(255,255,255,1)] cursor-pointer transition-all duration-200 select-none overflow-hidden rounded-2xl ${
         isFocused ? 'ring-2 ring-[#DC143C] ring-offset-2' : ''
       } ${className}`}
     >
+      {/* Glass Slab Edge Bevel Reflection */}
+      <div className="absolute top-0 left-2 right-2 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent opacity-90 pointer-events-none z-10" />
+
       {/* Card Header Info */}
       <div className="flex items-center justify-between gap-1 mb-2">
         <span className="font-heading font-semibold text-xs text-[#0F172A] truncate max-w-[120px]">
@@ -86,10 +90,15 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
       </div>
 
       {/* Card Image Container with Holographic Shimmer and Glare */}
-      <div className="relative aspect-[0.718] w-full overflow-hidden rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-        <img
-          src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
+      <div className="relative aspect-[0.718] w-full overflow-hidden rounded-xl bg-[#F8FAFC] border border-[#CBD5E1]/60 shadow-inner">
+        <CardImage
+          src={card.images.small || card.images.large}
           alt={card.name}
+          cardName={card.name}
+          cardNumber={card.number}
+          setName={card.set?.name}
+          rarity={card.rarity}
+          setId={card.set?.id}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />

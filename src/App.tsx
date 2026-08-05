@@ -24,7 +24,7 @@ import {
   DollarSign,
   Zap,
 } from 'lucide-react';
-import { setLiveExchangeRates } from './utils/formatters';
+import { initForexMetronome } from './utils/forexMetronome';
 import {
   MOCK_CARDS,
   MOCK_SETS,
@@ -216,16 +216,9 @@ export default function App() {
 
   const setCurrentTier = (t: AccountTier) => {};
 
-  // Fetch live exchange rates on mount
+  // Initialize 4-times-a-day forex metronome timer
   React.useEffect(() => {
-    fetch('/api/exchange-rates')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.rates) {
-          setLiveExchangeRates(data.rates);
-        }
-      })
-      .catch((err) => console.warn('Failed to load initial forex rates', err));
+    initForexMetronome();
   }, []);
 
 

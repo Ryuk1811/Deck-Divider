@@ -8,7 +8,6 @@ import {
   Layers,
   Sparkles,
   Globe,
-  RefreshCw,
   Search,
   ChevronDown,
 } from 'lucide-react';
@@ -155,166 +154,91 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   return (
     <div className="space-y-8 animate-fade-in p-6 max-w-7xl mx-auto">
-      {/* SECTION 1: GLOBAL DISPLAY CURRENCY & LIVE FOREX CONVERSIONS */}
-      <div className="neo-card p-6 space-y-6 chamfer-corner-sm bg-white border border-[#E2E8F0]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/30 shadow-sm">
-              <Globe className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="font-heading font-bold text-lg text-[#0F172A] flex items-center gap-2">
-                <span>Global Display Currency & Forex Rates</span>
-              </h2>
-              <p className="font-mono text-xs text-[#64748B]">
-                Select your preferred currency for live portfolio valuations and market calculations.
-              </p>
-            </div>
+      {/* SECTION 1: GLOBAL DISPLAY CURRENCY */}
+      <div className="bg-white p-6 space-y-6 rounded-2xl border border-[#E2E8F0] shadow-sm relative z-30 overflow-visible">
+        <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-4">
+          <div className="p-2.5 rounded-lg bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/30 shadow-sm">
+            <Globe className="w-5 h-5" />
           </div>
-
-          <button
-            type="button"
-            onClick={() => fetchExchangeRates(true)}
-            disabled={forexInfo.loading}
-            className="neo-btn-secondary text-xs px-3 py-2 flex items-center gap-2 self-start sm:self-auto"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#DC143C] ${forexInfo.loading ? 'animate-spin' : ''}`} />
-            <span>{forexInfo.loading ? 'Syncing...' : 'Refresh Forex Rates'}</span>
-          </button>
+          <div>
+            <h2 className="font-heading font-bold text-lg text-[#0F172A]">
+              Global Display Currency
+            </h2>
+            <p className="font-mono text-xs text-[#64748B]">
+              Select your preferred currency for portfolio valuations and market calculations.
+            </p>
+          </div>
         </div>
 
-        {/* Currency Dropdown Selector */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-3">
-            <label className="block font-mono text-xs font-bold text-[#0F172A]">
-              Active Display Currency Selection:
-            </label>
-            
-            {/* Custom Dropdown Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full p-3 bg-white border-2 border-[#0F172A] rounded-md font-mono text-sm font-bold text-[#0F172A] flex items-center justify-between shadow-sm hover:border-[#DC143C] transition-all"
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xl">{activeCurrencyObj.flag}</span>
-                  <span className="text-[#DC143C] font-extrabold">{activeCurrencyObj.code}</span>
-                  <span className="text-[#64748B] font-normal">({activeCurrencyObj.name})</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] rounded text-xs">
-                    {activeCurrencyObj.symbol}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-[#0F172A] transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                </div>
-              </button>
-
-              {/* Dropdown Menu Overlay */}
-              {isDropdownOpen && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-white border-2 border-[#0F172A] rounded-md shadow-xl z-50 p-3 space-y-3 max-h-80 overflow-y-auto">
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-3 text-[#94A3B8]" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search currency code, country, or symbol..."
-                      className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded text-xs font-mono focus:outline-none focus:border-[#DC143C]"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    {filteredCurrencies.map((c) => {
-                      const isSelected = currency === c.code;
-                      const rateVal = forexInfo.rates[c.code] ?? 1.0;
-                      return (
-                        <button
-                          key={c.code}
-                          type="button"
-                          onClick={() => {
-                            onSelectCurrency(c.code as DisplayCurrency);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`p-2.5 rounded border text-left font-mono text-xs flex items-center justify-between transition-all ${
-                            isSelected
-                              ? 'bg-[#0F172A] text-white border-[#0F172A] font-bold'
-                              : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:bg-[#FFF0F3] hover:border-[#DC143C]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <span>{c.flag}</span>
-                            <span className={isSelected ? 'text-[#FFD700]' : 'text-[#DC143C] font-bold'}>{c.code}</span>
-                            <span className="truncate opacity-80">{c.name}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <span className="opacity-60 text-[10px]">1$ = {rateVal.toFixed(rateVal > 10 ? 1 : 2)}</span>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-[#DC143C]" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Select Buttons for Popular Currencies */}
-            <div className="pt-2 space-y-1.5">
-              <span className="font-mono text-[11px] text-[#64748B]">Quick Select Major Forex Markets:</span>
-              <div className="flex flex-wrap gap-2">
-                {SUPPORTED_CURRENCIES.slice(0, 8).map((c) => {
-                  const isSelected = currency === c.code;
-                  return (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => onSelectCurrency(c.code as DisplayCurrency)}
-                      className={`px-3 py-1.5 rounded-md border font-mono text-xs transition-all flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-[#DC143C] text-white border-[#DC143C] font-bold shadow-sm'
-                          : 'bg-[#F8FAFC] text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
-                      }`}
-                    >
-                      <span>{c.flag}</span>
-                      <span>{c.code}</span>
-                      <span className="opacity-70">({c.symbol})</span>
-                    </button>
-                  );
-                })}
+        {/* Currency Selector */}
+        <div className="space-y-3 relative z-40">
+          <label className="block font-mono text-xs font-bold text-[#0F172A]">
+            Active Display Currency Selection:
+          </label>
+          
+          {/* Custom Dropdown Trigger */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full p-3 bg-white border-2 border-[#0F172A] rounded-lg font-mono text-sm font-bold text-[#0F172A] flex items-center justify-between shadow-xs hover:border-[#DC143C] focus:outline-none focus:ring-2 focus:ring-[#DC143C]/20 transition-all cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl">{activeCurrencyObj.flag}</span>
+                <span className="text-[#DC143C] font-extrabold">{activeCurrencyObj.code}</span>
+                <span className="text-[#64748B] font-normal">({activeCurrencyObj.name})</span>
               </div>
-            </div>
-          </div>
-
-          {/* Live Exchange Rate Status Card */}
-          <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md space-y-3 font-mono text-xs flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
-                <span className="font-bold text-[#0F172A]">Live Forex Conversion</span>
-                <span className="inline-flex items-center gap-1.5 text-[10px] bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30 px-2 py-0.5 rounded-full font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-ping" />
-                  LIVE
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] rounded font-mono text-xs font-bold">
+                  {activeCurrencyObj.symbol}
                 </span>
+                <ChevronDown className={`w-4 h-4 text-[#0F172A] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
+            </button>
 
-              <div className="space-y-1 pt-1">
-                <div className="text-[#64748B] text-[11px]">Active Conversion Pair:</div>
-                <div className="text-base font-bold text-[#0F172A] flex items-center gap-1">
-                  <span>1 USD =</span>
-                  <span className="text-[#DC143C]">{activeRate.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
-                  <span>{currency}</span>
+            {/* Dropdown Menu Overlay */}
+            {isDropdownOpen && (
+              <div className="mt-2 bg-white border-2 border-[#0F172A] rounded-xl shadow-2xl p-4 space-y-3 max-h-80 overflow-y-auto relative z-50 animate-fade-in">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-3 text-[#94A3B8]" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search currency code, country, or symbol..."
+                    className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs font-mono focus:outline-none focus:border-[#DC143C]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {filteredCurrencies.map((c) => {
+                    const isSelected = currency === c.code;
+                    return (
+                      <button
+                        key={c.code}
+                        type="button"
+                        onClick={() => {
+                          onSelectCurrency(c.code as DisplayCurrency);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`p-2.5 rounded-lg border text-left font-mono text-xs flex items-center justify-between transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#0F172A] text-white border-[#0F172A] font-bold shadow-xs'
+                            : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:bg-[#FFF0F3] hover:border-[#DC143C]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span>{c.flag}</span>
+                          <span className={isSelected ? 'text-[#FFD700]' : 'text-[#DC143C] font-bold'}>{c.code}</span>
+                          <span className="truncate opacity-80">{c.name}</span>
+                        </div>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-[#DC143C]" />}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-
-              <div className="text-[10px] text-[#64748B] space-y-0.5 pt-2 border-t border-[#E2E8F0]">
-                <div>Provider: {forexInfo.provider}</div>
-                <div>Last Sync: {new Date(forexInfo.updated).toLocaleTimeString()}</div>
-              </div>
-            </div>
-
-            <div className="p-2 bg-[#FFF0F3] border border-[#DC143C]/20 rounded text-[10px] text-[#0F172A]">
-              💡 Changing currency immediately updates all deck values, portfolio charts, and market calculations across the app.
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -362,9 +286,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <h2 className="font-heading font-bold text-lg text-[#0F172A]">
                   Account Tier: {currentTier}
                 </h2>
-                <span className="font-mono text-[10px] font-bold bg-[#16A34A] text-white px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  PayPal Live
-                </span>
               </div>
               <p className="font-mono text-xs text-[#64748B]">
                 {TIER_LIMITS[currentTier].tagline}

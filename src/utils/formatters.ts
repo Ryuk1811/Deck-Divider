@@ -12,6 +12,28 @@ export function setLiveExchangeRates(rates: Record<string, number>): void {
   }
 }
 
+export function getCurrencySymbol(targetCurrency: DisplayCurrency = 'USD'): string {
+  const code = (targetCurrency || 'USD').toUpperCase();
+  return CURRENCY_SYMBOLS[code] ?? `${code} `;
+}
+
+export function getCurrencyRate(targetCurrency: DisplayCurrency = 'USD'): number {
+  const code = (targetCurrency || 'USD').toUpperCase();
+  return CURRENCY_RATES[code] ?? 1.0;
+}
+
+export function convertUSDToCurrency(amountInUSD: number, targetCurrency: DisplayCurrency = 'USD'): number {
+  const rate = getCurrencyRate(targetCurrency);
+  const converted = amountInUSD * rate;
+  return Number(converted.toFixed(2));
+}
+
+export function convertCurrencyToUSD(amountInTargetCurrency: number, targetCurrency: DisplayCurrency = 'USD'): number {
+  const rate = getCurrencyRate(targetCurrency);
+  if (!rate || rate === 0) return amountInTargetCurrency;
+  return Number((amountInTargetCurrency / rate).toFixed(2));
+}
+
 export function formatCurrency(
   amountInUSD: number,
   targetCurrency: DisplayCurrency = 'USD'

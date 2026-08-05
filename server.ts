@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
-import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig, PAYPAL_PLAN_IDS } from './server/paypal.js';
+import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb } from './server/firebaseAdmin.js';
 import {
   getExpansions,
@@ -116,6 +116,34 @@ async function startServer() {
     res.json(status);
   });
 
+  app.get('/api/config/credentials', async (req, res) => {
+    try {
+      const { getAppCredentials } = await import('./server/configManager.js');
+      const creds = await getAppCredentials();
+      // Mask sensitive secret
+      const masked = {
+        ...creds,
+        paypal: {
+          ...creds.paypal,
+          clientSecret: creds.paypal.clientSecret ? '••••••••' + creds.paypal.clientSecret.slice(-4) : '',
+        },
+      };
+      res.json(masked);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to fetch credentials' });
+    }
+  });
+
+  app.post('/api/config/credentials', async (req, res) => {
+    try {
+      const { updateAppCredentials } = await import('./server/configManager.js');
+      const updated = await updateAppCredentials(req.body);
+      res.json({ success: true, updated });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to update credentials' });
+    }
+  });
+
   app.get('/api/firebase/status', (req, res) => {
     try {
       const adminApp = getFirebaseAdmin();
@@ -145,8 +173,13 @@ async function startServer() {
     }
   };
 
-  app.get('/api/billing/paypal-config', (req, res) => {
-    res.json(getPayPalConfig());
+  app.get('/api/billing/paypal-config', async (req, res) => {
+    try {
+      const config = await getPayPalConfig();
+      res.json(config);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to fetch PayPal config' });
+    }
   });
 
   app.get('/api/billing/subscription', verifyToken, async (req, res) => {

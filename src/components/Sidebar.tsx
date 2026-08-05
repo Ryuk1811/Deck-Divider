@@ -33,7 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCommandPalette,
   isSyncing = false,
 }) => {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const [syncState, setSyncState] = useState<SyncProgressState>({
     isSyncing: false,
     progress: 100,
@@ -62,7 +62,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     auth.signOut();
   };
 
-  const displayName = profile?.displayName || 'Collector';
+  const displayName = user?.displayName || profile?.displayName || user?.email?.split('@')[0] || 'Collector';
+  const avatarUrl = user?.photoURL || profile?.avatar || '';
   const initials = displayName.substring(0, 2).toUpperCase();
 
   return (
@@ -153,9 +154,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] chamfer-corner-sm">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="relative flex-shrink-0">
-              <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
-                {initials}
-              </div>
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={displayName}
+                  className="w-7 h-7 rounded-full object-cover border border-[#CBD5E1]"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
+                  {initials}
+                </div>
+              )}
               <div
                 title={isSyncing ? 'Background server sync in progress' : 'Synced'}
                 className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${

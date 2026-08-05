@@ -34,10 +34,14 @@ export const ListsView: React.FC<ListsViewProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
+  const prevSignalRef = React.useRef(createListSignal);
 
   useEffect(() => {
-    if (createListSignal && createListSignal > 0) {
-      setIsCreateModalOpen(true);
+    if (createListSignal !== undefined && createListSignal !== prevSignalRef.current) {
+      if (createListSignal > 0) {
+        setIsCreateModalOpen(true);
+      }
+      prevSignalRef.current = createListSignal;
     }
   }, [createListSignal]);
 

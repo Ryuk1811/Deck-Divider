@@ -1,20 +1,11 @@
-const PAYPAL_MODE = process.env.PAYPAL_MODE || 'live';
-const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ';
-const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || 'EBY3NmWWbURMAaxJl4m3xqrvc76TtlBcKebkEzw3lU0lVYfKZrq89UtfGzF_6IagElsHIXjiOQHnrXGD';
-const PAYPAL_API_BASE = PAYPAL_MODE === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+import { getAppCredentials } from './configManager';
 
-export const PAYPAL_PLAN_IDS: Record<string, string> = {
-  Bunch: process.env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
-  Stack: process.env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',
-  Deck: process.env.PAYPAL_PLAN_DECK || 'P-8K993431SB9741949NJY5GVY',
-  Collection: process.env.PAYPAL_PLAN_COLLECTION || 'P-1EH4703021893203DNJY5HII',
-};
-
-export function getPayPalConfig() {
+export async function getPayPalConfig() {
+  const creds = await getAppCredentials();
   return {
-    clientId: PAYPAL_CLIENT_ID,
-    mode: PAYPAL_MODE,
-    planIds: PAYPAL_PLAN_IDS,
+    clientId: creds.paypal.clientId,
+    mode: creds.paypal.mode,
+    planIds: creds.paypal.planIds,
   };
 }
 
@@ -25,8 +16,13 @@ export async function getPayPalAccessToken() {
   if (accessToken && Date.now() < tokenExpiresAt) {
     return accessToken;
   }
-  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
-  const response = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+
+  const creds = await getAppCredentials();
+  const { clientId, clientSecret, mode } = creds.paypal;
+  const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const response = await fetch(`${apiBase}/v1/oauth2/token`, {
     method: 'POST',
     body: 'grant_type=client_credentials',
     headers: {
@@ -52,16 +48,20 @@ export const TIER_PRICES: Record<string, number> = {
   Collection: 44,
 };
 
-export function getPlanIdForTier(tier: string): string {
-  const planId = PAYPAL_PLAN_IDS[tier];
+export async function getPlanIdForTier(tier: string): Promise<string> {
+  const creds = await getAppCredentials();
+  const planId = creds.paypal.planIds[tier as keyof typeof creds.paypal.planIds];
   if (!planId) throw new Error(`No PayPal subscription plan ID configured for tier: ${tier}`);
   return planId;
 }
 
 export async function createSubscription(tier: string, returnUrl: string, cancelUrl: string) {
-  const planId = getPlanIdForTier(tier);
+  const planId = await getPlanIdForTier(tier);
   const token = await getPayPalAccessToken();
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions`, {
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const res = await fetch(`${apiBase}/v1/billing/subscriptions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -89,9 +89,12 @@ export async function createSubscription(tier: string, returnUrl: string, cancel
 }
 
 export async function reviseSubscription(subscriptionId: string, newTier: string, returnUrl: string, cancelUrl: string) {
-  const planId = getPlanIdForTier(newTier);
+  const planId = await getPlanIdForTier(newTier);
   const token = await getPayPalAccessToken();
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions/${subscriptionId}/revise`, {
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const res = await fetch(`${apiBase}/v1/billing/subscriptions/${subscriptionId}/revise`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -108,7 +111,7 @@ export async function reviseSubscription(subscriptionId: string, newTier: string
       },
     }),
   });
-  
+
   if (res.status === 200 || res.status === 201) {
     return await res.json();
   } else if (res.status === 204) {
@@ -122,7 +125,10 @@ export async function reviseSubscription(subscriptionId: string, newTier: string
 
 export async function getSubscription(subscriptionId: string) {
   const token = await getPayPalAccessToken();
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions/${subscriptionId}`, {
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const res = await fetch(`${apiBase}/v1/billing/subscriptions/${subscriptionId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to fetch subscription');
