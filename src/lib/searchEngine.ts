@@ -94,6 +94,7 @@ export const initSearchEngine = async (): Promise<void> => {
 };
 
 import { PokemonCard, EnergyType, CardRarity, CardSet } from '../types';
+import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
   const normalizedTypes = card.types
@@ -123,16 +124,20 @@ export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
       wPrerelease: Boolean(card.variants.wPrerelease),
       secret100: Boolean(card.variants.secret100),
     } : undefined,
-    set: {
-      id: card.set?.id || 'unknown',
-      name: card.set?.name || 'Unknown Set',
-      series: 'Unknown',
-      printedTotal: 0,
-      total: 0,
-      releaseDate: '',
-      symbolUrl: card.set?.symbol ? `${card.set.symbol}.png` : undefined,
-      logoUrl: card.set?.logo ? `${card.set.logo}.png` : undefined,
-    },
+    set: normalizeSet(
+      card.set
+        ? {
+            id: card.set.id,
+            name: card.set.name,
+            symbolUrl: card.set.symbol
+              ? `/api/tcgdex/image${card.set.symbol.replace('https://assets.tcgdex.net', '')}.png`
+              : undefined,
+            logoUrl: card.set.logo
+              ? `/api/tcgdex/image${card.set.logo.replace('https://assets.tcgdex.net', '')}.png`
+              : undefined,
+          }
+        : { id: 'unknown', name: 'Unknown Set' }
+    ),
     artist: card.illustrator || 'Unknown',
     number: card.localId,
     images: {
@@ -216,19 +221,16 @@ export const getAvailableSets = (): CardSet[] => {
   const setsMap = new Map<string, CardSet>();
   for (const doc of allDocsData) {
     if (doc.set && !setsMap.has(doc.set.id)) {
-      setsMap.set(doc.set.id, {
+      const normalized = normalizeSet({
         id: doc.set.id,
         name: doc.set.name,
-        series: 'Unknown',
-        printedTotal: 0,
-        total: 0,
-        releaseDate: '',
         symbolUrl: doc.set.symbol ? `/api/tcgdex/image${doc.set.symbol.replace('https://assets.tcgdex.net', '')}.png` : undefined,
         logoUrl: doc.set.logo ? `/api/tcgdex/image${doc.set.logo.replace('https://assets.tcgdex.net', '')}.png` : undefined,
       });
+      setsMap.set(doc.set.id, normalized);
     }
   }
-  return Array.from(setsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  return sortSetsChronologically(Array.from(setsMap.values()));
 };
 
 export const searchCards = (filters: SearchFilters): TCGdexCard[] => {

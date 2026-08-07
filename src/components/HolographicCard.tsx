@@ -105,7 +105,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
 
         {/* Glare Layer */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-200"
+          className="pointer-events-none fixed inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-200"
           style={{
             background:
               'radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%)',
@@ -115,7 +115,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         {/* Standard Shimmer Layer */}
         {isHolo && (
           <div
-            className="pointer-events-none absolute inset-0 mix-blend-color-dodge opacity-30 group-hover:opacity-80 transition-opacity duration-300 holo-shimmer animate-holo-idle"
+            className="pointer-events-none fixed inset-0 mix-blend-color-dodge opacity-30 group-hover:opacity-80 transition-opacity duration-300 holo-shimmer animate-holo-idle"
             style={{
               backgroundPosition: 'var(--shimmer-x, 0%) center',
             }}
@@ -124,7 +124,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
 
         {/* Glitter Layer */}
         {isGlitter && (
-          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300 bg-[radial-gradient(#FFD700_1px,transparent_1px)] [background-size:12px_12px]" />
+          <div className="pointer-events-none fixed inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300 bg-[radial-gradient(#FFD700_1px,transparent_1px)] [background-size:12px_12px]" />
         )}
 
         {/* Quantity Badge - Continuous State */}

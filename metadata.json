@@ -1,5 +1,5 @@
 {
-  "name": "Deck Divider",
+  "name": "DECK / divider",
   "description": "Standalone Pokemon TCG portfolio, deck management, set completion, and collection manager featuring Soft Neo-Brutalist Luxury UI/UX.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

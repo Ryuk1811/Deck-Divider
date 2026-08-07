@@ -40,8 +40,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfileAndSubscription = async (userObj: FirebaseUser) => {
     const uid = userObj.uid;
-    const googleName = userObj.displayName || userObj.email?.split('@')[0] || 'Collector';
-    const googlePhoto = userObj.photoURL || '';
+    const googleName = userObj.displayName || 
+                       userObj.providerData?.find(p => p.displayName)?.displayName || 
+                       userObj.email?.split('@')[0] || 
+                       'Collector';
+    const googlePhoto = userObj.photoURL || 
+                        userObj.providerData?.find(p => p.photoURL)?.photoURL || 
+                        '';
 
     const defaultProf: UserProfile = {
       id: uid,
@@ -66,13 +71,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const mergedProf: UserProfile = {
           ...existingData,
           displayName: googleName || existingData.displayName,
-          avatar: googlePhoto || existingData.avatar,
+          avatar: googlePhoto || existingData.avatar || '',
           email: userObj.email || existingData.email,
         };
         setProfile(mergedProf);
-        // Persist updated Google OAuth profile info
-        if (googleName !== existingData.displayName || googlePhoto !== existingData.avatar) {
-          await setDoc(userRef, { displayName: googleName, avatar: googlePhoto }, { merge: true });
+        // Persist updated Google OAuth profile info only if non-empty and changed
+        const nameChanged = googleName && googleName !== existingData.displayName;
+        const photoChanged = googlePhoto && googlePhoto !== existingData.avatar;
+        if (nameChanged || photoChanged) {
+          const updateObj: Partial<UserProfile> = {};
+          if (nameChanged) updateObj.displayName = googleName;
+          if (photoChanged) updateObj.avatar = googlePhoto;
+          await setDoc(userRef, updateObj, { merge: true });
         }
       } else {
         await setDoc(userRef, defaultProf, { merge: true });

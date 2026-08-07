@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Plus,
@@ -281,33 +282,33 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-4xl bg-white p-6 border border-[#E2E8F0] shadow-2xl my-6 max-h-[90vh] flex flex-col overflow-hidden rounded-2xl">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+      <div className="w-full max-w-5xl bg-white p-4 sm:p-6 md:p-8 border border-[#E2E8F0] shadow-2xl max-h-[95vh] flex flex-col overflow-hidden rounded-2xl relative">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <span className="inline-block rounded-md bg-[#FFF0F3] text-[#DC143C] font-mono text-xs font-bold px-2.5 py-1 border border-[#DC143C]/20">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className="flex-shrink-0 whitespace-nowrap inline-block rounded-md bg-[#FFF0F3] text-[#DC143C] font-mono text-xs font-bold px-2.5 py-1 border border-[#DC143C]/20">
               {fullCardData.set.name} • #{fullCardData.number}
             </span>
-            <h2 className="font-heading font-bold text-xl text-[#0F172A]">
+            <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
               {fullCardData.name}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] hover:text-[#DC143C] transition-colors"
+            className="p-1.5 rounded-lg bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] hover:text-[#DC143C] transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Body Grid */}
-        <div className="py-4 grid grid-cols-1 md:grid-cols-12 gap-6 overflow-hidden flex-1 min-h-0">
+        {/* Modal Body Flex */}
+        <div className="py-4 flex flex-col lg:flex-row gap-4 lg:gap-6 overflow-hidden flex-1 min-h-0 w-full relative">
           {/* Left Column: Dead-Centered Tidally Locked Pokemon Card */}
-          <div className="md:col-span-5 flex flex-col items-center justify-center p-3 sm:p-4 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/60 rounded-xl border border-[#E2E8F0] overflow-y-auto max-h-full">
-            <GlassSlabFrame className="w-full max-w-[230px] sm:max-w-[245px] shadow-2xl my-auto">
+          <div className="flex-shrink-0 w-full lg:w-[35%] xl:w-[40%] flex flex-col items-center justify-center p-3 sm:p-4 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/60 rounded-xl border border-[#E2E8F0] overflow-y-auto max-h-[35vh] lg:max-h-full">
+            <GlassSlabFrame className="w-full max-w-[220px] sm:max-w-[245px] shadow-2xl my-auto">
               <CardImage
                 src={fullCardData.images.large || fullCardData.images.small}
                 alt={fullCardData.name}
@@ -346,75 +347,78 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
           </div>
 
           {/* Right Column: Scroll View with Tidally Locked Major Details */}
-          <div className="md:col-span-7 flex flex-col overflow-y-auto pr-2 space-y-4 max-h-[68vh] custom-scrollbar">
-            {/* Sticky/Tidally Locked Tab Navigation Bar */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 py-2 border-b border-[#E2E8F0] flex items-center gap-1.5 flex-wrap">
-              {[
-                { id: 'overview', label: 'Overview', icon: Info },
-                { id: 'prices', label: 'Prices', icon: TrendingUp },
-                { id: 'raw', label: 'Raw Data', icon: Database },
-                { id: 'grades', label: 'Grades', icon: ShieldCheck },
-              ].map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all border rounded-md ${
-                      isActive
-                        ? 'bg-[#0F172A] text-white border-[#0F172A]'
-                        : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A] hover:text-[#0F172A]'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div className="flex-1 min-w-0 w-full flex flex-col min-h-0 max-h-[45vh] lg:max-h-full relative bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-1 overflow-hidden">
+            <div className="custom-scrollbar flex-1 overflow-y-auto relative">
+              {/* Sticky/Tidally Locked Tab Navigation Bar */}
+              <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 px-4 py-3 border-b border-[#E2E8F0] flex items-center gap-1.5 flex-wrap flex-shrink-0">
+                {[
+                  { id: 'overview', label: 'Overview', icon: Info },
+                  { id: 'prices', label: 'Prices', icon: TrendingUp },
+                  { id: 'raw', label: 'Raw Data', icon: Database },
+                  { id: 'grades', label: 'Grades', icon: ShieldCheck },
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all border rounded-md ${
+                        isActive
+                          ? 'bg-[#0F172A] text-white border-[#0F172A]'
+                          : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A] hover:text-[#0F172A]'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-              {/* Tab 1: Overview */}
-              {activeTab === 'overview' && (
-                <div className="space-y-4">
-                  {/* Category, Stage, HP & Dex ID Panel */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg">
-                    <div>
-                      <div className="font-mono text-[10px] text-[#64748B]">Category / Stage</div>
-                      <div className="font-heading font-semibold text-xs text-[#0F172A] mt-0.5">
-                        {fullCardData.category || fullCardData.supertype} {fullCardData.stage ? `• ${fullCardData.stage}` : ''}
+              {/* Tab Content Container */}
+              <div className="p-4 space-y-4">
+                {/* Tab 1: Overview */}
+                {activeTab === 'overview' && (
+                  <div className="space-y-4">
+                    {/* Category, Stage, HP & Dex ID Panel - Inline, Symmetric, Justified */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-center">
+                      <div className="flex flex-col justify-center items-center py-1">
+                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Category</div>
+                        <div className="font-mono font-bold text-xs text-[#0F172A] mt-1 truncate max-w-full">
+                          {fullCardData.category || fullCardData.supertype} {fullCardData.stage ? `• ${fullCardData.stage}` : ''}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col justify-center items-center py-1 border-l border-[#E2E8F0]">
+                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Hit Points</div>
+                        <div className="font-num font-bold text-xs text-[#DC143C] mt-1">
+                          {fullCardData.hp ? `${fullCardData.hp} HP` : 'N/A'}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col justify-center items-center py-1 border-t sm:border-t-0 sm:border-l border-[#E2E8F0]">
+                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Pokédex ID</div>
+                        <div className="font-mono font-bold text-xs text-[#0F172A] mt-1">
+                          {fullCardData.dexId ? `#${String(fullCardData.dexId[0]).padStart(4, '0')}` : 'N/A'}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col justify-center items-center py-1 border-t border-l sm:border-t-0 border-[#E2E8F0]">
+                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Regulation</div>
+                        <div className="font-mono font-bold text-xs text-[#0F172A] mt-1">
+                          {fullCardData.regulationMark ? `Mark ${fullCardData.regulationMark}` : 'Standard'}
+                        </div>
                       </div>
                     </div>
-
-                    <div>
-                      <div className="font-mono text-[10px] text-[#64748B]">Hit Points (HP)</div>
-                      <div className="font-num font-bold text-sm text-[#DC143C] mt-0.5">
-                        {fullCardData.hp ? `${fullCardData.hp} HP` : 'N/A'}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="font-mono text-[10px] text-[#64748B]">Pokédex ID</div>
-                      <div className="font-mono font-bold text-xs text-[#0F172A] mt-0.5">
-                        {fullCardData.dexId ? `#${String(fullCardData.dexId[0]).padStart(4, '0')}` : 'N/A'}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="font-mono text-[10px] text-[#64748B]">Regulation Mark</div>
-                      <div className="font-mono font-bold text-xs text-[#0F172A] mt-0.5">
-                        {fullCardData.regulationMark ? `Mark ${fullCardData.regulationMark}` : 'Standard'}
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Format Legalities & Printings Showcase */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* Format Legalities */}
                     <div className="p-3 bg-white border border-[#E2E8F0] space-y-1.5 rounded-lg">
                       <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Tournament Format Legalities</div>
-                      <div className="flex items-center gap-2 pt-1">
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border ${
                           fullCardData.legalities?.standard
                             ? 'bg-[#DCFCE7] text-[#15803D] border-[#86EFAC]'
@@ -559,19 +563,20 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                     </div>
                   )}
 
-                  {/* Weakness & Retreat */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-2.5 bg-white border border-[#E2E8F0] rounded-lg">
-                      <span className="font-mono text-[10px] text-[#64748B]">Weakness</span>
-                      <div className="font-mono text-xs font-semibold text-[#0F172A] mt-0.5">
+                  {/* Weakness & Retreat - Inline, Symmetric, Justified */}
+                  <div className="grid grid-cols-2 gap-3 p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-center">
+                    <div className="flex flex-col justify-center items-center py-1">
+                      <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Weakness</div>
+                      <div className="font-mono font-bold text-xs text-[#0F172A] mt-1 truncate max-w-full">
                         {fullCardData.weaknesses
                           ? fullCardData.weaknesses.map((w) => `${w.type} ${w.value}`).join(', ')
                           : 'None'}
                       </div>
                     </div>
-                    <div className="p-2.5 bg-white border border-[#E2E8F0] rounded-lg">
-                      <span className="font-mono text-[10px] text-[#64748B]">Retreat Cost</span>
-                      <div className="font-mono text-xs font-semibold text-[#0F172A] mt-0.5">
+
+                    <div className="flex flex-col justify-center items-center py-1 border-l border-[#E2E8F0]">
+                      <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Retreat Cost</div>
+                      <div className="font-mono font-bold text-xs text-[#0F172A] mt-1 truncate max-w-full">
                         {fullCardData.retreatCost ? `${fullCardData.retreatCost.length} Energy` : 'Free'}
                       </div>
                     </div>
@@ -691,44 +696,49 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                       </span>
                     </div>
                     <p className="font-mono text-[11px] text-[#64748B]">
-                      Store third-party grading information for cards certified by PSA, BGS, CGC, ACE, or SGC.
+                      Store third-party certification details (PSA, BGS, CGC, TAG, MGC, ACE, SGC, ARS, PGG).
                     </p>
 
-                    <div className="grid grid-cols-3 gap-2 pt-2">
-                      <div>
-                        <label className="font-mono text-[10px] text-[#64748B]">Company</label>
+                    <div className="grid grid-cols-3 gap-3 pt-2">
+                      <div className="flex flex-col">
+                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Company</label>
                         <select
                           value={gradingCompany}
                           onChange={(e) => setGradingCompany(e.target.value as any)}
-                          className="w-full mt-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                         >
                           <option value="PSA">PSA</option>
-                          <option value="BGS">BGS</option>
+                          <option value="BGS">BGS (Beckett)</option>
                           <option value="CGC">CGC</option>
+                          <option value="TAG">TAG</option>
+                          <option value="MGC">MGC</option>
                           <option value="ACE">ACE</option>
                           <option value="SGC">SGC</option>
+                          <option value="ARS">ARS</option>
+                          <option value="PGG">PGG</option>
+                          <option value="Other">Other</option>
                         </select>
                       </div>
 
-                      <div>
-                        <label className="font-mono text-[10px] text-[#64748B]">Grade</label>
+                      <div className="flex flex-col">
+                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Grade</label>
                         <input
                           type="text"
                           value={grade}
                           onChange={(e) => setGrade(e.target.value)}
                           placeholder="e.g. 10"
-                          className="w-full mt-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                         />
                       </div>
 
-                      <div>
-                        <label className="font-mono text-[10px] text-[#64748B]">Cert #</label>
+                      <div className="flex flex-col">
+                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Cert #</label>
                         <input
                           type="text"
                           value={certNumber}
                           onChange={(e) => setCertNumber(e.target.value)}
                           placeholder="8-digit cert"
-                          className="w-full mt-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                         />
                       </div>
                     </div>
@@ -776,13 +786,13 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               </div>
 
               {targetType === 'deck' ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <div>
-                    <label className="font-mono text-[10px] text-[#64748B]">Deck Target</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex flex-col">
+                    <label className="font-mono text-[10px] text-[#64748B] mb-1">Deck Target</label>
                     <select
                       value={selectedDeckId}
                       onChange={(e) => setSelectedDeckId(e.target.value)}
-                      className="w-full mt-0.5 p-2 bg-white border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                      className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                     >
                       {decks.map((d) => (
                         <option key={d.id} value={d.id}>
@@ -792,12 +802,12 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                     </select>
                   </div>
 
-                  <div>
-                    <label className="font-mono text-[10px] text-[#64748B]">Condition</label>
+                  <div className="flex flex-col">
+                    <label className="font-mono text-[10px] text-[#64748B] mb-1">Condition</label>
                     <select
                       value={condition}
                       onChange={(e) => setCondition(e.target.value as any)}
-                      className="w-full mt-0.5 p-2 bg-white border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                      className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                     >
                       <option value="NM">Near Mint (NM)</option>
                       <option value="LP">Lightly Played (LP)</option>
@@ -807,35 +817,35 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                     </select>
                   </div>
 
-                  <div>
-                    <label className="font-mono text-[10px] text-[#64748B]">Qty</label>
+                  <div className="flex flex-col">
+                    <label className="font-mono text-[10px] text-[#64748B] mb-1">Qty</label>
                     <input
                       type="number"
                       min="1"
                       value={quantity}
                       onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                      className="w-full mt-0.5 p-2 bg-white border border-[#E2E8F0] font-mono text-xs font-semibold font-num text-[#0F172A] rounded-md"
+                      className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-num text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                     />
                   </div>
 
-                  <div>
-                    <label className="font-mono text-[10px] text-[#64748B]">Purchase Price ({getCurrencySymbol(currency)} {currency})</label>
+                  <div className="flex flex-col">
+                    <label className="font-mono text-[10px] text-[#64748B] mb-1">Purchase Price ({getCurrencySymbol(currency)} {currency})</label>
                     <input
                       type="number"
                       step="0.01"
                       value={purchasePrice}
                       onChange={(e) => setPurchasePrice(parseFloat(e.target.value) || 0)}
-                      className="w-full mt-0.5 p-2 bg-white border border-[#E2E8F0] font-mono text-xs font-semibold font-num text-[#0F172A] rounded-md"
+                      className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-num text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                     />
                   </div>
                 </div>
               ) : (
-                <div>
-                  <label className="font-mono text-[10px] text-[#64748B]">List Target</label>
+                <div className="flex flex-col">
+                  <label className="font-mono text-[10px] text-[#64748B] mb-1">List Target</label>
                   <select
                     value={selectedListId}
                     onChange={(e) => setSelectedListId(e.target.value)}
-                    className="w-full mt-0.5 p-2 bg-white border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] rounded-md"
+                    className="w-full p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                   >
                     {lists.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -854,10 +864,12 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
           </div>
         </div>
       </div>
+      </div>
+      </div>
 
       {/* Duplicate Check Confirmation Sub-Modal */}
       {duplicateCheckPrompt && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 chamfer-corner-lg">
             <div className="flex items-center gap-2 text-[#DC143C]">
               <AlertTriangle className="w-6 h-6" />
@@ -897,6 +909,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };

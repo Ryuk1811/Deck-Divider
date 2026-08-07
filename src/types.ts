@@ -195,10 +195,100 @@ export type DisplayCurrency =
   | 'TRY'
   | (string & {});
 
+export type GradingCompany =
+  | 'PSA'
+  | 'BGS'
+  | 'CGC'
+  | 'TAG'
+  | 'MGC'
+  | 'ACE'
+  | 'SGC'
+  | 'ARS'
+  | 'PGG'
+  | 'Other';
+
 export interface GradingInfo {
-  company: 'PSA' | 'BGS' | 'CGC' | 'ACE' | 'SGC' | 'Other';
+  company: GradingCompany;
   grade: string;
   certNumber: string;
+  subgrades?: {
+    centering?: number;
+    corners?: number;
+    edges?: number;
+    surface?: number;
+  };
+}
+
+export interface PSAPopReport {
+  certNumber: string;
+  gradingCompany?: GradingCompany;
+  specNumber: string;
+  cardName: string;
+  setName: string;
+  year: string;
+  variety?: string;
+  grade: string;
+  gradeNum: number;
+  totalGraded: number;
+  popPsa10: number; // Gem Mint / Pristine count
+  popPsa9: number;  // Mint count
+  popPsa8AndLower: number; // 8 & lower count
+  gemMintRate: number; // percentage e.g. 42.5
+  verifyStatus: 'VERIFIED' | 'NEEDS_REVIEW' | 'INVALID';
+  subgrades?: {
+    centering?: number;
+    corners?: number;
+    edges?: number;
+    surface?: number;
+  };
+  labelImages?: {
+    front: string;
+    back: string;
+  };
+}
+export type GradingPopReport = PSAPopReport;
+
+export interface MarketListing {
+  id: string;
+  platform: 'TCGPlayer' | 'eBay' | 'CardMarket' | 'PWCC' | 'Goldin';
+  title: string;
+  price: number;
+  currency: DisplayCurrency;
+  conditionOrGrade: string;
+  date: string;
+  url: string;
+  sellerRating?: string;
+}
+
+export interface SealedProduct {
+  id: string;
+  name: string;
+  type: 'Booster Box' | 'Elite Trainer Box' | 'Booster Bundle' | 'Collection Box' | 'Tin' | 'Blister Pack' | 'Case' | 'Packs';
+  language: 'English' | 'Japanese' | 'Traditional Chinese' | 'Korean' | 'German' | 'French' | string;
+  set: CardSet;
+  releaseDate: string;
+  msrp: number;
+  marketPrice: number;
+  imageUrl: string;
+  packCount: number;
+  priceHistory?: PricePoint[];
+}
+
+export interface PortfolioSealedEntry {
+  id: string;
+  ownerId?: string;
+  productId: string;
+  product: SealedProduct;
+  quantity: number;
+  purchasePrice: number; // USD
+  purchaseCurrency: DisplayCurrency;
+  purchaseDate: string;
+  condition: 'Factory Sealed' | 'Minor Tear' | 'Acrylic Cased' | 'Damaged Box';
+  notes?: string;
+  isSold: boolean;
+  salePrice?: number;
+  saleCurrency?: DisplayCurrency;
+  saleDate?: string;
 }
 
 export interface PortfolioCardEntry {

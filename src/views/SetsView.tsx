@@ -3,6 +3,7 @@ import { BookOpen, CheckCircle2, Search, Loader2 } from 'lucide-react';
 import { CardSet, PokemonCard, Deck, DisplayCurrency } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
 import { getCardsBySetCatalog, getExpansionsCatalog } from '../lib/dataSyncEngine';
+import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 interface SetsViewProps {
   sets: CardSet[];
@@ -21,7 +22,9 @@ export const SetsView: React.FC<SetsViewProps> = ({
   onSelectCard,
   onQuickLookCard,
 }) => {
-  const [allExpansions, setAllExpansions] = useState<CardSet[]>(propSets.length > 0 ? propSets : []);
+  const [allExpansions, setAllExpansions] = useState<CardSet[]>(
+    propSets.length > 0 ? sortSetsChronologically(propSets.map(normalizeSet)) : []
+  );
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   const [loadedCardsMap, setLoadedCardsMap] = useState<Record<string, PokemonCard[]>>({});
   const [setCards, setSetCards] = useState<PokemonCard[]>([]);
@@ -31,16 +34,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
   // Fetch all expansions on mount
   useEffect(() => {
     getExpansionsCatalog().then((expansions) => {
-      const formatted: CardSet[] = expansions.map((e) => ({
-        id: e.id,
-        name: e.name,
-        series: e.series || 'Pokémon TCG',
-        printedTotal: e.printedTotal || 100,
-        total: e.total || 100,
-        releaseDate: e.releaseDate || '',
-        symbolUrl: e.symbolUrl,
-        logoUrl: e.logoUrl,
-      }));
+      const formatted: CardSet[] = sortSetsChronologically(expansions.map(normalizeSet));
       setAllExpansions(formatted);
       if (formatted.length > 0 && !selectedSetId) {
         setSelectedSetId(formatted[0].id);
@@ -76,18 +70,6 @@ export const SetsView: React.FC<SetsViewProps> = ({
 
   const [selectedSeriesFilter, setSelectedSeriesFilter] = useState<string>('All');
 
-  // Series categories list
-  const seriesCategories = [
-    'All',
-    'Scarlet & Violet',
-    'Sword & Shield',
-    'Sun & Moon',
-    'XY Series',
-    'Black & White',
-    "McDonald's Collection",
-    'Promos & Special',
-  ];
-
   // Filter expansions by series filter & search query
   const filteredExpansions = allExpansions.filter((s) => {
     const matchesSearch =
@@ -97,9 +79,6 @@ export const SetsView: React.FC<SetsViewProps> = ({
 
     if (!matchesSearch) return false;
     if (selectedSeriesFilter === 'All') return true;
-    if (selectedSeriesFilter === "McDonald's Collection") {
-      return s.series === "McDonald's Collection" || s.name.toLowerCase().includes('mcdonald');
-    }
     return s.series.toLowerCase() === selectedSeriesFilter.toLowerCase();
   });
 
@@ -116,7 +95,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
     setCards.length > 0 ? Math.round((ownedInSet / setCards.length) * 100) : 0;
 
   return (
-    <div className="space-y-8 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-8 animate-fade-in">
       {/* EXPANSIONS HEADER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-6">
         <div>
@@ -129,20 +108,20 @@ export const SetsView: React.FC<SetsViewProps> = ({
         </div>
 
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#64748B]" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#DC143C]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search expansion sets..."
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#E2E8F0] bg-white font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-colors"
+            className="w-full pl-9 pr-4 py-2.5 glass-slab font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-all shadow-xs"
           />
         </div>
       </div>
 
       {/* SERIES FILTER PILLS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-        {seriesCategories.map((cat) => {
+        {getDynamicSeriesCategories(allExpansions).map((cat) => {
           const isActive = selectedSeriesFilter === cat;
           return (
             <button
@@ -160,61 +139,64 @@ export const SetsView: React.FC<SetsViewProps> = ({
           );
         })}
       </div>
-
       {/* SETS LIST GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
-        {filteredExpansions.map((s) => {
-          const isSelected = s.id === activeSet?.id;
+      <div className="scroller-bounding-box h-[440px]">
+        <div className="scroller-bounding-box-inner p-3 custom-scrollbar h-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredExpansions.map((s) => {
+              const isSelected = s.id === activeSet?.id;
 
-          return (
-            <div
-              key={s.id}
-              onClick={() => setSelectedSetId(s.id)}
-              className={`neo-card p-4 space-y-2.5 cursor-pointer transition-all chamfer-corner-sm bg-white ${
-                isSelected
-                  ? 'border-[#DC143C] bg-[#FFF0F3]/40 shadow-sm ring-1 ring-[#DC143C]'
-                  : 'hover:border-[#CBD5E1]'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  {s.logoUrl && (
-                    <img
-                      src={s.logoUrl}
-                      alt={s.name}
-                      className="w-8 h-8 object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <div>
-                    <h3 className="font-heading font-bold text-sm text-[#0F172A] line-clamp-1">
-                      {s.name}
-                    </h3>
-                    <p className="font-mono text-[11px] text-[#64748B]">
-                      {s.series} {s.releaseDate ? `• ${s.releaseDate}` : ''}
-                    </p>
+              return (
+                <div
+                  key={s.id}
+                  onClick={() => setSelectedSetId(s.id)}
+                  className={`p-4 space-y-2.5 cursor-pointer transition-all glass-slab ${
+                    isSelected
+                      ? 'border-[#DC143C] bg-[#FFF0F3]/40 shadow-sm ring-1 ring-[#DC143C]'
+                      : 'hover:border-[#CBD5E1] shadow-xs hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      {s.logoUrl && (
+                        <img
+                          src={s.logoUrl}
+                          alt={s.name}
+                          className="w-8 h-8 object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-heading font-bold text-sm text-[#0F172A] line-clamp-1">
+                          {s.name}
+                        </h3>
+                        <p className="font-mono text-[11px] text-[#64748B]">
+                          {s.series} {s.releaseDate ? `• ${s.releaseDate}` : ''}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#475569] font-mono text-[10px] font-bold">
+                      {s.total || s.printedTotal} Cards
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between font-mono text-[11px] text-[#64748B] pt-1 border-t border-[#F1F5F9]">
+                    <span>Set Code: <strong className="text-[#0F172A]">{s.id.toUpperCase()}</strong></span>
+                    <span className="font-semibold text-[#DC143C]">Explore Set →</span>
                   </div>
                 </div>
-
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#475569] font-mono text-[10px] font-bold">
-                  {s.total || s.printedTotal} Cards
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between font-mono text-[11px] text-[#64748B] pt-1 border-t border-[#F1F5F9]">
-                <span>Set Code: <strong className="text-[#0F172A]">{s.id.toUpperCase()}</strong></span>
-                <span className="font-semibold text-[#DC143C]">Explore Set →</span>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* SELECTED SET DETAIL CONTENT */}
       {activeSet && (
-        <div className="neo-card p-6 space-y-6 chamfer-corner-sm bg-white border border-[#E2E8F0]">
+        <div className="p-6 space-y-6 glass-slab shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
             <div className="flex items-center gap-3">
               {activeSet.logoUrl && (

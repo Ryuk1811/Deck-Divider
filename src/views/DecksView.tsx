@@ -238,50 +238,50 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const soldEntries = currentDeck ? currentDeck.entries.filter((e) => e.isSold) : [];
 
   return (
-    <div className="space-y-6 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-6 animate-fade-in">
       {/* 1. TOP HEADED DECK FUNCTION PANEL */}
-      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-5 space-y-5">
+      <div className="p-5 glass-slab shadow-md space-y-5">
         {/* Header Row: Title & Function Buttons */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
-              className="w-4 h-4 rounded-full border border-black/10 shadow-xs flex-shrink-0"
+              className="w-4 h-4 rounded-full border border-black/10 shadow-xs flex-shrink-0 mt-1 sm:mt-1.5"
               style={{ backgroundColor: currentDeck?.colorHex || '#DC143C' }}
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-heading font-bold text-xl text-[#0F172A]">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
                   {currentDeck?.name || 'Decks Studio'}
                 </h2>
-                <span className="font-mono text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded">
+                <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0">
                   {decks.length} Active Decks
                 </span>
               </div>
-              <p className="font-mono text-xs text-[#64748B] mt-0.5">
+              <p className="font-mono text-[11px] sm:text-xs text-[#64748B] mt-0.5 max-w-xl truncate">
                 {currentDeck?.description || 'Manage deck structures, custom colors, and binder pages'}
               </p>
             </div>
           </div>
 
-          {/* Function Actions Toolbar */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Function Actions Toolbar - Clean wrapping flex row on all screens */}
+          <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2 w-full lg:w-auto">
             <button
               type="button"
               onClick={handleOpenCreateModal}
-              className="px-3.5 py-2 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-md hover:bg-[#B01030] transition-colors flex items-center gap-1.5 shadow-xs"
+              className="h-9 px-4 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>New Deck</span>
+              <Plus className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">New Deck</span>
             </button>
 
             {currentDeck && (
               <button
                 type="button"
                 onClick={handleOpenEditModal}
-                className="px-3.5 py-2 bg-white text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C] font-mono text-xs font-bold rounded-md transition-colors flex items-center gap-1.5 shadow-xs"
+                className="h-9 px-4 bg-white text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C] font-mono text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
               >
-                <Settings2 className="w-3.5 h-3.5 text-[#DC143C]" />
-                <span>Assign Name & Color</span>
+                <Settings2 className="w-3.5 h-3.5 text-[#DC143C] flex-shrink-0" />
+                <span className="truncate">Assign Name & Color</span>
               </button>
             )}
 
@@ -293,10 +293,10 @@ export const DecksView: React.FC<DecksViewProps> = ({
                     onDeleteDeck(currentDeck.id);
                   }
                 }}
-                className="px-3 py-2 bg-white text-[#EF4444] border border-[#E2E8F0] hover:bg-[#FEF2F2] hover:border-[#EF4444] font-mono text-xs font-bold rounded-md transition-colors flex items-center gap-1.5 shadow-xs"
+                className="h-9 px-4 bg-white text-[#EF4444] border border-[#E2E8F0] hover:bg-[#FEF2F2] hover:border-[#EF4444] font-mono text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Delete</span>
+                <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">Delete</span>
               </button>
             )}
 
@@ -304,30 +304,38 @@ export const DecksView: React.FC<DecksViewProps> = ({
             <button
               type="button"
               onClick={handleTogglePublic}
-              className={`px-3 py-2 text-xs font-mono font-bold border transition-all rounded-md flex items-center gap-1.5 shadow-xs ${
+              className={`h-9 px-4 text-xs font-mono font-bold border transition-all rounded-lg flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer ${
                 currentDeck?.isPublic
                   ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]'
-                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#DC143C]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C]'
               }`}
             >
-              {currentDeck?.isPublic ? <Share2 className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-              <span>{currentDeck?.isPublic ? 'Public Active' : 'Make Public'}</span>
+              {currentDeck?.isPublic ? (
+                <Share2 className="w-3.5 h-3.5 flex-shrink-0" />
+              ) : (
+                <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+              )}
+              <span className="truncate">
+                {currentDeck?.isPublic ? 'Public Active' : 'Make Public'}
+              </span>
             </button>
 
             {currentDeck?.isPublic && (
               <button
                 type="button"
                 onClick={handleCopyPublicLink}
-                className="px-3 py-2 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center gap-1.5 hover:bg-[#1E293B] rounded-md transition-colors shadow-xs"
+                className="h-9 px-4 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
               >
-                <Copy className="w-3.5 h-3.5" />
-                <span>{copiedLink ? 'Copied Link!' : 'Copy Link'}</span>
+                <Copy className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">
+                  {copiedLink ? 'Copied Link!' : 'Copy Link'}
+                </span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Deck Switcher Grid (NO FULL COLOR BORDER - ONLY LEFT SIDE MARKER) */}
+        {/* Deck Switcher Grid (NO SIDE-TAB BORDERS AS PER DESIGN SYSTEM) */}
         <div className="space-y-2">
           <span className="font-mono text-xs font-bold text-[#64748B]">
             Select Active Deck Location:
@@ -342,14 +350,10 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 <div
                   key={deck.id}
                   onClick={() => setSelectedDeckId(deck.id)}
-                  style={{
-                    borderLeftColor: deck.colorHex,
-                    borderLeftWidth: '5px',
-                  }}
-                  className={`p-3 bg-white border cursor-pointer transition-all duration-200 relative overflow-hidden rounded-md ${
+                  className={`p-3.5 cursor-pointer transition-all duration-200 relative overflow-hidden glass-slab shadow-sm ${
                     isSelected
-                      ? 'border-[#0F172A] ring-1 ring-[#0F172A] bg-[#F8FAFC] shadow-xs'
-                      : 'border-[#E2E8F0] hover:border-[#CBD5E1] shadow-xs'
+                      ? 'border-[#DC143C] ring-1 ring-[#DC143C] bg-[#FFF0F3]/10 shadow-xs'
+                      : 'shadow-xs hover:shadow-md'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -382,36 +386,38 @@ export const DecksView: React.FC<DecksViewProps> = ({
         </div>
 
         {/* View Mode Switcher Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E2E8F0]">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-xs font-bold text-[#64748B] mr-1">Display Mode:</span>
-            {[
-              { id: 'binder', label: 'Binder View', icon: Grid },
-              { id: 'table', label: 'Ledger Table', icon: Table },
-              { id: 'segregation', label: 'By Expansion', icon: FolderTree },
-              { id: 'sold', label: 'Sales Log', icon: DollarSign },
-            ].map((mode) => {
-              const isActive = viewMode === mode.id;
-              const Icon = mode.icon;
-              return (
-                <button
-                  key={mode.id}
-                  type="button"
-                  onClick={() => setViewMode(mode.id as any)}
-                  className={`px-3 py-1.5 text-xs font-mono font-bold rounded-md border flex items-center gap-1.5 transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
-                      : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#DC143C]' : 'text-[#64748B]'}`} />
-                  <span>{mode.label}</span>
-                </button>
-              );
-            })}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#E2E8F0]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+            <span className="font-mono text-xs font-bold text-[#64748B] flex-shrink-0">Display Mode:</span>
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto">
+              {[
+                { id: 'binder', label: 'Binder View', icon: Grid },
+                { id: 'table', label: 'Ledger Table', icon: Table },
+                { id: 'segregation', label: 'By Expansion', icon: FolderTree },
+                { id: 'sold', label: 'Sales Log', icon: DollarSign },
+              ].map((mode) => {
+                const isActive = viewMode === mode.id;
+                const Icon = mode.icon;
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => setViewMode(mode.id as any)}
+                    className={`h-9 px-3 text-xs font-mono font-bold rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer w-full sm:w-auto text-center ${
+                      isActive
+                        ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
+                        : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[#DC143C]' : 'text-[#64748B]'}`} />
+                    <span className="truncate">{mode.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="font-mono text-xs text-[#64748B]">
+          <div className="font-mono text-xs text-[#64748B] text-right sm:text-left flex-shrink-0">
             {activeEntries.length} Active • {soldEntries.length} Sold
           </div>
         </div>
@@ -429,7 +435,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
               </div>
 
               {activeEntries.length === 0 ? (
-                <div className="text-center py-12 border-2 border-dashed border-[#E2E8F0] rounded-xl space-y-2 bg-white">
+                <div className="text-center py-12 space-y-2 glass-slab shadow-md">
                   <Layers className="w-8 h-8 text-[#CBD5E1] mx-auto" />
                   <p className="font-heading font-bold text-sm text-[#0F172A]">
                     This deck has no active cards yet
@@ -474,7 +480,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
           {/* VIEW MODE 2: DATA TABLE VIEW */}
           {viewMode === 'table' && (
-            <div className="bg-white overflow-x-auto border border-[#E2E8F0] rounded-xl shadow-xs">
+            <div className="overflow-x-auto glass-slab shadow-md">
               <table className="w-full text-left font-mono text-xs">
                 <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B]">
                   <tr>
@@ -529,7 +535,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
               {Object.entries(entriesBySet).map(([setName, group]) => (
                 <div
                   key={setName}
-                  className="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-xs space-y-3"
+                  className="p-4 glass-slab shadow-md space-y-3"
                 >
                   <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
                     <div className="flex items-center gap-2">
@@ -573,7 +579,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
           {/* VIEW MODE 4: SOLD CARDS LOG */}
           {viewMode === 'sold' && (
-            <div className="bg-white p-5 rounded-xl border border-[#E2E8F0] shadow-xs space-y-4">
+            <div className="p-5 glass-slab shadow-md space-y-4">
               <h3 className="font-heading font-bold text-base text-[#0F172A]">
                 Marked Sold Cards
               </h3>
@@ -627,7 +633,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* CREATE DECK MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-lg text-[#0F172A]">
@@ -737,7 +743,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* EDIT DECK PROPERTIES MODAL */}
       {isEditModalOpen && currentDeck && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-lg text-[#0F172A]">
@@ -835,7 +841,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* CONFIRM SPLIT GROUP MODAL */}
       {splitGroupSetId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
             <div className="flex items-center gap-2 text-[#DC143C]">
               <AlertTriangle className="w-5 h-5" />
@@ -879,7 +885,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* MARK CARD SOLD FORM MODAL */}
       {soldTargetEntry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-lg text-[#0F172A]">

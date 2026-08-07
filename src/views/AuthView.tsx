@@ -9,6 +9,7 @@ import {
 import { auth } from '../lib/firebase';
 import { validateEmailAddress } from '../lib/emailValidator';
 import { Loader2 } from 'lucide-react';
+import { DeckDividerBrand } from '../components/DeckDividerBrand';
 
 export function AuthView() {
   const [isLogin, setIsLogin] = useState(true);
@@ -85,9 +86,7 @@ export function AuthView() {
     <div className="min-h-screen w-full flex items-center justify-center bg-dot-grid bg-[#F8FAFC] font-mono select-none p-4">
       <div className="w-full max-w-md bg-white p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl">
         <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#DC143C] to-[#B01030] flex items-center justify-center text-white font-heading font-bold text-xl shadow-md">
-            DD
-          </div>
+          <DeckDividerBrand size="lg" showLogo={true} />
         </div>
 
         <h1 className="font-heading font-bold text-2xl text-center text-[#0F172A] mb-1">

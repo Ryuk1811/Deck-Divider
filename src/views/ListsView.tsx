@@ -94,7 +94,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
   };
 
   return (
-    <div className="space-y-8 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-8 animate-fade-in">
       {/* LISTS SELECTOR AND GRID */}
 
       {/* LIST TABS */}
@@ -105,10 +105,10 @@ export const ListsView: React.FC<ListsViewProps> = ({
             <div
               key={list.id}
               onClick={() => setSelectedListId(list.id)}
-              className={`p-4 bg-white border cursor-pointer transition-all chamfer-corner-sm ${
+              className={`p-4 cursor-pointer transition-all glass-slab ${
                 isSelected
-                  ? 'border-[#DC143C] bg-gradient-to-r from-[#FFF0F3]/40 to-white shadow-sm'
-                  : 'border-[#E2E8F0] hover:border-[#CBD5E1] shadow-xs'
+                  ? 'border-[#DC143C] bg-gradient-to-r from-[#FFF0F3]/40 to-white shadow-sm ring-1 ring-[#DC143C]'
+                  : 'shadow-xs hover:shadow-md'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -135,7 +135,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
       {/* SELECTED LIST CONTENTS */}
       {currentList && (
-        <div className="neo-card p-6 space-y-6 chamfer-corner-sm bg-white border border-[#E2E8F0]">
+        <div className="p-6 space-y-6 glass-slab shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
             <div>
               <h2 className="font-heading font-bold text-2xl text-[#0F172A]">
@@ -157,7 +157,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
           </div>
 
           {listCards.length === 0 ? (
-            <div className="p-12 text-center bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-md space-y-3">
+            <div className="p-12 text-center glass-slab space-y-3">
               <Layers className="w-8 h-8 text-[#94A3B8] mx-auto" />
               <div className="font-heading font-bold text-sm text-[#0F172A]">This Custom List is Empty</div>
               <p className="font-mono text-xs text-[#64748B] max-w-sm mx-auto">
@@ -194,7 +194,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
       {/* CREATE LIST MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 chamfer-corner-lg">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-lg text-[#0F172A]">

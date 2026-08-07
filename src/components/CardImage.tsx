@@ -68,7 +68,7 @@ export const CardImage: React.FC<CardImageProps> = ({
     return (
       <div className={`relative aspect-[0.718] w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] border border-[#CBD5E1] rounded-lg p-3 flex flex-col justify-between overflow-hidden shadow-inner ${className}`}>
         {/* Holographic Shimmer Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/20 via-transparent to-transparent pointer-events-none" />
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/20 via-transparent to-transparent pointer-events-none" />
 
         {/* Top Header */}
         <div className="flex items-center justify-between text-white border-b border-white/10 pb-1 z-10">

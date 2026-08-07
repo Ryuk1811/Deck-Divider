@@ -156,11 +156,11 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
       : setBreakdownList;
 
   return (
-    <div className="space-y-8 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-8 animate-fade-in">
       {/* 4-STAT FIGURES ROW */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Figure 1: Current Holdings Value */}
-        <div className="kpi-card p-5 space-y-2 bg-white border border-[#E2E8F0] shadow-xs rounded-lg">
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs text-[#64748B]">Holdings Value</span>
             <div className="w-7 h-7 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 text-[#DC143C] flex items-center justify-center">
@@ -176,7 +176,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
         </div>
 
         {/* Figure 2: Cost Basis */}
-        <div className="kpi-card p-5 space-y-2 bg-white border border-[#E2E8F0] shadow-xs rounded-lg">
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs text-[#64748B]">Cost Basis</span>
             <div className="w-7 h-7 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] flex items-center justify-center">
@@ -192,7 +192,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
         </div>
 
         {/* Figure 3: Unrealized Gain/Loss */}
-        <div className="kpi-card p-5 space-y-2 bg-white border border-[#E2E8F0] shadow-xs rounded-lg">
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs text-[#64748B]">Unrealized P&L</span>
             <div
@@ -222,7 +222,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
         </div>
 
         {/* Figure 4: Realized Profit */}
-        <div className="kpi-card p-5 space-y-2 bg-white border border-[#E2E8F0] shadow-xs rounded-lg">
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs text-[#64748B]">Realized Profit</span>
             <div className="w-7 h-7 rounded-lg bg-[#FFFBEB] border border-[#FFD700]/50 text-[#854D0E] flex items-center justify-center">
@@ -245,7 +245,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
       {/* CHART & VALUE BREAKDOWN ROW */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Value Over Time Chart */}
-        <div className="lg:col-span-7 neo-card p-6 space-y-4 bg-white border border-[#E2E8F0] rounded-lg">
+        <div className="lg:col-span-7 p-6 space-y-4 glass-slab shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div>
               <h3 className="font-heading font-bold text-base text-[#0F172A]">
@@ -305,7 +305,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
         </div>
 
         {/* Value Distribution Breakdown Card */}
-        <div className="lg:col-span-5 neo-card p-6 space-y-4 bg-white border border-[#E2E8F0] rounded-lg">
+        <div className="lg:col-span-5 p-6 space-y-4 glass-slab shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div>
               <h3 className="font-heading font-bold text-base text-[#0F172A]">
@@ -352,29 +352,31 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 overflow-y-auto max-h-[240px] pr-1">
-            {currentBreakdown.map((item) => (
-              <div key={item.label} className="space-y-1">
-                <div className="flex items-center justify-between font-mono text-xs">
-                  <span className="font-semibold text-[#0F172A]">{item.label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#64748B] font-num">
-                      {formatCurrency(item.value, currency)}
-                    </span>
-                    <span className="font-bold text-[#DC143C] font-num">
-                      {item.percent.toFixed(1)}%
-                    </span>
+          <div className="scroller-bounding-box h-[250px]">
+            <div className="scroller-bounding-box-inner p-3 custom-scrollbar h-full space-y-3">
+              {currentBreakdown.map((item) => (
+                <div key={item.label} className="space-y-1">
+                  <div className="flex items-center justify-between font-mono text-xs">
+                    <span className="font-semibold text-[#0F172A]">{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#64748B] font-num">
+                        {formatCurrency(item.value, currency)}
+                      </span>
+                      <span className="font-bold text-[#DC143C] font-num">
+                        {item.percent.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="w-full bg-[#F1F5F9] h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-[#DC143C] to-[#B01030] h-full rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, Math.max(2, item.percent))}%` }}
+                    />
                   </div>
                 </div>
-                {/* Progress bar */}
-                <div className="w-full bg-[#F1F5F9] h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-[#DC143C] to-[#B01030] h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(100, Math.max(2, item.percent))}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -382,7 +384,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
       {/* RECENT ACTIVITY LOG & MOVERS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Recent Audit Log */}
-        <div className="lg:col-span-6 neo-card p-6 space-y-4 bg-white border border-[#E2E8F0] rounded-lg">
+        <div className="lg:col-span-6 p-6 space-y-4 glass-slab shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <h3 className="font-heading font-bold text-base text-[#0F172A]">
               Transaction & Audit Log
@@ -390,41 +392,43 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
             <span className="font-mono text-[10px] text-[#64748B]">Historical Events</span>
           </div>
 
-          <div className="space-y-3 overflow-y-auto max-h-[260px]">
-            {recentActivities.map((act) => (
-              <div
-                key={act.id}
-                className="flex items-center justify-between p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  {act.cardImage && act.cardImage.length > 0 ? (
-                    <img
-                      src={act.cardImage}
-                      alt={act.title}
-                      className="w-8 h-10 object-cover border border-[#E2E8F0] rounded-md"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-[#0F172A] text-white flex items-center justify-center font-mono font-bold text-xs rounded-md">
-                      <Activity className="w-4 h-4 text-[#DC143C]" />
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="font-heading font-semibold text-xs text-[#0F172A] truncate">
-                      {act.title}
-                    </div>
-                    <div className="font-mono text-[10px] text-[#64748B] truncate">
-                      {act.subtitle}
+          <div className="scroller-bounding-box h-[270px]">
+            <div className="scroller-bounding-box-inner p-3 custom-scrollbar h-full space-y-3">
+              {recentActivities.map((act) => (
+                <div
+                  key={act.id}
+                  className="flex items-center justify-between p-3 bg-white border border-[#E2E8F0] rounded-md"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {act.cardImage && act.cardImage.length > 0 ? (
+                      <img
+                        src={act.cardImage}
+                        alt={act.title}
+                        className="w-8 h-10 object-cover border border-[#E2E8F0] rounded-md"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-[#0F172A] text-white flex items-center justify-center font-mono font-bold text-xs rounded-md">
+                        <Activity className="w-4 h-4 text-[#DC143C]" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-heading font-semibold text-xs text-[#0F172A] truncate">
+                        {act.title}
+                      </div>
+                      <div className="font-mono text-[10px] text-[#64748B] truncate">
+                        {act.subtitle}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Market Movers */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="flex items-center justify-between bg-white px-4 py-3 border border-[#E2E8F0] rounded-lg shadow-xs">
+          <div className="flex items-center justify-between px-4 py-3 glass-slab shadow-md">
             <h3 className="font-heading font-bold text-base text-[#0F172A]">
               Highest Value Market Cards
             </h3>
@@ -436,7 +440,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
               <div
                 key={card.id}
                 onClick={() => onSelectCard(card)}
-                className="bg-white p-3 border border-[#E2E8F0] rounded-lg flex items-center gap-3 cursor-pointer hover:border-[#DC143C] transition-all group shadow-xs"
+                className="p-3 glass-slab flex items-center gap-3 cursor-pointer hover:border-[#DC143C] transition-all group shadow-md"
               >
                 <img
                   src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
@@ -462,7 +466,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
 
       {/* DECKS VALUATION SUMMARY SHORTCUTS */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between bg-white px-4 py-3 border border-[#E2E8F0] rounded-lg shadow-xs">
+        <div className="flex items-center justify-between px-4 py-3 glass-slab shadow-md">
           <h3 className="font-heading font-bold text-base text-[#0F172A]">
             Deck Valuation Summaries
           </h3>
@@ -488,7 +492,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
               <div
                 key={deck.id}
                 onClick={() => onSelectDeck(deck.id)}
-                className="bg-white p-4 space-y-3 border border-[#E2E8F0] rounded-lg cursor-pointer hover:border-[#DC143C] transition-all group shadow-xs"
+                className="p-4 space-y-3 glass-slab cursor-pointer hover:border-[#DC143C] transition-all group shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

@@ -116,6 +116,22 @@ async function startServer() {
     res.json(status);
   });
 
+  // Live Certification Verification Endpoint
+  app.get('/api/cert/verify', async (req, res) => {
+    try {
+      const certNumber = (req.query.certNumber as string) || '';
+      const company = (req.query.company as any) || 'PSA';
+      if (!certNumber) {
+        return res.status(400).json({ error: 'certNumber is required' });
+      }
+      const { verifyGradingCert } = await import('./server/certManager.js');
+      const report = await verifyGradingCert(certNumber, company);
+      res.json(report);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to verify certification' });
+    }
+  });
+
   app.get('/api/config/credentials', async (req, res) => {
     try {
       const { getAppCredentials } = await import('./server/configManager.js');

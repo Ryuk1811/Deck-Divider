@@ -11,6 +11,7 @@ import {
 } from './indexedDB';
 import { CardSet, PokemonCard, EnergyType } from '../types';
 import { MOCK_SETS, MOCK_CARDS } from '../data/mockData';
+import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 export interface SyncProgressState {
   isSyncing: boolean;
@@ -42,43 +43,9 @@ function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): 
   return `${clean}/${quality}.png`;
 }
 
-function inferSeries(set: any): string {
-  if (set.series && set.series !== 'Unknown' && set.series !== 'Pokémon TCG') return set.series;
-  if (set.serie?.name) return set.serie.name;
-  const name = set.name || '';
-  const id = set.id || '';
-  const nLower = name.toLowerCase();
-  const idLower = id.toLowerCase();
-  if (nLower.includes('mcdonald')) return "McDonald's Collection";
-  if (idLower.includes('sv') || nLower.includes('scarlet') || nLower.includes('paldea') || nLower.includes('151') || nLower.includes('stellar') || nLower.includes('surging') || nLower.includes('shrouded') || nLower.includes('temporal') || nLower.includes('twilight')) return 'Scarlet & Violet';
-  if (idLower.includes('swsh') || nLower.includes('sword') || nLower.includes('shield') || nLower.includes('evolving') || nLower.includes('brilliant') || nLower.includes('zenith') || nLower.includes('astral') || nLower.includes('lost origin') || nLower.includes('silver tempest')) return 'Sword & Shield';
-  if (idLower.includes('sm') || nLower.includes('sun') || nLower.includes('moon') || nLower.includes('team up') || nLower.includes('unbroken') || nLower.includes('unified')) return 'Sun & Moon';
-  if (idLower.includes('xy') || nLower.includes('xy') || nLower.includes('evolutions') || nLower.includes('roaring') || nLower.includes('primal')) return 'XY Series';
-  if (idLower.includes('bw') || nLower.includes('black') || nLower.includes('plasma')) return 'Black & White';
-  if (idLower.includes('hgss') || idLower.includes('col') || nLower.includes('heartgold') || nLower.includes('soulsilver')) return 'HeartGold & SoulSilver';
-  if (idLower.includes('dp') || idLower.includes('pl') || nLower.includes('diamond') || nLower.includes('platinum')) return 'Diamond & Pearl';
-  if (idLower.startsWith('ex') || nLower.includes('ex ')) return 'EX Series';
-  if (idLower.startsWith('neo') || nLower.includes('neo ')) return 'Neo Series';
-  if (idLower.startsWith('gym') || nLower.includes('gym ')) return 'Gym Series';
-  if (idLower.startsWith('base') || nLower.includes('base') || nLower.includes('jungle') || nLower.includes('fossil')) return 'Base Series';
-  if (idLower.startsWith('pop') || nLower.includes('pop ')) return 'POP Series';
-  return 'Promos & Special';
-}
-
 // Map TCGdex Set schema to app CardSet schema
 function mapTCGdexSet(set: any): CardSet {
-  const symbol = set.symbol ? (set.symbol.endsWith('.png') || set.symbol.endsWith('.webp') ? set.symbol : `${set.symbol}.png`) : '';
-  const logo = set.logo ? (set.logo.endsWith('.png') || set.logo.endsWith('.webp') ? set.logo : `${set.logo}.png`) : '';
-  return {
-    id: set.id,
-    name: set.name,
-    series: inferSeries(set),
-    printedTotal: set.cardCount?.official || set.cardCount?.total || 100,
-    total: set.cardCount?.total || set.cardCount?.official || 100,
-    releaseDate: set.releaseDate || '2020-01-01',
-    symbolUrl: symbol || 'https://images.pokemontcg.io/base1/symbol.png',
-    logoUrl: logo || 'https://images.pokemontcg.io/base1/logo.png',
-  };
+  return normalizeSet(set);
 }
 
 // Map TCGdex Card detail schema to app PokemonCard schema
@@ -127,16 +94,7 @@ export function mapTCGdexCard(card: any): PokemonCard {
           value: r.value || '-30',
         }))
       : undefined,
-    set: {
-      id: card.set?.id || 'base1',
-      name: card.set?.name || 'Base Set',
-      series: card.set?.series || 'Original',
-      printedTotal: card.set?.cardCount?.official || 102,
-      total: card.set?.cardCount?.total || 102,
-      releaseDate: card.set?.releaseDate || '1999-01-09',
-      symbolUrl: card.set?.symbol ? `${card.set.symbol}.png` : 'https://images.pokemontcg.io/base1/symbol.png',
-      logoUrl: card.set?.logo ? `${card.set.logo}.png` : 'https://images.pokemontcg.io/base1/logo.png',
-    },
+    set: normalizeSet(card.set || { id: 'base1', name: 'Base Set' }),
     number: String(card.localId || '1'),
     rarity: card.rarity || 'Common',
     legalities: {
@@ -174,7 +132,7 @@ export async function getExpansionsCatalog(): Promise<CardSet[]> {
   const cached = await idbGetAllExpansions();
   if (cached && cached.length > 10) {
     refreshExpansionsInBackground();
-    return cached;
+    return sortSetsChronologically(cached.map(normalizeSet));
   }
 
   try {
@@ -182,7 +140,7 @@ export async function getExpansionsCatalog(): Promise<CardSet[]> {
     if (res.ok) {
       const rawSets = await res.json();
       if (Array.isArray(rawSets) && rawSets.length > 0) {
-        const mappedSets = rawSets.map(mapTCGdexSet);
+        const mappedSets = sortSetsChronologically(rawSets.map(mapTCGdexSet));
         await idbSaveExpansions(mappedSets);
         return mappedSets;
       }
@@ -193,14 +151,15 @@ export async function getExpansionsCatalog(): Promise<CardSet[]> {
     const res = await fetch('https://api.tcgdex.net/v2/en/sets');
     if (res.ok) {
       const rawSets = await res.json();
-      const mappedSets = rawSets.map(mapTCGdexSet);
+      const mappedSets = sortSetsChronologically(rawSets.map(mapTCGdexSet));
       await idbSaveExpansions(mappedSets);
       return mappedSets;
     }
   } catch (err) {}
 
-  await idbSaveExpansions(MOCK_SETS);
-  return MOCK_SETS;
+  const sortedMock = sortSetsChronologically(MOCK_SETS.map(normalizeSet));
+  await idbSaveExpansions(sortedMock);
+  return sortedMock;
 }
 
 async function refreshExpansionsInBackground() {

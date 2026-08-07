@@ -50,7 +50,7 @@ export const QuickLookModal: React.FC<QuickLookModalProps> = ({
   const currIdx = cardList.findIndex((c) => c.id === card.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
       <div className="glass-panel p-6 border border-[#E2E8F0] shadow-xl max-w-md w-full relative space-y-4 chamfer-corner-lg">
         {/* Header bar */}
         <div className="flex items-center justify-between">

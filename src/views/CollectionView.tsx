@@ -287,9 +287,9 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
     selectedDeckFilter !== 'all';
 
   return (
-    <div className="space-y-6 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-6 animate-fade-in">
       {/* 1. TOP GLOBAL COLLECTION METRICS & CONTROL BAR */}
-      <div className="bg-white p-5 rounded-lg border border-[#E2E8F0] shadow-xs space-y-4">
+      <div className="p-5 glass-slab shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 flex items-center justify-center text-[#DC143C]">
@@ -377,7 +377,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
       {/* 2. EXPANDABLE SEGREGATION & FILTER PANEL */}
       {isFilterPanelOpen && (
-        <div className="bg-white p-5 rounded-lg border border-[#E2E8F0] shadow-xs space-y-4 animate-fade-in">
+        <div className="p-5 glass-slab shadow-md space-y-4 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />
@@ -454,11 +454,11 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           </div>
 
           {/* Type Pills */}
-          <div className="space-y-1.5 pt-2 border-t border-[#E2E8F0]">
+          <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
             <span className="font-mono text-xs font-bold text-[#64748B]">
               Filter Energy Types:
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {ALL_TYPES.map((type) => {
                 const isSelected = selectedTypes.includes(type);
                 return (
@@ -466,13 +466,13 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     key={type}
                     type="button"
                     onClick={() => toggleTypeFilter(type)}
-                    className={`px-2.5 py-1 font-mono text-xs rounded-md border transition-all ${
+                    className={`h-9 px-3 w-full font-mono text-xs rounded-lg border flex items-center justify-center text-center transition-all truncate cursor-pointer ${
                       isSelected
                         ? 'bg-[#DC143C] text-white border-[#DC143C] font-bold shadow-xs'
-                        : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A]'
+                        : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A] hover:border-[#CBD5E1]'
                     }`}
                   >
-                    {type}
+                    <span className="truncate">{type}</span>
                   </button>
                 );
               })}
@@ -481,11 +481,11 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
           {/* Rarity Pills */}
           {availableRarities.length > 0 && (
-            <div className="space-y-1.5 pt-2 border-t border-[#E2E8F0]">
+            <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
               <span className="font-mono text-xs font-bold text-[#64748B]">
                 Filter Rarities:
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {availableRarities.map((rarity) => {
                   const isSelected = selectedRarities.includes(rarity);
                   return (
@@ -493,13 +493,13 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                       key={rarity}
                       type="button"
                       onClick={() => toggleRarityFilter(rarity)}
-                      className={`px-2.5 py-1 font-mono text-xs rounded-md border transition-all ${
+                      className={`h-9 px-3 w-full font-mono text-xs rounded-lg border flex items-center justify-center text-center transition-all truncate cursor-pointer ${
                         isSelected
                           ? 'bg-[#0F172A] text-white border-[#0F172A] font-bold shadow-xs'
-                          : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A]'
+                          : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A] hover:border-[#CBD5E1]'
                       }`}
                     >
-                      {rarity}
+                      <span className="truncate">{rarity}</span>
                     </button>
                   );
                 })}
@@ -511,7 +511,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
       {/* 3. MAIN CONTENT RENDER (BINDER, GRID, OR TABLE) */}
       {filteredEntries.length === 0 ? (
-        <div className="bg-white p-12 text-center rounded-lg border border-[#E2E8F0] space-y-3">
+        <div className="p-12 text-center glass-slab shadow-md space-y-3">
           <BookOpen className="w-10 h-10 text-[#CBD5E1] mx-auto" />
           <h3 className="font-heading font-bold text-lg text-[#0F172A]">
             No Cards Matching Active Collection Filters
@@ -530,7 +530,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
       ) : viewMode === 'binder' ? (
         /* BINDER VIEW (3x3 PAGE LAYOUT WITH PAGINATION) */
         <div className="space-y-6">
-          <div className="flex items-center justify-between bg-white px-4 py-3 rounded-lg border border-[#E2E8F0]">
+          <div className="flex items-center justify-between px-4 py-3 glass-slab shadow-md">
             <div className="font-mono text-xs font-bold text-[#0F172A]">
               3x3 Binder View &bull; Page {binderPage} of {totalBinderPages} ({filteredEntries.length} Total Cards)
             </div>
@@ -602,7 +602,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE VIEW */
-        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-xs overflow-hidden">
+        <div className="glass-slab shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -693,7 +693,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           {groupedCollection.map((group) => (
             <div key={group.groupName} className="space-y-4">
               {groupBy !== 'none' && (
-                <div className="flex items-center justify-between bg-white px-4 py-2.5 rounded-lg border border-[#E2E8F0] shadow-xs">
+                <div className="flex items-center justify-between px-4 py-2.5 glass-slab shadow-sm">
                   <div className="flex items-center gap-2">
                     <h3 className="font-heading font-bold text-base text-[#0F172A]">
                       {group.groupName}

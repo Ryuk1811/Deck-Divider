@@ -35,7 +35,7 @@ export function DropdownMenu({
       : 'left-0 origin-top-left';
 
   return (
-    <div className="relative inline-block text-left z-50" ref={ref}>
+    <div className={`relative inline-block text-left ${isOpen ? 'z-30' : 'z-10'}`} ref={ref}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -52,7 +52,7 @@ export function DropdownMenu({
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className={`absolute ${alignmentClasses} mt-2 w-max min-w-[220px] bg-white border border-[#E2E8F0] rounded-lg shadow-xl overflow-hidden animate-fade-in z-50`}
+          className={`absolute ${alignmentClasses} mt-2 w-max min-w-[220px] bg-white border border-[#E2E8F0] rounded-lg shadow-xl overflow-hidden animate-fade-in z-30`}
         >
           {children}
         </div>

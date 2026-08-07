@@ -23,6 +23,7 @@ import {
   Download,
   DollarSign,
   Zap,
+  Menu,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import {
@@ -34,6 +35,7 @@ import {
   INITIAL_ACTIVITIES,
 } from './data/mockData';
 import { Sidebar, ActiveTab } from './components/Sidebar';
+import { DeckDividerBrand } from './components/DeckDividerBrand';
 import { CommandPalette } from './components/CommandPalette';
 import { CardDetailModal } from './components/CardDetailModal';
 import { QuickLookModal } from './components/QuickLookModal';
@@ -50,9 +52,13 @@ import { SetsView } from './views/SetsView';
 import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
+import { SealedPortfolioManager } from './components/SealedPortfolioManager';
+import { PSACertVerifier } from './components/PSACertVerifier';
+import { PortfolioSealedEntry, GradingInfo, PSAPopReport } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
+import { idbGetSealedVault, idbSaveSealedVault } from './lib/indexedDB';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -243,6 +249,23 @@ export default function App() {
   const [soldEntries, setSoldEntries] = useState<PortfolioCardEntry[]>(INITIAL_SOLD_ENTRIES);
   const [customLists, setCustomLists] = useState<CustomList[]>(INITIAL_LISTS);
   const [recentActivities, setRecentActivities] = useState(INITIAL_ACTIVITIES);
+  const [sealedEntries, setSealedEntries] = useState<PortfolioSealedEntry[]>([]);
+
+  // Load sealed entries from IndexedDB on initial mount
+  React.useEffect(() => {
+    idbGetSealedVault().then((saved) => {
+      if (saved && saved.length > 0) {
+        setSealedEntries(saved);
+      }
+    });
+  }, []);
+
+  // Sync sealed entries to IndexedDB on change
+  React.useEffect(() => {
+    if (sealedEntries.length > 0) {
+      idbSaveSealedVault(sealedEntries);
+    }
+  }, [sealedEntries]);
 
   // Persistent Search Filters
   const [savedFilters, setSavedFilters] = useState<SearchFilters>({
@@ -257,10 +280,16 @@ export default function App() {
   const [createListSignal, setCreateListSignal] = useState(0);
   const [exportDataSignal, setExportDataSignal] = useState(0);
 
+  // Responsive Collapsible Sidebar States
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   const sectionMeta: Record<ActiveTab, { tag: string; title: string }> = {
     collection: { tag: 'Global Inventory', title: 'Global Collection' },
     metrics: { tag: 'Portfolio Analytics', title: 'Metrics & Performance' },
     decks: { tag: 'Deck Command', title: 'Decks & Binder Studio' },
+    sealed_vault: { tag: 'Vault Inventory', title: 'Sealed Product Vault' },
+    psa_verify: { tag: 'Cert & Pop Hub', title: 'Grading Cert & Pop Report' },
     search: { tag: 'Card Discovery', title: 'Global Search' },
     sets: { tag: 'Expansion Index', title: 'Sets & Trackers' },
     lists: { tag: 'Unlimited Groups', title: 'Lists & Want-Lists' },
@@ -527,40 +556,50 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A] select-none">
-      {/* Sidebar Navigation (Static Locked, 2 Solid Dividers) */}
+      {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         currentTier={currentTier}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         isSyncing={isSyncing}
+        isCollapsed={isSidebarCollapsed}
+        setIsCollapsed={setIsSidebarCollapsed}
+        isMobileOpen={isMobileSidebarOpen}
+        setIsMobileOpen={setIsMobileSidebarOpen}
       />
 
       {/* Main Panel Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line) */}
-        <header className="h-16 flex items-center justify-between px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs">
-          {/* Left: Section Header Tag & Title */}
-          <div className="flex items-center gap-3 min-w-0">
-            <span className="font-mono text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line h-16) */}
+        <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2">
+          {/* Left: Mobile Drawer Trigger + Section Header Tag & Title */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <DeckDividerBrand
+              size="xs"
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              className="md:hidden flex-shrink-0 cursor-pointer mr-1"
+            />
+            <span className="hidden sm:inline-flex font-mono text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
               {sectionMeta[activeTab].tag}
             </span>
-            <span className="text-[#CBD5E1] font-mono text-sm flex-shrink-0">/</span>
-            <h1 className="font-heading font-bold text-lg text-[#0F172A] truncate">
+            <span className="hidden sm:inline text-[#CBD5E1] font-mono text-sm flex-shrink-0">/</span>
+            <h1 className="font-heading font-bold text-sm sm:text-base md:text-lg text-[#0F172A] truncate">
               {sectionMeta[activeTab].title}
             </h1>
           </div>
 
           {/* Right: Symmetrical Inline Actions & Status Badges */}
-          <div className="flex items-center gap-2.5 font-mono text-xs flex-shrink-0">
+          <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
             {activeTab === 'collection' && (
               <button
                 type="button"
                 onClick={() => setActiveTab('search')}
-                className="h-9 px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
+                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-[#DC143C]" />
-                <span>Add Cards to Portfolio</span>
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
+                <span className="hidden sm:inline">Add Cards to Portfolio</span>
+                <span className="sm:hidden text-[11px]">Add Cards</span>
               </button>
             )}
 
@@ -568,10 +607,11 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveTab('collection')}
-                className="h-9 px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
+                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
-                <Layers className="w-4 h-4 text-[#DC143C]" />
-                <span>View Inventory</span>
+                <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
+                <span className="hidden sm:inline">View Inventory</span>
+                <span className="sm:hidden text-[11px]">Inventory</span>
               </button>
             )}
 
@@ -579,23 +619,24 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCreateDeckSignal((s) => s + 1)}
-                className="h-9 px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
+                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
-                <span>
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">
                   Create New Deck ({decks.length}/
                   {TIER_LIMITS[currentTier].maxDecks === Infinity
                     ? '∞'
                     : TIER_LIMITS[currentTier].maxDecks}
                   )
                 </span>
+                <span className="sm:hidden text-[11px]">New Deck</span>
               </button>
             )}
 
             {activeTab === 'sets' && (
-              <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs">
-                <Boxes className="w-4 h-4 text-[#DC143C]" />
-                <span>{allSets.length} Sets Tracked</span>
+              <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-bold rounded-md shadow-xs">
+                <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
+                <span>{allSets.length} Sets</span>
               </div>
             )}
 
@@ -603,10 +644,11 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCreateListSignal((s) => s + 1)}
-                className="h-9 px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
+                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
-                <span>Create Custom List</span>
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Create Custom List</span>
+                <span className="sm:hidden text-[11px]">New List</span>
               </button>
             )}
 
@@ -614,10 +656,11 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setExportDataSignal((s) => s + 1)}
-                className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] hover:border-[#DC143C] flex items-center gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
+                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] hover:border-[#DC143C] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
-                <Download className="w-4 h-4 text-[#DC143C]" />
-                <span>Export Collection Data</span>
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
+                <span className="hidden sm:inline">Export Collection Data</span>
+                <span className="sm:hidden text-[11px]">Export</span>
               </button>
             )}
           </div>
@@ -682,6 +725,85 @@ export default function App() {
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
             />
+          )}
+
+          {activeTab === 'sealed_vault' && (
+            <div className="app-view-container space-y-6">
+              <SealedPortfolioManager
+                entries={sealedEntries}
+                currency={displayCurrency}
+                availableSets={liveSets}
+                onAddSealedEntry={(entry) => setSealedEntries((prev) => [entry, ...prev])}
+                onDeleteSealedEntry={(id) => setSealedEntries((prev) => prev.filter((e) => e.id !== id))}
+                onMarkSoldSealedEntry={(id, salePrice) =>
+                  setSealedEntries((prev) =>
+                    prev.map((e) => (e.id === id ? { ...e, isSold: true, salePrice } : e))
+                  )
+                }
+              />
+            </div>
+          )}
+
+          {activeTab === 'psa_verify' && (
+            <div className="app-view-container space-y-6">
+              <PSACertVerifier
+                currency={displayCurrency}
+                onAddGradedCardToCollection={(certReport: PSAPopReport) => {
+                  triggerSyncPulse();
+                  const targetDeck = decks[0];
+                  if (!targetDeck) return;
+
+                  const cardMatch: PokemonCard = {
+                    id: `graded-${certReport.certNumber}`,
+                    name: certReport.cardName,
+                    supertype: 'Pokémon',
+                    subtypes: [certReport.variety || 'Secret Rare'],
+                    hp: 280,
+                    types: ['Colorless'],
+                    set: {
+                      id: certReport.specNumber || 'graded-set',
+                      name: certReport.setName,
+                      series: certReport.year || '2024',
+                      printedTotal: 100,
+                      total: 100,
+                      releaseDate: `${certReport.year}-01-01`,
+                    },
+                    number: certReport.certNumber,
+                    artist: `${certReport.gradingCompany || 'PSA'} Certified Registry`,
+                    rarity: certReport.variety || 'Special Illustration Rare',
+                    prices: {
+                      raw: 150,
+                      psa10Estimate: 280,
+                      psa9Estimate: 190,
+                      priceHistory: [],
+                    },
+                    images: {
+                      small: certReport.labelImages?.front || 'https://images.pokemontcg.io/symbol.png',
+                      large: certReport.labelImages?.front || 'https://images.pokemontcg.io/symbol.png',
+                    },
+                  };
+
+                  const gradingInfo: GradingInfo = {
+                    company: certReport.gradingCompany || 'PSA',
+                    certNumber: certReport.certNumber,
+                    grade: certReport.grade || '10',
+                    subgrades: certReport.subgrades,
+                  };
+
+                  const updatedCards = [
+                    ...targetDeck.cards,
+                    {
+                      card: cardMatch,
+                      quantity: 1,
+                      condition: 'Graded' as const,
+                      gradingInfo,
+                    },
+                  ];
+
+                  handleUpdateDeck({ ...targetDeck, cards: updatedCards });
+                }}
+              />
+            </div>
           )}
 
           {activeTab === 'search' && (

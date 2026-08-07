@@ -153,9 +153,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const activeRate = forexInfo.rates[currency] ?? 1.0;
 
   return (
-    <div className="space-y-8 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-8 animate-fade-in">
       {/* SECTION 1: GLOBAL DISPLAY CURRENCY */}
-      <div className="bg-white p-6 space-y-6 rounded-2xl border border-[#E2E8F0] shadow-sm relative z-30 overflow-visible">
+      <div className="p-6 space-y-6 glass-slab shadow-md relative z-30 overflow-visible">
         <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-4">
           <div className="p-2.5 rounded-lg bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/30 shadow-sm">
             <Globe className="w-5 h-5" />
@@ -244,7 +244,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 2: DATA EXPORT */}
-      <div className="neo-card p-6 space-y-4 chamfer-corner-sm bg-white border border-[#E2E8F0]">
+      <div className="p-6 space-y-4 glass-slab shadow-md">
         <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-3">
           <div className="p-2 rounded-lg bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]">
             <Download className="w-5 h-5" />
@@ -275,7 +275,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 3: SUBSCRIPTION MANAGEMENT & TIER COMPARISON */}
-      <div className="neo-card p-6 space-y-6 chamfer-corner-sm bg-white border border-[#E2E8F0]">
+      <div className="p-6 space-y-6 glass-slab shadow-md">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#E2E8F0] pb-4 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-[#FFFBEB] text-[#854D0E] border border-[#FFD700]">
@@ -310,10 +310,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             return (
               <div
                 key={tierName}
-                className={`p-4 chamfer-corner-sm border flex flex-col justify-between space-y-4 transition-all ${
+                className={`p-4 border flex flex-col justify-between space-y-4 transition-all glass-slab ${
                   isCurrent
-                    ? 'bg-white border-2 border-[#DC143C] shadow-sm'
-                    : 'bg-[#F8FAFC] border-[#E2E8F0] hover:border-[#CBD5E1]'
+                    ? 'border-2 border-[#DC143C] shadow-md ring-1 ring-[#DC143C]'
+                    : 'shadow-xs hover:shadow-md'
                 }`}
               >
                 <div className="space-y-2">

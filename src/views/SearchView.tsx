@@ -131,9 +131,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
   }, [filters]);
 
   return (
-    <div className="space-y-6 animate-fade-in p-6 max-w-7xl mx-auto">
+    <div className="app-view-container space-y-6 animate-fade-in">
       {/* Main Search Input bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 chamfer-corner-sm bg-white border border-[#E2E8F0] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 glass-slab shadow-md">
         <div className="flex-1 flex items-center gap-3 px-2">
           <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
           <input
@@ -175,7 +175,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
       {/* Expandable Inline Filter Panel */}
       {isFilterPanelOpen && (
-        <div className="p-6 bg-white border border-[#E2E8F0] rounded-md shadow-sm space-y-6 animate-fade-in">
+        <div className="p-6 glass-slab space-y-6 animate-fade-in shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />
@@ -349,7 +349,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
             {/* Energy Types Multi-Select */}
             <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Energy Types</label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_ENERGY_TYPES.map((type) => {
                   const isSelected = filters.types.includes(type);
                   return (
@@ -357,13 +357,13 @@ export const SearchView: React.FC<SearchViewProps> = ({
                       key={type}
                       type="button"
                       onClick={() => handleToggleType(type)}
-                      className={`px-3 py-1 text-xs font-mono font-bold border transition-all rounded-md cursor-pointer ${
+                      className={`h-9 px-3 w-full text-xs font-mono font-bold border transition-all rounded-lg flex items-center justify-center text-center truncate cursor-pointer ${
                         isSelected
-                          ? 'bg-[#0F172A] text-white border-[#0F172A]'
+                          ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
                           : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
                       }`}
                     >
-                      {type}
+                      <span className="truncate">{type}</span>
                     </button>
                   );
                 })}
@@ -373,7 +373,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
             {/* Rarities Filter */}
             <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Rarity Tiers</label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_RARITIES.map((rarity) => {
                   const isSelected = filters.rarities.includes(rarity);
                   return (
@@ -381,13 +381,13 @@ export const SearchView: React.FC<SearchViewProps> = ({
                       key={rarity}
                       type="button"
                       onClick={() => handleToggleRarity(rarity)}
-                      className={`px-2.5 py-1 text-xs font-mono font-bold border transition-all rounded-md cursor-pointer ${
+                      className={`h-9 px-3 w-full text-xs font-mono font-bold border transition-all rounded-lg flex items-center justify-center text-center truncate cursor-pointer ${
                         isSelected
-                          ? 'bg-[#DC143C] text-white border-[#DC143C]'
+                          ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-xs'
                           : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
                       }`}
                     >
-                      {rarity}
+                      <span className="truncate">{rarity}</span>
                     </button>
                   );
                 })}

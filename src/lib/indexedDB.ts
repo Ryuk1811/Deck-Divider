@@ -1,5 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { PokemonCard, CardSet, Deck, PortfolioCardEntry, CustomList } from '../types';
+import { PokemonCard, CardSet, Deck, PortfolioCardEntry, CustomList, PortfolioSealedEntry } from '../types';
 
 interface DeckDividerDBSchema extends DBSchema {
   cards: {
@@ -38,6 +38,10 @@ interface DeckDividerDBSchema extends DBSchema {
     key: string;
     value: PortfolioCardEntry;
   };
+  sealedVault: {
+    key: string;
+    value: PortfolioSealedEntry;
+  };
   customLists: {
     key: string;
     value: CustomList;
@@ -45,14 +49,14 @@ interface DeckDividerDBSchema extends DBSchema {
 }
 
 const DB_NAME = 'DeckDividerDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<DeckDividerDBSchema>> | null = null;
 
 export function getIndexedDB() {
   if (!dbPromise) {
     dbPromise = openDB<DeckDividerDBSchema>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion) {
         if (!db.objectStoreNames.contains('cards')) {
           const cardStore = db.createObjectStore('cards', { keyPath: 'id' });
           cardStore.createIndex('by-setId', 'set.id');
@@ -74,6 +78,9 @@ export function getIndexedDB() {
         }
         if (!db.objectStoreNames.contains('userPortfolio')) {
           db.createObjectStore('userPortfolio', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('sealedVault')) {
+          db.createObjectStore('sealedVault', { keyPath: 'id' });
         }
         if (!db.objectStoreNames.contains('customLists')) {
           db.createObjectStore('customLists', { keyPath: 'id' });
@@ -186,4 +193,19 @@ export async function idbSaveUserPortfolio(items: PortfolioCardEntry[]): Promise
 export async function idbGetUserPortfolio(): Promise<PortfolioCardEntry[]> {
   const db = await getIndexedDB();
   return db.getAll('userPortfolio');
+}
+
+export async function idbSaveSealedVault(items: PortfolioSealedEntry[]): Promise<void> {
+  const db = await getIndexedDB();
+  const tx = db.transaction('sealedVault', 'readwrite');
+  await tx.store.clear();
+  for (const item of items) {
+    await tx.store.put(item);
+  }
+  await tx.done;
+}
+
+export async function idbGetSealedVault(): Promise<PortfolioSealedEntry[]> {
+  const db = await getIndexedDB();
+  return db.getAll('sealedVault');
 }
