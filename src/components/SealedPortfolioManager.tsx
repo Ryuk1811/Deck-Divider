@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Package, Plus, Trash2, DollarSign, Calendar, Layers, ShieldCheck, Tag, ExternalLink, Search } from 'lucide-react';
 import { PortfolioSealedEntry, DisplayCurrency, SealedProduct, CardSet } from '../types';
-import { MOCK_SEALED_PRODUCTS, generateSealedProductsFromSets } from '../data/sealedAndMarketData';
+import { generateSealedProductsFromSets } from '../data/sealedAndMarketData';
 import { formatCurrency, getCurrencySymbol, convertUSDToCurrency, convertCurrencyToUSD } from '../utils/formatters';
 
 interface SealedPortfolioManagerProps {
@@ -35,7 +35,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
   const [customLanguage, setCustomLanguage] = useState('English');
   const [customMarketPrice, setCustomMarketPrice] = useState<number>(150);
 
-  const [selectedProductId, setSelectedProductId] = useState<string>(catalogProducts[0]?.id || MOCK_SEALED_PRODUCTS[0].id);
+  const [selectedProductId, setSelectedProductId] = useState<string>(catalogProducts[0]?.id || 'none');
   const [quantity, setQuantity] = useState<number>(1);
   const [purchasePrice, setPurchasePrice] = useState<number>(
     convertUSDToCurrency(catalogProducts[0]?.marketPrice || 150, currency)
@@ -58,7 +58,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
   }, [catalogProducts, productSearch]);
 
   const activeProduct = useMemo(() => {
-    return catalogProducts.find((p) => p.id === selectedProductId) || catalogProducts[0] || MOCK_SEALED_PRODUCTS[0];
+    return catalogProducts.find((p) => p.id === selectedProductId) || catalogProducts[0];
   }, [catalogProducts, selectedProductId]);
 
   const handleProductChange = (prodId: string) => {
@@ -93,7 +93,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
         releaseDate: purchaseDate,
         msrp: priceInUSD,
         marketPrice: customUsdMarket,
-        imageUrl: 'https://images.pokemontcg.io/symbol.png',
+        imageUrl: undefined,
         packCount: customType === 'Booster Box' ? 36 : customType === 'Elite Trainer Box' ? 9 : 6,
       };
     } else {
@@ -240,12 +240,24 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                 return (
                   <tr key={entry.id} className="hover:bg-[#F8FAFC] transition-colors">
                     <td className="py-3 px-3">
-                      <div className="font-bold text-[#0F172A]">{entry.product.name}</div>
-                      <div className="text-[10px] text-[#64748B] flex items-center gap-2">
-                        <span className="px-1.5 py-0.5 bg-[#E2E8F0] rounded text-[#0F172A] font-bold">
-                          {entry.product.type}
-                        </span>
-                        <span>{entry.product.set.name}</span>
+                      <div className="flex items-center gap-3">
+                        {entry.product.imageUrl && (
+                          <div className="w-10 h-10 flex-shrink-0 bg-white border border-[#E2E8F0] rounded p-1 shadow-2xs">
+                            <img src={entry.product.imageUrl} alt={entry.product.name} className="w-full h-full object-contain" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-bold text-[#0F172A]">{entry.product.name}</div>
+                          <div className="text-[10px] text-[#64748B] flex items-center gap-2 mt-1">
+                            <span className="px-1.5 py-0.5 bg-[#E2E8F0] rounded text-[#0F172A] font-bold">
+                              {entry.product.type}
+                            </span>
+                            {entry.product.set.logoUrl && (
+                              <img src={entry.product.set.logoUrl} alt={entry.product.set.name} className="h-3 object-contain" />
+                            )}
+                            <span>{entry.product.set.name}</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="py-3 px-3">
@@ -337,17 +349,24 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                       className="w-full pl-8 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs focus:outline-none focus:border-[#DC143C]"
                     />
                   </div>
-                  <select
-                    value={selectedProductId}
-                    onChange={(e) => handleProductChange(e.target.value)}
-                    className="w-full p-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs focus:outline-none focus:border-[#DC143C]"
-                  >
-                    {filteredCatalog.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} ({p.language}) - Market: ${p.marketPrice}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex gap-4">
+                    {activeProduct?.imageUrl && (
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-white border border-[#E2E8F0] rounded-xl p-2 shadow-sm flex items-center justify-center">
+                        <img src={activeProduct.imageUrl} alt={activeProduct.name} className="max-w-full max-h-full object-contain" />
+                      </div>
+                    )}
+                    <select
+                      value={selectedProductId}
+                      onChange={(e) => handleProductChange(e.target.value)}
+                      className="flex-1 h-fit p-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs focus:outline-none focus:border-[#DC143C]"
+                    >
+                      {filteredCatalog.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.language}) - Market: ${p.marketPrice}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">

@@ -3,6 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
+import { verifyPayPalWebhookSignature, handlePayPalWebhookEvent } from './server/paypalWebhook.js';
+import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb } from './server/firebaseAdmin.js';
 import {
   getExpansions,
@@ -15,16 +17,20 @@ import {
   searchCardsServer,
 } from './server/tcgCatalogManager.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Trust reverse proxy headers (Cloud Run / Nginx)
+  app.set('trust proxy', 1);
+
   // JSON and URL-encoded body parser
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Static route for public SEO files and asset images
+  app.use(express.static(path.join(process.cwd(), 'public')));
+  app.use('/src/assets', express.static(path.join(process.cwd(), 'src/assets')));
 
   // API Routes
   app.get('/api/health', (req, res) => {
@@ -41,7 +47,7 @@ async function startServer() {
       const sets = await getExpansions();
       res.json(sets);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch expansions' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -53,7 +59,7 @@ async function startServer() {
       }
       res.json(setDetail);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch set detail' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -62,7 +68,7 @@ async function startServer() {
       const cards = await getAllCardsSummary();
       res.json(cards);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch card summary' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -73,7 +79,7 @@ async function startServer() {
       const chunk = await getLazyChunk(offset, limit);
       res.json(chunk);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch lazy chunk' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -91,7 +97,7 @@ async function startServer() {
       const result = await searchCardsServer({ q, category, stage, type, regulationMark, format, offset, limit });
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to perform search' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -103,7 +109,7 @@ async function startServer() {
       }
       res.json(card);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch card detail' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -116,21 +122,8 @@ async function startServer() {
     res.json(status);
   });
 
-  // Live Certification Verification Endpoint
-  app.get('/api/cert/verify', async (req, res) => {
-    try {
-      const certNumber = (req.query.certNumber as string) || '';
-      const company = (req.query.company as any) || 'PSA';
-      if (!certNumber) {
-        return res.status(400).json({ error: 'certNumber is required' });
-      }
-      const { verifyGradingCert } = await import('./server/certManager.js');
-      const report = await verifyGradingCert(certNumber, company);
-      res.json(report);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to verify certification' });
-    }
-  });
+  const { certRoutes } = await import('./server/routes/certRoutes.js');
+  app.use('/api/v1/cert', certRoutes);
 
   app.get('/api/config/credentials', async (req, res) => {
     try {
@@ -146,7 +139,7 @@ async function startServer() {
       };
       res.json(masked);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch credentials' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -156,7 +149,7 @@ async function startServer() {
       const updated = await updateAppCredentials(req.body);
       res.json({ success: true, updated });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to update credentials' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -171,13 +164,29 @@ async function startServer() {
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL || 'Configured via Environment',
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Firebase Admin status check failed' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
   
+  // PayPal Webhook Route
+  app.post('/api/v1/paypal/webhook', billingLimiter, async (req, res) => {
+    try {
+      const isValid = await verifyPayPalWebhookSignature(req.headers, req.body);
+      if (!isValid) {
+        console.warn('[PayPal Webhook] Invalid signature rejected');
+        return res.status(401).json({ error: 'Invalid Webhook Signature' });
+      }
+      const result = await handlePayPalWebhookEvent(req.body);
+      res.json(result);
+    } catch (err: any) {
+      console.error('[PayPal Webhook Error]', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   // PayPal Billing Routes
-  const verifyToken = async (req, res, next) => {
+  const verifyToken = async (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -189,12 +198,14 @@ async function startServer() {
     }
   };
 
+  app.use('/api/billing', billingLimiter);
+
   app.get('/api/billing/paypal-config', async (req, res) => {
     try {
       const config = await getPayPalConfig();
       res.json(config);
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch PayPal config' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -208,7 +219,7 @@ async function startServer() {
         res.json({ tierName: 'Starter', billingStatus: 'NONE' });
       }
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -218,7 +229,7 @@ async function startServer() {
       const sub = await createSubscription(tier, returnUrl, cancelUrl);
       res.json(sub);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -228,7 +239,7 @@ async function startServer() {
       const result = await reviseSubscription(subscriptionId, newTier, returnUrl, cancelUrl);
       res.json(result);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -244,7 +255,7 @@ async function startServer() {
       }, { merge: true });
       res.json({ success: true });
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -274,19 +285,68 @@ async function startServer() {
       res.json({ success: true, tierName: tier, status: subStatus });
     } catch (err: any) {
       console.error('Execute subscription error:', err);
-      res.status(500).json({ error: err.message || 'Failed to activate subscription' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
   
   // Deck & Limit Routes
-  const TIER_LIMITS = {
-    Starter: { maxDecks: 4, maxCards: 25 },
-    Bunch: { maxDecks: 9, maxCards: 40 },
-    Stack: { maxDecks: 15, maxCards: 50 },
-    Deck: { maxDecks: 18, maxCards: 60 },
-    Collection: { maxDecks: 99999, maxCards: 99999 }
+  const TIER_LIMITS: Record<string, { maxDecks: number; maxCards: number; maxLists: number; maxItemsPerList: number; maxVerifiedCerts: number; canSharePublicLinks: boolean }> = {
+    Starter: { maxDecks: 4, maxCards: 25, maxLists: 3, maxItemsPerList: 20, maxVerifiedCerts: 5, canSharePublicLinks: false },
+    Bunch: { maxDecks: 9, maxCards: 40, maxLists: 8, maxItemsPerList: 50, maxVerifiedCerts: 15, canSharePublicLinks: false },
+    Stack: { maxDecks: 15, maxCards: 50, maxLists: 15, maxItemsPerList: 100, maxVerifiedCerts: 40, canSharePublicLinks: true },
+    Deck: { maxDecks: 18, maxCards: 60, maxLists: 25, maxItemsPerList: 200, maxVerifiedCerts: 100, canSharePublicLinks: true },
+    Collection: { maxDecks: 99999, maxCards: 99999, maxLists: 99999, maxItemsPerList: 99999, maxVerifiedCerts: 99999, canSharePublicLinks: true }
   };
+
+  // Public Deck Sharing Tier Check
+  app.put('/api/decks/:deckId/public', verifyToken, async (req: any, res: any) => {
+    try {
+      const { isPublic } = req.body;
+      const db = getAdminDb();
+      const subDoc = await db.collection('subscriptions').doc(req.uid).get();
+      const tierName = subDoc.data()?.tierName || 'Starter';
+      const canShare = TIER_LIMITS[tierName]?.canSharePublicLinks ?? false;
+
+      if (isPublic && !canShare) {
+        return res.status(403).json({ error: 'Public link sharing is disabled on your current tier. Please upgrade to Stack tier or higher.' });
+      }
+
+      const deckRef = db.collection('users').doc(req.uid).collection('decks').doc(req.params.deckId);
+      await deckRef.set({ isPublic: Boolean(isPublic), updatedAt: new Date().toISOString() }, { merge: true });
+      res.json({ success: true, isPublic: Boolean(isPublic) });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  // Custom List Creation Tier Gate
+  app.post('/api/custom-lists', verifyToken, async (req: any, res: any) => {
+    try {
+      const db = getAdminDb();
+      const subDoc = await db.collection('subscriptions').doc(req.uid).get();
+      const tierName = subDoc.data()?.tierName || 'Starter';
+      const maxLists = TIER_LIMITS[tierName]?.maxLists || 3;
+
+      const snapshot = await db.collection('users').doc(req.uid).collection('customLists').count().get();
+      if (snapshot.data().count >= maxLists) {
+        return res.status(403).json({ error: `Tier limit reached: ${tierName} tier permits up to ${maxLists} custom lists.` });
+      }
+
+      const listRef = db.collection('users').doc(req.uid).collection('customLists').doc();
+      const newList = {
+        ...req.body,
+        id: listRef.id,
+        ownerId: req.uid,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      await listRef.set(newList);
+      res.json(newList);
+    } catch (err: any) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
   app.post('/api/decks', verifyToken, async (req, res) => {
     try {
@@ -311,7 +371,7 @@ async function startServer() {
       await deckRef.set(newDeck);
       res.json(newDeck);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -352,9 +412,9 @@ async function startServer() {
       res.json({ success: true });
     } catch (err) {
       if (err.message.includes('Tier limit exceeded')) {
-        return res.status(403).json({ error: err.message });
+        return res.status(403).json({ error: 'Internal Server Error' });
       }
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -402,9 +462,9 @@ async function startServer() {
       res.json({ success: true });
     } catch (err) {
       if (err.message.includes('Tier limit exceeded')) {
-        return res.status(403).json({ error: err.message });
+        return res.status(403).json({ error: 'Internal Server Error' });
       }
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -432,7 +492,7 @@ async function startServer() {
       }
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -446,6 +506,7 @@ async function startServer() {
       const auth = getAdminAuth();
       const decodedToken = await auth.verifyIdToken(idToken);
       const uid = decodedToken.uid;
+      const email = (decodedToken.email || '').toLowerCase();
       
       const db = getAdminDb();
       
@@ -453,33 +514,58 @@ async function startServer() {
       const subRef = db.collection('subscriptions').doc(uid);
       
       const userDoc = await userRef.get();
+      const isSuperUserEmail = email === 'gurutvamurdia@gmail.com';
+      
       if (!userDoc.exists) {
         // Create founding records automatically on first sign-up
         const batch = db.batch();
         
         batch.set(userRef, {
           id: uid,
-          displayName: decodedToken.name || decodedToken.email?.split('@')[0] || 'Collector',
+          displayName: decodedToken.name || email.split('@')[0] || 'Collector',
           email: decodedToken.email || '',
           avatar: decodedToken.picture || '',
           displayCurrency: 'USD',
+          isSuperUser: isSuperUserEmail,
+          role: isSuperUserEmail ? 'super_user' : 'user',
           createdAt: new Date().toISOString()
         });
         
         batch.set(subRef, {
           id: uid,
-          tierName: 'Starter', // Always begins correctly on the Starter tier
+          tierName: isSuperUserEmail ? 'Collection' : 'Starter',
+          isSuperUser: isSuperUserEmail,
           billingStatus: 'active',
           updatedAt: new Date().toISOString()
         });
         
         await batch.commit();
+      } else {
+        // Update existing user doc if super user or if photo URL is provided
+        const updateUserData: Record<string, any> = {};
+        if (decodedToken.picture && decodedToken.picture !== userDoc.data()?.avatar) {
+          updateUserData.avatar = decodedToken.picture;
+        }
+        if (isSuperUserEmail) {
+          updateUserData.isSuperUser = true;
+          updateUserData.role = 'super_user';
+          await subRef.set({
+            id: uid,
+            tierName: 'Collection',
+            isSuperUser: true,
+            billingStatus: 'active',
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+        }
+        if (Object.keys(updateUserData).length > 0) {
+          await userRef.set(updateUserData, { merge: true });
+        }
       }
       
-      res.json({ success: true });
+      res.json({ success: true, isSuperUser: isSuperUserEmail });
     } catch (err: any) {
       console.error('[Auth Init Error]', err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -516,7 +602,7 @@ async function startServer() {
         ptcglFormat: formattedLines.join('\n'),
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to export deck' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -569,7 +655,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -581,7 +667,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -592,7 +678,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -603,7 +689,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -614,7 +700,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -625,7 +711,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -721,7 +807,7 @@ async function startServer() {
         cached: false
       });
     } catch (err: any) {
-      res.status(500).json({ error: err.message || 'Failed to fetch exchange rates' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -732,7 +818,7 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -762,11 +848,12 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
   
   // --- End TCGdex Proxy ---
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -774,7 +861,7 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, 'dist');
+const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));

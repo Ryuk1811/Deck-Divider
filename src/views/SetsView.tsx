@@ -196,8 +196,9 @@ export const SetsView: React.FC<SetsViewProps> = ({
 
       {/* SELECTED SET DETAIL CONTENT */}
       {activeSet && (
-        <div className="p-6 space-y-6 glass-slab shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
+        <div className="space-y-4">
+          {/* Set Detail Header Strip */}
+          <div className="p-5 bg-white border border-[#E2E8F0] rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {activeSet.logoUrl && (
                 <img
@@ -222,18 +223,19 @@ export const SetsView: React.FC<SetsViewProps> = ({
           </div>
 
           {isLoadingSetCards ? (
-            <div className="py-16 text-center space-y-3">
+            <div className="py-16 text-center glass-slab shadow-xs space-y-3">
               <Loader2 className="w-8 h-8 text-[#DC143C] animate-spin mx-auto" />
               <p className="font-mono text-xs text-[#64748B]">
                 Fetching card details for {activeSet.name} from TCG catalog...
               </p>
             </div>
           ) : setCards.length === 0 ? (
-            <div className="py-12 text-center text-[#64748B] font-mono text-xs">
+            <div className="py-12 text-center glass-slab shadow-xs text-[#64748B] font-mono text-xs">
               No card records found for set {activeSet.name}.
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            /* Cards Grid */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
               {setCards.map((card) => {
                 const isOwned = ownedCardIds.has(card.id);
                 return (

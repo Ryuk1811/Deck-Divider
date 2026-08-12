@@ -5,6 +5,7 @@ export interface AppCredentials {
     mode: string;
     clientId: string;
     clientSecret: string;
+    webhookId?: string;
     planIds: {
       Bunch: string;
       Stack: string;
@@ -27,7 +28,7 @@ const DEFAULT_CREDENTIALS: AppCredentials = {
   paypal: {
     mode: process.env.PAYPAL_MODE || 'live',
     clientId: process.env.PAYPAL_CLIENT_ID || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ',
-    clientSecret: process.env.PAYPAL_CLIENT_SECRET || 'EBY3NmWWbURMAaxJl4m3xqrvc76TtlBcKebkEzw3lU0lVYfKZrq89UtfGzF_6IagElsHIXjiOQHnrXGD',
+    clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
     planIds: {
       Bunch: process.env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
       Stack: process.env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',

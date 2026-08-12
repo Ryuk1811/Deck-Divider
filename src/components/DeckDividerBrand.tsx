@@ -213,7 +213,7 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`inline-flex items-center justify-center select-none transition-all ${gapSize} ${
+      className={`${className.includes('w-full') ? 'flex w-full' : 'inline-flex'} items-center justify-center select-none transition-all ${gapSize} ${
         onClick ? 'cursor-pointer hover:opacity-90 active:scale-[0.98]' : ''
       } ${className}`}
       title={onClick ? (collapsed ? 'Expand Sidebar' : 'Collapse Sidebar') : undefined}
@@ -231,8 +231,8 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
         </div>
       ) : (
         /* Normal Mode: Defined Rectangular Box with rounded corners containing "DECK / divider" */
-        <div className={`bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxPadding.split(' ').filter(c => c.startsWith('rounded-')).join(' ')}`}>
-          <div className={`bg-black flex items-center justify-center rounded-[inherit] ${rectBoxPadding}`}>
+        <div className={`${className.includes('w-full') ? 'w-full' : ''} bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxPadding.split(' ').filter(c => c.startsWith('rounded-')).join(' ')}`}>
+          <div className={`${className.includes('w-full') ? 'w-full' : ''} bg-black flex items-center justify-center rounded-[inherit] ${rectBoxPadding}`}>
             <div className="font-heading font-black flex items-center justify-center leading-none">
               <span className="text-white tracking-[0.16em] uppercase">DECK</span>
               <span className="text-[#DC143C] font-mono font-bold opacity-90 text-[1.1em] mx-1">/</span>

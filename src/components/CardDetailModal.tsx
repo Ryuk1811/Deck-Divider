@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   Award,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import {
   PokemonCard,
@@ -71,6 +72,38 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   const [gradingCompany, setGradingCompany] = useState<GradingInfo['company']>('PSA');
   const [grade, setGrade] = useState<string>('10');
   const [certNumber, setCertNumber] = useState<string>('');
+
+  // Graded market cheerio scraping state
+  const [gradedMarketReport, setGradedMarketReport] = useState<any | null>(null);
+  const [isScrapingGradedMarket, setIsScrapingGradedMarket] = useState<boolean>(false);
+  const [gradedScrapeError, setGradedScrapeError] = useState<string | null>(null);
+
+  const handleFetchGradedMarket = async () => {
+    if (!fullCardData) return;
+    setIsScrapingGradedMarket(true);
+    setGradedScrapeError(null);
+    try {
+      const rawVal = fullCardData.prices?.raw || 25;
+      const cleanCert = certNumber ? certNumber.trim().replace(/^#/, '') : '';
+      const res = await fetch(
+        `/api/v1/cert/graded-market?cardName=${encodeURIComponent(fullCardData.name)}&setName=${encodeURIComponent(fullCardData.set?.name || '')}&provider=${encodeURIComponent(gradingCompany)}&grade=${encodeURIComponent(grade)}&certId=${encodeURIComponent(cleanCert)}&rawPrice=${rawVal}`
+      );
+      if (!res.ok) {
+        throw new Error(`Market fetch failed (${res.status})`);
+      }
+      const data = await res.json();
+      if (data.success) {
+        setGradedMarketReport(data);
+      } else {
+        setGradedScrapeError('No market listings found for this grade.');
+      }
+    } catch (err: any) {
+      console.error('Error scraping graded market data:', err);
+      setGradedScrapeError(err.message || 'Scraping request failed.');
+    } finally {
+      setIsScrapingGradedMarket(false);
+    }
+  };
 
   // Duplicate Check Modal State
   const [duplicateCheckPrompt, setDuplicateCheckPrompt] = useState<{
@@ -266,7 +299,14 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
       purchaseCurrency: currency,
       purchaseDate,
       notes,
-      gradingInfo: certNumber ? { company: gradingCompany, grade, certNumber } : undefined,
+      gradingInfo: (certNumber || (gradingCompany && grade))
+        ? {
+            company: gradingCompany,
+            grade: grade || '10',
+            certNumber: certNumber ? certNumber.trim() : '',
+            subgrades: gradedMarketReport?.certData?.subGrades || undefined,
+          }
+        : undefined,
     };
 
     if (existingEntry) {
@@ -687,69 +727,244 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
               {/* Tab 4: Grades */}
               {activeTab === 'grades' && (
-                <div className="space-y-3">
-                  <div className="p-3 bg-white border border-[#E2E8F0] space-y-2 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-[#DC143C]" />
-                      <span className="font-heading font-bold text-xs text-[#0F172A]">
-                        Manual Grading Record (AI-Free)
-                      </span>
+                <div className="space-y-4">
+                  <div className="p-4 bg-white border border-[#E2E8F0] space-y-3 rounded-xl shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-[#DC143C]" />
+                        <span className="font-heading font-bold text-xs text-[#0F172A]">
+                          Graded Card Authentication & Market Valuation
+                        </span>
+                      </div>
+                      {(grade === '10' || grade === '9.5') && (
+                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-[#FFFBEB] border border-[#FFD700] text-[10px] font-mono font-bold text-[#854D0E] rounded-full">
+                          <Award className="w-3 h-3 text-[#CA8A04]" />
+                          <span>{grade === '10' ? 'Gem Mint 10' : 'Mint 9.5'}</span>
+                        </div>
+                      )}
                     </div>
+
                     <p className="font-mono text-[11px] text-[#64748B]">
-                      Store third-party certification details (PSA, BGS, CGC, TAG, MGC, ACE, SGC, ARS, PGG).
+                      Assign third-party grading provider, grade, and certification number to track verified slab values.
                     </p>
 
-                    <div className="grid grid-cols-3 gap-3 pt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                       <div className="flex flex-col">
-                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Company</label>
+                        <label className="font-mono text-[10px] font-bold text-[#64748B] mb-1 uppercase tracking-wider">
+                          Grading Provider
+                        </label>
                         <select
                           value={gradingCompany}
-                          onChange={(e) => setGradingCompany(e.target.value as any)}
-                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
+                          onChange={(e) => {
+                            setGradingCompany(e.target.value as any);
+                            setGradedMarketReport(null);
+                          }}
+                          className="w-full p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                         >
-                          <option value="PSA">PSA</option>
-                          <option value="BGS">BGS (Beckett)</option>
-                          <option value="CGC">CGC</option>
-                          <option value="TAG">TAG</option>
-                          <option value="MGC">MGC</option>
-                          <option value="ACE">ACE</option>
-                          <option value="SGC">SGC</option>
-                          <option value="ARS">ARS</option>
-                          <option value="PGG">PGG</option>
+                          <option value="PSA">PSA (Professional Sports Authenticator)</option>
+                          <option value="BGS">BGS (Beckett Grading Services)</option>
+                          <option value="CGC">CGC (Certified Guaranty Company)</option>
+                          <option value="TAG">TAG (Technical Authentication & Grading)</option>
+                          <option value="SGC">SGC (Sportscard Guaranty)</option>
+                          <option value="MGC">MGC (Majesty Grading Company)</option>
+                          <option value="ACE">ACE (Ace Grading)</option>
+                          <option value="ARS">ARS (ARISTOCRAT Grading)</option>
+                          <option value="PGG">PGG (Platin Grading Service)</option>
                           <option value="Other">Other</option>
                         </select>
                       </div>
 
                       <div className="flex flex-col">
-                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Grade</label>
-                        <input
-                          type="text"
+                        <label className="font-mono text-[10px] font-bold text-[#64748B] mb-1 uppercase tracking-wider">
+                          Assigned Grade
+                        </label>
+                        <select
                           value={grade}
-                          onChange={(e) => setGrade(e.target.value)}
-                          placeholder="e.g. 10"
-                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
-                        />
+                          onChange={(e) => {
+                            setGrade(e.target.value);
+                            setGradedMarketReport(null);
+                          }}
+                          className="w-full p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
+                        >
+                          <option value="10">Gem Mint / Perfect 10</option>
+                          <option value="9.5">Mint+ 9.5</option>
+                          <option value="9">Mint 9</option>
+                          <option value="8.5">NM-MT+ 8.5</option>
+                          <option value="8">NM-MT 8</option>
+                          <option value="7">Near Mint 7</option>
+                          <option value="6">EX-MT 6</option>
+                          <option value="5">EX 5</option>
+                          <option value="4">VG-EX 4</option>
+                          <option value="3">VG 3</option>
+                          <option value="2">Good 2</option>
+                          <option value="1">Fair/PR 1</option>
+                        </select>
                       </div>
 
                       <div className="flex flex-col">
-                        <label className="font-mono text-[10px] text-[#64748B] mb-1">Cert #</label>
+                        <label className="font-mono text-[10px] font-bold text-[#64748B] mb-1 uppercase tracking-wider">
+                          Cert #
+                        </label>
                         <input
                           type="text"
                           value={certNumber}
                           onChange={(e) => setCertNumber(e.target.value)}
-                          placeholder="8-digit cert"
-                          className="w-full flex-1 p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
+                          placeholder="e.g. 69225215"
+                          className="w-full p-2 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-lg focus:outline-none focus:border-[#DC143C] transition-colors"
                         />
                       </div>
                     </div>
 
-                    {grade === '10' && (
-                      <div className="mt-2 flex items-center gap-2 p-2 bg-[#FFFBEB] border border-[#FFD700] text-xs font-mono font-bold text-[#854D0E] rounded-md">
-                        <Award className="w-4 h-4 text-[#CA8A04]" />
-                        <span>Gold Tier Gem Mint Badge Awarded!</span>
+                    <div className="flex items-center justify-between pt-2">
+                      <button
+                        type="button"
+                        onClick={handleFetchGradedMarket}
+                        disabled={isScrapingGradedMarket}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                      >
+                        {isScrapingGradedMarket ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Fetching {gradingCompany} {grade} Market Value...</span>
+                          </>
+                        ) : (
+                          <>
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span>Fetch Market Valuation ({gradingCompany} {grade})</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {gradedScrapeError && (
+                      <div className="p-2.5 bg-[#FEF2F2] border border-[#FECDD3] text-xs font-mono text-[#991B1B] rounded-lg flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-[#DC143C] flex-shrink-0" />
+                        <span>{gradedScrapeError}</span>
                       </div>
                     )}
                   </div>
+
+                  {/* Scraped Market Data Results */}
+                  {gradedMarketReport && (
+                    <div className="space-y-3 animate-fade-in">
+                      {/* Verified Registry Record Badge if Cert was found */}
+                      {gradedMarketReport.certData && (
+                        <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-[#16A34A]" />
+                              <span className="font-mono font-bold text-xs text-[#166534]">
+                                Verified Registry Record ({gradedMarketReport.certData.provider})
+                              </span>
+                            </div>
+                            <span className="font-mono text-[10px] text-[#15803D] bg-white border border-[#BBF7D0] px-2 py-0.5 rounded-md">
+                              Cert #{gradedMarketReport.certData.certId}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs pt-1 text-[#166534]">
+                            <div>
+                              <span className="text-[10px] text-[#86EFAC] block">Card</span>
+                              <span className="font-bold truncate block">{gradedMarketReport.certData.cardName}</span>
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#86EFAC] block">Set</span>
+                              <span className="font-bold truncate block">{gradedMarketReport.certData.setName}</span>
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#86EFAC] block">Grade</span>
+                              <span className="font-bold block">{gradedMarketReport.certData.gradeLabel}</span>
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#86EFAC] block">Year</span>
+                              <span className="font-bold block">{gradedMarketReport.certData.year || 'N/A'}</span>
+                            </div>
+                          </div>
+
+                          {gradedMarketReport.certData.subGrades && (
+                            <div className="pt-2 border-t border-[#BBF7D0]/60 grid grid-cols-4 gap-2 text-center font-mono text-[11px] text-[#15803D]">
+                              <div className="bg-white/60 p-1 rounded-md">
+                                <span className="text-[9px] text-[#166534] block">Centering</span>
+                                <span className="font-bold">{gradedMarketReport.certData.subGrades.centering || '10'}</span>
+                              </div>
+                              <div className="bg-white/60 p-1 rounded-md">
+                                <span className="text-[9px] text-[#166534] block">Corners</span>
+                                <span className="font-bold">{gradedMarketReport.certData.subGrades.corners || '10'}</span>
+                              </div>
+                              <div className="bg-white/60 p-1 rounded-md">
+                                <span className="text-[9px] text-[#166534] block">Edges</span>
+                                <span className="font-bold">{gradedMarketReport.certData.subGrades.edges || '10'}</span>
+                              </div>
+                              <div className="bg-white/60 p-1 rounded-md">
+                                <span className="text-[9px] text-[#166534] block">Surface</span>
+                                <span className="font-bold">{gradedMarketReport.certData.subGrades.surface || '10'}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Market Valuation Summary */}
+                      <div className="grid grid-cols-3 gap-3 p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl font-mono">
+                        <div>
+                          <span className="text-[10px] text-[#64748B] block">Fair Market Value</span>
+                          <span className="font-bold text-sm text-[#DC143C]">
+                            {formatCurrency(convertUSDToCurrency(gradedMarketReport.gradedMarketData.fairMarketValue, currency), currency)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#64748B] block">Average Sale</span>
+                          <span className="font-bold text-xs text-[#0F172A]">
+                            {formatCurrency(convertUSDToCurrency(gradedMarketReport.gradedMarketData.averagePrice, currency), currency)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#64748B] block">Market Sales</span>
+                          <span className="font-bold text-xs text-[#0F172A]">
+                            {gradedMarketReport.gradedMarketData.salesCount} listings
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Scraped Listings Table */}
+                      <div className="border border-[#E2E8F0] rounded-xl overflow-hidden bg-white">
+                        <div className="px-3 py-2 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between font-mono text-[11px] font-bold text-[#0F172A]">
+                          <span>Recent Verified Sales ({gradingCompany} {grade})</span>
+                          <span className="text-[#64748B] font-normal">Real-Time Market Listings</span>
+                        </div>
+                        <div className="divide-y divide-[#E2E8F0] max-h-48 overflow-y-auto">
+                          {gradedMarketReport.gradedMarketData.salesHistory.map((item: any, idx: number) => (
+                            <div key={idx} className="p-2.5 hover:bg-[#F8FAFC] transition-colors flex items-center justify-between gap-3 text-xs font-mono">
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[#0F172A] font-medium truncate block">{item.title}</span>
+                                <div className="flex items-center gap-2 text-[10px] text-[#64748B] mt-0.5">
+                                  <span>{item.date}</span>
+                                  <span>•</span>
+                                  <span className="text-[#16A34A] font-bold">{item.platform}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 flex-shrink-0">
+                                <span className="font-bold text-[#0F172A] font-num">
+                                  {formatCurrency(convertUSDToCurrency(item.price, currency), currency)}
+                                </span>
+                                {item.url && (
+                                  <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-1 text-[#64748B] hover:text-[#DC143C] transition-colors"
+                                    title="View Market Listing"
+                                  >
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

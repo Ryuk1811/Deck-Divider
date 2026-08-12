@@ -10,6 +10,8 @@ export interface TierLimit {
   priceMonthly: number; // 0, 11, 22, 33, 44
   maxDecks: number; // Infinity for Collection
   maxCardsPerDeck: number; // Infinity for Collection
+  maxLists: number; // Infinity for Collection
+  maxItemsPerList: number; // Infinity for Collection
   canSharePublicLinks: boolean;
   tagline: string;
 }
@@ -20,6 +22,8 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     priceMonthly: 0,
     maxDecks: 4,
     maxCardsPerDeck: 25,
+    maxLists: 3,
+    maxItemsPerList: 20,
     canSharePublicLinks: false,
     tagline: 'Entry point for casual collectors',
   },
@@ -28,6 +32,8 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     priceMonthly: 11,
     maxDecks: 9,
     maxCardsPerDeck: 40,
+    maxLists: 8,
+    maxItemsPerList: 50,
     canSharePublicLinks: false,
     tagline: 'For active player bundles',
   },
@@ -36,6 +42,8 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     priceMonthly: 22,
     maxDecks: 15,
     maxCardsPerDeck: 50,
+    maxLists: 15,
+    maxItemsPerList: 100,
     canSharePublicLinks: true,
     tagline: 'Unlocks public deck share links',
   },
@@ -44,6 +52,8 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     priceMonthly: 33,
     maxDecks: 18,
     maxCardsPerDeck: 60,
+    maxLists: 25,
+    maxItemsPerList: 200,
     canSharePublicLinks: true,
     tagline: 'Full tournament specs',
   },
@@ -52,6 +62,8 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     priceMonthly: 44,
     maxDecks: Infinity,
     maxCardsPerDeck: Infinity,
+    maxLists: Infinity,
+    maxItemsPerList: Infinity,
     canSharePublicLinks: true,
     tagline: 'Hold your whole collection with zero limits',
   },
@@ -219,35 +231,6 @@ export interface GradingInfo {
   };
 }
 
-export interface PSAPopReport {
-  certNumber: string;
-  gradingCompany?: GradingCompany;
-  specNumber: string;
-  cardName: string;
-  setName: string;
-  year: string;
-  variety?: string;
-  grade: string;
-  gradeNum: number;
-  totalGraded: number;
-  popPsa10: number; // Gem Mint / Pristine count
-  popPsa9: number;  // Mint count
-  popPsa8AndLower: number; // 8 & lower count
-  gemMintRate: number; // percentage e.g. 42.5
-  verifyStatus: 'VERIFIED' | 'NEEDS_REVIEW' | 'INVALID';
-  subgrades?: {
-    centering?: number;
-    corners?: number;
-    edges?: number;
-    surface?: number;
-  };
-  labelImages?: {
-    front: string;
-    back: string;
-  };
-}
-export type GradingPopReport = PSAPopReport;
-
 export interface MarketListing {
   id: string;
   platform: 'TCGPlayer' | 'eBay' | 'CardMarket' | 'PWCC' | 'Goldin';
@@ -330,8 +313,9 @@ export interface CustomList {
   name: string;
   description: string;
   cardIds: string[];
+  coverImageUrl?: string;
   createdAt: string;
-}
+$}
 
 export interface UserProfile {
   id: string; // auth.uid
@@ -339,6 +323,8 @@ export interface UserProfile {
   email: string;
   avatar: string;
   displayCurrency: DisplayCurrency;
+  isSuperUser?: boolean;
+  role?: string;
   createdAt: string;
 }
 
@@ -347,6 +333,7 @@ export interface SubscriptionRecord {
   tierName: AccountTier;
   billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid';
   paypalSubscriptionId?: string;
+  isSuperUser?: boolean;
   updatedAt: string;
 }
 

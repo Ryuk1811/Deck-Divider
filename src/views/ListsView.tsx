@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, ListOrdered, Trash2, X, Sparkles, FolderPlus, Layers } from 'lucide-react';
-import { CustomList, PokemonCard, DisplayCurrency } from '../types';
+import { CustomList, PokemonCard, DisplayCurrency, AccountTier, TIER_LIMITS } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
 import { getCardByIdFromEngine, mapToPokemonCard } from '../lib/searchEngine';
 
@@ -8,11 +8,13 @@ interface ListsViewProps {
   lists: CustomList[];
   cards: PokemonCard[];
   currency: DisplayCurrency;
+  currentTier?: AccountTier;
   onCreateList: (list: Omit<CustomList, 'id' | 'createdAt'>) => void;
   onDeleteList: (listId: string) => void;
   onRemoveCardFromList: (listId: string, cardId: string) => void;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
+  onTriggerLimitModal?: (action: 'CREATE_LIST' | 'ADD_TO_LIST', details?: any) => void;
   createListSignal?: number;
 }
 
@@ -20,11 +22,13 @@ export const ListsView: React.FC<ListsViewProps> = ({
   lists,
   cards,
   currency,
+  currentTier = 'Starter',
   onCreateList,
   onDeleteList,
   onRemoveCardFromList,
   onSelectCard,
   onQuickLookCard,
+  onTriggerLimitModal,
   createListSignal,
 }) => {
   const [selectedListId, setSelectedListId] = useState<string>(
@@ -36,10 +40,27 @@ export const ListsView: React.FC<ListsViewProps> = ({
   const [newListDesc, setNewListDesc] = useState('');
   const prevSignalRef = React.useRef(createListSignal);
 
+  const tierLimit = TIER_LIMITS[currentTier];
+
+  const handleOpenCreateModal = () => {
+    if (lists.length >= tierLimit.maxLists) {
+      if (onTriggerLimitModal) {
+        onTriggerLimitModal('CREATE_LIST', {
+          currentCount: lists.length,
+          limitCount: tierLimit.maxLists,
+        });
+      }
+      return;
+    }
+    setNewListName('');
+    setNewListDesc('');
+    setIsCreateModalOpen(true);
+  };
+
   useEffect(() => {
     if (createListSignal !== undefined && createListSignal !== prevSignalRef.current) {
       if (createListSignal > 0) {
-        setIsCreateModalOpen(true);
+        handleOpenCreateModal();
       }
       prevSignalRef.current = createListSignal;
     }
@@ -51,7 +72,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
     if (!currentList || !currentList.cardIds) return [];
     
     return currentList.cardIds.map((cardId) => {
-      // 1. Check passed-in cards (MOCK_CARDS / Collection)
+      // 1. Check passed-in cards 
       const foundInProps = cards.find((c) => c.id === cardId);
       if (foundInProps) return foundInProps;
 
@@ -72,8 +93,8 @@ export const ListsView: React.FC<ListsViewProps> = ({
         rarity: 'Rare',
         set: { id: setCode, name: 'Pokémon TCG', series: 'Scarlet & Violet' },
         images: {
-          small: `https://assets.tcgdex.net/en/${setCode}/${numberCode}/low.png`,
-          large: `https://assets.tcgdex.net/en/${setCode}/${numberCode}/high.png`,
+          small: `https://images.pokemontcg.io/${setCode}/${numberCode}.png`,
+          large: `https://images.pokemontcg.io/${setCode}/${numberCode}_hires.png`,
         },
         prices: { raw: 4.50, psa10Estimate: 15.00, psa9Estimate: 7.50 },
       } as PokemonCard;
@@ -96,6 +117,15 @@ export const ListsView: React.FC<ListsViewProps> = ({
   return (
     <div className="app-view-container space-y-8 animate-fade-in">
       {/* LISTS SELECTOR AND GRID */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+        <h2 className="font-heading font-bold text-lg text-[#0F172A]">My Custom Lists</h2>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] rounded-lg border border-[#E2E8F0]">
+          <span className="font-mono text-xs text-[#64748B]">Lists Usage:</span>
+          <span className="font-mono text-xs font-bold text-[#0F172A]">
+            {lists.length} / {tierLimit.maxLists === Infinity ? '∞' : tierLimit.maxLists}
+          </span>
+        </div>
+      </div>
 
       {/* LIST TABS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -105,28 +135,37 @@ export const ListsView: React.FC<ListsViewProps> = ({
             <div
               key={list.id}
               onClick={() => setSelectedListId(list.id)}
-              className={`p-4 cursor-pointer transition-all glass-slab ${
+              className={`p-4 cursor-pointer transition-all glass-slab flex flex-col justify-between ${
                 isSelected
                   ? 'border-[#DC143C] bg-gradient-to-r from-[#FFF0F3]/40 to-white shadow-sm ring-1 ring-[#DC143C]'
                   : 'shadow-xs hover:shadow-md'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ListOrdered className="w-4 h-4 text-[#DC143C]" />
-                  <h3 className="font-heading font-bold text-sm text-[#0F172A]">
-                    {list.name}
-                  </h3>
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ListOrdered className="w-4 h-4 text-[#DC143C]" />
+                    <h3 className="font-heading font-bold text-sm text-[#0F172A]">
+                      {list.name}
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded-md">
+                    {list.cardIds.length} / {tierLimit.maxItemsPerList === Infinity ? '∞' : tierLimit.maxItemsPerList}
+                  </span>
                 </div>
-                <span className="font-mono text-[10px] font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded-md">
-                  Unlimited
-                </span>
+                <p className="font-mono text-xs text-[#64748B] mt-2 line-clamp-1">
+                  {list.description}
+                </p>
               </div>
-              <p className="font-mono text-xs text-[#64748B] mt-2 line-clamp-1">
-                {list.description}
-              </p>
-              <div className="mt-3 font-mono text-xs text-[#64748B]">
-                {list.cardIds.length} cards tracked
+              <div className="mt-4 flex items-center justify-between">
+                <div className="font-mono text-[11px] text-[#64748B]">
+                  {list.cardIds.length} cards tracked
+                </div>
+                {list.coverImageUrl && (
+                  <div className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] shadow-2xs">
+                    <img src={list.coverImageUrl} alt="List Cover" className="w-full h-full object-cover object-top" />
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -135,13 +174,14 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
       {/* SELECTED LIST CONTENTS */}
       {currentList && (
-        <div className="p-6 space-y-6 glass-slab shadow-md">
-          <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="space-y-4">
+          {/* List Title & Action Header Strip */}
+          <div className="p-5 bg-white border border-[#E2E8F0] rounded-xl shadow-xs flex items-center justify-between">
             <div>
               <h2 className="font-heading font-bold text-2xl text-[#0F172A]">
                 {currentList.name}
               </h2>
-              <p className="font-mono text-xs text-[#64748B]">
+              <p className="font-mono text-xs text-[#64748B] mt-0.5">
                 {currentList.description}
               </p>
             </div>
@@ -165,28 +205,37 @@ export const ListsView: React.FC<ListsViewProps> = ({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {listCards.map((card) => (
-                <div key={card.id} className="relative group">
-                  <HolographicCard
-                    card={card}
-                    currency={currency}
-                    onClick={() => onSelectCard(card)}
-                    onQuickLook={() => onQuickLookCard(card)}
-                  />
+            <div className="space-y-4">
+              {/* Cards Count Status Strip */}
+              <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl shadow-xs text-xs font-mono text-[#666666]">
+                <span className="font-bold text-[#0F172A]">{listCards.length} Saved Cards in "{currentList.name}"</span>
+                <span>Click card to inspect details</span>
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemoveCardFromList(currentList.id, card.id);
-                    }}
-                    className="absolute top-2 right-2 hidden group-hover:flex items-center p-1 rounded-full bg-[#0F172A] text-white hover:bg-[#FF4500] z-10 shadow-md"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
+              {/* Cards Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                {listCards.map((card) => (
+                  <div key={card.id} className="relative group">
+                    <HolographicCard
+                      card={card}
+                      currency={currency}
+                      onClick={() => onSelectCard(card)}
+                      onQuickLook={() => onQuickLookCard(card)}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveCardFromList(currentList.id, card.id);
+                      }}
+                      className="absolute top-2 right-2 hidden group-hover:flex items-center p-1 rounded-full bg-[#0F172A] text-white hover:bg-[#FF4500] z-10 shadow-md"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

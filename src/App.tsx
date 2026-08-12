@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   AccountTier,
   DisplayCurrency,
@@ -26,14 +26,6 @@ import {
   Menu,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
-import {
-  MOCK_CARDS,
-  MOCK_SETS,
-  INITIAL_DECKS,
-  INITIAL_SOLD_ENTRIES,
-  INITIAL_LISTS,
-  INITIAL_ACTIVITIES,
-} from './data/mockData';
 import { Sidebar, ActiveTab } from './components/Sidebar';
 import { DeckDividerBrand } from './components/DeckDividerBrand';
 import { CommandPalette } from './components/CommandPalette';
@@ -53,12 +45,11 @@ import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
 import { SealedPortfolioManager } from './components/SealedPortfolioManager';
-import { PSACertVerifier } from './components/PSACertVerifier';
-import { PortfolioSealedEntry, GradingInfo, PSAPopReport } from './types';
+import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
-import { idbGetSealedVault, idbSaveSealedVault } from './lib/indexedDB';
+import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists } from './lib/indexedDB';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -84,7 +75,7 @@ export default function App() {
     () => (liveSets.length > 0 ? liveSets : engineReady ? getAvailableSets() : []),
     [engineReady, liveSets]
   );
-  const effectiveCards = allCards.length > 0 ? allCards : MOCK_CARDS;
+  const effectiveCards = allCards;
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('collection');
@@ -230,14 +221,14 @@ export default function App() {
 
   React.useEffect(() => {
     if (!user) {
-      setDecks(INITIAL_DECKS);
-      setSoldEntries(INITIAL_SOLD_ENTRIES);
-      setCustomLists(INITIAL_LISTS);
+      setDecks([]);
+      setSoldEntries([]);
+      setCustomLists([]);
       return;
     }
     const unsubDecks = onSnapshot(collection(db, 'users', user.uid, 'decks'), (snap) => {
-      const liveDecks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      setDecks(liveDecks.length > 0 ? liveDecks : INITIAL_DECKS);
+      const liveDecks = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Deck[];
+      setDecks(liveDecks);
     });
     return () => {
       unsubDecks();
@@ -245,10 +236,10 @@ export default function App() {
   }, [user]);
 
   // Core Data Collections
-  const [decks, setDecks] = useState<Deck[]>(INITIAL_DECKS);
-  const [soldEntries, setSoldEntries] = useState<PortfolioCardEntry[]>(INITIAL_SOLD_ENTRIES);
-  const [customLists, setCustomLists] = useState<CustomList[]>(INITIAL_LISTS);
-  const [recentActivities, setRecentActivities] = useState(INITIAL_ACTIVITIES);
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [soldEntries, setSoldEntries] = useState<PortfolioCardEntry[]>([]);
+  const [customLists, setCustomLists] = useState<CustomList[]>([]);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [sealedEntries, setSealedEntries] = useState<PortfolioSealedEntry[]>([]);
 
   // Load sealed entries from IndexedDB on initial mount
@@ -266,6 +257,21 @@ export default function App() {
       idbSaveSealedVault(sealedEntries);
     }
   }, [sealedEntries]);
+
+  React.useEffect(() => {
+    idbGetCustomLists().then((saved) => {
+      if (saved && saved.length > 0) {
+        setCustomLists(saved);
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (customLists.length > 0) {
+      idbSaveCustomLists(customLists);
+
+    }
+  }, [customLists]);
 
   // Persistent Search Filters
   const [savedFilters, setSavedFilters] = useState<SearchFilters>({
@@ -289,7 +295,6 @@ export default function App() {
     metrics: { tag: 'Portfolio Analytics', title: 'Metrics & Performance' },
     decks: { tag: 'Deck Command', title: 'Decks & Binder Studio' },
     sealed_vault: { tag: 'Vault Inventory', title: 'Sealed Product Vault' },
-    psa_verify: { tag: 'Cert & Pop Hub', title: 'Grading Cert & Pop Report' },
     search: { tag: 'Card Discovery', title: 'Global Search' },
     sets: { tag: 'Expansion Index', title: 'Sets & Trackers' },
     lists: { tag: 'Unlimited Groups', title: 'Lists & Want-Lists' },
@@ -299,19 +304,25 @@ export default function App() {
   // Modal States
   const [selectedDetailCard, setSelectedDetailCard] = useState<PokemonCard | null>(null);
   const [quickLookCard, setQuickLookCard] = useState<PokemonCard | null>(null);
-  const [quickLookCardList, setQuickLookCardList] = useState<PokemonCard[]>(MOCK_CARDS);
+  const [quickLookCardList, setQuickLookCardList] = useState<PokemonCard[]>([]);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [targetDeckIdForView, setTargetDeckIdForView] = useState<string | undefined>(undefined);
 
   // Limit Hit Modal State
   const [limitModalConfig, setLimitModalConfig] = useState<{
     isOpen: boolean;
-    action: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK';
+    action: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK' | 'CREATE_LIST' | 'ADD_TO_LIST';
     details?: any;
   }>({
     isOpen: false,
     action: 'CREATE_DECK',
   });
+
+  const [verifiedCertsCount, setVerifiedCertsCount] = useState<number>(() => parseInt(localStorage.getItem('verifiedCertsCount') || '0', 10));
+
+  React.useEffect(() => {
+    localStorage.setItem('verifiedCertsCount', verifiedCertsCount.toString());
+  }, [verifiedCertsCount]);
 
   // Trigger brief background sync indicator pulse
   const triggerSyncPulse = () => {
@@ -508,6 +519,16 @@ export default function App() {
 
   // Custom List Handlers
   const handleCreateList = (listData: Omit<CustomList, 'id' | 'createdAt'>) => {
+    const maxLists = TIER_LIMITS[currentTier].maxLists;
+    if (customLists.length >= maxLists) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'CREATE_LIST',
+        details: { currentCount: customLists.length, limitCount: maxLists },
+      });
+      return;
+    }
+
     triggerSyncPulse();
     const newList: CustomList = {
       id: `list-${Date.now()}`,
@@ -523,6 +544,17 @@ export default function App() {
   };
 
   const handleAddCardToList = (listId: string, cardId: string) => {
+    const targetList = customLists.find((l) => l.id === listId);
+    const maxItems = TIER_LIMITS[currentTier].maxItemsPerList;
+    if (targetList && targetList.cardIds.length >= maxItems) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'ADD_TO_LIST',
+        details: { currentCount: targetList.cardIds.length, limitCount: maxItems, listName: targetList.name },
+      });
+      return;
+    }
+
     triggerSyncPulse();
     setCustomLists(
       customLists.map((l) =>
@@ -692,6 +724,8 @@ export default function App() {
               decks={decks}
               soldEntries={soldEntries}
               customLists={customLists}
+              sealedEntries={sealedEntries}
+              liveSets={liveSets}
               currency={displayCurrency}
               recentActivities={recentActivities}
               allCards={effectiveCards}
@@ -744,68 +778,6 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === 'psa_verify' && (
-            <div className="app-view-container space-y-6">
-              <PSACertVerifier
-                currency={displayCurrency}
-                onAddGradedCardToCollection={(certReport: PSAPopReport) => {
-                  triggerSyncPulse();
-                  const targetDeck = decks[0];
-                  if (!targetDeck) return;
-
-                  const cardMatch: PokemonCard = {
-                    id: `graded-${certReport.certNumber}`,
-                    name: certReport.cardName,
-                    supertype: 'Pokémon',
-                    subtypes: [certReport.variety || 'Secret Rare'],
-                    hp: 280,
-                    types: ['Colorless'],
-                    set: {
-                      id: certReport.specNumber || 'graded-set',
-                      name: certReport.setName,
-                      series: certReport.year || '2024',
-                      printedTotal: 100,
-                      total: 100,
-                      releaseDate: `${certReport.year}-01-01`,
-                    },
-                    number: certReport.certNumber,
-                    artist: `${certReport.gradingCompany || 'PSA'} Certified Registry`,
-                    rarity: certReport.variety || 'Special Illustration Rare',
-                    prices: {
-                      raw: 150,
-                      psa10Estimate: 280,
-                      psa9Estimate: 190,
-                      priceHistory: [],
-                    },
-                    images: {
-                      small: certReport.labelImages?.front || 'https://images.pokemontcg.io/symbol.png',
-                      large: certReport.labelImages?.front || 'https://images.pokemontcg.io/symbol.png',
-                    },
-                  };
-
-                  const gradingInfo: GradingInfo = {
-                    company: certReport.gradingCompany || 'PSA',
-                    certNumber: certReport.certNumber,
-                    grade: certReport.grade || '10',
-                    subgrades: certReport.subgrades,
-                  };
-
-                  const updatedCards = [
-                    ...targetDeck.cards,
-                    {
-                      card: cardMatch,
-                      quantity: 1,
-                      condition: 'Graded' as const,
-                      gradingInfo,
-                    },
-                  ];
-
-                  handleUpdateDeck({ ...targetDeck, cards: updatedCards });
-                }}
-              />
-            </div>
-          )}
-
           {activeTab === 'search' && (
             <SearchView
               sets={allSets}
@@ -839,6 +811,7 @@ export default function App() {
               lists={customLists}
               cards={effectiveCards}
               currency={displayCurrency}
+              currentTier={currentTier}
               onCreateList={handleCreateList}
               onDeleteList={handleDeleteList}
               onRemoveCardFromList={handleRemoveCardFromList}
@@ -847,6 +820,9 @@ export default function App() {
                 setQuickLookCard(card);
                 setQuickLookCardList(effectiveCards);
               }}
+              onTriggerLimitModal={(action, details) =>
+                setLimitModalConfig({ isOpen: true, action, details })
+              }
               createListSignal={createListSignal}
             />
           )}

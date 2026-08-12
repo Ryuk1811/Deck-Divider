@@ -12,6 +12,7 @@ import {
   ArrowDownRight,
   Activity,
   Layers,
+  Boxes,
 } from 'lucide-react';
 import {
   Deck,
@@ -19,6 +20,9 @@ import {
   DisplayCurrency,
   RecentActivityItem,
   PokemonCard,
+  CustomList,
+  PortfolioSealedEntry,
+  CardSet,
 } from '../types';
 import { formatCurrency, formatPercent } from '../utils/formatters';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
@@ -26,6 +30,9 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'rec
 interface MetricsViewProps {
   decks: Deck[];
   soldEntries: PortfolioCardEntry[];
+  customLists: CustomList[];
+  sealedEntries: PortfolioSealedEntry[];
+  liveSets: CardSet[];
   currency: DisplayCurrency;
   recentActivities: RecentActivityItem[];
   allCards: PokemonCard[];
@@ -37,6 +44,9 @@ interface MetricsViewProps {
 export const MetricsView: React.FC<MetricsViewProps> = ({
   decks,
   soldEntries,
+  customLists,
+  sealedEntries,
+  liveSets,
   currency,
   recentActivities,
   allCards,
@@ -105,7 +115,21 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
     }
   });
 
-  // Mock Value Over Time Data
+  // Calculate Extra Metrics
+  let totalSealedValue = 0;
+  let totalSealedItems = 0;
+  sealedEntries.forEach((entry) => {
+    if (!entry.isSold) {
+      totalSealedValue += entry.product.marketPrice * entry.quantity;
+      totalSealedItems += entry.quantity;
+    }
+  });
+  
+  const listsCount = customLists.length;
+  const cardsInLists = customLists.reduce((acc, list) => acc + list.cardIds.length, 0);
+  const uniqueSetsCount = liveSets.length;
+
+  // Generated Value Over Time Data (Simulated based on total holding value)
   const chartData = [
     { date: 'Jun 01', value: totalHoldingsValue * 0.88 },
     { date: 'Jun 10', value: totalHoldingsValue * 0.92 },
@@ -238,6 +262,54 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
           </div>
           <p className="font-mono text-[10px] text-[#64748B]">
             From {soldEntries.length} completed card sales
+          </p>
+        </div>
+      </div>
+
+      {/* SECOND 4-STAT FIGURES ROW */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs text-[#64748B]">Sealed Vault Value</span>
+            <div className="w-7 h-7 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] flex items-center justify-center">
+              <Boxes className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="font-num font-bold text-2xl text-[#0F172A]">
+            {formatCurrency(totalSealedValue, currency)}
+          </div>
+          <p className="font-mono text-[10px] text-[#64748B]">
+            Across {totalSealedItems} tracked items
+          </p>
+        </div>
+
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs text-[#64748B]">Custom Lists</span>
+            <div className="w-7 h-7 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] flex items-center justify-center">
+              <Layers className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="font-num font-bold text-2xl text-[#0F172A]">
+            {listsCount}
+          </div>
+          <p className="font-mono text-[10px] text-[#64748B]">
+            Tracking {cardsInLists} unique cards
+          </p>
+        </div>
+
+        <div className="kpi-card p-5 space-y-2 glass-slab shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs text-[#64748B]">Live Sets Index</span>
+            <div className="w-7 h-7 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] flex items-center justify-center">
+              <BarChart2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="font-num font-bold text-2xl text-[#0F172A]">
+            {uniqueSetsCount}
+          </div>
+          <p className="font-mono text-[10px] text-[#64748B]">
+            Available for analysis
           </p>
         </div>
       </div>

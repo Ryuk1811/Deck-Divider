@@ -397,23 +397,26 @@ export const SearchView: React.FC<SearchViewProps> = ({
         </div>
       )}
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-xs font-mono text-[#666666]">
-        <span>Showing {filteredCards.length} matching card records</span>
-        <span>Press Space on any card for Quick Look</span>
-      </div>
+      {/* Results Section */}
+      <div className="space-y-4">
+        {/* Results Header Bar */}
+        <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl shadow-xs font-mono text-xs text-[#666666]">
+          <span className="font-bold text-[#0F172A]">Showing {filteredCards.length} matching card records</span>
+          <span>Press Space on any card for Quick Look</span>
+        </div>
 
-      {/* Results Card Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {filteredCards.map((card) => (
-          <HolographicCard
-            key={card.id}
-            card={card}
-            currency={currency}
-            onClick={() => onSelectCard(card)}
-            onQuickLook={() => onQuickLookCard(card)}
-          />
-        ))}
+        {/* Results Card Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+          {filteredCards.map((card) => (
+            <HolographicCard
+              key={card.id}
+              card={card}
+              currency={currency}
+              onClick={() => onSelectCard(card)}
+              onQuickLook={() => onQuickLookCard(card)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

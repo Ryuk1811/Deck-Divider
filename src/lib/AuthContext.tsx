@@ -40,6 +40,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfileAndSubscription = async (userObj: FirebaseUser) => {
     const uid = userObj.uid;
+    const isSuperUser = (userObj.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+
     const googleName = userObj.displayName || 
                        userObj.providerData?.find(p => p.displayName)?.displayName || 
                        userObj.email?.split('@')[0] || 
@@ -54,11 +56,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: userObj.email || '',
       avatar: googlePhoto,
       displayCurrency: 'USD',
+      isSuperUser: isSuperUser,
       createdAt: new Date().toISOString()
     };
     const defaultSub: SubscriptionRecord = {
       id: uid,
-      tierName: 'Starter',
+      tierName: isSuperUser ? 'Collection' : 'Starter',
+      isSuperUser: isSuperUser,
       billingStatus: 'active',
       updatedAt: new Date().toISOString()
     };
@@ -73,15 +77,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           displayName: googleName || existingData.displayName,
           avatar: googlePhoto || existingData.avatar || '',
           email: userObj.email || existingData.email,
+          isSuperUser: isSuperUser || Boolean(existingData.isSuperUser),
         };
         setProfile(mergedProf);
-        // Persist updated Google OAuth profile info only if non-empty and changed
+        
+        // Persist updated Google OAuth profile info if photo/name changed or super user
         const nameChanged = googleName && googleName !== existingData.displayName;
         const photoChanged = googlePhoto && googlePhoto !== existingData.avatar;
-        if (nameChanged || photoChanged) {
+        const superUserNeedsUpdate = isSuperUser && !existingData.isSuperUser;
+
+        if (nameChanged || photoChanged || superUserNeedsUpdate) {
           const updateObj: Partial<UserProfile> = {};
           if (nameChanged) updateObj.displayName = googleName;
           if (photoChanged) updateObj.avatar = googlePhoto;
+          if (superUserNeedsUpdate) updateObj.isSuperUser = true;
           await setDoc(userRef, updateObj, { merge: true });
         }
       } else {
@@ -92,7 +101,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const subRef = doc(db, 'subscriptions', uid);
       const subDoc = await getDoc(subRef);
       if (subDoc.exists()) {
-        setSubscription(subDoc.data() as SubscriptionRecord);
+        const subData = subDoc.data() as SubscriptionRecord;
+        if (isSuperUser) {
+          subData.tierName = 'Collection';
+          subData.isSuperUser = true;
+          await setDoc(subRef, { tierName: 'Collection', isSuperUser: true, billingStatus: 'active' }, { merge: true });
+        }
+        setSubscription(subData);
       } else {
         await setDoc(subRef, defaultSub, { merge: true });
         setSubscription(defaultSub);
@@ -106,6 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
     provider.setCustomParameters({
       prompt: 'select_account',
     });

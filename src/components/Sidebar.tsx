@@ -10,9 +10,9 @@ import {
   LogOut,
   TrendingUp,
   Package,
-  ShieldCheck,
   ChevronRight,
   X,
+  ShieldCheck,
 } from 'lucide-react';
 import { AccountTier } from '../types';
 import { useAuth } from '../lib/AuthContext';
@@ -25,7 +25,6 @@ export type ActiveTab =
   | 'metrics'
   | 'decks'
   | 'sealed_vault'
-  | 'psa_verify'
   | 'search'
   | 'sets'
   | 'lists'
@@ -84,7 +83,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'metrics', label: 'Metrics', icon: TrendingUp },
     { id: 'decks', label: 'Decks', icon: Layers },
     { id: 'sealed_vault', label: 'Sealed Vault', icon: Package },
-    { id: 'psa_verify', label: 'Cert & Pop Report', icon: ShieldCheck },
     { id: 'search', label: 'Search', icon: Search },
     { id: 'sets', label: 'Sets', icon: BookOpen },
     { id: 'lists', label: 'Lists', icon: ListOrdered },
@@ -94,9 +92,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     auth.signOut();
   };
 
+  const [imgError, setImgError] = useState(false);
   const displayName = user?.displayName || profile?.displayName || user?.email?.split('@')[0] || 'Collector';
   const avatarUrl = profile?.avatar || user?.photoURL || user?.providerData?.find(p => p.photoURL)?.photoURL || '';
   const initials = displayName.substring(0, 2).toUpperCase();
+  const isSuperUser = profile?.isSuperUser || user?.email?.toLowerCase() === 'gurutvamurdia@gmail.com';
 
   const handleNavClick = (tab: ActiveTab) => {
     setActiveTab(tab);
@@ -116,19 +116,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Main Sidebar Component */}
       <aside
         className={`fixed md:static inset-y-0 left-0 z-[70] flex flex-col h-screen bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-16' : 'w-72 max-w-[85vw] md:w-64'
+          isCollapsed ? 'w-14' : 'w-56 max-w-[85vw]'
         } ${
           isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* 1. Header Section - Height exactly h-16 to perfectly align inline with Top Bar */}
-        <div className="h-16 flex items-center justify-between px-3 border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC]">
+        <div className="h-16 flex items-center justify-center px-3 border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC]">
           {!isCollapsed ? (
-            <div className="flex items-center justify-between w-full">
-              {/* Wordmark functions directly as drawer opener and closer */}
+            <div className="flex items-center justify-center w-full">
+              {/* Wordmark functions directly as drawer opener and closer, spanning sidebar width */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
+                className="w-full"
                 onClick={() => {
                   if (window.innerWidth < 768) {
                     setIsMobileOpen(false);
@@ -257,12 +258,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="flex items-center justify-between p-2 bg-[#F8FAFC] border border-[#E2E8F0] chamfer-corner-sm">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="relative flex-shrink-0">
-                    {avatarUrl ? (
+                    {avatarUrl && !imgError ? (
                       <img
                         src={avatarUrl}
                         alt={displayName}
                         className="w-7 h-7 rounded-full object-cover border border-[#CBD5E1]"
                         referrerPolicy="no-referrer"
+                        onError={() => setImgError(true)}
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
@@ -281,10 +283,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {displayName}
                     </div>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <span className="inline-block rounded-md px-1.5 py-0.2 text-[9px] font-mono font-bold bg-[#0F172A] text-white">
-                        {currentTier}
-                      </span>
-                      <span className="font-mono text-[9px] text-[#64748B]">Tier</span>
+                      {isSuperUser ? (
+                        <span className="inline-block rounded-md px-1.5 py-0.2 text-[8px] font-mono font-bold bg-[#FFD700] text-[#0F172A] border border-[#B8860B] shadow-xs">
+                          SUPER USER (UNLIMITED)
+                        </span>
+                      ) : (
+                        <>
+                          <span className="inline-block rounded-md px-1.5 py-0.2 text-[9px] font-mono font-bold bg-[#0F172A] text-white">
+                            {currentTier}
+                          </span>
+                          <span className="font-mono text-[9px] text-[#64748B]">Tier</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -315,14 +325,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div
                 className="relative group cursor-pointer"
                 onClick={() => handleNavClick('settings')}
-                title={`${displayName} (${currentTier} Tier)`}
+                title={`${displayName} (${isSuperUser ? 'Super User - Unlimited' : currentTier + ' Tier'})`}
               >
-                {avatarUrl ? (
+                {avatarUrl && !imgError ? (
                   <img
                     src={avatarUrl}
                     alt={displayName}
                     className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1]"
                     referrerPolicy="no-referrer"
+                    onError={() => setImgError(true)}
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">

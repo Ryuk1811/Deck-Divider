@@ -6,11 +6,12 @@ interface LimitReachedModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentTier: AccountTier;
-  attemptedAction: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK';
+  attemptedAction: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK' | 'CREATE_LIST' | 'ADD_TO_LIST';
   attemptedDetails?: {
     currentCount?: number;
     limitCount?: number;
     deckName?: string;
+    listName?: string;
   };
   onUpgradeToTier: (tier: AccountTier) => void;
 }
@@ -61,6 +62,14 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
     title = 'Public Link Sharing Restricted';
     description = `Sharing public deck links is available starting at the Stack tier ($22/mo) and above. ${currentTier} tier decks are kept private to your account.`;
     unlockHighlight = 'Upgrade to Stack tier ($22/mo) to generate viewable public links for any deck!';
+  } else if (attemptedAction === 'CREATE_LIST') {
+    title = `Custom List Limit Hit (${currentLimit.maxLists} Lists)`;
+    description = `You attempted to create list #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxLists} custom lists.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your limit to ${nextLimit.maxLists} lists!`;
+  } else if (attemptedAction === 'ADD_TO_LIST') {
+    title = `Per-List Item Limit Hit (${currentLimit.maxItemsPerList} Cards)`;
+    description = `You attempted to add a card to "${attemptedDetails?.listName || 'List'}". Your current ${currentTier} plan caps items per list at ${currentLimit.maxItemsPerList}.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands capacity to ${nextLimit.maxItemsPerList} cards per list!`;
   }
 
   return (

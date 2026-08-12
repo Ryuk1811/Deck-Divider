@@ -53,10 +53,14 @@ const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<DeckDividerDBSchema>> | null = null;
 
-export function getIndexedDB() {
+export function resetIndexedDB() {
+  dbPromise = null;
+}
+
+export async function getIndexedDB(): Promise<IDBPDatabase<DeckDividerDBSchema>> {
   if (!dbPromise) {
     dbPromise = openDB<DeckDividerDBSchema>(DB_NAME, DB_VERSION, {
-      upgrade(db, oldVersion) {
+      upgrade(db) {
         if (!db.objectStoreNames.contains('cards')) {
           const cardStore = db.createObjectStore('cards', { keyPath: 'id' });
           cardStore.createIndex('by-setId', 'set.id');
@@ -86,126 +90,195 @@ export function getIndexedDB() {
           db.createObjectStore('customLists', { keyPath: 'id' });
         }
       },
+      blocked() {
+        dbPromise = null;
+      },
+      blocking() {
+        dbPromise = null;
+      },
+      terminated() {
+        dbPromise = null;
+      },
+    }).then((db) => {
+      db.onclose = () => {
+        dbPromise = null;
+      };
+      db.onversionchange = () => {
+        try {
+          db.close();
+        } catch (_) {}
+        dbPromise = null;
+      };
+      return db;
+    }).catch((err) => {
+      dbPromise = null;
+      throw err;
     });
   }
-  return dbPromise;
+
+  try {
+    const db = await dbPromise;
+    return db;
+  } catch (err) {
+    dbPromise = null;
+    throw err;
+  }
+}
+
+/**
+ * Safe transaction executor that handles "Database is closing/hidden" or connection drops,
+ * automatically resetting the cached connection promise and retrying once.
+ */
+async function execDB<T>(
+  action: (db: IDBPDatabase<DeckDividerDBSchema>) => Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    const db = await getIndexedDB();
+    return await action(db);
+  } catch (err: any) {
+    // Reset connection cached promise
+    dbPromise = null;
+    try {
+      const freshDb = await getIndexedDB();
+      return await action(freshDb);
+    } catch (retryErr: any) {
+      console.warn('IndexedDB connection resilient fallback triggered:', retryErr?.message || retryErr);
+      return fallback;
+    }
+  }
 }
 
 // Cards Operations
 export async function idbSaveCards(cards: PokemonCard[]): Promise<void> {
-  const db = await getIndexedDB();
-  const tx = db.transaction('cards', 'readwrite');
-  for (const card of cards) {
-    await tx.store.put(card);
-  }
-  await tx.done;
+  return execDB(async (db) => {
+    const tx = db.transaction('cards', 'readwrite');
+    for (const card of cards) {
+      await tx.store.put(card);
+    }
+    await tx.done;
+  }, undefined);
 }
 
 export async function idbGetAllCards(): Promise<PokemonCard[]> {
-  const db = await getIndexedDB();
-  return db.getAll('cards');
+  return execDB(async (db) => db.getAll('cards'), []);
 }
 
 export async function idbGetCardsBySet(setId: string): Promise<PokemonCard[]> {
-  const db = await getIndexedDB();
-  return db.getAllFromIndex('cards', 'by-setId', setId);
+  return execDB(async (db) => db.getAllFromIndex('cards', 'by-setId', setId), []);
 }
 
 export async function idbGetCardById(id: string): Promise<PokemonCard | undefined> {
-  const db = await getIndexedDB();
-  return db.get('cards', id);
+  return execDB(async (db) => db.get('cards', id), undefined);
 }
 
 export async function idbGetCardCount(): Promise<number> {
-  const db = await getIndexedDB();
-  return db.count('cards');
+  return execDB(async (db) => db.count('cards'), 0);
 }
 
 // Expansions Operations
 export async function idbSaveExpansions(expansions: CardSet[]): Promise<void> {
-  const db = await getIndexedDB();
-  const tx = db.transaction('expansions', 'readwrite');
-  for (const exp of expansions) {
-    await tx.store.put(exp);
-  }
-  await tx.done;
+  return execDB(async (db) => {
+    const tx = db.transaction('expansions', 'readwrite');
+    for (const exp of expansions) {
+      await tx.store.put(exp);
+    }
+    await tx.done;
+  }, undefined);
 }
 
 export async function idbGetAllExpansions(): Promise<CardSet[]> {
-  const db = await getIndexedDB();
-  return db.getAll('expansions');
+  return execDB(async (db) => db.getAll('expansions'), []);
 }
 
 export async function idbGetExpansionCount(): Promise<number> {
-  const db = await getIndexedDB();
-  return db.count('expansions');
+  return execDB(async (db) => db.count('expansions'), 0);
 }
 
 // Sync Metadata Operations
+const DEFAULT_SYNC_META = {
+  key: 'global',
+  lastSyncedAt: 0,
+  cardCount: 0,
+  expansionCount: 0,
+  isSyncing: false,
+  syncProgress: 0,
+  message: 'Idle',
+};
+
 export async function idbGetSyncMeta() {
-  const db = await getIndexedDB();
-  const meta = await db.get('syncMeta', 'global');
-  return meta || {
-    key: 'global',
-    lastSyncedAt: 0,
-    cardCount: 0,
-    expansionCount: 0,
-    isSyncing: false,
-    syncProgress: 0,
-    message: 'Idle',
-  };
+  return execDB(async (db) => {
+    const meta = await db.get('syncMeta', 'global');
+    return meta || DEFAULT_SYNC_META;
+  }, DEFAULT_SYNC_META);
 }
 
 export async function idbUpdateSyncMeta(metaPartial: Partial<Awaited<ReturnType<typeof idbGetSyncMeta>>>) {
-  const db = await getIndexedDB();
-  const current = await idbGetSyncMeta();
-  const updated = { ...current, ...metaPartial, key: 'global' };
-  await db.put('syncMeta', updated);
-  return updated;
+  return execDB(async (db) => {
+    const current = (await db.get('syncMeta', 'global')) || DEFAULT_SYNC_META;
+    const updated = { ...current, ...metaPartial, key: 'global' };
+    await db.put('syncMeta', updated);
+    return updated;
+  }, { ...DEFAULT_SYNC_META, ...metaPartial });
 }
 
 // User Local Cache Sync
 export async function idbSaveUserDecks(decks: Deck[]): Promise<void> {
-  const db = await getIndexedDB();
-  const tx = db.transaction('userDecks', 'readwrite');
-  await tx.store.clear();
-  for (const deck of decks) {
-    await tx.store.put(deck);
-  }
-  await tx.done;
+  return execDB(async (db) => {
+    const tx = db.transaction('userDecks', 'readwrite');
+    await tx.store.clear();
+    for (const deck of decks) {
+      await tx.store.put(deck);
+    }
+    await tx.done;
+  }, undefined);
 }
 
 export async function idbGetUserDecks(): Promise<Deck[]> {
-  const db = await getIndexedDB();
-  return db.getAll('userDecks');
+  return execDB(async (db) => db.getAll('userDecks'), []);
 }
 
 export async function idbSaveUserPortfolio(items: PortfolioCardEntry[]): Promise<void> {
-  const db = await getIndexedDB();
-  const tx = db.transaction('userPortfolio', 'readwrite');
-  await tx.store.clear();
-  for (const item of items) {
-    await tx.store.put(item);
-  }
-  await tx.done;
+  return execDB(async (db) => {
+    const tx = db.transaction('userPortfolio', 'readwrite');
+    await tx.store.clear();
+    for (const item of items) {
+      await tx.store.put(item);
+    }
+    await tx.done;
+  }, undefined);
 }
 
 export async function idbGetUserPortfolio(): Promise<PortfolioCardEntry[]> {
-  const db = await getIndexedDB();
-  return db.getAll('userPortfolio');
+  return execDB(async (db) => db.getAll('userPortfolio'), []);
 }
 
 export async function idbSaveSealedVault(items: PortfolioSealedEntry[]): Promise<void> {
-  const db = await getIndexedDB();
-  const tx = db.transaction('sealedVault', 'readwrite');
-  await tx.store.clear();
-  for (const item of items) {
-    await tx.store.put(item);
-  }
-  await tx.done;
+  return execDB(async (db) => {
+    const tx = db.transaction('sealedVault', 'readwrite');
+    await tx.store.clear();
+    for (const item of items) {
+      await tx.store.put(item);
+    }
+    await tx.done;
+  }, undefined);
 }
 
 export async function idbGetSealedVault(): Promise<PortfolioSealedEntry[]> {
-  const db = await getIndexedDB();
-  return db.getAll('sealedVault');
+  return execDB(async (db) => db.getAll('sealedVault'), []);
+}
+
+export async function idbSaveCustomLists(lists: CustomList[]): Promise<void> {
+  return execDB(async (db) => {
+    const tx = db.transaction('customLists', 'readwrite');
+    await tx.store.clear();
+    for (const list of lists) {
+      await tx.store.put(list);
+    }
+    await tx.done;
+  }, undefined);
+}
+
+export async function idbGetCustomLists(): Promise<CustomList[]> {
+  return execDB(async (db) => db.getAll('customLists'), []);
 }

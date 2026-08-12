@@ -10,7 +10,6 @@ import {
   idbGetExpansionCount,
 } from './indexedDB';
 import { CardSet, PokemonCard, EnergyType } from '../types';
-import { MOCK_SETS, MOCK_CARDS } from '../data/mockData';
 import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 export interface SyncProgressState {
@@ -127,7 +126,7 @@ export function mapTCGdexCard(card: any): PokemonCard {
   };
 }
 
-// 1. Get Expansions (IndexedDB -> Server Proxy API -> TCGdex Direct -> Mock Fallback)
+// 1. Get Expansions (IndexedDB -> Server Proxy API -> TCGdex Direct )
 export async function getExpansionsCatalog(): Promise<CardSet[]> {
   const cached = await idbGetAllExpansions();
   if (cached && cached.length > 10) {
@@ -157,9 +156,7 @@ export async function getExpansionsCatalog(): Promise<CardSet[]> {
     }
   } catch (err) {}
 
-  const sortedMock = sortSetsChronologically(MOCK_SETS.map(normalizeSet));
-  await idbSaveExpansions(sortedMock);
-  return sortedMock;
+  return [];
 }
 
 async function refreshExpansionsInBackground() {
@@ -230,12 +227,6 @@ export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]
     }
   } catch (e) {}
 
-  const mockSetCards = MOCK_CARDS.filter((c) => c.set?.id === setId);
-  if (mockSetCards.length > 0) {
-    await idbSaveCards(mockSetCards);
-    return mockSetCards;
-  }
-
   return [];
 }
 
@@ -266,7 +257,7 @@ export async function getCardDetailCatalog(cardId: string): Promise<PokemonCard 
     }
   } catch (e) {}
 
-  return cached || MOCK_CARDS.find((c) => c.id === cardId) || null;
+  return cached || null;
 }
 
 // 4. Background Lazy Loading Catalog Sync (Non-blocking & Loop-Free)

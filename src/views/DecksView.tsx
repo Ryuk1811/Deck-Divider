@@ -337,9 +337,17 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
         {/* Deck Switcher Grid (NO SIDE-TAB BORDERS AS PER DESIGN SYSTEM) */}
         <div className="space-y-2">
-          <span className="font-mono text-xs font-bold text-[#64748B]">
-            Select Active Deck Location:
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold text-[#64748B]">
+              Select Active Deck Location:
+            </span>
+            <div className="flex items-center gap-2 px-2.5 py-1 bg-[#F1F5F9] rounded-md border border-[#E2E8F0]">
+              <span className="font-mono text-[11px] text-[#64748B]">Decks Usage:</span>
+              <span className="font-mono text-[11px] font-bold text-[#0F172A]">
+                {decks.length} / {tierLimit.maxDecks === Infinity ? '∞' : tierLimit.maxDecks}
+              </span>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {decks.map((deck) => {
               const isSelected = deck.id === currentDeck?.id;

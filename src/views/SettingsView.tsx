@@ -349,6 +349,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     </div>
 
                     <div className="flex items-center justify-between">
+                      <span className="text-[#64748B]">Lists:</span>
+                      <span className="font-bold text-[#0F172A]">
+                        {limit.maxLists === Infinity ? 'Unlimited' : limit.maxLists}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
                       <span className="text-[#64748B]">Public Link:</span>
                       <span className="font-bold text-[#0F172A]">
                         {limit.canSharePublicLinks ? 'Yes' : 'No'}
