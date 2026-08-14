@@ -122,7 +122,7 @@ async function startServer() {
     res.json(status);
   });
 
-  const { certRoutes } = await import('./server/routes/certRoutes.js');
+   const { certRoutes } = await import('./server/routes/certRoutes.js');
   app.use('/api/v1/cert', certRoutes);
 
   app.get('/api/config/credentials', async (req, res) => {
@@ -853,6 +853,10 @@ async function startServer() {
   });
   
   // --- End TCGdex Proxy ---
+
+  // Mount marketing routes
+  const { marketingRoutes } = await import('./server/marketing.js');
+  app.use('/', marketingRoutes);
 
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

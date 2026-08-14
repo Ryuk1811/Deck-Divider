@@ -24,6 +24,7 @@ import {
   DollarSign,
   Zap,
   Menu,
+  Search,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import { Sidebar, ActiveTab } from './components/Sidebar';
@@ -630,8 +631,8 @@ export default function App() {
                 className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span className="hidden sm:inline">Add Cards to Portfolio</span>
-                <span className="sm:hidden text-[11px]">Add Cards</span>
+                <span className="hidden sm:inline">Add Cards</span>
+                <span className="sm:hidden text-[11px]">Add</span>
               </button>
             )}
 

@@ -12,7 +12,6 @@ import {
   Package,
   ChevronRight,
   X,
-  ShieldCheck,
 } from 'lucide-react';
 import { AccountTier } from '../types';
 import { useAuth } from '../lib/AuthContext';

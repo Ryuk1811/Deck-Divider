@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { PokemonCard, DisplayCurrency } from '../types';
+import { PokemonCard, DisplayCurrency, GradingInfo } from '../types';
 import { holographicEngine } from '../utils/holographicEngine';
 import { formatCurrency, RARITY_BADGE_STYLE, ENERGY_COLORS } from '../utils/formatters';
 import { Sparkles, Eye } from 'lucide-react';
 import { CardImage } from './CardImage';
+import { GradedSlabCard } from './GradedSlabCard';
 
 interface HolographicCardProps {
   card: PokemonCard;
+  gradingInfo?: GradingInfo;
   currency?: DisplayCurrency;
   quantity?: number;
   deckName?: string;
@@ -20,6 +22,7 @@ interface HolographicCardProps {
 
 export const HolographicCard: React.FC<HolographicCardProps> = ({
   card,
+  gradingInfo,
   currency = 'USD',
   quantity,
   deckName,
@@ -30,6 +33,23 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
   className = '',
   isFocused = false,
 }) => {
+  // If grading info is provided (e.g. PSA 10, BGS 9.5), render the luxury physical slab case!
+  if (gradingInfo && gradingInfo.company && gradingInfo.grade) {
+    return (
+      <GradedSlabCard
+        card={card}
+        gradingInfo={gradingInfo}
+        currency={currency}
+        quantity={quantity}
+        onClick={onClick}
+        onQuickLook={onQuickLook}
+        showPrice={showPrice}
+        className={className}
+        isFocused={isFocused}
+      />
+    );
+  }
+
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
