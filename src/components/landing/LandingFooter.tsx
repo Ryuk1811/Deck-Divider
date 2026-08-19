@@ -131,20 +131,20 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
           {/* Direct Launch / Account */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] font-mono">
-              Get Started
+              Access Platform
             </h4>
             <div className="space-y-2">
               <button
                 onClick={onEnterApp}
-                className="w-full py-2.5 px-3 bg-[#DC143C] hover:bg-[#B01030] text-white text-xs font-semibold rounded-lg transition-colors text-center cursor-pointer shadow-xs"
+                className="w-full py-2.5 px-3 bg-[#DC143C] hover:bg-[#B01030] text-white text-xs font-semibold rounded-lg transition-all text-center cursor-pointer shadow-xs hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
               >
-                Launch Studio Free
+                Open Live Workspace
               </button>
               <button
                 onClick={onOpenAuth}
-                className="w-full py-2.5 px-3 bg-[#F8FAFC] hover:bg-slate-100 text-[#0F172A] text-xs font-semibold rounded-lg transition-colors text-center border border-[#E2E8F0] cursor-pointer"
+                className="w-full py-2.5 px-3 bg-[#F8FAFC] hover:bg-slate-100 text-[#0F172A] text-xs font-semibold rounded-lg transition-all text-center border border-[#E2E8F0] cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A] focus-visible:ring-offset-2"
               >
-                Sign In / Register
+                Sign In / Authenticate
               </button>
             </div>
           </div>

@@ -14,39 +14,39 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
   displayCurrency,
 }) => {
   return (
-    <section className="relative w-full pt-12 pb-20 px-4 sm:px-6 lg:px-8 border-b border-[#E2E8F0] overflow-hidden">
-      <div className="relative max-w-6xl mx-auto text-center space-y-8">
+    <section className="relative w-full pt-16 sm:pt-20 pb-20 px-4 sm:px-6 lg:px-8 border-b border-[#E2E8F0] overflow-hidden">
+      <div className="relative max-w-7xl mx-auto text-center space-y-8">
         {/* Top Tagline Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-xs font-semibold shadow-xs">
           <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse"></span>
-          <span>Next-Generation Pokémon TCG Studio & Portfolio Tracker</span>
+          <span>Next-Generation Pokémon TCG Asset Management</span>
         </div>
 
         {/* Singular Wide Hero Title */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.1] max-w-4xl mx-auto font-heading">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.05] max-w-4xl mx-auto font-heading text-balance">
           Institutional-Grade Intelligence for <span className="text-[#DC143C]">Pokémon TCG</span> Collectors & Competitors
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto font-normal leading-relaxed">
-          Real-time multi-currency portfolio valuation, PSA/BGS/CGC slab tracking, tournament-legal deck architecture, expansion master checklists, and sealed vault asset management.
+        <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto font-normal leading-relaxed text-balance">
+          A unified platform engineered for high-net-worth collectors and competitive players. Seamlessly manage portfolio valuations, track graded slabs, architect tournament-legal decks, and optimize your sealed vault assets in real time.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
           <button
             onClick={onEnterApp}
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
           >
-            <span>Launch Studio Free</span>
+            <span>Open Live Workspace</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
             onClick={onExploreFeatures}
-            className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] font-semibold text-sm rounded-xl shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] font-semibold text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A] focus-visible:ring-offset-2"
           >
-            <span>Explore All 7 Modules</span>
+            <span>View Platform Architecture</span>
             <ChevronRight className="w-4 h-4 text-[#64748B]" />
           </button>
         </div>
@@ -55,15 +55,15 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
         <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-medium text-[#64748B]">
           <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
-            <span>Instant Search & Zero Lag</span>
+            <span>Low-Latency Card Indexing</span>
           </div>
           <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
-            <span>Real-Time TCG Market Pricing</span>
+            <span>Real-Time Market Valuation</span>
           </div>
           <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
-            <span>Tournament Standard & Expanded Formats</span>
+            <span>Championship Format Validation</span>
           </div>
         </div>
 

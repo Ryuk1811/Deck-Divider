@@ -92,11 +92,11 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
             <Sparkles className="w-3.5 h-3.5" />
             <span>TRANSPARENT PLANS</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-heading">
-            Scale As Your Collection Grows
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-heading text-balance">
+            Scale Your Operations
           </h2>
           <p className="text-sm sm:text-base text-[#64748B] max-w-2xl mx-auto">
-            From casual collectors to tournament champions and sealed vault investors. Simple monthly pricing with no hidden fees.
+            Engineered for casual collectors, tournament champions, and institutional vault investors. Simple monthly pricing, unparalleled scale.
           </p>
         </div>
 
@@ -111,14 +111,14 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               return (
                 <div
                   key={tier}
-                  className={`relative flex flex-col justify-between rounded-xl p-4 sm:p-5 transition-all duration-200 ${
+                  className={`relative flex flex-col justify-between rounded-xl p-5 sm:p-6 transition-all duration-300 ${
                     popular
-                      ? 'bg-white border-2 border-[#DC143C] shadow-lg scale-[1.02] z-10'
-                      : 'bg-white border border-[#E2E8F0] shadow-xs hover:border-[#CBD5E1]'
+                      ? 'bg-white border-2 border-[#DC143C] shadow-lg z-10 hover:-translate-y-1 hover:shadow-xl'
+                      : 'bg-white border border-[#E2E8F0] shadow-xs hover:border-[#CBD5E1] hover:-translate-y-1 hover:shadow-md'
                   }`}
                 >
                   {popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#DC143C] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs whitespace-nowrap">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#DC143C] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs whitespace-nowrap">
                       Most Popular
                     </div>
                   )}
@@ -165,10 +165,10 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
                   <div className="mt-5 pt-3 border-t border-[#F1F5F9]">
                     <button
                       onClick={() => onSelectTier(tier)}
-                      className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`w-full py-2.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                         popular
-                          ? 'bg-[#DC143C] hover:bg-[#B01030] text-white shadow-xs'
-                          : 'bg-[#F8FAFC] hover:bg-[#FFF0F3] hover:text-[#DC143C] text-[#0F172A] border border-[#E2E8F0]'
+                          ? 'bg-[#DC143C] hover:bg-[#B01030] text-white shadow-xs focus-visible:ring-[#DC143C]'
+                          : 'bg-[#F8FAFC] hover:bg-[#FFF0F3] hover:text-[#DC143C] text-[#0F172A] border border-[#E2E8F0] focus-visible:ring-[#0F172A]'
                       }`}
                     >
                       {isCurrent ? 'Current Plan' : tier === 'Starter' ? 'Start Free' : `Select ${tier}`}

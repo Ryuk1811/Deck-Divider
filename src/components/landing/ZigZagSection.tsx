@@ -33,17 +33,13 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
     >
       <div className="max-w-7xl mx-auto">
         <div
-          className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center ${
-            reversed ? 'lg:grid-flow-dense' : ''
+          className={`flex flex-col lg:flex-row gap-8 lg:gap-12 items-center ${
+            reversed ? 'lg:flex-row-reverse' : ''
           }`}
         >
           {/* Text Content Column - Depth 2 White Card */}
-          <div
-            className={`lg:col-span-5 ${
-              reversed ? 'lg:col-start-8' : ''
-            }`}
-          >
-            <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-8 space-y-6 text-left">
+          <div className="w-full lg:w-1/2">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-8 sm:p-10 space-y-6 text-left w-full h-full flex flex-col justify-center min-h-[480px]">
               {/* Header Badge */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
@@ -54,7 +50,7 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
                     {badge}
                   </span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-tight font-heading">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-tight font-heading text-balance">
                   {title}
                 </h2>
               </div>
@@ -87,7 +83,7 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
                 <div className="pt-3 border-t border-[#F1F5F9]">
                   <button
                     onClick={onCtaClick}
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#DC143C] hover:text-[#B01030] transition-colors cursor-pointer group"
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#DC143C] hover:text-[#B01030] transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-4 rounded-sm"
                   >
                     <span>{ctaText}</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -98,12 +94,8 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
           </div>
 
           {/* UI Mockup Column - Glass Slab Container */}
-          <div
-            className={`lg:col-span-7 ${
-              reversed ? 'lg:col-start-1 lg:row-start-1' : ''
-            }`}
-          >
-            <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-4">
+          <div className="w-full lg:w-1/2 flex h-full">
+            <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-4 w-full h-full flex flex-col justify-center min-h-[480px]">
               {mockup}
             </div>
           </div>

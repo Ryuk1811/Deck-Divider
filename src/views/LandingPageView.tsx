@@ -42,10 +42,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
     <div className="min-h-screen w-full bg-[#F8FAFC] bg-[radial-gradient(#CBD5E1_1.2px,transparent_1.2px)] [background-size:16px_16px] text-[#0F172A] flex flex-col font-sans overflow-x-hidden">
       {/* 1. Header Navigation */}
       <LandingNav
-        onEnterApp={onEnterApp}
         onOpenAuth={onOpenAuth}
-        displayCurrency={displayCurrency}
-        onSelectCurrency={onSelectCurrency}
       />
 
       {/* 2. Wide Hero Section */}
@@ -60,26 +57,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="collection"
         index="01/07"
-        badge="SLAB & RAW COLLECTION"
-        title="Interactive Slab Display & Grade Registry"
-        description="Catalog your graded slabs (PSA, BGS, CGC) and raw binders with holographic tilt physics, authentic certification metadata, and continuous market price tracking."
+        badge="SLAB & RAW ASSET REGISTRY"
+        title="Cryptographic-Grade Slab & Binder Management"
+        description="Maintain a flawless ledger of your graded slabs (PSA, BGS, CGC) and raw inventory. Features include authentic certification metadata parsing, real-time market price syncing, and interactive holographic physics."
         bulletPoints={[
           {
-            title: 'Precision Slabs & Grades',
-            desc: 'Track certificate numbers, subgrades (Centering, Surface, Corners, Edges), and graded population status.',
+            title: 'Certification Integrity',
+            desc: 'Log and verify unique certificate numbers, grading company metadata, and detailed subgrades (Centering, Surface, Corners, Edges).',
           },
           {
-            title: 'Live TCG Market Valuation',
-            desc: 'Continuous price sync with verified marketplace data and historical sales records.',
+            title: 'Continuous Valuation Sync',
+            desc: 'Live price aggregation from verified marketplace APIs and historical sales data to determine true asset net worth.',
           },
           {
-            title: 'Holographic Simulation',
-            desc: 'Interactive card shimmer physics that replicate rainbow foil, secret rares, and textured gold cards.',
+            title: 'Digital Twin Physics',
+            desc: 'Immersive interactive card shimmer that accurately replicates rainbow foil, secret rare textures, and gold finishes.',
           },
         ]}
         mockup={<CollectionMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Explore Collection Studio"
+        ctaText="Explore Asset Registry"
         onCtaClick={onEnterApp}
       />
 
@@ -87,21 +84,21 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="metrics"
         index="02/07"
-        badge="PORTFOLIO VALUATION & METRICS"
-        title="Real-Time NAV Growth Curves & Era Allocation"
-        description="Analyze your total collection value with institutional-grade financial intelligence. Track portfolio equity, cost basis, unrealized capital gains, and top market performers."
+        badge="FINANCIAL INTELLIGENCE"
+        title="Real-Time NAV Curves & Asset Allocation"
+        description="Monitor your collection's financial health with terminal-grade analytics. Track aggregate portfolio equity, absolute cost basis, unrealized capital gains, and segmented market performance."
         bulletPoints={[
           {
-            title: 'Portfolio Equity Growth',
-            desc: 'Interactive 7D, 30D, 90D, 1Y, and all-time portfolio equity curves with performance metrics.',
+            title: 'Equity Growth Trajectories',
+            desc: 'Visualize 7D, 30D, 90D, and All-Time portfolio equity curves against baseline market performance.',
           },
           {
-            title: 'Era & Rarity Allocation',
-            desc: 'Visual asset distribution breakdowns across Scarlet & Violet, Sword & Shield, Sun & Moon, and Vintage WOTC.',
+            title: 'Era & Rarity Segmentation',
+            desc: 'Break down asset distribution across modern expansions (Scarlet & Violet) to Vintage WOTC with precision charting.',
           },
           {
-            title: 'Multi-Currency Real-Time Exchange',
-            desc: 'Automatic currency conversion across USD, EUR, GBP, JPY, CAD, AUD, and 20+ currencies with live rates.',
+            title: 'Live FX Conversion',
+            desc: 'Seamless multi-currency settlement and real-time exchange rates across USD, EUR, GBP, JPY, and 20+ global fiat currencies.',
           },
         ]}
         mockup={<MetricsMockup currency={displayCurrency} />}
@@ -114,26 +111,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="decks"
         index="03/07"
-        badge="TOURNAMENT STUDIO"
-        title="60-Card Architecture & Legality Validation"
-        description="Engineer tournament-grade 60-card decks with real-time regulation mark validation (Standard G/H, Expanded), Pokémon/Trainer/Energy composition balance, and one-click PTCGL export."
+        badge="TOURNAMENT ARCHITECTURE"
+        title="Championship-Grade 60-Card Engineering"
+        description="Construct optimal tournament decks with strict regulation mark validation (Standard/Expanded). Analyze Pokémon, Trainer, and Energy distribution metrics before exporting directly to PTCGL."
         bulletPoints={[
           {
-            title: 'Regulation Mark Validator',
-            desc: 'Automatic legality verification ensuring every card complies with current official tournament formats.',
+            title: 'Automated Format Validation',
+            desc: 'Real-time legality enforcement ensuring complete compliance with the latest official Play! Pokémon tournament rulesets.',
           },
           {
-            title: 'Ratio Health Monitor',
-            desc: 'Visual distribution bars analyzing engine stability and optimal energy counts.',
+            title: 'Engine Stability Metrics',
+            desc: 'Visual distribution histograms detailing optimal card ratios, draw power probabilities, and energy counts.',
           },
           {
-            title: 'Export & Proxy Printing',
-            desc: 'Export standard PTCGL deck codes, custom printable proxy sheets, and shareable public deck links.',
+            title: 'Seamless PTCGL Export',
+            desc: 'Generate standardized deck strings for immediate import into Pokémon TCG Live or print high-fidelity proxy sheets.',
           },
         ]}
         mockup={<DecksMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Build Your First Deck"
+        ctaText="Architect Your First Deck"
         onCtaClick={onEnterApp}
       />
 
@@ -141,26 +138,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="sets"
         index="04/07"
-        badge="MASTER SET COMPLETION"
-        title="148+ Expansions Matrix & Master Checklists"
-        description="Track master set completion across every Pokémon TCG expansion ever printed. Automatically categorize regular, reverse holo, secret rare, and special illustration cards."
+        badge="MASTER EXPANSION TRACKING"
+        title="Complete Matrix of 148+ Printed Expansions"
+        description="Execute comprehensive master set tracking across the entire history of the Pokémon TCG. Automatically isolate regular prints, reverse holos, secret rares, and illustration rares."
         bulletPoints={[
           {
-            title: 'Master Checklist Tracker',
-            desc: 'Visual progress rings and missing-card identifiers to quickly find the exact singles you need to complete each set.',
+            title: 'Definitive Checklist Ledgers',
+            desc: 'Granular progress rings and missing-asset identifiers designed to streamline the acquisition of exact singles needed.',
           },
           {
-            title: 'Complete Era Catalog',
-            desc: 'Full high-resolution artwork, card set numbers, and release dates from 1999 Base Set to latest Scarlet & Violet expansions.',
+            title: 'Historical Era Catalogs',
+            desc: 'Access high-resolution archival scans and metadata from the 1999 Base Set through the current generation.',
           },
           {
-            title: 'Trophy Milestones',
-            desc: 'Unlock milestone badges and mastery stats when completing 100% of an expansion checklist.',
+            title: 'Completion Milestones',
+            desc: 'Cryptographic badges and mastery statistics awarded upon achieving 100% completion of any official expansion.',
           },
         ]}
         mockup={<SetsMockup currency={displayCurrency} />}
         reversed={true}
-        ctaText="Track Master Sets"
+        ctaText="View Expansion Ledgers"
         onCtaClick={onEnterApp}
       />
 
@@ -168,26 +165,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="search"
         index="05/07"
-        badge="INSTANT CARD SEARCH"
-        title="Instant Multi-Attribute Filter Matrix"
-        description="Search through tens of thousands of Pokémon cards instantly without lag. Filter by HP, Illustrator, Attack damage, Card Type, Stage, Rarity, and Price bounds with instant responsiveness."
+        badge="LOW-LATENCY INDEXING"
+        title="High-Frequency Multi-Vector Search Matrix"
+        description="Query tens of thousands of printed cards with zero-latency response times. Combine complex filters for HP, Artist, Attack metrics, Rarity, and Live Price boundaries instantly."
         bulletPoints={[
           {
-            title: 'Instant Card Search',
-            desc: 'Instant lookup and fuzzy matching allowing seamless browsing even with slow network connections.',
+            title: 'Sub-Millisecond Querying',
+            desc: 'Optimized local indexing and fuzzy string matching for instantaneous browsing, even under heavy network latency.',
           },
           {
-            title: 'Advanced Filter Matrix',
-            desc: 'Combine filters with ease: match Fire types with 280+ HP and Special Illustration Rare status in one click.',
+            title: 'Advanced Parameter Stacking',
+            desc: 'Chain complex queries: isolate Fire-type Pokémon with 280+ HP and Special Illustration Rare status in a single keystroke.',
           },
           {
-            title: 'Global ⌘K Command Palette',
-            desc: 'Quick keyboard shortcut anywhere in the app to jump to cards, decks, sets, or fast actions.',
+            title: 'Global Command Architecture',
+            desc: 'Utilize the ⌘K command palette from anywhere in the workspace to instantly traverse to assets, decks, or tools.',
           },
         ]}
         mockup={<SearchMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Search Cards Now"
+        ctaText="Execute a Query"
         onCtaClick={onEnterApp}
       />
 
@@ -195,26 +192,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="lists"
         index="06/07"
-        badge="CURATED WATCHLISTS"
-        title="Custom Watchlists & Target Price Alerts"
-        description="Create bespoke hunting lists, trade binders, and investment watchlists. Set target buy/sell price thresholds and get instant visual indicators when market prices hit your goal."
+        badge="ALGORITHMIC WATCHLISTS"
+        title="Bespoke Targeting & Price Action Alerts"
+        description="Structure targeted acquisition lists, trade binders, and speculative watchlists. Define exact buy/sell price thresholds and monitor real-time market action against your goals."
         bulletPoints={[
           {
-            title: 'Target Price Triggers',
-            desc: 'Define ideal entry prices for grail cards and monitor market dips in real time.',
+            title: 'Threshold Triggers',
+            desc: 'Establish definitive entry points for grail assets and monitor market retracements with visual price indicators.',
           },
           {
-            title: 'Multi-List Organization',
-            desc: 'Organize cards into distinct lists for Trade Events, PSA Submissions, or Speculative Buys.',
+            title: 'Categorical Organization',
+            desc: 'Segment targeted cards into isolated lists for Trade Show Events, Bulk PSA Submissions, or Long-Term Holds.',
           },
           {
             title: 'Data Portability',
-            desc: 'Export watchlists into clean spreadsheet and backup formats for inventory audits and records.',
+            desc: 'Export curated watchlists into standardized CSV formats for external inventory audits, ledgers, and institutional records.',
           },
         ]}
         mockup={<ListsMockup currency={displayCurrency} />}
         reversed={true}
-        ctaText="Create Custom Watchlists"
+        ctaText="Build Target Parameters"
         onCtaClick={onEnterApp}
       />
 
@@ -222,21 +219,21 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="sealed-vault"
         index="07/07"
-        badge="SEALED VAULT INVENTORY"
-        title="Booster Box & Sealed Asset Management"
-        description="Dedicated inventory management for booster boxes, Elite Trainer Boxes (ETB), Ultra-Premium Collections (UPC), and sealed cases. Track case multipliers, cost basis, and unrealized profits."
+        badge="SEALED ASSET VAULT"
+        title="Institutional Sealed Inventory Management"
+        description="Manage high-value sealed inventory including Booster Boxes, Elite Trainer Boxes, and Ultra-Premium Collections. Track wholesale case multipliers and compound ROI."
         bulletPoints={[
           {
-            title: 'Sealed Unit Types',
-            desc: 'Native tracking for booster boxes, sleeved booster packs, blister packs, ETBs, tins, and master cases.',
+            title: 'Comprehensive Unit Taxonomy',
+            desc: 'Native infrastructure for tracking sleeved booster packs, blister packs, ETBs, tins, and master cases.',
           },
           {
-            title: 'Case Multipliers',
-            desc: 'Automatically tracks 6x booster box cases or 10x ETB cases with individual and total valuations.',
+            title: 'Wholesale Case Multipliers',
+            desc: 'Automatic aggregation of 6x booster box cases or 10x ETB cases, mapping individual unit costs to total case valuation.',
           },
           {
-            title: 'Profit & ROI Calculations',
-            desc: 'Instant profit margin meters and ROI performance metrics across all sealed acquisitions.',
+            title: 'ROI & Margin Analytics',
+            desc: 'Instantaneous profit margin visualizations and compound return performance metrics across your entire sealed position.',
           },
         ]}
         mockup={<SealedVaultMockup currency={displayCurrency} />}
