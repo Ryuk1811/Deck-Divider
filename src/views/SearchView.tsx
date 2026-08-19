@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search as SearchIcon,
   Filter,
@@ -15,6 +15,7 @@ import {
   DisplayCurrency,
 } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
+import { DropdownMenu } from '../components/DropdownMenu';
 import { searchCards, mapToPokemonCard } from '../lib/searchEngine';
 
 interface SearchViewProps {
@@ -94,11 +95,6 @@ export const SearchView: React.FC<SearchViewProps> = ({
       variant: '',
       legality: undefined,
       illustrator: '',
-      priceMin: undefined,
-      priceMax: undefined,
-      hpMin: undefined,
-      hpMax: undefined,
-      setId: undefined,
       sortBy: 'price-desc',
     };
     updateLocalFilters(resetF);
@@ -120,7 +116,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
     return count;
   }, [filters]);
 
-  // Run the local search engine query with filters
+  // Run the actual local search engine query!
   const filteredCards = useMemo(() => {
     const rawResults = searchCards(filters);
     const mapped = rawResults.map(mapToPokemonCard);
@@ -136,59 +132,45 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
   return (
     <div className="app-view-container space-y-6 animate-fade-in">
-      {/* Top Search & Filter Bar */}
-      <div className="p-4 glass-slab shadow-md space-y-3">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex-1 min-w-[260px] flex items-center gap-3 px-3 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus-within:border-[#DC143C] transition-all">
-            <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
-            <input
-              type="text"
-              value={filters.query}
-              onChange={(e) => updateLocalFilters({ ...filters, query: e.target.value })}
-              placeholder="Search Pokémon cards by name, set, or artist..."
-              className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#94A3B8]"
-            />
-            {filters.query && (
-              <button
-                type="button"
-                onClick={() => updateLocalFilters({ ...filters, query: '' })}
-                className="p-1 text-[#64748B] hover:text-[#0F172A]"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {(activeFilterCount > 0 || filters.query) && (
-              <button
-                type="button"
-                onClick={handleReset}
-                className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1 cursor-pointer px-2 py-1"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reset</span>
-              </button>
-            )}
+      {/* Main Search Input bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 glass-slab shadow-md">
+        <div className="flex-1 flex items-center gap-3 px-2">
+          <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
+          <input
+            type="text"
+            value={filters.query}
+            onChange={(e) => updateLocalFilters({ ...filters, query: e.target.value })}
+            placeholder="Search Pokemon cards by name, set, or artist..."
+            className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B]"
+          />
+          {filters.query && (
             <button
               type="button"
-              onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-              className={`h-10 px-3.5 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-lg border transition-all cursor-pointer ${
-                isFilterPanelOpen || activeFilterCount > 0
-                  ? 'bg-[#0F172A] text-white border-[#0F172A]'
-                  : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
-              }`}
+              onClick={() => updateLocalFilters({ ...filters, query: '' })}
+              className="p-1 text-[#64748B] hover:text-[#0F172A]"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#DC143C]" />
-              <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="px-1.5 py-0.2 bg-[#DC143C] text-white rounded-full text-[10px] font-bold">
-                  {activeFilterCount}
-                </span>
-              )}
+              <X className="w-4 h-4" />
             </button>
-          </div>
+          )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+          className={`h-10 px-4 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-md border transition-all cursor-pointer ${
+            isFilterPanelOpen || activeFilterCount > 0
+              ? 'bg-[#0F172A] text-white border-[#0F172A]'
+              : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
+          }`}
+        >
+          <SlidersHorizontal className="w-4 h-4 text-[#DC143C]" />
+          <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="px-1.5 py-0.5 bg-[#DC143C] text-white rounded-full text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Expandable Inline Filter Panel */}
@@ -197,14 +179,12 @@ export const SearchView: React.FC<SearchViewProps> = ({
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />
-              <span className="font-heading font-bold text-base text-[#0F172A]">
-                Refine Search Metrics
-              </span>
+              <span className="font-heading font-bold text-base text-[#0F172A]">Refine Search Metrics</span>
             </div>
             <button
               type="button"
               onClick={handleReset}
-              className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1.5 cursor-pointer"
+              className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1.5"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset All Filters</span>
@@ -214,29 +194,25 @@ export const SearchView: React.FC<SearchViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Category & Stage */}
             <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Card Category
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Category</label>
               <select
                 value={filters.category || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, category: e.target.value })}
-                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Categories (Pokémon, Trainer, Energy)</option>
                 <option value="Pokemon">Pokémon</option>
-                <option value="Trainer">Trainer Cards</option>
-                <option value="Energy">Energy Cards</option>
+                <option value="Trainer">Trainer</option>
+                <option value="Energy">Energy</option>
               </select>
             </div>
 
             <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Evolution Stage
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Stage / Form</label>
               <select
                 value={filters.stage || ''}
                 onChange={(e) => updateLocalFilters({ ...filters, stage: e.target.value })}
-                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Stages</option>
                 <option value="Basic">Basic</option>
@@ -244,21 +220,82 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 <option value="Stage 2">Stage 2</option>
                 <option value="VMAX">VMAX</option>
                 <option value="VSTAR">VSTAR</option>
-                <option value="ex">ex</option>
+                <option value="EX">EX / ex</option>
+                <option value="MEGA">MEGA</option>
+                <option value="Restored">Restored</option>
               </select>
             </div>
 
-            {/* Set Selector */}
             <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Expansion Set
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Printing Variant</label>
+              <select
+                value={filters.variant || ''}
+                onChange={(e) => updateLocalFilters({ ...filters, variant: e.target.value })}
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              >
+                <option value="">All Printings</option>
+                <option value="normal">Normal / Standard</option>
+                <option value="holo">Holographic (Holo)</option>
+                <option value="reverse">Reverse Holo</option>
+                <option value="firstEdition">1st Edition</option>
+                <option value="wPrerelease">Prerelease Promo</option>
+                <option value="secret100">Secret / Ultra</option>
+              </select>
+            </div>
+
+            {/* Format Legality & Regulation Mark & Illustrator */}
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Format Legality</label>
+              <select
+                value={filters.legality || ''}
+                onChange={(e) => updateLocalFilters({ ...filters, legality: (e.target.value as any) || undefined })}
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              >
+                <option value="">All Formats</option>
+                <option value="standard">Standard Format Legal</option>
+                <option value="expanded">Expanded Format Legal</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Regulation Mark</label>
+              <select
+                value={filters.regulationMark || ''}
+                onChange={(e) => updateLocalFilters({ ...filters, regulationMark: e.target.value })}
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              >
+                <option value="">All Regulation Marks</option>
+                <option value="D">Regulation D</option>
+                <option value="E">Regulation E</option>
+                <option value="F">Regulation F</option>
+                <option value="G">Regulation G</option>
+                <option value="H">Regulation H</option>
+                <option value="I">Regulation I</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Illustrator / Artist</label>
+              <input
+                type="text"
+                placeholder="Filter by Artist (e.g. Ken Sugimori)"
+                value={filters.artist || filters.illustrator || ''}
+                onChange={(e) => updateLocalFilters({ ...filters, artist: e.target.value, illustrator: e.target.value })}
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+              />
+            </div>
+
+            {/* Set & Sort */}
+            <div className="space-y-2">
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Expansion Set</label>
               <select
                 value={filters.setId || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, setId: e.target.value || undefined })}
-                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
+                onChange={(e) =>
+                  updateLocalFilters({ ...filters, setId: e.target.value || undefined })
+                }
+                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
-                <option value="">All Expansions</option>
+                <option value="">All Pokemon Sets</option>
                 {sets.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name} ({s.series})
@@ -268,9 +305,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Sort Ordering
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Sort Ordering</label>
               <select
                 value={filters.sortBy}
                 onChange={(e) =>
@@ -287,19 +322,14 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
             {/* Price Range */}
             <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Price Range ($)
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Price Range ($)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   placeholder="Min Price"
                   value={filters.priceMin ?? ''}
                   onChange={(e) =>
-                    updateLocalFilters({
-                      ...filters,
-                      priceMin: e.target.value ? Number(e.target.value) : undefined,
-                    })
+                    updateLocalFilters({ ...filters, priceMin: e.target.value ? Number(e.target.value) : undefined })
                   }
                   className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
                 />
@@ -309,10 +339,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                   placeholder="Max Price"
                   value={filters.priceMax ?? ''}
                   onChange={(e) =>
-                    updateLocalFilters({
-                      ...filters,
-                      priceMax: e.target.value ? Number(e.target.value) : undefined,
-                    })
+                    updateLocalFilters({ ...filters, priceMax: e.target.value ? Number(e.target.value) : undefined })
                   }
                   className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
                 />
@@ -321,9 +348,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
             {/* Energy Types Multi-Select */}
             <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Energy Types
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Energy Types</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_ENERGY_TYPES.map((type) => {
                   const isSelected = filters.types.includes(type);
@@ -347,9 +372,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
             {/* Rarities Filter */}
             <div className="sm:col-span-2 lg:col-span-3 space-y-2 border-t border-[#E2E8F0] pt-4">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">
-                Rarity Tiers
-              </label>
+              <label className="block font-mono text-xs font-bold text-[#0F172A]">Rarity Tiers</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_RARITIES.map((rarity) => {
                   const isSelected = filters.rarities.includes(rarity);
@@ -378,9 +401,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
       <div className="space-y-4">
         {/* Results Header Bar */}
         <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl shadow-xs font-mono text-xs text-[#666666]">
-          <span className="font-bold text-[#0F172A]">
-            Showing {filteredCards.length} matching card records
-          </span>
+          <span className="font-bold text-[#0F172A]">Showing {filteredCards.length} matching card records</span>
           <span>Press Space on any card for Quick Look</span>
         </div>
 

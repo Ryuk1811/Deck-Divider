@@ -1,7 +1,7 @@
 import { CardSet } from '../types';
 
 /**
- * Known default canonical series list for high-end collector classification.
+ * Known default canonical series list for fallback ordering.
  */
 export const DEFAULT_SERIES_CATEGORIES = [
   'All',
@@ -13,23 +13,19 @@ export const DEFAULT_SERIES_CATEGORIES = [
   'HeartGold & SoulSilver',
   'Diamond & Pearl',
   'EX Series',
-  'E-Card Series',
   'Neo Series',
   'Gym Series',
   'Base Series',
   'POP Series',
-  'Pokémon TCG Pocket',
-  'Mega Evolution Series',
+  "McDonald's Collection",
   'Promos & Special',
 ];
 
 /**
- * Standard series priority weights (lower = newer/higher priority).
+ * Standard known series priority weights (lower = newer/higher priority).
  */
 const KNOWN_SERIES_WEIGHTS: Record<string, number> = {
   'Scarlet & Violet': 10,
-  'Mega Evolution Series': 15,
-  'Pokémon TCG Pocket': 18,
   'Sword & Shield': 20,
   'Sun & Moon': 30,
   'XY Series': 40,
@@ -37,34 +33,48 @@ const KNOWN_SERIES_WEIGHTS: Record<string, number> = {
   'HeartGold & SoulSilver': 60,
   'Diamond & Pearl': 70,
   'EX Series': 80,
-  'E-Card Series': 85,
   'Neo Series': 90,
   'Gym Series': 100,
   'Base Series': 110,
   'POP Series': 120,
-  'Promos & Special': 130,
+  "McDonald's Collection": 130,
+  'Promos & Special': 140,
 };
 
 /**
- * Ensures any asset image URL from TCGdex or PokemonTCG is fully qualified with .png.
+ * Helper to clean up raw series string from APIs into human-friendly format.
  */
-export function formatSetAssetUrl(url?: string): string {
-  if (!url) return '';
-  const trimmed = String(url).trim();
-  if (!trimmed) return '';
+function cleanSeriesString(rawSeries: string): string {
+  if (!rawSeries) return '';
+  let s = rawSeries.trim();
 
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    if (trimmed.includes('assets.tcgdex.net') && !trimmed.match(/\.(png|webp|jpg|jpeg|svg)$/i)) {
-      return `${trimmed}.png`;
-    }
-    return trimmed;
+  const lower = s.toLowerCase();
+  if (lower === 'unknown' || lower === 'pokémon tcg' || lower === 'pokemon tcg' || lower === 'tcg' || lower === 'sets') {
+    return '';
   }
 
-  return `https://assets.tcgdex.net/univ/${trimmed}.png`;
+  // Canonical remapping for known variants from APIs
+  if (lower.includes('scarlet') || lower.includes('violet') || lower === 'sv') return 'Scarlet & Violet';
+  if (lower.includes('sword') || lower.includes('shield') || lower === 'swsh') return 'Sword & Shield';
+  if (lower.includes('sun') || lower.includes('moon') || lower === 'sm') return 'Sun & Moon';
+  if (lower === 'xy' || lower.includes('xy series')) return 'XY Series';
+  if (lower.includes('black') || lower.includes('white') || lower === 'bw') return 'Black & White';
+  if (lower.includes('heartgold') || lower.includes('soulsilver') || lower === 'hgss') return 'HeartGold & SoulSilver';
+  if (lower.includes('diamond') || lower.includes('pearl') || lower.includes('platinum') || lower === 'dp' || lower === 'pl') return 'Diamond & Pearl';
+  if (lower.startsWith('ex') || lower.includes('ex series')) return 'EX Series';
+  if (lower.startsWith('neo') || lower.includes('neo series')) return 'Neo Series';
+  if (lower.startsWith('gym') || lower.includes('gym series')) return 'Gym Series';
+  if (lower.includes('base') || lower.includes('original') || lower === 'base series') return 'Base Series';
+  if (lower.includes('pop') || lower === 'pop series') return 'POP Series';
+  if (lower.includes('mcdonald')) return "McDonald's Collection";
+
+  // Capitalize title case for new/unrecognised series (e.g. "legends: z-a" -> "Legends: Z-A")
+  return s.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 /**
- * Normalizes any set's series into canonical collector eras.
+ * Normalizes any set's series into canonical or dynamically detected Series/Eras.
+ * Future-proofed for unannounced and newly introduced sets and expansions!
  */
 export function normalizeSeries(set: any): string {
   if (!set) return 'Promos & Special';
@@ -72,58 +82,25 @@ export function normalizeSeries(set: any): string {
   const idLower = String(set.id || '').toLowerCase();
   const nameLower = String(set.name || '').toLowerCase();
 
-  // 1. Explicit series name checks from API
+  // 1. Check if the set object explicitly brings a valid series field from the API
   const rawApiSeries =
     typeof set.series === 'string'
       ? set.series
       : set.serie?.name || set.serie?.id || set.serie || set.expansion?.series || '';
 
-  const sLower = String(rawApiSeries).toLowerCase();
-  if (sLower.includes('scarlet') || sLower.includes('violet') || sLower === 'sv') return 'Scarlet & Violet';
-  if (sLower.includes('sword') || sLower.includes('shield') || sLower === 'swsh') return 'Sword & Shield';
-  if (sLower.includes('sun') || sLower.includes('moon') || sLower === 'sm') return 'Sun & Moon';
-  if (sLower === 'xy' || sLower.includes('xy series')) return 'XY Series';
-  if (sLower.includes('black') || sLower.includes('white') || sLower === 'bw') return 'Black & White';
-  if (sLower.includes('heartgold') || sLower.includes('soulsilver') || sLower === 'hgss') return 'HeartGold & SoulSilver';
-  if (sLower.includes('diamond') || sLower.includes('pearl') || sLower.includes('platinum') || sLower === 'dp' || sLower === 'pl') return 'Diamond & Pearl';
-  if (sLower.startsWith('ex') || sLower.includes('ex series')) return 'EX Series';
-  if (sLower.includes('ecard') || sLower.includes('e-card')) return 'E-Card Series';
-  if (sLower.startsWith('neo') || sLower.includes('neo series')) return 'Neo Series';
-  if (sLower.startsWith('gym') || sLower.includes('gym series')) return 'Gym Series';
-  if (sLower.includes('base') || sLower.includes('original') || sLower === 'base series') return 'Base Series';
-  if (sLower.includes('pop') || sLower === 'pop series') return 'POP Series';
-  if (sLower.includes('pocket')) return 'Pokémon TCG Pocket';
-  if (sLower.includes('mega')) return 'Mega Evolution Series';
-
-  // 2. Specific Set ID Mappings
-  // Pokémon TCG Pocket Sets
-  if (
-    idLower.match(/^a[1-9]/) ||
-    idLower.match(/^b[1-9]/) ||
-    idLower === 'p-a' ||
-    nameLower.includes('genetic apex') ||
-    nameLower.includes('mythical island') ||
-    nameLower.includes('space-time smackdown') ||
-    nameLower.includes('triumphant light') ||
-    nameLower.includes('shining revelry') ||
-    nameLower.includes('celestial guardians') ||
-    nameLower.includes('mega rising') ||
-    nameLower.includes('crimson blaze') ||
-    nameLower.includes('fantastical parade')
-  ) {
-    return 'Pokémon TCG Pocket';
+  const cleanedApiSeries = cleanSeriesString(String(rawApiSeries));
+  if (cleanedApiSeries) {
+    return cleanedApiSeries;
   }
 
-  // Mega Evolution Sets
-  if (idLower.startsWith('me') || idLower.startsWith('mep') || idLower.startsWith('mee') || nameLower.includes('mega evolution')) {
-    return 'Mega Evolution Series';
+  // 2. Pattern match by set name keywords
+  if (nameLower.includes('mcdonald') || idLower.includes('mcd')) {
+    return "McDonald's Collection";
   }
 
-  // Scarlet & Violet
+  // Scarlet & Violet era sets
   if (
     idLower.startsWith('sv') ||
-    idLower === 'sve' ||
-    idLower === 'svp' ||
     nameLower.includes('scarlet') ||
     nameLower.includes('paldea') ||
     nameLower.includes('obsidian') ||
@@ -135,25 +112,17 @@ export function normalizeSeries(set: any): string {
     nameLower.includes('surging') ||
     nameLower.includes('prismatic') ||
     nameLower.includes('151') ||
-    nameLower.includes('destined') ||
-    nameLower.includes('journey together') ||
-    nameLower.includes('white flare') ||
-    nameLower.includes('black bolt')
+    nameLower.includes('destinies') ||
+    nameLower.includes('journey')
   ) {
     return 'Scarlet & Violet';
   }
 
-  // Sword & Shield
+  // Sword & Shield era sets
   if (
     idLower.startsWith('swsh') ||
-    idLower === 'swshp' ||
-    idLower.startsWith('cel25') ||
-    idLower === 'cpa' ||
-    idLower === 'shf' ||
-    idLower === 'pgo' ||
-    idLower === 'crz' ||
-    idLower.includes('fut') ||
     nameLower.includes('sword & shield') ||
+    nameLower.includes('sword and shield') ||
     nameLower.includes('rebel clash') ||
     nameLower.includes('darkness ablaze') ||
     nameLower.includes('vivid voltage') ||
@@ -166,35 +135,24 @@ export function normalizeSeries(set: any): string {
     nameLower.includes('astral radiance') ||
     nameLower.includes('lost origin') ||
     nameLower.includes('silver tempest') ||
-    nameLower.includes('crown zenith') ||
-    nameLower.includes('celebrations')
+    nameLower.includes('crown zenith')
   ) {
     return 'Sword & Shield';
   }
 
-  // Sun & Moon
+  // Sun & Moon era sets
   if (
     idLower.startsWith('sm') ||
-    idLower === 'smp' ||
-    idLower === 'det1' ||
-    idLower === 'sma' ||
-    idLower === 'shlg' ||
-    idLower === 'hif' ||
     nameLower.includes('sun & moon') ||
-    nameLower.includes('guardians rising') ||
-    nameLower.includes('burning shadows') ||
-    nameLower.includes('crimson invasion') ||
     nameLower.includes('ultra prism') ||
     nameLower.includes('forbidden light') ||
     nameLower.includes('celestial storm') ||
-    nameLower.includes('dragon majesty') ||
     nameLower.includes('lost thunder') ||
     nameLower.includes('team up') ||
-    nameLower.includes('detective pikachu') ||
     nameLower.includes('unbroken bonds') ||
     nameLower.includes('unified minds') ||
-    nameLower.includes('hidden fates') ||
     nameLower.includes('cosmic eclipse') ||
+    nameLower.includes('hidden fates') ||
     nameLower.includes('shining legends')
   ) {
     return 'Sun & Moon';
@@ -203,26 +161,18 @@ export function normalizeSeries(set: any): string {
   // XY Series
   if (
     idLower.startsWith('xy') ||
-    idLower === 'xyp' ||
-    idLower === 'xya' ||
-    idLower === 'dc1' ||
-    idLower === 'g1' ||
-    idLower === 'rc' ||
-    idLower.startsWith('tk-xy') ||
-    nameLower.includes('kalos') ||
     nameLower.includes('flashfire') ||
     nameLower.includes('furious fists') ||
     nameLower.includes('phantom forces') ||
     nameLower.includes('primal clash') ||
-    nameLower.includes('double crisis') ||
     nameLower.includes('roaring skies') ||
     nameLower.includes('ancient origins') ||
     nameLower.includes('breakthrough') ||
     nameLower.includes('breakpoint') ||
-    nameLower.includes('generations') ||
     nameLower.includes('fates collide') ||
     nameLower.includes('steam siege') ||
-    nameLower.includes('evolutions')
+    nameLower.includes('evolutions') ||
+    nameLower.includes('generations')
   ) {
     return 'XY Series';
   }
@@ -230,16 +180,11 @@ export function normalizeSeries(set: any): string {
   // Black & White
   if (
     idLower.startsWith('bw') ||
-    idLower === 'bwp' ||
-    idLower === 'dv1' ||
-    idLower.startsWith('tk-bw') ||
-    nameLower.includes('black & white') ||
     nameLower.includes('emerging powers') ||
     nameLower.includes('noble victories') ||
     nameLower.includes('next destinies') ||
     nameLower.includes('dark explorers') ||
     nameLower.includes('dragons exalted') ||
-    nameLower.includes('dragon vault') ||
     nameLower.includes('boundaries crossed') ||
     nameLower.includes('plasma storm') ||
     nameLower.includes('plasma freeze') ||
@@ -252,9 +197,7 @@ export function normalizeSeries(set: any): string {
   // HeartGold & SoulSilver
   if (
     idLower.startsWith('hgss') ||
-    idLower === 'hgssp' ||
-    idLower === 'col1' ||
-    idLower.startsWith('tk-hs') ||
+    idLower.startsWith('col') ||
     nameLower.includes('heartgold') ||
     nameLower.includes('soulsilver') ||
     nameLower.includes('unleashed') ||
@@ -268,10 +211,7 @@ export function normalizeSeries(set: any): string {
   // Diamond & Pearl / Platinum
   if (
     idLower.startsWith('dp') ||
-    idLower.startsWith('dpp') ||
     idLower.startsWith('pl') ||
-    idLower === 'ru1' ||
-    idLower.startsWith('tk-dp') ||
     nameLower.includes('diamond & pearl') ||
     nameLower.includes('mysterious treasures') ||
     nameLower.includes('secret wonders') ||
@@ -282,9 +222,7 @@ export function normalizeSeries(set: any): string {
     nameLower.includes('platinum') ||
     nameLower.includes('rising rivals') ||
     nameLower.includes('supreme victors') ||
-    nameLower.includes('arceus') ||
-    nameLower.includes('pokémon rumble') ||
-    nameLower.includes('pokemon rumble')
+    nameLower.includes('arceus')
   ) {
     return 'Diamond & Pearl';
   }
@@ -292,52 +230,20 @@ export function normalizeSeries(set: any): string {
   // EX Series
   if (
     idLower.startsWith('ex') ||
-    idLower.startsWith('exp') ||
-    idLower.startsWith('tk-ex') ||
     nameLower.includes('ruby & sapphire') ||
     nameLower.includes('sandstorm') ||
-    nameLower.includes('dragon') ||
-    nameLower.includes('team magma') ||
-    nameLower.includes('hidden legends') ||
     nameLower.includes('firered') ||
     nameLower.includes('leafgreen') ||
-    nameLower.includes('team rocket returns') ||
-    nameLower.includes('deoxys') ||
     nameLower.includes('emerald') ||
     nameLower.includes('unseen forces') ||
     nameLower.includes('delta species') ||
-    nameLower.includes('legend maker') ||
-    nameLower.includes('holon phantoms') ||
-    nameLower.includes('crystal guardians') ||
-    nameLower.includes('dragon frontiers') ||
     nameLower.includes('power keepers')
   ) {
     return 'EX Series';
   }
 
-  // E-Card Series
-  if (
-    idLower.startsWith('ecard') ||
-    idLower === 'expedition' ||
-    idLower === 'aquapolis' ||
-    idLower === 'skyridge' ||
-    nameLower.includes('expedition') ||
-    nameLower.includes('aquapolis') ||
-    nameLower.includes('skyridge')
-  ) {
-    return 'E-Card Series';
-  }
-
   // Neo Series
-  if (
-    idLower.startsWith('neo') ||
-    idLower === 'si1' ||
-    nameLower.includes('neo genesis') ||
-    nameLower.includes('neo discovery') ||
-    nameLower.includes('neo revelation') ||
-    nameLower.includes('neo destiny') ||
-    nameLower.includes('southern islands')
-  ) {
+  if (idLower.startsWith('neo') || nameLower.includes('neo genesis') || nameLower.includes('neo discovery')) {
     return 'Neo Series';
   }
 
@@ -366,21 +272,24 @@ export function normalizeSeries(set: any): string {
     return 'POP Series';
   }
 
-  // Promos & Special / Trainer Kits
-  if (
-    idLower.includes('mcd') ||
-    idLower.includes('promo') ||
-    idLower.includes('misc') ||
-    idLower.includes('tk') ||
-    idLower.includes('mfb') ||
-    nameLower.includes('mcdonald') ||
-    nameLower.includes('promo') ||
-    nameLower.includes('trainer kit') ||
-    nameLower.includes('first battle')
-  ) {
-    return 'Promos & Special';
+  // 3. Dynamic Inference for Brand New / Unannounced Set Prefixes (e.g. za01 -> Legends: Z-A, me01 -> Mega Series, etc.)
+  const prefixMatch = idLower.match(/^([a-z]{2,5})\d+/);
+  if (prefixMatch) {
+    const prefix = prefixMatch[1].toUpperCase();
+    if (prefix === 'ZA' || prefix === 'LAZ') return 'Legends: Z-A';
+    if (prefix === 'ME') return 'Mega Evolution Series';
+    if (prefix === 'POCKET' || prefix === 'TCP') return 'Pokémon TCG Pocket';
+    // Dynamic series fallback derived from ID prefix (e.g., "AZ Series")
+    return `${prefix} Series`;
   }
 
+  // 4. Release Year Fallback for future brand new sets
+  const releaseYear = set.releaseDate ? parseInt(String(set.releaseDate).substring(0, 4), 10) : 0;
+  if (releaseYear >= 2026) {
+    return `2026+ Expansions`;
+  }
+
+  // Default fallback
   return 'Promos & Special';
 }
 
@@ -412,25 +321,17 @@ export function normalizeSetName(set: any): string {
   if (id === 'neo2') return 'Neo Discovery';
   if (id === 'neo3') return 'Neo Revelation';
   if (id === 'neo4') return 'Neo Destiny';
-  if (id === 'ecard1') return 'Expedition Base Set';
-  if (id === 'ecard2') return 'Aquapolis';
-  if (id === 'ecard3') return 'Skyridge';
   if (id === 'sv3pt5' || id === 'sv03.5' || id === 'sv3.5') return '151';
   if (id === 'swsh12pt5' || id === 'swsh12.5') return 'Crown Zenith';
   if (id === 'swsh10pt5' || id === 'swsh10.5') return 'Pokémon GO';
   if (id === 'swsh4pt5' || id === 'swsh4.5') return 'Shining Fates';
   if (id === 'swsh3pt5' || id === 'swsh3.5') return 'Champion\'s Path';
-  if (id === 'cel25') return 'Celebrations';
-  if (id === 'cel25cc') return 'Celebrations Classic Collection';
-  if (id === 'dc1') return 'Double Crisis';
-  if (id === 'det1') return 'Detective Pikachu';
-  if (id === 'ru1') return 'Pokémon Rumble';
-  if (id === 'si1') return 'Southern Islands';
 
   if (!rawName || rawName.toLowerCase() === 'unknown set' || rawName.toLowerCase() === 'unknown') {
     return `Set ${set.id?.toUpperCase() || ''}`;
   }
 
+  // Clean double spaces or weird punctuation in brand new set names
   return rawName.replace(/\s+/g, ' ');
 }
 
@@ -444,11 +345,15 @@ export function normalizeSet(set: any): CardSet {
   const cardCountOfficial = set.cardCount?.official || set.printedTotal || set.total || 100;
   const cardCountTotal = set.cardCount?.total || set.total || cardCountOfficial;
 
-  const rawSymbol = set.symbolUrl || set.images?.symbol || (typeof set.symbol === 'string' ? set.symbol : '');
-  const rawLogo = set.logoUrl || set.images?.logo || (typeof set.logo === 'string' ? set.logo : '');
+  let symbolUrl =
+    set.symbolUrl ||
+    (set.symbol ? (set.symbol.endsWith('.png') || set.symbol.endsWith('.webp') ? set.symbol : `${set.symbol}.png`) : '');
+  let logoUrl =
+    set.logoUrl ||
+    (set.logo ? (set.logo.endsWith('.png') || set.logo.endsWith('.webp') ? set.logo : `${set.logo}.png`) : '');
 
-  const symbolUrl = formatSetAssetUrl(rawSymbol);
-  const logoUrl = formatSetAssetUrl(rawLogo);
+  if (!symbolUrl) symbolUrl = 'https://images.pokemontcg.io/symbol.png';
+  if (!logoUrl) logoUrl = symbolUrl;
 
   return {
     id: String(set.id || 'unknown'),
@@ -457,24 +362,27 @@ export function normalizeSet(set: any): CardSet {
     printedTotal: cardCountOfficial,
     total: cardCountTotal,
     releaseDate: set.releaseDate || '2024-01-01',
-    symbolUrl: symbolUrl || undefined,
-    logoUrl: logoUrl || symbolUrl || undefined,
+    symbolUrl,
+    logoUrl,
   };
 }
 
 /**
  * Gets the release weight/rank of a series (lower = newer).
+ * Automatically calculates dynamic release dates for new/unrecognised series!
  */
 export function getSeriesWeight(seriesName: string, sets: CardSet[] = []): number {
   if (KNOWN_SERIES_WEIGHTS[seriesName] !== undefined) {
     return KNOWN_SERIES_WEIGHTS[seriesName];
   }
 
+  // Find max release date among sets in this series
   const seriesSets = sets.filter((s) => s.series === seriesName);
   if (seriesSets.length > 0) {
     const maxYear = Math.max(
       ...seriesSets.map((s) => (s.releaseDate ? parseInt(s.releaseDate.substring(0, 4), 10) : 2020))
     );
+    // If released in 2026 or later, rank higher than Scarlet & Violet (weight < 10)
     return Math.max(0, 2030 - maxYear);
   }
 
@@ -483,20 +391,24 @@ export function getSeriesWeight(seriesName: string, sets: CardSet[] = []): numbe
 
 /**
  * Dynamically builds the series category list for UI filter pills.
+ * Combines standard categories and any brand new series dynamically discovered from incoming sets.
  */
 export function getDynamicSeriesCategories(expansions: CardSet[]): string[] {
   const seriesSet = new Set<string>();
 
+  // Collect all series present in current expansions
   expansions.forEach((e) => {
     if (e.series) seriesSet.add(e.series);
   });
 
+  // Ensure default known categories are included
   DEFAULT_SERIES_CATEGORIES.forEach((cat) => {
     if (cat !== 'All') seriesSet.add(cat);
   });
 
   const uniqueList = Array.from(seriesSet);
 
+  // Sort series dynamically by newest release date first
   uniqueList.sort((a, b) => {
     const weightA = getSeriesWeight(a, expansions);
     const weightB = getSeriesWeight(b, expansions);
@@ -507,16 +419,21 @@ export function getDynamicSeriesCategories(expansions: CardSet[]): string[] {
 }
 
 /**
- * Sorts sets chronologically with newest first.
+ * Sorts array of sets chronologically (Newest series & release dates first).
+ * Completely future-proof for any new expansion block!
  */
 export function sortSetsChronologically(sets: CardSet[]): CardSet[] {
   return [...sets].sort((a, b) => {
     const weightA = getSeriesWeight(a.series, sets);
     const weightB = getSeriesWeight(b.series, sets);
-    if (weightA !== weightB) return weightA - weightB;
 
-    const dateA = a.releaseDate || '2000-01-01';
-    const dateB = b.releaseDate || '2000-01-01';
+    if (weightA !== weightB) {
+      return weightA - weightB;
+    }
+
+    // Secondary sort: release date descending (newest first)
+    const dateA = a.releaseDate || '1990-01-01';
+    const dateB = b.releaseDate || '1990-01-01';
     return dateB.localeCompare(dateA);
   });
 }

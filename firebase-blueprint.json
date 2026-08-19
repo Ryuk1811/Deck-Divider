@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile document",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "avatar": { "type": "string" },
+        "displayCurrency": { "type": "string" },
+        "isSuperUser": { "type": "boolean" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "email"]
+    },
+    "SubscriptionRecord": {
+      "title": "SubscriptionRecord",
+      "description": "User subscription status and tier",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tierName": { "type": "string" },
+        "isSuperUser": { "type": "boolean" },
+        "billingStatus": { "type": "string" },
+        "paypalSubscriptionId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "tierName"]
+    },
+    "Deck": {
+      "title": "Deck",
+      "description": "Deck container with card entries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "colorHex": { "type": "string" },
+        "isPublic": { "type": "boolean" },
+        "ownerId": { "type": "string" },
+        "entries": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile documents"
+    },
+    "/subscriptions/{userId}": {
+      "schema": { "$ref": "#/entities/SubscriptionRecord" },
+      "description": "User tier and billing subscription records"
+    },
+    "/users/{userId}/decks/{deckId}": {
+      "schema": { "$ref": "#/entities/Deck" },
+      "description": "User created decks subcollection"
+    },
+    "/decks/{deckId}": {
+      "schema": { "$ref": "#/entities/Deck" },
+      "description": "Shared root decks collection"
+    }
+  }
+}

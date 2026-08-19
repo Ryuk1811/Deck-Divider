@@ -315,7 +315,7 @@ export interface CustomList {
   cardIds: string[];
   coverImageUrl?: string;
   createdAt: string;
-$}
+}
 
 export interface UserProfile {
   id: string; // auth.uid

@@ -1,90 +1,80 @@
 import MiniSearch from 'minisearch';
 import { get, set } from 'idb-keyval';
+import { FALLBACK_CARDS, RawFallbackCard } from '../data/fallbackCards';
 
 const CACHE_KEY = 'tcgdex-cards-index-data';
 const CACHE_TIME_KEY = 'tcgdex-cards-index-time';
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-export interface TCGdexCard {
-  id: string;
-  localId: string;
-  name: string;
-  hp?: number;
-  types?: string[];
-  rarity?: string;
-  illustrator?: string;
-  image?: string;
-  category?: string;
-  stage?: string;
-  regulationMark?: string;
-  legal?: {
-    standard?: boolean;
-    expanded?: boolean;
-  };
-  variants?: {
-    normal?: boolean;
-    reverse?: boolean;
-    holo?: boolean;
-    firstEdition?: boolean;
-    wPrerelease?: boolean;
-    secret100?: boolean;
-  };
-  set?: {
-    id: string;
-    name: string;
-    symbol?: string;
-    logo?: string;
-  };
-}
+export interface TCGdexCard extends RawFallbackCard {}
 
 let miniSearch: MiniSearch<TCGdexCard> | null = null;
-let allDocsData: TCGdexCard[] = [];
+let allDocsData: TCGdexCard[] = [...FALLBACK_CARDS];
 let isIndexing = false;
 let initPromise: Promise<void> | null = null;
 
+function setupMiniSearch(data: TCGdexCard[]) {
+  const ms = new MiniSearch<TCGdexCard>({
+    fields: ['name', 'types', 'rarity', 'illustrator', 'localId', 'set.name', 'category', 'stage'],
+    storeFields: [
+      'id', 'localId', 'name', 'hp', 'types', 'rarity', 'illustrator', 'image',
+      'category', 'stage', 'regulationMark', 'legal', 'variants', 'set'
+    ],
+    extractField: (document, fieldName) => {
+      if (fieldName === 'set.name') return document.set?.name;
+      return document[fieldName as keyof TCGdexCard];
+    }
+  });
+  ms.addAll(data);
+  return ms;
+}
+
+// Pre-initialize synchronously with fallback cards so search and sets are ready instantly
+if (!miniSearch) {
+  miniSearch = setupMiniSearch(allDocsData);
+}
+
 export const initSearchEngine = async (): Promise<void> => {
-  if (miniSearch) return;
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
     isIndexing = true;
     try {
-      const lastFetchTime = await get<number>(CACHE_TIME_KEY);
+      // 1. Try local IndexedDB cache first
+      let data: TCGdexCard[] | undefined = await get<TCGdexCard[]>(CACHE_KEY).catch(() => undefined);
+      const lastFetchTime = await get<number>(CACHE_TIME_KEY).catch(() => undefined);
       const now = Date.now();
-      let data: TCGdexCard[] | undefined = await get<TCGdexCard[]>(CACHE_KEY);
 
-      if (!data || !lastFetchTime || (now - lastFetchTime > CACHE_DURATION_MS)) {
-        // Fetch new data
-        const response = await fetch('/api/tcgdex/index-data');
-        if (!response.ok) throw new Error('Failed to fetch index data');
-        const json = await response.json();
-        data = json?.data?.cards || [];
-        
-        if (data && data.length > 0) {
-          // Fire and forget cache update
-          set(CACHE_KEY, data).catch(console.error);
-          set(CACHE_TIME_KEY, now).catch(console.error);
-        }
+      if (data && data.length > 0) {
+        allDocsData = data;
+        miniSearch = setupMiniSearch(data);
       }
 
-      if (!data) data = [];
-      allDocsData = data;
+      // 2. Fetch fresh catalog in background if expired or empty with a 6-second timeout
+      if (!data || !lastFetchTime || (now - lastFetchTime > CACHE_DURATION_MS)) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-      miniSearch = new MiniSearch<TCGdexCard>({
-        fields: ['name', 'types', 'rarity', 'illustrator', 'localId', 'set.name', 'category', 'stage'],
-        storeFields: [
-          'id', 'localId', 'name', 'hp', 'types', 'rarity', 'illustrator', 'image',
-          'category', 'stage', 'regulationMark', 'legal', 'variants', 'set'
-        ],
-        extractField: (document, fieldName) => {
-          if (fieldName === 'set.name') return document.set?.name;
-          return document[fieldName as keyof TCGdexCard];
+        try {
+          const response = await fetch('/api/tcgdex/index-data', { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (response.ok) {
+            const json = await response.json();
+            const fetchedCards: TCGdexCard[] = json?.data?.cards || [];
+            if (fetchedCards && fetchedCards.length > 0) {
+              allDocsData = fetchedCards;
+              miniSearch = setupMiniSearch(fetchedCards);
+              set(CACHE_KEY, fetchedCards).catch(() => {});
+              set(CACHE_TIME_KEY, now).catch(() => {});
+            }
+          }
+        } catch (fetchErr) {
+          // Network timeout or error - continue with loaded data or fallback cards
+          clearTimeout(timeoutId);
         }
-      });
-
-      miniSearch.addAll(data);
+      }
     } catch (error) {
-      console.error('Search Engine Initialization Failed:', error);
+      console.warn('Search Engine Background Sync Notice:', error);
     } finally {
       isIndexing = false;
     }

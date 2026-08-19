@@ -37,7 +37,6 @@ interface CollectionViewProps {
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
   onSelectDeck: (deckId: string) => void;
-  onAddCardToDeck?: (deckId: string, card: PokemonCard) => void;
   onAddCardToList?: (listId: string, cardId: string) => void;
 }
 
@@ -66,7 +65,6 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onSelectCard,
   onQuickLookCard,
   onSelectDeck,
-  onAddCardToDeck,
   onAddCardToList,
 }) => {
   // View & Grouping Controls State
@@ -568,7 +566,6 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   <div className="relative">
                     <HolographicCard
                       card={card}
-                      rarity={card.rarity}
                       onClick={() => onSelectCard(card)}
                       onQuickLook={() => onQuickLookCard(card)}
                     />

@@ -131,16 +131,6 @@ export async function getExpansions(): Promise<TCGSet[]> {
     if (!res.ok) throw new Error(`TCGdex API error: ${res.statusText}`);
     const sets: TCGSet[] = await res.json();
     
-    // Normalize logo and symbol URLs to have .png extensions
-    sets.forEach((s) => {
-      if (s.logo && s.logo.includes('assets.tcgdex.net') && !s.logo.match(/\.(png|webp|jpg|jpeg|svg)$/i)) {
-        s.logo = `${s.logo}.png`;
-      }
-      if (s.symbol && s.symbol.includes('assets.tcgdex.net') && !s.symbol.match(/\.(png|webp|jpg|jpeg|svg)$/i)) {
-        s.symbol = `${s.symbol}.png`;
-      }
-    });
-
     // Sort by release date / id descending
     sets.sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || ''));
     

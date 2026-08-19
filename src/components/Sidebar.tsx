@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Layers,
@@ -12,6 +13,8 @@ import {
   Package,
   ChevronRight,
   X,
+  ShieldCheck,
+  Globe,
 } from 'lucide-react';
 import { AccountTier } from '../types';
 import { useAuth } from '../lib/AuthContext';
@@ -52,6 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen: propIsMobileOpen,
   setIsMobileOpen: propSetIsMobileOpen,
 }) => {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
@@ -87,8 +91,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'lists', label: 'Lists', icon: ListOrdered },
   ];
 
-  const handleSignOut = () => {
-    auth.signOut();
+  const handleSignOut = async () => {
+    await auth.signOut();
+    navigate('/');
   };
 
   const [imgError, setImgError] = useState(false);

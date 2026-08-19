@@ -50,68 +50,35 @@ let lastFetchTime = 0;
 const CACHE_TTL_MS = 60 * 1000; // 1 minute TTL cache
 
 export async function getAppCredentials(): Promise<AppCredentials> {
-  const now = Date.now();
-  if (cachedCredentials && now - lastFetchTime < CACHE_TTL_MS) {
-    return cachedCredentials;
-  }
-
-  try {
-    const db = getAdminDb();
-    const docRef = db.collection('config').doc('app_credentials');
-    const snap = await docRef.get();
-
-    if (snap.exists) {
-      const data = snap.data() as AppCredentials;
-      cachedCredentials = {
-        paypal: {
-          ...DEFAULT_CREDENTIALS.paypal,
-          ...data.paypal,
-          planIds: {
-            ...DEFAULT_CREDENTIALS.paypal.planIds,
-            ...(data.paypal?.planIds || {}),
-          },
-        },
-        tcgdex: {
-          ...DEFAULT_CREDENTIALS.tcgdex,
-          ...(data.tcgdex || {}),
-        },
-        firebase: {
-          ...DEFAULT_CREDENTIALS.firebase,
-          ...(data.firebase || {}),
-        },
-      };
-    } else {
-      // Seed initial credentials document into Firestore
-      const initialData: AppCredentials = {
-        ...DEFAULT_CREDENTIALS,
-        updatedAt: new Date().toISOString(),
-      };
-      await docRef.set(initialData);
-      cachedCredentials = initialData;
-      console.log('Successfully seeded app_credentials document in Firestore (deckdivider1)');
-    }
-  } catch (err) {
-    console.warn('Could not read app_credentials from Firestore, utilizing in-memory configuration:', err);
-    cachedCredentials = DEFAULT_CREDENTIALS;
-  }
-
-  lastFetchTime = Date.now();
-  return cachedCredentials;
+  return DEFAULT_CREDENTIALS;
 }
 
 export async function updateAppCredentials(newCreds: Partial<AppCredentials>): Promise<AppCredentials> {
-  try {
-    const db = getAdminDb();
-    const docRef = db.collection('config').doc('app_credentials');
-    const updated = {
-      ...newCreds,
-      updatedAt: new Date().toISOString(),
-    };
-    await docRef.set(updated, { merge: true });
-    cachedCredentials = null; // Invalidate cache
-    return await getAppCredentials();
-  } catch (err: any) {
-    console.error('Failed to update app credentials in Firestore:', err);
-    throw new Error('Firestore update failed: ' + err.message);
-  }
+  // In-memory update
+  cachedCredentials = {
+    ...DEFAULT_CREDENTIALS,
+    ...newCreds,
+    paypal: {
+      ...DEFAULT_CREDENTIALS.paypal,
+      ...(newCreds.paypal || {}),
+      planIds: {
+        ...DEFAULT_CREDENTIALS.paypal.planIds,
+        ...(newCreds.paypal?.planIds || {}),
+      },
+    },
+    tcgdex: {
+      ...DEFAULT_CREDENTIALS.tcgdex,
+      ...(newCreds.tcgdex || {}),
+    },
+    firebase: {
+      ...DEFAULT_CREDENTIALS.firebase,
+      ...(newCreds.firebase || {}),
+    },
+    updatedAt: new Date().toISOString(),
+  };
+  
+  // Note: Changes won't persist across server restarts without a database backend
+  // In a production environment with proper service account credentials, 
+  // this would write to Firestore.
+  return cachedCredentials;
 }

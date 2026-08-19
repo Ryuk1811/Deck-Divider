@@ -335,61 +335,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
           </div>
         </div>
 
-        {/* Deck Financial Valuation & Unrealized P&L Tracker */}
-        {currentDeck && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] font-mono text-xs">
-            <div>
-              <span className="text-[#64748B] block text-[10px] uppercase tracking-wider font-semibold">Active Cards</span>
-              <span className="font-num font-bold text-sm text-[#0F172A] mt-0.5 block">
-                {activeEntries.reduce((acc, e) => acc + e.quantity, 0)} Units
-              </span>
-            </div>
-            <div>
-              <span className="text-[#64748B] block text-[10px] uppercase tracking-wider font-semibold">Cost Basis</span>
-              <span className="font-num font-bold text-sm text-[#0F172A] mt-0.5 block">
-                {formatCurrency(
-                  activeEntries.reduce((acc, e) => acc + (e.purchasePrice || e.card.prices.raw) * e.quantity, 0),
-                  currency
-                )}
-              </span>
-            </div>
-            <div>
-              <span className="text-[#64748B] block text-[10px] uppercase tracking-wider font-semibold">Market Value</span>
-              <span className="font-num font-bold text-sm text-[#0F172A] mt-0.5 block">
-                {formatCurrency(
-                  activeEntries.reduce((acc, e) => {
-                    const price = e.gradingInfo?.grade && parseFloat(e.gradingInfo.grade) >= 10
-                      ? (e.card.prices.psa10Estimate || e.card.prices.raw * 3.2)
-                      : e.card.prices.raw;
-                    return acc + price * e.quantity;
-                  }, 0),
-                  currency
-                )}
-              </span>
-            </div>
-            <div>
-              <span className="text-[#64748B] block text-[10px] uppercase tracking-wider font-semibold">Unrealized P&L</span>
-              {(() => {
-                const cost = activeEntries.reduce((acc, e) => acc + (e.purchasePrice || e.card.prices.raw) * e.quantity, 0);
-                const market = activeEntries.reduce((acc, e) => {
-                  const price = e.gradingInfo?.grade && parseFloat(e.gradingInfo.grade) >= 10
-                    ? (e.card.prices.psa10Estimate || e.card.prices.raw * 3.2)
-                    : e.card.prices.raw;
-                  return acc + price * e.quantity;
-                }, 0);
-                const diff = market - cost;
-                const pct = cost > 0 ? (diff / cost) * 100 : 0;
-                const isPositive = diff >= 0;
-                return (
-                  <span className={`font-num font-bold text-sm mt-0.5 block ${isPositive ? 'text-[#16A34A]' : 'text-[#DC143C]'}`}>
-                    {isPositive ? '+' : ''}{formatCurrency(diff, currency)} ({isPositive ? '+' : ''}{pct.toFixed(1)}%)
-                  </span>
-                );
-              })()}
-            </div>
-          </div>
-        )}
-
         {/* Deck Switcher Grid (NO SIDE-TAB BORDERS AS PER DESIGN SYSTEM) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -514,7 +459,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
                     <div key={entry.id} className="relative group">
                       <HolographicCard
                         card={entry.card}
-                        gradingInfo={entry.gradingInfo}
                         currency={currency}
                         quantity={entry.quantity}
                         deckName={currentDeck.name}
@@ -627,7 +571,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       <HolographicCard
                         key={entry.id}
                         card={entry.card}
-                        gradingInfo={entry.gradingInfo}
                         currency={currency}
                         quantity={entry.quantity}
                         deckName={currentDeck.name}

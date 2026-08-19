@@ -112,6 +112,8 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
                       application_context: {
                         shipping_preference: 'NO_SHIPPING',
                         user_action: 'SUBSCRIBE_NOW',
+                        return_url: window.location.href,
+                        cancel_url: window.location.href,
                       },
                     });
                   }}

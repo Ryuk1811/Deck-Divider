@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import {
   AccountTier,
   DisplayCurrency,
@@ -24,7 +25,6 @@ import {
   DollarSign,
   Zap,
   Menu,
-  Search,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import { Sidebar, ActiveTab } from './components/Sidebar';
@@ -45,6 +45,7 @@ import { SetsView } from './views/SetsView';
 import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
+import { LandingPageView } from './views/LandingPageView';
 import { SealedPortfolioManager } from './components/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
@@ -56,6 +57,7 @@ import { db, auth } from './lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function App() {
+  const navigate = useNavigate();
   const { user, profile, subscription, loading: authLoading, refreshSubscription } = useAuth();
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
@@ -80,6 +82,8 @@ export default function App() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('collection');
+  const [authViewRequested, setAuthViewRequested] = useState(false);
+  const [guestMode, setGuestMode] = useState(false);
 
   // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
@@ -227,10 +231,16 @@ export default function App() {
       setCustomLists([]);
       return;
     }
-    const unsubDecks = onSnapshot(collection(db, 'users', user.uid, 'decks'), (snap) => {
-      const liveDecks = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Deck[];
-      setDecks(liveDecks);
-    });
+    const unsubDecks = onSnapshot(
+      collection(db, 'users', user.uid, 'decks'),
+      (snap) => {
+        const liveDecks = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Deck[];
+        setDecks(liveDecks);
+      },
+      (err) => {
+        console.warn('Decks snapshot listener warning:', err);
+      }
+    );
     return () => {
       unsubDecks();
     };
@@ -575,20 +585,21 @@ export default function App() {
     );
   };
 
-  if (authLoading || !engineReady) {
+  const renderDashboard = () => {
+    if (authLoading) {
+      return (
+        <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#DC143C]" />
+        </div>
+      );
+    }
+
+    if (!user && !guestMode) {
+      return <Navigate to="/auth" replace />;
+    }
+
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#DC143C]" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <AuthView />;
-  }
-
-  return (
-    <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A] select-none">
+      <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A] select-none">
       {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
@@ -631,8 +642,8 @@ export default function App() {
                 className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span className="hidden sm:inline">Add Cards</span>
-                <span className="sm:hidden text-[11px]">Add</span>
+                <span className="hidden sm:inline">Add Cards to Portfolio</span>
+                <span className="sm:hidden text-[11px]">Add Cards</span>
               </button>
             )}
 
@@ -716,7 +727,6 @@ export default function App() {
                 setTargetDeckIdForView(deckId);
                 setActiveTab('decks');
               }}
-              onAddCardToDeck={handleAddCardToDeck}
             />
           )}
 
@@ -842,6 +852,59 @@ export default function App() {
           )}
         </main>
       </div>
+    </div>
+  );
+};
+
+  return (
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <LandingPageView
+              onEnterApp={() => {
+                if (user || guestMode) {
+                  navigate('/app');
+                } else {
+                  navigate('/auth');
+                }
+              }}
+              onOpenAuth={() => navigate('/auth')}
+              onSelectTier={(tier) => {
+                if (user) {
+                  if (tier !== 'Starter') {
+                    setPaypalModalTier(tier);
+                  }
+                  navigate('/app');
+                } else {
+                  navigate('/auth');
+                }
+              }}
+              currentTier={currentTier}
+              displayCurrency={displayCurrency}
+              onSelectCurrency={setDisplayCurrency}
+            />
+          }
+        />
+
+        <Route
+          path="/auth"
+          element={
+            <AuthView
+              onBack={() => navigate('/')}
+              onGuestAccess={() => {
+                setGuestMode(true);
+                navigate('/app');
+              }}
+            />
+          }
+        />
+
+        <Route path="/app/*" element={renderDashboard()} />
+        <Route path="/app" element={renderDashboard()} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
       {/* Global Modals & Overlays */}
       <CommandPalette
@@ -854,8 +917,12 @@ export default function App() {
         onSelectDeck={(deckId) => {
           setTargetDeckIdForView(deckId);
           setActiveTab('decks');
+          navigate('/app');
         }}
-        onNavigate={(tab) => setActiveTab(tab)}
+        onNavigate={(tab) => {
+          setActiveTab(tab);
+          navigate('/app');
+        }}
       />
 
       <CardDetailModal
@@ -919,6 +986,6 @@ export default function App() {
           if (paypalModalTier) handleChangeTier(paypalModalTier);
         }}
       />
-    </div>
+    </>
   );
 }

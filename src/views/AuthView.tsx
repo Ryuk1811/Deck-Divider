@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -7,11 +8,20 @@ import {
   signInWithPopup 
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { useAuth } from '../lib/AuthContext';
 import { validateEmailAddress } from '../lib/emailValidator';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 
-export function AuthView() {
+export function AuthView({ 
+  onBack,
+  onGuestAccess,
+}: { 
+  onBack?: () => void;
+  onGuestAccess?: () => void;
+}) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +29,21 @@ export function AuthView() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  // If user is already authenticated, automatically redirect to /app
+  useEffect(() => {
+    if (user) {
+      navigate('/app', { replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate('/');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +67,7 @@ export function AuthView() {
           await updateProfile(userCred.user, { displayName: name.trim() });
         }
       }
+      navigate('/app');
     } catch (err: any) {
       console.error(err);
       let msg = err.message || 'An error occurred during authentication.';
@@ -69,6 +95,7 @@ export function AuthView() {
         prompt: 'select_account'
       });
       await signInWithPopup(auth, provider);
+      navigate('/app');
     } catch (err: any) {
       console.error(err);
       let msg = err.message || 'Failed to sign in with Google.';
@@ -84,9 +111,16 @@ export function AuthView() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-dot-grid bg-[#F8FAFC] font-mono select-none p-4">
-      <div className="w-full max-w-md bg-white p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl">
+      <div className="w-full max-w-md bg-white p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl relative">
+        <button
+          onClick={handleBack}
+          className="absolute top-4 left-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] flex items-center gap-1 transition-colors cursor-pointer"
+        >
+          <span>← Back</span>
+        </button>
+
         <div className="flex justify-center mb-6">
-          <DeckDividerBrand size="lg" showLogo={true} />
+          <DeckDividerBrand size="lg" showLogo={true} onClick={() => navigate('/')} className="cursor-pointer" />
         </div>
 
         <h1 className="font-heading font-bold text-2xl text-center text-[#0F172A] mb-1">
@@ -98,15 +132,15 @@ export function AuthView() {
             : 'Join Deck Divider to manage your portfolio.'}
         </p>
 
-        {/* Google OAuth Button */}
+        {/* Google Sign In Button */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading || loading}
-          className="w-full h-11 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] hover:border-[#CBD5E1] text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-3 shadow-xs mb-5 disabled:opacity-50 cursor-pointer"
+          className="w-full h-11 mb-5 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] rounded-md text-xs font-bold transition-all flex items-center justify-center gap-3 shadow-xs disabled:opacity-50 cursor-pointer"
         >
           {googleLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-[#0F172A]" />
+            <Loader2 className="w-4 h-4 animate-spin text-[#DC143C]" />
           ) : (
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -130,9 +164,10 @@ export function AuthView() {
           <span>Continue with Google</span>
         </button>
 
-        <div className="relative flex items-center justify-center mb-5">
-          <div className="border-t border-[#E2E8F0] w-full"></div>
-          <span className="bg-white px-3 text-[10px] uppercase font-bold text-[#94A3B8] absolute">or email</span>
+        <div className="relative flex py-2 items-center mb-5">
+          <div className="flex-grow border-t border-[#E2E8F0]"></div>
+          <span className="flex-shrink mx-4 text-[10px] uppercase tracking-wider text-[#94A3B8] font-bold">Or with email</span>
+          <div className="flex-grow border-t border-[#E2E8F0]"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,11 +176,10 @@ export function AuthView() {
               <label className="text-xs font-semibold text-[#0F172A]">Display Name</label>
               <input
                 type="text"
-                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full h-10 px-3 bg-white border border-[#E2E8F0] rounded-md text-sm focus:border-[#0F172A] focus:ring-1 focus:ring-[#0F172A] outline-none transition-all"
-                placeholder="Collector Name"
+                placeholder="Trainer Ash"
               />
             </div>
           )}
@@ -190,7 +224,7 @@ export function AuthView() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-3">
           <button
             type="button"
             onClick={() => {
@@ -201,6 +235,20 @@ export function AuthView() {
           >
             {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                if (onGuestAccess) onGuestAccess();
+                navigate('/app');
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#DC143C] hover:text-[#B01030] transition-colors cursor-pointer"
+            >
+              <span>Explore Demo as Guest</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

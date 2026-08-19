@@ -9,7 +9,7 @@ service cloud.firestore {
     
     // Check if user is accessing their own data
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
     // Check if user is Super User / Admin
@@ -47,9 +47,9 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
       allow create: if isAuthenticated() && isOwner(userId) && 
-        (!request.resource.data.keys().hasAny(['isSuperUser', 'role']) || isSuperUser());
+        (request.resource.data.isSuperUser != true || isSuperUser());
       allow update: if isAuthenticated() && isOwner(userId) && 
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['isSuperUser', 'role']) || isSuperUser());
+        (request.resource.data.isSuperUser != true || isSuperUser());
       allow delete: if isSuperUser();
 
       match /{allSubcollections=**} {
@@ -57,10 +57,16 @@ service cloud.firestore {
       }
     }
     
-    // Subscriptions collection: locked write to Admin / Super User ONLY
+    // Subscriptions collection: owner can read & create initial record, superuser has full access
     match /subscriptions/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
-      allow write: if isSuperUser(); 
+      allow create: if isAuthenticated() && isOwner(userId) && 
+        (request.resource.data.isSuperUser != true || isSuperUser());
+      allow update: if isAuthenticated() && (
+        isSuperUser() || 
+        (isOwner(userId) && (request.resource.data.isSuperUser != true || isSuperUser()))
+      );
+      allow delete: if isSuperUser();
     }
     
     match /decks/{deckId} {

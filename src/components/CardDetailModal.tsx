@@ -28,7 +28,6 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'rec
 
 import { CardImage } from './CardImage';
 import { GlassSlabFrame } from './GlassSlabFrame';
-import { GradedSlabCard } from './GradedSlabCard';
 
 interface CardDetailModalProps {
   card: PokemonCard | null;
@@ -68,8 +67,6 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
     new Date().toISOString().split('T')[0]
   );
   const [notes, setNotes] = useState<string>('');
-
-  const [isGradedSlabView, setIsGradedSlabView] = useState(false);
 
   // Manual Grading state (Grades tab)
   const [gradingCompany, setGradingCompany] = useState<GradingInfo['company']>('PSA');
@@ -351,60 +348,18 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
         <div className="py-4 flex flex-col lg:flex-row gap-4 lg:gap-6 overflow-hidden flex-1 min-h-0 w-full relative">
           {/* Left Column: Dead-Centered Tidally Locked Pokemon Card */}
           <div className="flex-shrink-0 w-full lg:w-[35%] xl:w-[40%] flex flex-col items-center justify-center p-3 sm:p-4 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/60 rounded-xl border border-[#E2E8F0] overflow-y-auto max-h-[35vh] lg:max-h-full">
-            {/* Slab vs Raw Presentation Toggle */}
-            <div className="mb-2 flex items-center gap-1 p-0.5 bg-white border border-[#E2E8F0] rounded-lg shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setIsGradedSlabView(false)}
-                className={`px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md transition-all ${
-                  !isGradedSlabView && activeTab !== 'grades'
-                    ? 'bg-[#0F172A] text-white'
-                    : 'text-[#64748B] hover:text-[#0F172A]'
-                }`}
-              >
-                Raw Card
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsGradedSlabView(true)}
-                className={`px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md transition-all ${
-                  isGradedSlabView || activeTab === 'grades'
-                    ? 'bg-[#DC143C] text-white'
-                    : 'text-[#64748B] hover:text-[#DC143C]'
-                }`}
-              >
-                Graded Slab
-              </button>
-            </div>
-
-            {isGradedSlabView || activeTab === 'grades' ? (
-              <div className="w-full max-w-[220px] sm:max-w-[245px] my-auto">
-                <GradedSlabCard
-                  card={fullCardData}
-                  gradingInfo={{
-                    company: gradingCompany,
-                    grade: grade || '10',
-                    certNumber: certNumber ? certNumber.trim() : '10849204',
-                    subgrades: gradedMarketReport?.certData?.subGrades || undefined,
-                  }}
-                  currency={currency}
-                  showPrice={false}
-                />
-              </div>
-            ) : (
-              <GlassSlabFrame className="w-full max-w-[220px] sm:max-w-[245px] shadow-2xl my-auto">
-                <CardImage
-                  src={fullCardData.images.large || fullCardData.images.small}
-                  alt={fullCardData.name}
-                  cardName={fullCardData.name}
-                  cardNumber={fullCardData.number}
-                  setName={fullCardData.set?.name}
-                  rarity={fullCardData.rarity}
-                  setId={fullCardData.set?.id}
-                  className="w-full h-full object-cover"
-                />
-              </GlassSlabFrame>
-            )}
+            <GlassSlabFrame className="w-full max-w-[220px] sm:max-w-[245px] shadow-2xl my-auto">
+              <CardImage
+                src={fullCardData.images.large || fullCardData.images.small}
+                alt={fullCardData.name}
+                cardName={fullCardData.name}
+                cardNumber={fullCardData.number}
+                setName={fullCardData.set?.name}
+                rarity={fullCardData.rarity}
+                setId={fullCardData.set?.id}
+                className="w-full h-full object-cover"
+              />
+            </GlassSlabFrame>
 
             <div className="mt-4 text-center space-y-1">
               <div className="font-mono text-xs text-[#64748B]">
