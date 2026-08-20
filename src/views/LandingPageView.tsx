@@ -17,6 +17,8 @@ import { SealedVaultMockup } from '../components/landing/mockups/SealedVaultMock
 interface LandingPageViewProps {
   onEnterApp: () => void;
   onOpenAuth: () => void;
+  onNavigateAbout?: () => void;
+  onNavigateHowItWorks?: () => void;
   onSelectTier: (tier: AccountTier) => void;
   currentTier?: AccountTier;
   displayCurrency: DisplayCurrency;
@@ -26,12 +28,22 @@ interface LandingPageViewProps {
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
   onEnterApp,
   onOpenAuth,
+  onNavigateAbout,
+  onNavigateHowItWorks,
   onSelectTier,
   currentTier = 'Starter',
   displayCurrency,
   onSelectCurrency,
 }) => {
   const scrollTo = (id: string) => {
+    if (id === 'about' && onNavigateAbout) {
+      onNavigateAbout();
+      return;
+    }
+    if (id === 'how-it-works' && onNavigateHowItWorks) {
+      onNavigateHowItWorks();
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -43,42 +55,45 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* 1. Header Navigation */}
       <LandingNav
         onOpenAuth={onOpenAuth}
+        onNavigateSection={scrollTo}
       />
 
-      {/* 2. Wide Hero Section */}
-      <HeroWideSection
-        onEnterApp={onEnterApp}
-        onExploreFeatures={() => scrollTo('collection')}
-        displayCurrency={displayCurrency}
-      />
+      {/* 2. Wide Hero Section / About Section */}
+      <div id="about" className="scroll-mt-16">
+        <HeroWideSection
+          displayCurrency={displayCurrency}
+        />
+      </div>
 
       {/* 3. Alternating Sections with Text & UI Mockups */}
-      {/* Section 1: Collection */}
-      <ZigZagSection
-        id="collection"
-        index="01/07"
-        badge="SLAB & RAW ASSET REGISTRY"
-        title="Cryptographic-Grade Slab & Binder Management"
-        description="Maintain a flawless ledger of your graded slabs (PSA, BGS, CGC) and raw inventory. Features include authentic certification metadata parsing, real-time market price syncing, and interactive holographic physics."
-        bulletPoints={[
-          {
-            title: 'Certification Integrity',
-            desc: 'Log and verify unique certificate numbers, grading company metadata, and detailed subgrades (Centering, Surface, Corners, Edges).',
-          },
-          {
-            title: 'Continuous Valuation Sync',
-            desc: 'Live price aggregation from verified marketplace APIs and historical sales data to determine true asset net worth.',
-          },
-          {
-            title: 'Digital Twin Physics',
-            desc: 'Immersive interactive card shimmer that accurately replicates rainbow foil, secret rare textures, and gold finishes.',
-          },
-        ]}
-        mockup={<CollectionMockup currency={displayCurrency} />}
-        reversed={false}
-        ctaText="Explore Asset Registry"
-        onCtaClick={onEnterApp}
-      />
+      {/* Section 1: Collection / How It Works Anchor */}
+      <div id="how-it-works" className="scroll-mt-16">
+        <ZigZagSection
+          id="collection"
+          index="01/07"
+          badge="SLAB & RAW ASSET REGISTRY"
+          title="Cryptographic-Grade Slab & Binder Management"
+          description="Maintain a flawless ledger of your graded slabs (PSA, BGS, CGC) and raw inventory. Features include authentic certification metadata parsing, real-time market price syncing, and interactive holographic physics."
+          bulletPoints={[
+            {
+              title: 'Certification Integrity',
+              desc: 'Log and verify unique certificate numbers, grading company metadata, and detailed subgrades (Centering, Surface, Corners, Edges).',
+            },
+            {
+              title: 'Continuous Valuation Sync',
+              desc: 'Live price aggregation from verified marketplace APIs and historical sales data to determine true asset net worth.',
+            },
+            {
+              title: 'Digital Twin Physics',
+              desc: 'Immersive interactive card shimmer that accurately replicates rainbow foil, secret rare textures, and gold finishes.',
+            },
+          ]}
+          mockup={<CollectionMockup currency={displayCurrency} />}
+          reversed={false}
+          ctaText="Explore Asset Registry"
+          onCtaClick={onOpenAuth}
+        />
+      </div>
 
       {/* Section 2: Metrics */}
       <ZigZagSection
@@ -253,6 +268,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <LandingFooter
         onEnterApp={onEnterApp}
         onOpenAuth={onOpenAuth}
+        onNavigateSection={scrollTo}
         displayCurrency={displayCurrency}
       />
     </div>

@@ -46,6 +46,8 @@ import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
 import { LandingPageView } from './views/LandingPageView';
+import { AboutPageView } from './views/AboutPageView';
+import { HowItWorksPageView } from './views/HowItWorksPageView';
 import { SealedPortfolioManager } from './components/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
@@ -1138,6 +1140,8 @@ export default function App() {
                 }
               }}
               onOpenAuth={() => navigate('/auth')}
+              onNavigateAbout={() => navigate('/about')}
+              onNavigateHowItWorks={() => navigate('/how-it-works')}
               onSelectTier={(tier) => {
                 if (user) {
                   if (tier !== 'Starter') {
@@ -1151,6 +1155,30 @@ export default function App() {
               currentTier={currentTier}
               displayCurrency={displayCurrency}
               onSelectCurrency={setDisplayCurrency}
+            />
+          }
+        />
+
+        <Route
+          path="/about"
+          element={
+            <AboutPageView
+              onOpenAuth={() => navigate('/auth')}
+              onNavigateHome={() => navigate('/')}
+              onNavigateHowItWorks={() => navigate('/how-it-works')}
+              displayCurrency={displayCurrency}
+            />
+          }
+        />
+
+        <Route
+          path="/how-it-works"
+          element={
+            <HowItWorksPageView
+              onOpenAuth={() => navigate('/auth')}
+              onNavigateHome={() => navigate('/')}
+              onNavigateAbout={() => navigate('/about')}
+              displayCurrency={displayCurrency}
             />
           }
         />

@@ -1,25 +1,23 @@
 import React from 'react';
-import { ArrowRight, Sparkles, Shield, Layers, TrendingUp, Zap, CheckCircle2, ChevronRight, Activity } from 'lucide-react';
+import { Sparkles, Shield, Layers, TrendingUp, Zap, CheckCircle2, Activity } from 'lucide-react';
 import { DisplayCurrency } from '../../types';
 
 interface HeroWideSectionProps {
-  onEnterApp: () => void;
-  onExploreFeatures: () => void;
+  onEnterApp?: () => void;
+  onExploreFeatures?: () => void;
   displayCurrency: DisplayCurrency;
 }
 
 export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
-  onEnterApp,
-  onExploreFeatures,
   displayCurrency,
 }) => {
   return (
     <section className="relative w-full pt-12 sm:pt-16 lg:pt-20 xl:pt-24 pb-16 sm:pb-24 lg:pb-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 border-b border-[#E2E8F0] overflow-hidden">
       <div className="relative w-full max-w-[2200px] mx-auto text-center space-y-8 lg:space-y-12">
         {/* Top Tagline Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-xs font-semibold shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse"></span>
-          <span>Next-Generation Pokémon TCG Asset Management</span>
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full">
+          <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
+          <span className="truncate sm:whitespace-normal">Next-Gen Pokémon TCG Asset Management</span>
         </div>
 
         {/* Singular Wide Hero Title */}
@@ -32,37 +30,18 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
           A unified platform engineered for high-net-worth collectors and competitive players. Seamlessly manage portfolio valuations, track graded slabs, architect tournament-legal decks, and optimize your sealed vault assets in real time.
         </p>
 
-        {/* CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2">
-          <button
-            onClick={onEnterApp}
-            className="inline-flex items-center gap-3 px-7 py-4 bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
-          >
-            <span>Open Live Workspace</span>
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-
-          <button
-            onClick={onExploreFeatures}
-            className="inline-flex items-center gap-2.5 px-6 py-4 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] font-semibold text-sm sm:text-base rounded-xl shadow-xs transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A] focus-visible:ring-offset-2"
-          >
-            <span>View Platform Architecture</span>
-            <ChevronRight className="w-4 h-4 text-[#64748B]" />
-          </button>
-        </div>
-
         {/* Quick Trust / Feature Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-2 text-xs sm:text-sm font-medium text-[#64748B]">
-          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
-            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-8 pt-2 text-[11px] sm:text-sm font-medium text-[#64748B]">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
             <span>Low-Latency Card Indexing</span>
           </div>
-          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
-            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
             <span>Real-Time Market Valuation</span>
           </div>
-          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
-            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
             <span>Championship Format Validation</span>
           </div>
         </div>
@@ -163,13 +142,13 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
-                    <button
-                      onClick={onEnterApp}
-                      className="w-full py-2 bg-[#F8FAFC] hover:bg-[#FFF0F3] hover:text-[#DC143C] text-[#0F172A] font-semibold text-xs rounded-lg border border-[#E2E8F0] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <span>Open Live Portfolio</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center justify-between text-xs font-mono">
+                      <span className="text-[#64748B]">Real-Time Ledger:</span>
+                      <span className="text-emerald-600 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Synchronized
+                      </span>
+                    </div>
                   </div>
                 </div>
 

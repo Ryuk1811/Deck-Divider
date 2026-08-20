@@ -245,7 +245,7 @@ export function AuthView({
               }}
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#DC143C] hover:text-[#B01030] transition-colors cursor-pointer"
             >
-              <span>Explore Demo as Guest</span>
+              <span>Explore Offline Workspace</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
