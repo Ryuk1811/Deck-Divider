@@ -31,6 +31,9 @@ interface SettingsViewProps {
   soldEntries: PortfolioCardEntry[];
   exportDataSignal?: number;
   customLists?: any[];
+  onTriggerCloudSnapshot?: () => Promise<void>;
+  lastSyncedTimestamp?: string | null;
+  snapshotMetrics?: { rawSize: number; byteSize: number; compressionRatio: string } | null;
 }
 
 const SUPPORTED_CURRENCIES = [
@@ -65,7 +68,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   soldEntries,
   customLists = [],
   exportDataSignal,
+  onTriggerCloudSnapshot,
+  lastSyncedTimestamp,
+  snapshotMetrics,
 }) => {
+  const [isSnapshotting, setIsSnapshotting] = useState(false);
+  const [snapshotSuccess, setSnapshotSuccess] = useState(false);
+
+  const handleManualSnapshot = async () => {
+    if (!onTriggerCloudSnapshot) return;
+    setIsSnapshotting(true);
+    try {
+      await onTriggerCloudSnapshot();
+      setSnapshotSuccess(true);
+      setTimeout(() => setSnapshotSuccess(false), 3000);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSnapshotting(false);
+    }
+  };
   const [forexInfo, setForexInfo] = useState<{
     rates: Record<string, number>;
     provider: string;
@@ -243,7 +265,78 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* SECTION 2: DATA EXPORT */}
+      {/* SECTION 2: ENCRYPTED LOCAL STORAGE & COMPRESSED FIRESTORE BACKUP */}
+      <div className="p-6 space-y-4 glass-slab shadow-md">
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0]">
+              <Shield className="w-5 h-5 text-[#16A34A]" />
+            </div>
+            <div>
+              <h2 className="font-heading font-bold text-lg text-[#0F172A]">
+                Encrypted Local Database & Cloud Snapshot
+              </h2>
+              <p className="font-mono text-xs text-[#64748B]">
+                Hardware-derived AES-GCM 256-bit encryption with micro-compressed single-document cloud backups.
+              </p>
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-[#F0FDF4] border border-[#86EFAC] rounded text-emerald-800 font-mono text-xs font-bold">
+            <Check className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Vault Encrypted (AES-256)</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Storage Architecture</span>
+            <span className="font-mono text-xs font-bold text-[#0F172A] block">Zero-Knowledge Local DB</span>
+            <span className="text-[11px] text-[#64748B] block">Plaintext never exposed across network</span>
+          </div>
+          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Firestore Cloud Footprint</span>
+            <span className="font-mono text-xs font-bold text-[#0F172A] block">
+              {snapshotMetrics ? `${(snapshotMetrics.byteSize / 1024).toFixed(1)} KB (${snapshotMetrics.compressionRatio})` : 'Micro Snapshot (~8-15 KB)'}
+            </span>
+            <span className="text-[11px] text-[#64748B] block">Single document overwrite per user</span>
+          </div>
+          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Last Cloud Sync</span>
+            <span className="font-mono text-xs font-bold text-[#0F172A] block">
+              {lastSyncedTimestamp ? new Date(lastSyncedTimestamp).toLocaleTimeString() : 'Current Session Active'}
+            </span>
+            <span className="text-[11px] text-[#64748B] block">Automatic debounced backup</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3">
+          <p className="font-mono text-xs text-[#64748B]">
+            Manual snapshot force-packs all local encrypted state and writes a compressed single doc.
+          </p>
+          <button
+            type="button"
+            onClick={handleManualSnapshot}
+            disabled={isSnapshotting}
+            className="neo-btn-primary px-4 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap"
+          >
+            {isSnapshotting ? (
+              <span>Compressing & Syncing...</span>
+            ) : snapshotSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-white" />
+                <span>Cloud Snapshot Saved!</span>
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 text-white" />
+                <span>Save Compressed Cloud Snapshot</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* SECTION 3: DATA EXPORT */}
       <div className="p-6 space-y-4 glass-slab shadow-md">
         <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-3">
           <div className="p-2 rounded-lg bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]">

@@ -51,10 +51,11 @@ import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
-import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists } from './lib/indexedDB';
+import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists, idbGetUserDecks, idbSaveUserDecks } from './lib/indexedDB';
+import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc } from './lib/snapshotEngine';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 
 export default function App() {
   const navigate = useNavigate();
@@ -224,28 +225,6 @@ export default function App() {
   }, []);
 
 
-  React.useEffect(() => {
-    if (!user) {
-      setDecks([]);
-      setSoldEntries([]);
-      setCustomLists([]);
-      return;
-    }
-    const unsubDecks = onSnapshot(
-      collection(db, 'users', user.uid, 'decks'),
-      (snap) => {
-        const liveDecks = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Deck[];
-        setDecks(liveDecks);
-      },
-      (err) => {
-        console.warn('Decks snapshot listener warning:', err);
-      }
-    );
-    return () => {
-      unsubDecks();
-    };
-  }, [user]);
-
   // Core Data Collections
   const [decks, setDecks] = useState<Deck[]>([]);
   const [soldEntries, setSoldEntries] = useState<PortfolioCardEntry[]>([]);
@@ -253,36 +232,131 @@ export default function App() {
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [sealedEntries, setSealedEntries] = useState<PortfolioSealedEntry[]>([]);
 
-  // Load sealed entries from IndexedDB on initial mount
+  // Encrypted Local Vault & Compressed Cloud Snapshot State
+  const [lastSyncedTimestamp, setLastSyncedTimestamp] = useState<string | null>(null);
+  const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
+
+  // Load from Local Encrypted Storage on initial mount
   React.useEffect(() => {
-    idbGetSealedVault().then((saved) => {
+    const activeUid = user?.uid || 'guest_user';
+    idbGetUserDecks(activeUid).then((saved) => {
       if (saved && saved.length > 0) {
-        setSealedEntries(saved);
+        setDecks(saved);
       }
     });
-  }, []);
-
-  // Sync sealed entries to IndexedDB on change
-  React.useEffect(() => {
-    if (sealedEntries.length > 0) {
-      idbSaveSealedVault(sealedEntries);
-    }
-  }, [sealedEntries]);
-
-  React.useEffect(() => {
-    idbGetCustomLists().then((saved) => {
+    idbGetCustomLists(activeUid).then((saved) => {
       if (saved && saved.length > 0) {
         setCustomLists(saved);
       }
     });
-  }, []);
+    idbGetSealedVault(activeUid).then((saved) => {
+      if (saved && saved.length > 0) {
+        setSealedEntries(saved);
+      }
+    });
+  }, [user]);
+
+  // Initial cloud restore if local database is empty and user signs in
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchLatestCloudSnapshot = async () => {
+      try {
+        const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
+        const snapDoc = await getDoc(snapRef);
+        if (snapDoc.exists()) {
+          const docData = snapDoc.data() as CompressedSnapshotDoc;
+          setLastSyncedTimestamp(docData.updatedAt);
+          setSnapshotMetrics({
+            rawSize: docData.rawSize,
+            byteSize: docData.byteSize,
+            compressionRatio: docData.compressionRatio,
+          });
+
+          // Unpack if local state has no decks or lists
+          const unpacked = await unpackUserSnapshot(docData);
+          if (unpacked) {
+            setDecks((prev) => (prev.length === 0 && unpacked.decks?.length > 0 ? unpacked.decks : prev));
+            setCustomLists((prev) => (prev.length === 0 && unpacked.customLists?.length > 0 ? unpacked.customLists : prev));
+            setSealedEntries((prev) => (prev.length === 0 && unpacked.sealedEntries?.length > 0 ? unpacked.sealedEntries : prev));
+            setSoldEntries((prev) => (prev.length === 0 && unpacked.soldEntries?.length > 0 ? unpacked.soldEntries : prev));
+          }
+        }
+      } catch (err) {
+        console.warn('Snapshot fetch notice:', err);
+      }
+    };
+    fetchLatestCloudSnapshot();
+  }, [user]);
+
+  // Push compressed single-document snapshot to Firestore (overwriting existing)
+  const saveCompressedCloudSnapshot = React.useCallback(async () => {
+    if (!user) return;
+    try {
+      const stateToCompress = {
+        version: 2,
+        userId: user.uid,
+        updatedAt: new Date().toISOString(),
+        profile: {
+          displayName: profile?.displayName || user.displayName || '',
+          email: user.email || '',
+          tier: currentTier,
+          currency: displayCurrency,
+        },
+        decks,
+        customLists,
+        sealedEntries,
+        soldEntries,
+        recentActivities,
+      };
+
+      const packed = await packageUserSnapshot(stateToCompress);
+      const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
+      
+      // Strict overwrite (merge: false) to prevent historical document bloat
+      await setDoc(snapRef, packed, { merge: false });
+
+      setLastSyncedTimestamp(packed.updatedAt);
+      setSnapshotMetrics({
+        rawSize: packed.rawSize,
+        byteSize: packed.byteSize,
+        compressionRatio: packed.compressionRatio,
+      });
+      triggerSyncPulse();
+    } catch (err) {
+      console.warn('Cloud snapshot overwrite warning:', err);
+    }
+  }, [user, profile, currentTier, displayCurrency, decks, customLists, sealedEntries, soldEntries, recentActivities]);
+
+  // Debounced auto-snapshot when local data changes
+  React.useEffect(() => {
+    if (!user) return;
+    const timer = setTimeout(() => {
+      saveCompressedCloudSnapshot();
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [decks, customLists, sealedEntries, soldEntries, user, saveCompressedCloudSnapshot]);
+
+  // Sync local changes to Encrypted Local Storage
+  React.useEffect(() => {
+    const activeUid = user?.uid || 'guest_user';
+    if (decks.length > 0) {
+      idbSaveUserDecks(decks, activeUid);
+    }
+  }, [decks, user]);
 
   React.useEffect(() => {
+    const activeUid = user?.uid || 'guest_user';
     if (customLists.length > 0) {
-      idbSaveCustomLists(customLists);
-
+      idbSaveCustomLists(customLists, activeUid);
     }
-  }, [customLists]);
+  }, [customLists, user]);
+
+  React.useEffect(() => {
+    const activeUid = user?.uid || 'guest_user';
+    if (sealedEntries.length > 0) {
+      idbSaveSealedVault(sealedEntries, activeUid);
+    }
+  }, [sealedEntries, user]);
 
   // Persistent Search Filters
   const [savedFilters, setSavedFilters] = useState<SearchFilters>({
@@ -342,125 +416,167 @@ export default function App() {
   };
 
   // Deck Management Handlers
-  
   const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
-    triggerSyncPulse();
-    if (user) {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await fetch('/api/decks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(deckData)
+    const maxDecks = TIER_LIMITS[currentTier].maxDecks;
+    if (decks.length >= maxDecks) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'CREATE_DECK',
+        details: { currentCount: decks.length, limitCount: maxDecks },
       });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || 'Failed to create deck');
+      return;
+    }
+
+    triggerSyncPulse();
+    const newDeckId = `deck-${Date.now()}`;
+    const newDeck: Deck = {
+      id: newDeckId,
+      ...deckData,
+      entries: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setDecks((prev) => [newDeck, ...prev]);
+    idbSaveUserDecks([newDeck, ...decks]);
+    setTargetDeckIdForView(newDeckId);
+
+    if (user) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'decks', newDeckId), newDeck);
+      } catch (err) {
+        console.warn('Firestore deck save notice:', err);
       }
-    } else {
-      const newDeck: Deck = {
-        id: `deck-${Date.now()}`,
-        ...deckData,
-        entries: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setDecks([newDeck, ...decks]);
     }
   };
 
-
-
-  
-  const handleUpdateDeck = (updatedDeck: Deck) => {
-    setDecks(prev => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
+  const handleUpdateDeck = async (updatedDeck: Deck) => {
     triggerSyncPulse();
+    const newDecks = decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d));
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks);
+
+    if (user) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'decks', updatedDeck.id), updatedDeck, { merge: true });
+      } catch (err) {
+        console.warn('Firestore deck update notice:', err);
+      }
+    }
   };
 
-  const handleDeleteDeck = (deckId: string) => {
+  const handleDeleteDeck = async (deckId: string) => {
     triggerSyncPulse();
-    setDecks(decks.filter((d) => d.id !== deckId));
+    const newDecks = decks.filter((d) => d.id !== deckId);
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks);
+
+    if (user) {
+      try {
+        await deleteDoc(doc(db, 'users', user.uid, 'decks', deckId));
+      } catch (err) {
+        console.warn('Firestore deck delete notice:', err);
+      }
+    }
   };
 
-  
   const handleSplitDeckGroup = async (
     sourceDeckId: string,
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
     triggerSyncPulse();
+    const sourceDeck = decks.find((d) => d.id === sourceDeckId);
+    if (!sourceDeck) return;
+
+    const entriesToMove = sourceDeck.entries.filter((e) => cardIdsToSplit.includes(e.cardId));
+    const remainingEntries = sourceDeck.entries.filter((e) => !cardIdsToSplit.includes(e.cardId));
+    const newSplitDeckId = `deck-split-${Date.now()}`;
+    const newSplitDeck: Deck = {
+      id: newSplitDeckId,
+      name: newDeckName,
+      description: `Split group from ${sourceDeck.name}`,
+      colorHex: sourceDeck.colorHex,
+      isPublic: sourceDeck.isPublic,
+      entries: entriesToMove,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const updatedSourceDeck: Deck = {
+      ...sourceDeck,
+      entries: remainingEntries,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const newDecks = [
+      ...decks.map((d) => (d.id === sourceDeckId ? updatedSourceDeck : d)),
+      newSplitDeck,
+    ];
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks);
+
     if (user) {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await fetch(`/api/decks/${sourceDeckId}/split`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ cardIdsToSplit, newDeckName })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || 'Failed to split deck');
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'decks', updatedSourceDeck.id), updatedSourceDeck);
+        await setDoc(doc(db, 'users', user.uid, 'decks', newSplitDeckId), newSplitDeck);
+      } catch (err) {
+        console.warn('Firestore deck split save notice:', err);
       }
-    } else {
-      // Local fallback
-      const sourceDeck = decks.find((d) => d.id === sourceDeckId);
-      if (!sourceDeck) return;
-      const entriesToMove = sourceDeck.entries.filter((e) => cardIdsToSplit.includes(e.cardId));
-      const remainingEntries = sourceDeck.entries.filter((e) => !cardIdsToSplit.includes(e.cardId));
-      const newSplitDeck: Deck = {
-        id: `deck-split-${Date.now()}`,
-        name: newDeckName,
-        description: `Split group from ${sourceDeck.name}`,
-        colorHex: sourceDeck.colorHex,
-        isPublic: sourceDeck.isPublic,
-        entries: entriesToMove,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setDecks([
-        ...decks.map((d) => (d.id === sourceDeckId ? { ...d, entries: remainingEntries } : d)),
-        newSplitDeck,
-      ]);
     }
   };
 
-  const handleAddCardToDeck = (
+  const handleAddCardToDeck = async (
     deckId: string,
     entryData: Omit<PortfolioCardEntry, 'id' | 'isSold'>,
     mode: 'increment' | 'separate'
   ) => {
     triggerSyncPulse();
-    setDecks(
-      decks.map((deck) => {
-        if (deck.id !== deckId) return deck;
+    let targetDeck: Deck | undefined;
 
-        if (mode === 'increment') {
-          const existing = deck.entries.find(
-            (e) => !e.isSold && e.cardId === entryData.cardId && e.condition === entryData.condition
-          );
+    const newDecks = decks.map((deck) => {
+      if (deck.id !== deckId) return deck;
 
-          if (existing) {
-            return {
-              ...deck,
-              entries: deck.entries.map((e) =>
-                e.id === existing.id ? { ...e, quantity: e.quantity + entryData.quantity } : e
-              ),
-              updatedAt: new Date().toISOString(),
-            };
-          }
+      if (mode === 'increment') {
+        const existing = deck.entries.find(
+          (e) => !e.isSold && e.cardId === entryData.cardId && e.condition === entryData.condition
+        );
+
+        if (existing) {
+          targetDeck = {
+            ...deck,
+            entries: deck.entries.map((e) =>
+              e.id === existing.id ? { ...e, quantity: e.quantity + entryData.quantity } : e
+            ),
+            updatedAt: new Date().toISOString(),
+          };
+          return targetDeck;
         }
+      }
 
-        const newEntry: PortfolioCardEntry = {
-          id: `entry-${Date.now()}`,
-          ...entryData,
-          isSold: false,
-        };
+      const newEntry: PortfolioCardEntry = {
+        id: `entry-${Date.now()}`,
+        ...entryData,
+        isSold: false,
+      };
 
-        return {
-          ...deck,
-          entries: [...deck.entries, newEntry],
-          updatedAt: new Date().toISOString(),
-        };
-      })
-    );
+      targetDeck = {
+        ...deck,
+        entries: [...deck.entries, newEntry],
+        updatedAt: new Date().toISOString(),
+      };
+      return targetDeck;
+    });
+
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks);
+
+    if (user && targetDeck) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+      } catch (err) {
+        console.warn('Firestore deck add-card notice:', err);
+      }
+    }
 
     setRecentActivities([
       {
@@ -477,7 +593,7 @@ export default function App() {
     ]);
   };
 
-  const handleMarkCardSold = (
+  const handleMarkCardSold = async (
     deckId: string,
     entryId: string,
     saleDetails: {
@@ -489,26 +605,37 @@ export default function App() {
   ) => {
     triggerSyncPulse();
     let soldItem: PortfolioCardEntry | null = null;
+    let targetDeck: Deck | undefined;
 
-    setDecks(
-      decks.map((deck) => {
-        if (deck.id !== deckId) return deck;
-        return {
-          ...deck,
-          entries: deck.entries.map((e) => {
-            if (e.id === entryId) {
-              soldItem = {
-                ...e,
-                isSold: true,
-                ...saleDetails,
-              };
-              return soldItem;
-            }
-            return e;
-          }),
-        };
-      })
-    );
+    const newDecks = decks.map((deck) => {
+      if (deck.id !== deckId) return deck;
+      targetDeck = {
+        ...deck,
+        entries: deck.entries.map((e) => {
+          if (e.id === entryId) {
+            soldItem = {
+              ...e,
+              isSold: true,
+              ...saleDetails,
+            };
+            return soldItem;
+          }
+          return e;
+        }),
+      };
+      return targetDeck;
+    });
+
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks);
+
+    if (user && targetDeck) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+      } catch (err) {
+        console.warn('Firestore deck mark-sold notice:', err);
+      }
+    }
 
     if (soldItem) {
       setSoldEntries([soldItem, ...soldEntries]);
@@ -529,7 +656,7 @@ export default function App() {
   };
 
   // Custom List Handlers
-  const handleCreateList = (listData: Omit<CustomList, 'id' | 'createdAt'>) => {
+  const handleCreateList = async (listData: Omit<CustomList, 'id' | 'createdAt'>) => {
     const maxLists = TIER_LIMITS[currentTier].maxLists;
     if (customLists.length >= maxLists) {
       setLimitModalConfig({
@@ -541,20 +668,42 @@ export default function App() {
     }
 
     triggerSyncPulse();
+    const newListId = `list-${Date.now()}`;
     const newList: CustomList = {
-      id: `list-${Date.now()}`,
+      id: newListId,
       ...listData,
       createdAt: new Date().toISOString(),
     };
-    setCustomLists([...customLists, newList]);
+
+    const newLists = [newList, ...customLists];
+    setCustomLists(newLists);
+    idbSaveCustomLists(newLists);
+
+    if (user) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'customLists', newListId), newList);
+      } catch (err) {
+        console.warn('Firestore list create notice:', err);
+      }
+    }
   };
 
-  const handleDeleteList = (listId: string) => {
+  const handleDeleteList = async (listId: string) => {
     triggerSyncPulse();
-    setCustomLists(customLists.filter((l) => l.id !== listId));
+    const newLists = customLists.filter((l) => l.id !== listId);
+    setCustomLists(newLists);
+    idbSaveCustomLists(newLists);
+
+    if (user) {
+      try {
+        await deleteDoc(doc(db, 'users', user.uid, 'customLists', listId));
+      } catch (err) {
+        console.warn('Firestore list delete notice:', err);
+      }
+    }
   };
 
-  const handleAddCardToList = (listId: string, cardId: string) => {
+  const handleAddCardToList = async (listId: string, cardId: string) => {
     const targetList = customLists.find((l) => l.id === listId);
     const maxItems = TIER_LIMITS[currentTier].maxItemsPerList;
     if (targetList && targetList.cardIds.length >= maxItems) {
@@ -567,23 +716,141 @@ export default function App() {
     }
 
     triggerSyncPulse();
-    setCustomLists(
-      customLists.map((l) =>
-        l.id === listId && !l.cardIds.includes(cardId)
-          ? { ...l, cardIds: [...l.cardIds, cardId] }
-          : l
-      )
-    );
+    let updatedList: CustomList | undefined;
+
+    const newLists = customLists.map((l) => {
+      if (l.id === listId && !l.cardIds.includes(cardId)) {
+        updatedList = { ...l, cardIds: [...l.cardIds, cardId] };
+        return updatedList;
+      }
+      return l;
+    });
+
+    setCustomLists(newLists);
+    idbSaveCustomLists(newLists);
+
+    if (user && updatedList) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+      } catch (err) {
+        console.warn('Firestore list add-card notice:', err);
+      }
+    }
   };
 
-  const handleRemoveCardFromList = (listId: string, cardId: string) => {
+  const handleRemoveCardFromList = async (listId: string, cardId: string) => {
     triggerSyncPulse();
-    setCustomLists(
-      customLists.map((l) =>
-        l.id === listId ? { ...l, cardIds: l.cardIds.filter((id) => id !== cardId) } : l
-      )
-    );
+    let updatedList: CustomList | undefined;
+
+    const newLists = customLists.map((l) => {
+      if (l.id === listId) {
+        updatedList = { ...l, cardIds: l.cardIds.filter((id) => id !== cardId) };
+        return updatedList;
+      }
+      return l;
+    });
+
+    setCustomLists(newLists);
+    idbSaveCustomLists(newLists);
+
+    if (user && updatedList) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+      } catch (err) {
+        console.warn('Firestore list remove-card notice:', err);
+      }
+    }
   };
+
+  // Sealed Vault Handlers
+  const handleAddSealedEntry = async (entry: PortfolioSealedEntry) => {
+    triggerSyncPulse();
+    const newSealed = [entry, ...sealedEntries];
+    setSealedEntries(newSealed);
+    idbSaveSealedVault(newSealed);
+
+    if (user) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'sealedVault', entry.id), entry);
+      } catch (err) {
+        console.warn('Firestore sealed entry save notice:', err);
+      }
+    }
+
+    setRecentActivities((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        type: 'ADDED',
+        title: `Vaulted ${entry.product.name}`,
+        subtitle: `${entry.condition} • Qty ${entry.quantity}`,
+        timestamp: new Date().toISOString(),
+        amount: entry.purchasePrice * entry.quantity,
+        currency: entry.purchaseCurrency,
+      },
+      ...prev,
+    ]);
+  };
+
+  const handleDeleteSealedEntry = async (id: string) => {
+    triggerSyncPulse();
+    const newSealed = sealedEntries.filter((e) => e.id !== id);
+    setSealedEntries(newSealed);
+    idbSaveSealedVault(newSealed);
+
+    if (user) {
+      try {
+        await deleteDoc(doc(db, 'users', user.uid, 'sealedVault', id));
+      } catch (err) {
+        console.warn('Firestore sealed entry delete notice:', err);
+      }
+    }
+  };
+
+  const handleMarkSoldSealedEntry = async (id: string, salePrice: number) => {
+    triggerSyncPulse();
+    let updatedItem: PortfolioSealedEntry | null = null;
+    const newSealed = sealedEntries.map((e) => {
+      if (e.id === id) {
+        updatedItem = { ...e, isSold: true, salePrice };
+        return updatedItem;
+      }
+      return e;
+    });
+
+    setSealedEntries(newSealed);
+    idbSaveSealedVault(newSealed);
+
+    if (user && updatedItem) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'sealedVault', (updatedItem as PortfolioSealedEntry).id), updatedItem);
+      } catch (err) {
+        console.warn('Firestore sealed mark-sold notice:', err);
+      }
+    }
+
+    if (updatedItem) {
+      setRecentActivities((prev) => [
+        {
+          id: `act-${Date.now()}`,
+          type: 'SOLD',
+          title: `Sold ${(updatedItem as PortfolioSealedEntry).product.name}`,
+          subtitle: `Realized Sale @ $${salePrice.toLocaleString()}`,
+          timestamp: new Date().toISOString(),
+          amount: salePrice,
+          currency: (updatedItem as PortfolioSealedEntry).purchaseCurrency,
+        },
+        ...prev,
+      ]);
+    }
+  };
+
+  // Unified sold entries aggregating across decks & historical sales
+  const allSoldEntries = useMemo(() => {
+    const deckSolds = decks.flatMap((d) => d.entries.filter((e) => e.isSold));
+    const ids = new Set(deckSolds.map((s) => s.id));
+    const extraSolds = soldEntries.filter((s) => !ids.has(s.id));
+    return [...deckSolds, ...extraSolds];
+  }, [decks, soldEntries]);
 
   const renderDashboard = () => {
     if (authLoading) {
@@ -727,13 +994,14 @@ export default function App() {
                 setTargetDeckIdForView(deckId);
                 setActiveTab('decks');
               }}
+              onAddCardToList={handleAddCardToList}
             />
           )}
 
           {activeTab === 'metrics' && (
             <MetricsView
               decks={decks}
-              soldEntries={soldEntries}
+              soldEntries={allSoldEntries}
               customLists={customLists}
               sealedEntries={sealedEntries}
               liveSets={liveSets}
@@ -778,13 +1046,9 @@ export default function App() {
                 entries={sealedEntries}
                 currency={displayCurrency}
                 availableSets={liveSets}
-                onAddSealedEntry={(entry) => setSealedEntries((prev) => [entry, ...prev])}
-                onDeleteSealedEntry={(id) => setSealedEntries((prev) => prev.filter((e) => e.id !== id))}
-                onMarkSoldSealedEntry={(id, salePrice) =>
-                  setSealedEntries((prev) =>
-                    prev.map((e) => (e.id === id ? { ...e, isSold: true, salePrice } : e))
-                  )
-                }
+                onAddSealedEntry={handleAddSealedEntry}
+                onDeleteSealedEntry={handleDeleteSealedEntry}
+                onMarkSoldSealedEntry={handleMarkSoldSealedEntry}
               />
             </div>
           )}
@@ -845,9 +1109,12 @@ export default function App() {
               currentTier={currentTier}
               onChangeTier={handleChangeTier}
               decks={decks}
-              soldEntries={soldEntries}
+              soldEntries={allSoldEntries}
               customLists={customLists}
               exportDataSignal={exportDataSignal}
+              onTriggerCloudSnapshot={saveCompressedCloudSnapshot}
+              lastSyncedTimestamp={lastSyncedTimestamp}
+              snapshotMetrics={snapshotMetrics}
             />
           )}
         </main>

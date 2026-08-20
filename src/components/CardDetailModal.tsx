@@ -112,6 +112,18 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
     entryData: Omit<PortfolioCardEntry, 'id' | 'isSold'>;
   } | null>(null);
 
+  React.useEffect(() => {
+    if ((!selectedDeckId || !decks.some(d => d.id === selectedDeckId)) && decks.length > 0) {
+      setSelectedDeckId(decks[0].id);
+    }
+  }, [decks, selectedDeckId]);
+
+  React.useEffect(() => {
+    if ((!selectedListId || !lists.some(l => l.id === selectedListId)) && lists.length > 0) {
+      setSelectedListId(lists[0].id);
+    }
+  }, [lists, selectedListId]);
+
   // Lazy fetch full card data
   const [fullCardData, setFullCardData] = useState<PokemonCard | null>(card);
   const [isFetchingFull, setIsFetchingFull] = useState(false);

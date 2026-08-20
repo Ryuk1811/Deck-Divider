@@ -103,10 +103,10 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newListName) return;
+    if (!newListName.trim()) return;
     onCreateList({
-      name: newListName,
-      description: newListDesc,
+      name: newListName.trim(),
+      description: newListDesc.trim(),
       cardIds: [],
     });
     setNewListName('');
@@ -116,61 +116,99 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
   return (
     <div className="app-view-container space-y-8 animate-fade-in">
-      {/* LISTS SELECTOR AND GRID */}
+      {/* LISTS SELECTOR AND HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-        <h2 className="font-heading font-bold text-lg text-[#0F172A]">My Custom Lists</h2>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] rounded-lg border border-[#E2E8F0]">
-          <span className="font-mono text-xs text-[#64748B]">Lists Usage:</span>
-          <span className="font-mono text-xs font-bold text-[#0F172A]">
-            {lists.length} / {tierLimit.maxLists === Infinity ? '∞' : tierLimit.maxLists}
-          </span>
+        <div>
+          <h2 className="font-heading font-bold text-lg text-[#0F172A]">My Custom Lists</h2>
+          <p className="font-mono text-xs text-[#64748B] mt-0.5">
+            Organize want-lists, trade targets, and custom card binders
+          </p>
+        </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] rounded-lg border border-[#E2E8F0]">
+            <span className="font-mono text-xs text-[#64748B]">Lists Usage:</span>
+            <span className="font-mono text-xs font-bold text-[#0F172A]">
+              {lists.length} / {tierLimit.maxLists === Infinity ? '∞' : tierLimit.maxLists}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenCreateModal}
+            className="h-9 px-4 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
+          >
+            <Plus className="w-4 h-4 flex-shrink-0" />
+            <span>New Custom List</span>
+          </button>
         </div>
       </div>
 
+      {/* EMPTY STATE */}
+      {lists.length === 0 && (
+        <div className="p-12 text-center glass-slab space-y-4 rounded-xl border border-[#E2E8F0] shadow-sm">
+          <ListOrdered className="w-10 h-10 text-[#CBD5E1] mx-auto" />
+          <div className="space-y-1">
+            <h3 className="font-heading font-bold text-base text-[#0F172A]">No Custom Lists Created Yet</h3>
+            <p className="font-mono text-xs text-[#64748B] max-w-md mx-auto">
+              Create your first custom want-list or targeted binder group to curate cards across any Pokémon TCG expansion.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenCreateModal}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create First Custom List</span>
+          </button>
+        </div>
+      )}
+
       {/* LIST TABS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {lists.map((list) => {
-          const isSelected = list.id === currentList?.id;
-          return (
-            <div
-              key={list.id}
-              onClick={() => setSelectedListId(list.id)}
-              className={`p-4 cursor-pointer transition-all glass-slab flex flex-col justify-between ${
-                isSelected
-                  ? 'border-[#DC143C] bg-gradient-to-r from-[#FFF0F3]/40 to-white shadow-sm ring-1 ring-[#DC143C]'
-                  : 'shadow-xs hover:shadow-md'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ListOrdered className="w-4 h-4 text-[#DC143C]" />
-                    <h3 className="font-heading font-bold text-sm text-[#0F172A]">
-                      {list.name}
-                    </h3>
+      {lists.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {lists.map((list) => {
+            const isSelected = list.id === currentList?.id;
+            return (
+              <div
+                key={list.id}
+                onClick={() => setSelectedListId(list.id)}
+                className={`p-4 cursor-pointer transition-all glass-slab flex flex-col justify-between ${
+                  isSelected
+                    ? 'border-[#DC143C] bg-gradient-to-r from-[#FFF0F3]/40 to-white shadow-sm ring-1 ring-[#DC143C]'
+                    : 'shadow-xs hover:shadow-md'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ListOrdered className="w-4 h-4 text-[#DC143C]" />
+                      <h3 className="font-heading font-bold text-sm text-[#0F172A]">
+                        {list.name}
+                      </h3>
+                    </div>
+                    <span className="font-mono text-[10px] font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded-md">
+                      {list.cardIds.length} / {tierLimit.maxItemsPerList === Infinity ? '∞' : tierLimit.maxItemsPerList}
+                    </span>
                   </div>
-                  <span className="font-mono text-[10px] font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded-md">
-                    {list.cardIds.length} / {tierLimit.maxItemsPerList === Infinity ? '∞' : tierLimit.maxItemsPerList}
-                  </span>
+                  <p className="font-mono text-xs text-[#64748B] mt-2 line-clamp-1">
+                    {list.description || 'No description added'}
+                  </p>
                 </div>
-                <p className="font-mono text-xs text-[#64748B] mt-2 line-clamp-1">
-                  {list.description}
-                </p>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <div className="font-mono text-[11px] text-[#64748B]">
-                  {list.cardIds.length} cards tracked
-                </div>
-                {list.coverImageUrl && (
-                  <div className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] shadow-2xs">
-                    <img src={list.coverImageUrl} alt="List Cover" className="w-full h-full object-cover object-top" />
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="font-mono text-[11px] text-[#64748B]">
+                    {list.cardIds.length} cards tracked
                   </div>
-                )}
+                  {list.coverImageUrl && (
+                    <div className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] shadow-2xs">
+                      <img src={list.coverImageUrl} alt="List Cover" className="w-full h-full object-cover object-top" />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* SELECTED LIST CONTENTS */}
       {currentList && (
@@ -244,47 +282,60 @@ export const ListsView: React.FC<ListsViewProps> = ({
       {/* CREATE LIST MODAL */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 chamfer-corner-lg">
+          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-2xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-lg text-[#0F172A]">
                 New Custom List
               </h3>
-              <button type="button" onClick={() => setIsCreateModalOpen(false)}>
-                <X className="w-4 h-4 text-[#0F172A]" />
+              <button 
+                type="button" 
+                onClick={() => setIsCreateModalOpen(false)}
+                className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9]"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="font-mono text-xs text-[#64748B]">List Name</label>
+                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">List Name</label>
                 <input
                   type="text"
                   required
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   placeholder="e.g. Trade Night Targets"
-                  className="w-full mt-1 p-2.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A]"
+                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="font-mono text-xs text-[#64748B]">Description</label>
+                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">Description (Optional)</label>
                 <textarea
                   value={newListDesc}
                   onChange={(e) => setNewListDesc(e.target.value)}
-                  placeholder="Purpose or notes..."
-                  rows={2}
-                  className="w-full mt-1 p-2.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A]"
+                  placeholder="Purpose, priority notes, or trade goals..."
+                  rows={3}
+                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full neo-btn-primary py-3 text-xs flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Create Custom List</span>
-              </button>
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0]">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#DC143C] text-white hover:bg-[#B01030] text-xs font-mono font-bold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Custom List</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>

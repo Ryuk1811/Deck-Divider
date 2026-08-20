@@ -11,7 +11,7 @@ interface CommandPaletteProps {
   sets: CardSet[];
   onSelectCard: (card: PokemonCard) => void;
   onSelectDeck: (deckId: string) => void;
-  onNavigate: (tab: 'collection' | 'decks' | 'search' | 'sets' | 'lists' | 'settings') => void;
+  onNavigate: (tab: 'collection' | 'metrics' | 'decks' | 'sealed_vault' | 'search' | 'sets' | 'lists' | 'settings') => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -87,11 +87,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-2 px-2">
                   Quick Navigation
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { label: 'Collection Portfolio', tab: 'collection' },
+                    { label: 'Collection', tab: 'collection' },
+                    { label: 'Metrics', tab: 'metrics' },
                     { label: 'Decks Hub', tab: 'decks' },
-                    { label: 'Global Card Search', tab: 'search' },
+                    { label: 'Sealed Vault', tab: 'sealed_vault' },
+                    { label: 'Card Search', tab: 'search' },
+                    { label: 'Sets Index', tab: 'sets' },
+                    { label: 'Lists', tab: 'lists' },
+                    { label: 'Settings', tab: 'settings' },
                   ].map((item) => (
                     <button
                       key={item.tab}
@@ -100,10 +105,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         onNavigate(item.tab as any);
                         onClose();
                       }}
-                      className="flex items-center justify-between p-2.5 rounded-md bg-white border border-[#E2E8F0] hover:border-[#DC143C] text-xs font-mono text-[#0F172A] transition-all hover:bg-[#FFF0F3]"
+                      className="flex items-center justify-between p-2 rounded-md bg-white border border-[#E2E8F0] hover:border-[#DC143C] text-xs font-mono text-[#0F172A] transition-all hover:bg-[#FFF0F3]"
                     >
-                      <span>{item.label}</span>
-                      <ArrowRight className="w-3 h-3 text-[#DC143C]" />
+                      <span className="truncate">{item.label}</span>
+                      <ArrowRight className="w-3 h-3 text-[#DC143C] flex-shrink-0" />
                     </button>
                   ))}
                 </div>

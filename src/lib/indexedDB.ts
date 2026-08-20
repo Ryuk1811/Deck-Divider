@@ -1,5 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { PokemonCard, CardSet, Deck, PortfolioCardEntry, CustomList, PortfolioSealedEntry } from '../types';
+import { setEncryptedItem, getEncryptedItem } from './encryptedVault';
 
 interface DeckDividerDBSchema extends DBSchema {
   cards: {
@@ -222,8 +223,10 @@ export async function idbUpdateSyncMeta(metaPartial: Partial<Awaited<ReturnType<
   }, { ...DEFAULT_SYNC_META, ...metaPartial });
 }
 
-// User Local Cache Sync
-export async function idbSaveUserDecks(decks: Deck[]): Promise<void> {
+// User Local Cache Sync with Encrypted Local Storage integration
+export async function idbSaveUserDecks(decks: Deck[], userId: string = 'guest_user'): Promise<void> {
+  // Store in encrypted vault
+  setEncryptedItem('user_decks', decks, userId);
   return execDB(async (db) => {
     const tx = db.transaction('userDecks', 'readwrite');
     await tx.store.clear();
@@ -234,11 +237,16 @@ export async function idbSaveUserDecks(decks: Deck[]): Promise<void> {
   }, undefined);
 }
 
-export async function idbGetUserDecks(): Promise<Deck[]> {
+export async function idbGetUserDecks(userId: string = 'guest_user'): Promise<Deck[]> {
+  const encrypted = await getEncryptedItem<Deck[]>('user_decks', userId);
+  if (encrypted && encrypted.length > 0) {
+    return encrypted;
+  }
   return execDB(async (db) => db.getAll('userDecks'), []);
 }
 
-export async function idbSaveUserPortfolio(items: PortfolioCardEntry[]): Promise<void> {
+export async function idbSaveUserPortfolio(items: PortfolioCardEntry[], userId: string = 'guest_user'): Promise<void> {
+  setEncryptedItem('user_portfolio', items, userId);
   return execDB(async (db) => {
     const tx = db.transaction('userPortfolio', 'readwrite');
     await tx.store.clear();
@@ -249,11 +257,16 @@ export async function idbSaveUserPortfolio(items: PortfolioCardEntry[]): Promise
   }, undefined);
 }
 
-export async function idbGetUserPortfolio(): Promise<PortfolioCardEntry[]> {
+export async function idbGetUserPortfolio(userId: string = 'guest_user'): Promise<PortfolioCardEntry[]> {
+  const encrypted = await getEncryptedItem<PortfolioCardEntry[]>('user_portfolio', userId);
+  if (encrypted && encrypted.length > 0) {
+    return encrypted;
+  }
   return execDB(async (db) => db.getAll('userPortfolio'), []);
 }
 
-export async function idbSaveSealedVault(items: PortfolioSealedEntry[]): Promise<void> {
+export async function idbSaveSealedVault(items: PortfolioSealedEntry[], userId: string = 'guest_user'): Promise<void> {
+  setEncryptedItem('sealed_vault', items, userId);
   return execDB(async (db) => {
     const tx = db.transaction('sealedVault', 'readwrite');
     await tx.store.clear();
@@ -264,11 +277,16 @@ export async function idbSaveSealedVault(items: PortfolioSealedEntry[]): Promise
   }, undefined);
 }
 
-export async function idbGetSealedVault(): Promise<PortfolioSealedEntry[]> {
+export async function idbGetSealedVault(userId: string = 'guest_user'): Promise<PortfolioSealedEntry[]> {
+  const encrypted = await getEncryptedItem<PortfolioSealedEntry[]>('sealed_vault', userId);
+  if (encrypted && encrypted.length > 0) {
+    return encrypted;
+  }
   return execDB(async (db) => db.getAll('sealedVault'), []);
 }
 
-export async function idbSaveCustomLists(lists: CustomList[]): Promise<void> {
+export async function idbSaveCustomLists(lists: CustomList[], userId: string = 'guest_user'): Promise<void> {
+  setEncryptedItem('custom_lists', lists, userId);
   return execDB(async (db) => {
     const tx = db.transaction('customLists', 'readwrite');
     await tx.store.clear();
@@ -279,6 +297,11 @@ export async function idbSaveCustomLists(lists: CustomList[]): Promise<void> {
   }, undefined);
 }
 
-export async function idbGetCustomLists(): Promise<CustomList[]> {
+export async function idbGetCustomLists(userId: string = 'guest_user'): Promise<CustomList[]> {
+  const encrypted = await getEncryptedItem<CustomList[]>('custom_lists', userId);
+  if (encrypted && encrypted.length > 0) {
+    return encrypted;
+  }
   return execDB(async (db) => db.getAll('customLists'), []);
 }
+

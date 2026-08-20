@@ -30,6 +30,22 @@
       },
       "required": ["id", "tierName"]
     },
+    "UserCompressedSnapshot": {
+      "title": "UserCompressedSnapshot",
+      "description": "High-efficiency micro-compressed snapshot of the entire user state",
+      "type": "object",
+      "properties": {
+        "version": { "type": "number" },
+        "userId": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "byteSize": { "type": "number" },
+        "rawSize": { "type": "number" },
+        "compressionRatio": { "type": "string" },
+        "summary": { "type": "object" },
+        "compressedPayload": { "type": "string" }
+      },
+      "required": ["version", "userId", "updatedAt", "compressedPayload"]
+    },
     "Deck": {
       "title": "Deck",
       "description": "Deck container with card entries",
@@ -45,12 +61,47 @@
         "createdAt": { "type": "string" },
         "updatedAt": { "type": "string" }
       }
+    },
+    "CustomList": {
+      "title": "CustomList",
+      "description": "Custom card lists and want-lists",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "cardIds": { "type": "array" },
+        "coverImageUrl": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "SealedVaultEntry": {
+      "title": "SealedVaultEntry",
+      "description": "Sealed Booster Boxes, ETBs, and Bundle vault items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "product": { "type": "object" },
+        "quantity": { "type": "number" },
+        "purchasePrice": { "type": "number" },
+        "purchaseCurrency": { "type": "string" },
+        "purchaseDate": { "type": "string" },
+        "condition": { "type": "string" },
+        "notes": { "type": "string" },
+        "isSold": { "type": "boolean" },
+        "salePrice": { "type": "number" }
+      }
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
       "description": "User profile documents"
+    },
+    "/users/{userId}/snapshot/current": {
+      "schema": { "$ref": "#/entities/UserCompressedSnapshot" },
+      "description": "Single-document space-efficient compressed user state snapshot"
     },
     "/subscriptions/{userId}": {
       "schema": { "$ref": "#/entities/SubscriptionRecord" },
@@ -59,6 +110,14 @@
     "/users/{userId}/decks/{deckId}": {
       "schema": { "$ref": "#/entities/Deck" },
       "description": "User created decks subcollection"
+    },
+    "/users/{userId}/customLists/{listId}": {
+      "schema": { "$ref": "#/entities/CustomList" },
+      "description": "User created custom lists subcollection"
+    },
+    "/users/{userId}/sealedVault/{sealedId}": {
+      "schema": { "$ref": "#/entities/SealedVaultEntry" },
+      "description": "User sealed vault assets subcollection"
     },
     "/decks/{deckId}": {
       "schema": { "$ref": "#/entities/Deck" },

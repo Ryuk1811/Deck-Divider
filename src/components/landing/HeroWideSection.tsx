@@ -14,37 +14,37 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
   displayCurrency,
 }) => {
   return (
-    <section className="relative w-full pt-16 sm:pt-20 pb-20 px-4 sm:px-6 lg:px-8 border-b border-[#E2E8F0] overflow-hidden">
-      <div className="relative max-w-7xl mx-auto text-center space-y-8">
+    <section className="relative w-full pt-12 sm:pt-16 lg:pt-20 xl:pt-24 pb-16 sm:pb-24 lg:pb-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 border-b border-[#E2E8F0] overflow-hidden">
+      <div className="relative w-full max-w-[2200px] mx-auto text-center space-y-8 lg:space-y-12">
         {/* Top Tagline Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-xs font-semibold shadow-xs">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-xs font-semibold shadow-xs">
           <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse"></span>
           <span>Next-Generation Pokémon TCG Asset Management</span>
         </div>
 
         {/* Singular Wide Hero Title */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.05] max-w-4xl mx-auto font-heading text-balance">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] max-w-6xl mx-auto font-heading text-balance">
           Institutional-Grade Intelligence for <span className="text-[#DC143C]">Pokémon TCG</span> Collectors & Competitors
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto font-normal leading-relaxed text-balance">
+        <p className="text-base sm:text-lg lg:text-xl text-[#64748B] max-w-3xl lg:max-w-4xl mx-auto font-normal leading-relaxed text-balance">
           A unified platform engineered for high-net-worth collectors and competitive players. Seamlessly manage portfolio valuations, track graded slabs, architect tournament-legal decks, and optimize your sealed vault assets in real time.
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2">
           <button
             onClick={onEnterApp}
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-3 px-7 py-4 bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm sm:text-base rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
           >
             <span>Open Live Workspace</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
           <button
             onClick={onExploreFeatures}
-            className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] font-semibold text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A] focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2.5 px-6 py-4 bg-white hover:bg-slate-50 text-[#0F172A] border border-[#CBD5E1] font-semibold text-sm sm:text-base rounded-xl shadow-xs transition-all cursor-pointer hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A] focus-visible:ring-offset-2"
           >
             <span>View Platform Architecture</span>
             <ChevronRight className="w-4 h-4 text-[#64748B]" />
@@ -52,52 +52,52 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
         </div>
 
         {/* Quick Trust / Feature Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-medium text-[#64748B]">
-          <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-2 text-xs sm:text-sm font-medium text-[#64748B]">
+          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>Low-Latency Card Indexing</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
+          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>Real-Time Market Valuation</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-2xs">
+          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-full border border-[#E2E8F0] shadow-2xs">
             <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
             <span>Championship Format Validation</span>
           </div>
         </div>
 
-        {/* 3-Depth Light Studio Glass Slab Window Showcase */}
-        <div className="pt-6 max-w-5xl mx-auto">
+        {/* 3-Depth Light Studio Glass Slab Window Showcase - Full Width Scaling */}
+        <div className="pt-8 w-full">
           {/* Depth 0: Glass Slab Shell */}
-          <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-4 text-left">
+          <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left">
             {/* Depth 1: Studio Floor Wrapper */}
             <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl overflow-hidden">
               {/* Studio Window Header Bar */}
-              <div className="px-4 py-3 bg-white border-b border-[#E2E8F0] flex items-center justify-between">
+              <div className="px-4 sm:px-6 py-3.5 bg-white border-b border-[#E2E8F0] flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="flex gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#DC143C]/80 inline-block"></span>
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
                     <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A] inline-block"></span>
                   </div>
-                  <span className="text-xs font-mono font-semibold text-[#0F172A] ml-2">
+                  <span className="text-xs sm:text-sm font-mono font-semibold text-[#0F172A] ml-2">
                     DECK / divider Studio
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs font-mono text-[#64748B]">
-                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                     Market Sync Active
                   </span>
-                  <span className="hidden sm:inline bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-[#0F172A]">
+                  <span className="hidden sm:inline bg-slate-100 px-2.5 py-1 rounded border border-slate-200 text-[#0F172A]">
                     Currency: {displayCurrency}
                   </span>
                 </div>
               </div>
 
               {/* Studio Window Body: Live 3-Panel 3-Depth Showcase */}
-              <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 sm:p-6 lg:p-8 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
                 {/* Panel 1 (Depth 2): PSA 10 Gem Mint Slab */}
                 <div className="bg-white rounded-xl p-4 border border-[#E2E8F0] shadow-xs flex flex-col justify-between hover:border-[#DC143C] transition-all">
                   <div>

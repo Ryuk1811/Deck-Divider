@@ -23,20 +23,20 @@
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
-    font-size: 14px;
+    font-size: clamp(12.5px, 0.75rem + 0.2vw, 14.5px);
     min-height: 100%;
     width: 100%;
   }
 
   @media (min-width: 1536px) {
     html {
-      font-size: 15px;
+      font-size: clamp(13.5px, 0.82rem + 0.15vw, 15px);
     }
   }
 
   @media (min-width: 2560px) {
     html {
-      font-size: 16px;
+      font-size: clamp(15px, 0.92rem + 0.2vw, 17px);
     }
   }
 
@@ -101,14 +101,23 @@
   }
 }
 
-/* Global Responsive View Container Autoscaling */
+/* Global Responsive View Container Dynamic Autoscaling */
 .app-view-container {
   width: 100%;
-  max-width: 1600px;
+  max-width: 100%;
+  padding-left: clamp(1rem, 0.75rem + 1.2vw, 2.5rem);
+  padding-right: clamp(1rem, 0.75rem + 1.2vw, 2.5rem);
+  padding-top: clamp(0.75rem, 0.5rem + 0.8vw, 1.75rem);
+  padding-bottom: clamp(1rem, 0.75rem + 1vw, 2.5rem);
   margin-left: auto;
   margin-right: auto;
-  padding: 1rem;
   transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 1920px) {
+  .app-view-container {
+    max-width: 2200px;
+  }
 }
 
 /* Glass Slab & Background Separation Bounding Boxes */

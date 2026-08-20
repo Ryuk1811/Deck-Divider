@@ -84,25 +84,25 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
   ];
 
   return (
-    <section id="pricing" className="relative w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-[#E2E8F0] scroll-mt-16">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <section id="pricing" className="relative w-full py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 border-b border-[#E2E8F0] scroll-mt-16">
+      <div className="w-full max-w-[2200px] mx-auto space-y-12 lg:space-y-16">
         {/* Section Header Card */}
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-8 text-center space-y-4 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-10 lg:p-12 text-center space-y-4 max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>TRANSPARENT PLANS</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-heading text-balance">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F172A] tracking-tight font-heading text-balance">
             Scale Your Operations
           </h2>
-          <p className="text-sm sm:text-base text-[#64748B] max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-[#64748B] max-w-3xl mx-auto">
             Engineered for casual collectors, tournament champions, and institutional vault investors. Simple monthly pricing, unparalleled scale.
           </p>
         </div>
 
         {/* Pricing Cards Grid (All 5 Tiers) */}
-        <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl ring-1 ring-slate-900/[0.04] p-4 sm:p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 text-left">
+        <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl ring-1 ring-slate-900/[0.04] p-4 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 text-left">
             {tiers.map(({ tier, popular, features }) => {
               const limit = TIER_LIMITS[tier];
               const priceMonthly = limit.priceMonthly;

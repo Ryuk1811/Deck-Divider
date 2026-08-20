@@ -22,10 +22,10 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
   };
 
   return (
-    <footer className="w-full bg-white text-[#0F172A] border-t border-[#E2E8F0] pt-14 pb-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <footer className="w-full bg-white text-[#0F172A] border-t border-[#E2E8F0] pt-16 lg:pt-20 pb-12 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24">
+      <div className="w-full max-w-[2200px] mx-auto space-y-12">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 text-left">
           {/* Brand & Description Column */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">

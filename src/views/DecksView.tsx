@@ -139,7 +139,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newDeckName) return;
+    if (!newDeckName.trim()) return;
 
     if (newDeckIsPublic && !tierLimit.canSharePublicLinks) {
       onTriggerLimitModal('SHARE_PUBLIC_LINK');
@@ -147,8 +147,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
     }
 
     onCreateDeck({
-      name: newDeckName,
-      description: newDeckDesc,
+      name: newDeckName.trim(),
+      description: newDeckDesc.trim(),
       colorHex: newDeckColor,
       isPublic: newDeckIsPublic,
       publicShareCode: newDeckIsPublic
@@ -156,6 +156,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
         : undefined,
     });
 
+    setNewDeckName('');
+    setNewDeckDesc('');
     setIsCreateModalOpen(false);
   };
 
@@ -431,6 +433,27 @@ export const DecksView: React.FC<DecksViewProps> = ({
         </div>
       </div>
 
+      {/* EMPTY STATE WHEN NO DECKS EXIST */}
+      {decks.length === 0 && (
+        <div className="p-12 text-center glass-slab space-y-4 rounded-xl border border-[#E2E8F0] shadow-sm">
+          <Layers className="w-10 h-10 text-[#CBD5E1] mx-auto" />
+          <div className="space-y-1">
+            <h3 className="font-heading font-bold text-base text-[#0F172A]">No Decks or Binders Created Yet</h3>
+            <p className="font-mono text-xs text-[#64748B] max-w-md mx-auto">
+              Construct tournament-grade 60-card decks or organized binder segregations with custom colors and labels.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenCreateModal}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create First Deck</span>
+          </button>
+        </div>
+      )}
+
       {/* 2. MAIN ACTIVE DECK CARDS CANVAS */}
       {currentDeck && (
         <div className="space-y-6">
@@ -658,31 +681,31 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="font-mono text-xs text-[#64748B]">Deck Name</label>
+                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">Deck Name</label>
                 <input
                   type="text"
                   required
                   value={newDeckName}
                   onChange={(e) => setNewDeckName(e.target.value)}
-                  placeholder="e.g. Lost Zone Box"
-                  className="w-full mt-1 p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A]"
+                  placeholder="e.g. Lost Zone Box or Binder #1"
+                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="font-mono text-xs text-[#64748B]">Description</label>
+                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">Description (Optional)</label>
                 <textarea
                   value={newDeckDesc}
                   onChange={(e) => setNewDeckDesc(e.target.value)}
                   placeholder="Strategy breakdown or archetype tags..."
                   rows={2}
-                  className="w-full mt-1 p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A]"
+                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
                 />
               </div>
 
               {/* Color Palette Swatches & Manual Input */}
               <div className="space-y-2">
-                <label className="font-mono text-xs text-[#64748B]">Deck Left Marker Color</label>
+                <label className="block font-mono text-xs font-semibold text-[#0F172A]">Deck Color Accent</label>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { name: 'Crimson', hex: '#DC143C' },
@@ -733,17 +756,26 @@ export const DecksView: React.FC<DecksViewProps> = ({
                     onChange={(e) => setNewDeckIsPublic(e.target.checked)}
                     className="w-4 h-4 accent-[#DC143C]"
                   />
-                  <span>Public Deck Link</span>
+                  <span>Allow Public Link Sharing</span>
                 </label>
               </div>
 
-              <button
-                type="submit"
-                className="w-full neo-btn-primary py-3 text-xs flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Confirm & Create Deck</span>
-              </button>
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0]">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#DC143C] text-white hover:bg-[#B01030] text-xs font-mono font-bold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Deck</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
