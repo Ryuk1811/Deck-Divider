@@ -1,158 +1,250 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface DeckDividerBrandProps {
+export interface DeckDividerBrandProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   onClick?: () => void;
+  onLogoClick?: () => void;
   collapsed?: boolean;
   showLogo?: boolean;
 }
 
+export interface DeckDividersIconProps {
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+  title?: string;
+}
+
 /**
  * Fanned Deck Dividers Logo SVG
- * Captures the central foreground stack of 10 vibrant card deck dividers
- * (Yellow, Orange, Red, Pink, Purple, Blue, Green, Frosted White, Dark Grey, Black)
- * with top index tabs, realistic overlapping depth, and gradient reflections.
+ * Captures the exact fan-like stack of 10 overlapping soft rectangular card dividers
+ * arranged diagonally from lower-left to upper-right against a transparent background.
+ * Ordered bottom-to-top:
+ * 1. Dark Charcoal / Black (bottom-most)
+ * 2. Frosted Translucent Milky White
+ * 3. Opaque Pure White
+ * 4. Vibrant Emerald Green (#00A651)
+ * 5. Royal Blue (#0078D4)
+ * 6. Deep Saturated Purple / Violet
+ * 7. Hot Pink / Magenta
+ * 8. Pure Red
+ * 9. Bright Orange
+ * 10. Bright Pure Yellow (top-most / frontmost)
+ *
+ * Each card features rounded corners, index tabs on the upper edge, horizontal scorelines,
+ * soft inter-layer drop shadows, and soft-satin specular lighting.
  */
-export const DeckDividersIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => {
+export const DeckDividersIcon: React.FC<DeckDividersIconProps> = ({ 
+  className = "w-8 h-8",
+  onClick,
+  title,
+}) => {
   return (
     <svg
-      viewBox="0 0 220 220"
+      viewBox="0 0 200 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-label="Deck Divider Icon"
+      className={`${className} shrink-0 overflow-visible ${onClick ? 'cursor-pointer' : ''}`}
+      aria-label={title || "Deck Divider Stack Logo"}
+      onClick={onClick}
+      role={onClick ? "button" : "img"}
     >
+      {title && <title>{title}</title>}
       <defs>
-        {/* Soft Drop Shadows between layers */}
-        <filter id="shadow-soft" x="-10%" y="-10%" width="130%" height="130%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="2" dy="3" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.45" />
-        </filter>
-        
-        <filter id="shadow-deep" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="3" dy="5" stdDeviation="4" floodColor="#000000" floodOpacity="0.6" />
+        {/* Soft Inter-layer Occlusion Drop Shadow */}
+        <filter id="card-shadow" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="-1.5" dy="2.5" stdDeviation="2" floodColor="#090D14" floodOpacity="0.38" />
         </filter>
 
-        {/* Rich Color Gradients for 10 Dividers */}
-        <linearGradient id="div-yellow" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FFEE33" />
-          <stop offset="100%" stopColor="#FACC15" />
+        {/* Deeper Base Shadow */}
+        <filter id="card-shadow-deep" x="-40%" y="-40%" width="180%" height="180%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="-2" dy="4" stdDeviation="3.5" floodColor="#090D14" floodOpacity="0.5" />
+        </filter>
+
+        {/* 1. Yellow (Top-most) */}
+        <linearGradient id="g-yellow" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#FFF14D" />
+          <stop offset="60%" stopColor="#FFD400" />
+          <stop offset="100%" stopColor="#F5B800" />
         </linearGradient>
 
-        <linearGradient id="div-orange" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FF8800" />
-          <stop offset="100%" stopColor="#EA580C" />
+        {/* 2. Orange */}
+        <linearGradient id="g-orange" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#FF851B" />
+          <stop offset="70%" stopColor="#F55A00" />
+          <stop offset="100%" stopColor="#DD4300" />
         </linearGradient>
 
-        <linearGradient id="div-red" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#EF4444" />
-          <stop offset="100%" stopColor="#B91C1C" />
+        {/* 3. Red */}
+        <linearGradient id="g-red" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#ED2939" />
+          <stop offset="70%" stopColor="#D61828" />
+          <stop offset="100%" stopColor="#B30E1C" />
         </linearGradient>
 
-        <linearGradient id="div-pink" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#EC4899" />
-          <stop offset="100%" stopColor="#BE185D" />
+        {/* 4. Magenta / Hot Pink */}
+        <linearGradient id="g-pink" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#F43F9E" />
+          <stop offset="70%" stopColor="#E01E7E" />
+          <stop offset="100%" stopColor="#C00E65" />
         </linearGradient>
 
-        <linearGradient id="div-purple" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#5B21B6" />
+        {/* 5. Purple / Violet */}
+        <linearGradient id="g-purple" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#7E22CE" />
+          <stop offset="70%" stopColor="#6415B5" />
+          <stop offset="100%" stopColor="#4C0D8E" />
         </linearGradient>
 
-        <linearGradient id="div-blue" x1="0" y1="0" x2="1" y2="1">
+        {/* 6. Blue */}
+        <linearGradient id="g-blue" x1="0" y1="0" x2="0.8" y2="1">
           <stop offset="0%" stopColor="#0EA5E9" />
-          <stop offset="100%" stopColor="#0369A1" />
+          <stop offset="70%" stopColor="#0078D4" />
+          <stop offset="100%" stopColor="#005A9E" />
         </linearGradient>
 
-        <linearGradient id="div-green" x1="0" y1="0" x2="1" y2="1">
+        {/* 7. Green */}
+        <linearGradient id="g-green" x1="0" y1="0" x2="0.8" y2="1">
           <stop offset="0%" stopColor="#22C55E" />
-          <stop offset="100%" stopColor="#15803D" />
+          <stop offset="70%" stopColor="#00A651" />
+          <stop offset="100%" stopColor="#057A3D" />
         </linearGradient>
 
-        <linearGradient id="div-white" x1="0" y1="0" x2="1" y2="1">
+        {/* 8. Pure White */}
+        <linearGradient id="g-white" x1="0" y1="0" x2="0.8" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="70%" stopColor="#F8FAFC" />
           <stop offset="100%" stopColor="#E2E8F0" />
         </linearGradient>
 
-        <linearGradient id="div-grey" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#64748B" />
-          <stop offset="100%" stopColor="#334155" />
+        {/* 9. Frosted Milky White / Light Gray */}
+        <linearGradient id="g-frosted" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#E2E8F0" stopOpacity="0.9" />
+          <stop offset="70%" stopColor="#94A3B8" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#64748B" stopOpacity="0.8" />
         </linearGradient>
 
-        <linearGradient id="div-black" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#1E293B" />
-          <stop offset="100%" stopColor="#0F172A" />
+        {/* 10. Charcoal / Near-Black */}
+        <linearGradient id="g-charcoal" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#272F3D" />
+          <stop offset="70%" stopColor="#171D27" />
+          <stop offset="100%" stopColor="#0C1017" />
         </linearGradient>
+
+        {/* Reusable Tabbed Divider Card Geometry */}
+        <clipPath id="tab-clip">
+          <path d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z" />
+        </clipPath>
       </defs>
 
-      {/* Stacked Fanned Card Dividers - Diagonally Arrayed */}
-      <g transform="translate(10, 10)">
+      {/* Global Diagonal Fan Group: Center aligned and rotated ~33 degrees */}
+      <g transform="translate(18, 14)">
         
-        {/* 10. Black Divider (Bottom Layer) */}
-        <g transform="translate(20, 110) rotate(-32)" filter="url(#shadow-deep)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 30,7 L 27,0 L 5,0 C 2,0 0,2 0,5 Z" fill="url(#div-black)" />
-          <path d="M 1,8 L 64,8" stroke="#475569" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 9. Dark Grey Divider */}
-        <g transform="translate(30, 98) rotate(-30)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 35,7 L 32,0 L 10,0 C 7,0 5,2 5,5 Z" fill="url(#div-grey)" />
-          <path d="M 1,8 L 64,8" stroke="#94A3B8" strokeWidth="0.8" opacity="0.5" />
-        </g>
-
-        {/* 8. Frosted White Divider */}
-        <g transform="translate(40, 86) rotate(-28)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 40,7 L 37,0 L 15,0 C 12,0 10,2 10,5 Z" fill="url(#div-white)" />
-          <path d="M 1,8 L 64,8" stroke="#CBD5E1" strokeWidth="0.8" opacity="0.8" />
-        </g>
-
-        {/* 7. Green Divider */}
-        <g transform="translate(50, 74) rotate(-26)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 42,7 L 39,0 L 18,0 C 15,0 13,2 13,5 Z" fill="url(#div-green)" />
-          <path d="M 1,8 L 64,8" stroke="#86EFAC" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 6. Royal Blue Divider */}
-        <g transform="translate(60, 62) rotate(-24)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 45,7 L 42,0 L 22,0 C 19,0 17,2 17,5 Z" fill="url(#div-blue)" />
-          <path d="M 1,8 L 64,8" stroke="#7DD3FC" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 5. Purple Divider */}
-        <g transform="translate(70, 50) rotate(-22)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 48,7 L 45,0 L 25,0 C 22,0 20,2 20,5 Z" fill="url(#div-purple)" />
-          <path d="M 1,8 L 64,8" stroke="#C084FC" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 4. Hot Pink Divider */}
-        <g transform="translate(80, 38) rotate(-20)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 50,7 L 47,0 L 28,0 C 25,0 23,2 23,5 Z" fill="url(#div-pink)" />
-          <path d="M 1,8 L 64,8" stroke="#F472B6" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 3. Red Divider */}
-        <g transform="translate(90, 26) rotate(-18)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 53,7 L 50,0 L 32,0 C 29,0 27,2 27,5 Z" fill="url(#div-red)" />
-          <path d="M 1,8 L 64,8" stroke="#FCA5A5" strokeWidth="0.8" opacity="0.6" />
-        </g>
-
-        {/* 2. Orange Divider */}
-        <g transform="translate(100, 14) rotate(-16)" filter="url(#shadow-soft)">
-          <path d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 56,7 L 53,0 L 35,0 C 32,0 30,2 30,5 Z" fill="url(#div-orange)" />
-          <path d="M 1,8 L 64,8" stroke="#FDBA74" strokeWidth="0.8" opacity="0.7" />
-        </g>
-
-        {/* 1. Yellow Divider (Topmost Foreground Layer) */}
-        <g transform="translate(110, 2) rotate(-14)" filter="url(#shadow-deep)">
-          {/* Card outline with tab on top right */}
+        {/* Layer 10: Charcoal / Black Divider (Bottom-most) */}
+        <g transform="translate(12, 104) rotate(-33.5)" filter="url(#card-shadow-deep)">
           <path
-            d="M 0,12 L 0,100 C 0,103 2,105 5,105 L 60,105 C 63,105 65,103 65,100 L 65,12 C 65,9 63,7 60,7 L 58,7 L 55,0 L 38,0 C 35,0 33,2 33,5 L 33,7 Z"
-            fill="url(#div-yellow)"
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-charcoal)"
           />
-          {/* Subtle top divider line feature */}
-          <path d="M 1,8 L 64,8" stroke="#FEF08A" strokeWidth="1" opacity="0.9" />
-          {/* Front glossy highlight sweep */}
-          <path d="M 4,14 L 61,14 L 58,95 L 4,95 Z" fill="white" opacity="0.12" />
+          {/* Subtle upper score line */}
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#3E4A5C" strokeWidth="0.8" opacity="0.6" />
+          {/* Edge highlight */}
+          <path d="M 1,2 L 1,68" stroke="#4B586E" strokeWidth="0.6" opacity="0.4" />
+        </g>
+
+        {/* Layer 9: Frosted Milky White / Light Gray */}
+        <g transform="translate(20, 93) rotate(-32.8)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-frosted)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.5" />
+          <path d="M 1,2 L 1,68" stroke="#FFFFFF" strokeWidth="0.6" opacity="0.6" />
+        </g>
+
+        {/* Layer 8: Pure White */}
+        <g transform="translate(28, 82) rotate(-32.1)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-white)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#CBD5E1" strokeWidth="0.8" opacity="0.7" />
+          <path d="M 1,2 L 1,68" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.9" />
+        </g>
+
+        {/* Layer 7: Emerald Green */}
+        <g transform="translate(36, 71) rotate(-31.4)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-green)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#86EFAC" strokeWidth="0.8" opacity="0.6" />
+          <path d="M 1,2 L 1,68" stroke="#BBF7D0" strokeWidth="0.6" opacity="0.7" />
+        </g>
+
+        {/* Layer 6: Royal Blue */}
+        <g transform="translate(44, 60) rotate(-30.7)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-blue)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#7DD3FC" strokeWidth="0.8" opacity="0.6" />
+          <path d="M 1,2 L 1,68" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.7" />
+        </g>
+
+        {/* Layer 5: Deep Purple / Violet */}
+        <g transform="translate(52, 49) rotate(-30)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-purple)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#C084FC" strokeWidth="0.8" opacity="0.6" />
+          <path d="M 1,2 L 1,68" stroke="#E9D5FF" strokeWidth="0.6" opacity="0.7" />
+        </g>
+
+        {/* Layer 4: Hot Pink / Magenta */}
+        <g transform="translate(60, 38) rotate(-29.3)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-pink)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#F472B6" strokeWidth="0.8" opacity="0.6" />
+          <path d="M 1,2 L 1,68" stroke="#FBCFE8" strokeWidth="0.6" opacity="0.7" />
+        </g>
+
+        {/* Layer 3: Pure Red */}
+        <g transform="translate(68, 27) rotate(-28.6)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-red)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FCA5A5" strokeWidth="0.8" opacity="0.6" />
+          <path d="M 1,2 L 1,68" stroke="#FEE2E2" strokeWidth="0.6" opacity="0.7" />
+        </g>
+
+        {/* Layer 2: Orange */}
+        <g transform="translate(76, 16) rotate(-27.9)" filter="url(#card-shadow)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-orange)"
+          />
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FDBA74" strokeWidth="0.8" opacity="0.7" />
+          <path d="M 1,2 L 1,68" stroke="#FFEDD5" strokeWidth="0.6" opacity="0.8" />
+        </g>
+
+        {/* Layer 1: Bright Yellow (Top-most Front Layer) */}
+        <g transform="translate(84, 5) rotate(-27.2)" filter="url(#card-shadow-deep)">
+          <path
+            d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+            fill="url(#g-yellow)"
+          />
+          {/* Subtle upper scoreline */}
+          <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FEF08A" strokeWidth="1" opacity="0.9" />
+          {/* Top-left specular highlight */}
+          <path d="M 1,2 L 1,68" stroke="#FEF9C3" strokeWidth="0.8" opacity="0.9" />
+          {/* Gentle satin surface shimmer */}
+          <path d="M 3,6 L 52,6 L 50,66 L 3,66 Z" fill="white" opacity="0.08" />
         </g>
       </g>
     </svg>
@@ -162,26 +254,39 @@ export const DeckDividersIcon: React.FC<{ className?: string }> = ({ className =
 /**
  * Global DECK / divider Brand Component
  * Strict Requirement:
+ * - Logo Icon placed on the LEFT side of the wordmark (with fallback button behavior back to main web page)
  * - Solid black box background (#000000)
- * - Logo and Wordmark side by side
  * - Wordmark: "DECK / divider"
  *   - "DECK" in UPPERCASE and WHITE (#FFFFFF)
- *   - " / " in WHITE or light border accent
+ *   - " / " in RED or accent
  *   - "divider" in LOWERCASE and RED (#DC143C)
  */
 export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   size = 'md',
   className = '',
   onClick,
-  collapsed = false,
-  showLogo = false,
+  onLogoClick,
+  collapsed,
+  showLogo = true,
 }) => {
+  const navigate = useNavigate();
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onLogoClick) {
+      onLogoClick();
+    } else {
+      navigate('/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const gapSize = {
-    xs: 'gap-2',
-    sm: 'gap-3',
-    md: 'gap-3.5',
-    lg: 'gap-4',
-    xl: 'gap-5',
+    xs: 'gap-1.5',
+    sm: 'gap-2',
+    md: 'gap-2.5 sm:gap-3',
+    lg: 'gap-3 sm:gap-3.5',
+    xl: 'gap-4',
   }[size];
 
   // Square dimensions for collapsed mode (1:1 ratio)
@@ -203,51 +308,90 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   }[size];
 
   const iconSizes = {
-    xs: 'w-6 h-6',
-    sm: 'w-7 h-7',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10',
-    xl: 'w-12 h-12',
+    xs: 'w-5 h-5',
+    sm: 'w-6 h-6',
+    md: 'w-7 h-7 sm:w-8 sm:h-8',
+    lg: 'w-9 h-9 sm:w-10 sm:h-10',
+    xl: 'w-11 h-11 sm:w-13 sm:h-13',
   }[size];
 
-  return (
-    <div
-      onClick={onClick}
-      className={`${className.includes('w-full') ? 'flex w-full' : 'inline-flex'} items-center justify-center select-none transition-all ${gapSize} ${
-        onClick ? 'cursor-pointer hover:opacity-90 active:scale-[0.98]' : ''
-      } ${className}`}
-      title={onClick ? (collapsed ? 'Expand Sidebar' : 'Collapse Sidebar') : undefined}
+  // Helper render for Logo Fallback Button
+  const renderLogoButton = (iconClass: string) => (
+    <button
+      type="button"
+      onClick={handleLogoClick}
+      className="flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg hover:bg-slate-100 active:scale-95 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C]"
+      title="DECK / divider — Return to main page"
+      aria-label="Deck Divider Home (Return to main page)"
     >
-      {collapsed ? (
-        /* Collapsed Mode: Perfectly Square 1:1 Box with rounded corners containing "D / d" */
-        <div className={`bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${squareSizes}`}>
-          <div className="w-full h-full bg-black flex items-center justify-center rounded-[inherit]">
-            <div className="font-heading font-black flex items-center justify-center leading-none">
-              <span className="text-white uppercase tracking-tight">D</span>
-              <span className="text-[#DC143C] font-mono font-bold mx-[1px]">/</span>
-              <span className="text-[#DC143C] lowercase font-bold tracking-tight">d</span>
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* Normal Mode: Defined Rectangular Box with rounded corners containing "DECK / divider" */
-        <div className={`${className.includes('w-full') ? 'w-full' : ''} bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxPadding.split(' ').filter(c => c.startsWith('rounded-')).join(' ')}`}>
-          <div className={`${className.includes('w-full') ? 'w-full' : ''} bg-black flex items-center justify-center rounded-[inherit] ${rectBoxPadding}`}>
-            <div className="font-heading font-black flex items-center justify-center leading-none">
-              <span className="text-white tracking-[0.16em] uppercase">DECK</span>
-              <span className="text-[#DC143C] font-mono font-bold opacity-90 text-[1.1em] mx-1">/</span>
-              <span className="text-[#DC143C] font-semibold tracking-[0.12em] lowercase">divider</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeckDividersIcon className={`${iconClass} transition-transform duration-300 group-hover:scale-110`} />
+    </button>
+  );
 
-      {/* Standalone Logo Icon (Rendered when showLogo is true) */}
-      {showLogo && (
-        <div className="flex-shrink-0 flex items-center justify-center">
-          <DeckDividersIcon className={`${iconSizes} transition-transform duration-300 hover:scale-105`} />
+  // Helper render for Collapsed Square wordmark ("D / d")
+  const renderCollapsedWordmark = () => (
+    <div className={`bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${squareSizes}`}>
+      <div className="w-full h-full bg-black flex items-center justify-center rounded-[inherit]">
+        <div className="font-heading font-black flex items-center justify-center leading-none">
+          <span className="text-white uppercase tracking-tight">D</span>
+          <span className="text-[#DC143C] font-mono font-bold mx-[1px]">/</span>
+          <span className="text-[#DC143C] lowercase font-bold tracking-tight">d</span>
         </div>
-      )}
+      </div>
+    </div>
+  );
+
+  // Helper render for Normal Expanded Wordmark ("DECK / divider")
+  const renderExpandedWordmark = (isFullWidth = false) => (
+    <div className={`${isFullWidth ? 'w-full' : ''} bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxPadding.split(' ').filter(c => c.startsWith('rounded-')).join(' ')}`}>
+      <div className={`${isFullWidth ? 'w-full' : ''} bg-black flex items-center justify-center rounded-[inherit] ${rectBoxPadding}`}>
+        <div className="font-heading font-black flex items-center justify-center leading-none">
+          <span className="text-white tracking-[0.16em] uppercase">DECK</span>
+          <span className="text-[#DC143C] font-mono font-bold opacity-90 text-[1.1em] mx-1">/</span>
+          <span className="text-[#DC143C] font-semibold tracking-[0.12em] lowercase">divider</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const containerClasses = `${className.includes('w-full') ? 'flex w-full' : 'inline-flex'} items-center select-none transition-all ${gapSize} ${
+    onClick ? 'cursor-pointer hover:opacity-90 active:scale-[0.98]' : ''
+  } ${className}`;
+
+  // If explicitly forced collapsed
+  if (collapsed === true) {
+    return (
+      <div onClick={onClick} className={containerClasses} title={onClick ? 'Expand Sidebar' : undefined}>
+        {showLogo && renderLogoButton(iconSizes)}
+        {renderCollapsedWordmark()}
+      </div>
+    );
+  }
+
+  // If explicitly forced expanded
+  if (collapsed === false) {
+    return (
+      <div onClick={onClick} className={containerClasses} title={onClick ? 'Collapse Sidebar' : undefined}>
+        {showLogo && renderLogoButton(iconSizes)}
+        {renderExpandedWordmark(className.includes('w-full'))}
+      </div>
+    );
+  }
+
+  // Automatic Responsive Mode (collapsed on mobile < md, full on desktop >= md)
+  return (
+    <div onClick={onClick} className={containerClasses}>
+      {/* 1. Mobile representation (automatically collapsed) */}
+      <div className="flex md:hidden items-center gap-1.5">
+        {showLogo && renderLogoButton('w-5 h-5')}
+        {renderCollapsedWordmark()}
+      </div>
+
+      {/* 2. Desktop representation (expanded) */}
+      <div className="hidden md:flex items-center gap-2.5">
+        {showLogo && renderLogoButton(iconSizes)}
+        {renderExpandedWordmark(className.includes('w-full'))}
+      </div>
     </div>
   );
 };

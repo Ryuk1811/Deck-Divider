@@ -30,7 +30,7 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-md bg-white border-2 border-[#0F172A] p-6 shadow-2xl rounded-xl space-y-5 chamfer-corner-lg relative max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b border-[#E2E8F0] pb-4">
           <div className="flex items-center gap-3">

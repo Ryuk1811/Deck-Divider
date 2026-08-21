@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Grid,
   Table,
@@ -16,6 +16,7 @@ import {
   DollarSign,
   Tag,
   ArrowUpDown,
+  ChevronDown,
 } from 'lucide-react';
 import {
   Deck,
@@ -28,6 +29,7 @@ import {
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
 import { DropdownMenu } from '../components/DropdownMenu';
+import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -38,6 +40,7 @@ interface CollectionViewProps {
   onQuickLookCard: (card: PokemonCard) => void;
   onSelectDeck: (deckId: string) => void;
   onAddCardToList?: (listId: string, cardId: string) => void;
+  onNavigateToSearch?: () => void;
 }
 
 export type GroupByOption = 'none' | 'type' | 'rarity' | 'set' | 'deck' | 'supertype';
@@ -57,6 +60,8 @@ const ALL_TYPES: EnergyType[] = [
   'Colorless',
 ];
 
+const COLLECTION_CHUNK_SIZE = 40;
+
 export const CollectionView: React.FC<CollectionViewProps> = ({
   decks,
   allCards,
@@ -66,23 +71,35 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onQuickLookCard,
   onSelectDeck,
   onAddCardToList,
+  onNavigateToSearch,
 }) => {
   // View & Grouping Controls State
   const [viewMode, setViewMode] = useState<ViewModeOption>('grid');
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Instant input state vs debounced search filter
+  const [searchInputText, setSearchInputText] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
   const [selectedTypes, setSelectedTypes] = useState<EnergyType[]>([]);
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<string>('all');
   const [selectedDeckFilter, setSelectedDeckFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortOption>('price-desc');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [visibleCardCount, setVisibleCardCount] = useState(COLLECTION_CHUNK_SIZE);
 
   // Binder Page State
   const [binderPage, setBinderPage] = useState(1);
 
-  // Quick Action Dropdown State
-  const [activeActionMenuCardId, setActiveActionMenuCardId] = useState<string | null>(null);
+  // Debounce collection search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchInputText);
+      setVisibleCardCount(COLLECTION_CHUNK_SIZE);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchInputText]);
 
   // 1. Gather all portfolio entries with assigned deck metadata
   const collectionEntries: {
@@ -134,8 +151,8 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
       const card = item.card;
 
       // Search Filter
-      if (searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase();
+      if (debouncedSearchQuery.trim() !== '') {
+        const q = debouncedSearchQuery.toLowerCase();
         const matchesName = card.name.toLowerCase().includes(q);
         const matchesSet = card.set.name.toLowerCase().includes(q);
         const matchesNumber = card.number.toLowerCase().includes(q);
@@ -179,13 +196,23 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
     });
   }, [
     collectionEntries,
-    searchQuery,
+    debouncedSearchQuery,
     selectedTypes,
     selectedRarities,
     selectedSetId,
     selectedDeckFilter,
     sortBy,
   ]);
+
+  // Progressive background prewarm of filtered collection cards
+  useEffect(() => {
+    if (filteredEntries.length > 0) {
+      queueCardsForProgressivePrewarm(
+        filteredEntries.slice(0, 40).map((i) => i.card),
+        'high'
+      );
+    }
+  }, [filteredEntries]);
 
   // Unique Sets for filter dropdown
   const availableSets = useMemo(() => {
@@ -248,44 +275,48 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
     }));
   }, [filteredEntries, groupBy]);
 
-  // Binder Pagination calculations (9 items per page)
-  const itemsPerPage = 9;
-  const totalBinderPages = Math.ceil(filteredEntries.length / itemsPerPage) || 1;
-  const currentBinderItems = useMemo(() => {
-    const start = (binderPage - 1) * itemsPerPage;
-    return filteredEntries.slice(start, start + itemsPerPage);
+  // Binder View Paging: 9 cards per page (3x3 grid)
+  const BINDER_PAGE_SIZE = 9;
+  const totalBinderPages = Math.max(1, Math.ceil(filteredEntries.length / BINDER_PAGE_SIZE));
+  const currentBinderCards = useMemo(() => {
+    const start = (binderPage - 1) * BINDER_PAGE_SIZE;
+    return filteredEntries.slice(start, start + BINDER_PAGE_SIZE);
   }, [filteredEntries, binderPage]);
 
   const toggleTypeFilter = (t: EnergyType) => {
     setSelectedTypes((prev) =>
       prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
     );
+    setVisibleCardCount(COLLECTION_CHUNK_SIZE);
   };
 
   const toggleRarityFilter = (r: string) => {
     setSelectedRarities((prev) =>
       prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]
     );
+    setVisibleCardCount(COLLECTION_CHUNK_SIZE);
   };
 
   const clearAllFilters = () => {
-    setSearchQuery('');
+    setSearchInputText('');
+    setDebouncedSearchQuery('');
     setSelectedTypes([]);
     setSelectedRarities([]);
     setSelectedSetId('all');
     setSelectedDeckFilter('all');
     setSortBy('price-desc');
+    setVisibleCardCount(COLLECTION_CHUNK_SIZE);
   };
 
   const hasActiveFilters =
-    searchQuery !== '' ||
+    searchInputText !== '' ||
     selectedTypes.length > 0 ||
     selectedRarities.length > 0 ||
     selectedSetId !== 'all' ||
     selectedDeckFilter !== 'all';
 
   return (
-    <div className="app-view-container space-y-6 animate-fade-in">
+    <div className="app-view-container space-y-6">
       {/* 1. TOP GLOBAL COLLECTION METRICS & CONTROL BAR */}
       <div className="p-5 glass-slab shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -308,7 +339,18 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-xs">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-xs">
+            {onNavigateToSearch && (
+              <button
+                type="button"
+                onClick={onNavigateToSearch}
+                className="h-9 px-4 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center justify-center gap-1.5 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 flex-shrink-0" />
+                <span>Add Cards to Portfolio</span>
+              </button>
+            )}
+
             {/* Bubble Menus */}
             <DropdownMenu align="right" triggerLabel="View Mode" triggerIcon={<Grid className="w-3.5 h-3.5 text-[#DC143C]" />}>
               <div className="flex flex-col p-2 space-y-1">
@@ -320,7 +362,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   <button
                     key={mode.id}
                     onClick={() => setViewMode(mode.id as any)}
-                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all cursor-pointer ${
                       viewMode === mode.id ? 'bg-[#DC143C] text-white font-bold' : 'text-[#0F172A] hover:bg-[#F8FAFC]'
                     }`}
                   >
@@ -344,7 +386,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   <button
                     key={g.id}
                     onClick={() => setGroupBy(g.id as any)}
-                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md text-left transition-all cursor-pointer ${
                       groupBy === g.id ? 'bg-[#DC143C] text-white font-bold' : 'text-[#0F172A] hover:bg-[#F8FAFC]'
                     }`}
                   >
@@ -357,7 +399,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             <button
               type="button"
               onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold rounded-md border transition-all shadow-xs ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold rounded-md border transition-all shadow-xs cursor-pointer ${
                 hasActiveFilters || isFilterPanelOpen
                   ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]'
                   : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
@@ -375,7 +417,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
       {/* 2. EXPANDABLE SEGREGATION & FILTER PANEL */}
       {isFilterPanelOpen && (
-        <div className="p-5 glass-slab shadow-md space-y-4 animate-fade-in">
+        <div className="p-5 glass-slab shadow-md space-y-4">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />
@@ -387,7 +429,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               <button
                 type="button"
                 onClick={clearAllFilters}
-                className="font-mono text-xs text-[#DC143C] font-semibold hover:underline"
+                className="font-mono text-xs text-[#DC143C] font-semibold hover:underline cursor-pointer"
               >
                 Reset All Filters
               </button>
@@ -404,9 +446,11 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 <Search className="w-4 h-4 text-[#64748B] absolute left-3 top-2.5" />
                 <input
                   type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchInputText}
+                  onChange={(e) => setSearchInputText(e.target.value)}
                   placeholder="e.g. Charizard, 151..."
+                  autoComplete="off"
+                  spellCheck="false"
                   className="w-full pl-9 pr-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
                 />
               </div>
@@ -419,7 +463,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               </label>
               <select
                 value={selectedSetId}
-                onChange={(e) => setSelectedSetId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedSetId(e.target.value);
+                  setVisibleCardCount(COLLECTION_CHUNK_SIZE);
+                }}
                 className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono text-[#0F172A] p-1.5 rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="all">All Expansion Sets</option>
@@ -438,7 +485,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               </label>
               <select
                 value={selectedDeckFilter}
-                onChange={(e) => setSelectedDeckFilter(e.target.value)}
+                onChange={(e) => {
+                  setSelectedDeckFilter(e.target.value);
+                  setVisibleCardCount(COLLECTION_CHUNK_SIZE);
+                }}
                 className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono text-[#0F172A] p-1.5 rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="all">All Decks & Binders</option>
@@ -454,144 +504,127 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           {/* Type Pills */}
           <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
             <span className="font-mono text-xs font-bold text-[#64748B]">
-              Filter Energy Types:
+              Energy Types
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {ALL_TYPES.map((type) => {
-                const isSelected = selectedTypes.includes(type);
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => toggleTypeFilter(type)}
-                    className={`h-9 px-3 w-full font-mono text-xs rounded-lg border flex items-center justify-center text-center transition-all truncate cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#DC143C] text-white border-[#DC143C] font-bold shadow-xs'
-                        : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A] hover:border-[#CBD5E1]'
-                    }`}
-                  >
-                    <span className="truncate">{type}</span>
-                  </button>
-                );
-              })}
+            <div className="flex flex-wrap gap-1.5">
+              {ALL_TYPES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => toggleTypeFilter(t)}
+                  className={`px-2 py-1 text-xs font-mono font-bold rounded border transition-all cursor-pointer ${
+                    selectedTypes.includes(t)
+                      ? 'bg-[#0F172A] text-white border-[#0F172A]'
+                      : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1]'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Rarity Pills */}
+          {/* Rarities */}
           {availableRarities.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
               <span className="font-mono text-xs font-bold text-[#64748B]">
-                Filter Rarities:
+                Rarity Classes
               </span>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                {availableRarities.map((rarity) => {
-                  const isSelected = selectedRarities.includes(rarity);
-                  return (
-                    <button
-                      key={rarity}
-                      type="button"
-                      onClick={() => toggleRarityFilter(rarity)}
-                      className={`h-9 px-3 w-full font-mono text-xs rounded-lg border flex items-center justify-center text-center transition-all truncate cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#0F172A] text-white border-[#0F172A] font-bold shadow-xs'
-                          : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:text-[#0F172A] hover:border-[#CBD5E1]'
-                      }`}
-                    >
-                      <span className="truncate">{rarity}</span>
-                    </button>
-                  );
-                })}
+              <div className="flex flex-wrap gap-1.5">
+                {availableRarities.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => toggleRarityFilter(r)}
+                    className={`px-2 py-1 text-xs font-mono font-bold rounded border transition-all cursor-pointer ${
+                      selectedRarities.includes(r)
+                        ? 'bg-[#DC143C] text-white border-[#DC143C]'
+                        : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1]'
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
               </div>
             </div>
           )}
+
+          {/* Sort By Row */}
+          <div className="flex items-center justify-between pt-2 border-t border-[#E2E8F0]">
+            <span className="font-mono text-xs font-bold text-[#64748B]">
+              Sort Order
+            </span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono text-[#0F172A] p-1.5 rounded-md focus:border-[#DC143C] focus:outline-none"
+            >
+              <option value="price-desc">Highest Value ($)</option>
+              <option value="price-asc">Lowest Value ($)</option>
+              <option value="name-asc">Card Name (A-Z)</option>
+              <option value="set-asc">Expansion Set</option>
+              <option value="qty-desc">Holdings Quantity</option>
+            </select>
+          </div>
         </div>
       )}
 
-      {/* 3. MAIN CONTENT RENDER (BINDER, GRID, OR TABLE) */}
+      {/* 3. DYNAMIC VIEW DISPLAY (BINDER / TABLE / GRID) */}
       {filteredEntries.length === 0 ? (
-        <div className="p-12 text-center glass-slab shadow-md space-y-3">
-          <BookOpen className="w-10 h-10 text-[#CBD5E1] mx-auto" />
-          <h3 className="font-heading font-bold text-lg text-[#0F172A]">
-            No Cards Matching Active Collection Filters
-          </h3>
-          <p className="font-mono text-xs text-[#64748B] max-w-md mx-auto">
-            Try resetting your search query or energy type filters to view all cards in your global inventory.
+        <div className="p-12 text-center glass-slab shadow-sm space-y-3">
+          <p className="font-mono text-sm text-[#64748B]">
+            No card holdings match your current collection filters.
           </p>
-          <button
-            type="button"
-            onClick={clearAllFilters}
-            className="neo-btn-primary px-4 py-2 text-xs inline-block"
-          >
-            Clear Filters
-          </button>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              className="px-4 py-2 bg-[#0F172A] text-white rounded-lg font-mono text-xs font-bold cursor-pointer"
+            >
+              Clear All Filters
+            </button>
+          )}
         </div>
       ) : viewMode === 'binder' ? (
-        /* BINDER VIEW (3x3 PAGE LAYOUT WITH PAGINATION) */
-        <div className="space-y-6">
-          <div className="flex items-center justify-between px-4 py-3 glass-slab shadow-md">
-            <div className="font-mono text-xs font-bold text-[#0F172A]">
-              3x3 Binder View &bull; Page {binderPage} of {totalBinderPages} ({filteredEntries.length} Total Cards)
-            </div>
-
-            <div className="flex items-center gap-2 font-mono text-xs">
+        /* 3x3 BINDER VIEW WITH SMOOTH PAGING */
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl shadow-xs font-mono text-xs text-[#64748B]">
+            <span>
+              Binder Page <strong>{binderPage}</strong> of <strong>{totalBinderPages}</strong>
+            </span>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                disabled={binderPage <= 1}
+                disabled={binderPage === 1}
                 onClick={() => setBinderPage((p) => Math.max(1, p - 1))}
-                className="px-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md text-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white flex items-center gap-1 font-bold"
+                className="p-1.5 rounded bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#E2E8F0] disabled:opacity-30 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Prev Page</span>
+                <ChevronLeft className="w-4 h-4 text-[#0F172A]" />
               </button>
-              <span className="px-3 py-1.5 bg-[#0F172A] text-white rounded-md font-bold">
-                {binderPage} / {totalBinderPages}
-              </span>
               <button
                 type="button"
-                disabled={binderPage >= totalBinderPages}
+                disabled={binderPage === totalBinderPages}
                 onClick={() => setBinderPage((p) => Math.min(totalBinderPages, p + 1))}
-                className="px-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md text-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white flex items-center gap-1 font-bold"
+                className="p-1.5 rounded bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#E2E8F0] disabled:opacity-30 cursor-pointer"
               >
-                <span>Next Page</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-[#0F172A]" />
               </button>
             </div>
           </div>
 
-          {/* 3x3 Binder Grid Canvas */}
-          <div className="p-6 bg-[#0F172A] rounded-xl border-4 border-[#1E293B] shadow-xl space-y-4">
+          <div className="p-6 rounded-2xl bg-[#0F172A] shadow-xl border-4 border-[#1E293B]">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {currentBinderItems.map(({ entry, card, deckName, deckColor, deckId }) => (
-                <div key={`${deckId}-${entry.id}`} className="space-y-2 group">
-                  <div className="relative">
-                    <HolographicCard
-                      card={card}
-                      onClick={() => onSelectCard(card)}
-                      onQuickLook={() => onQuickLookCard(card)}
-                    />
-                    {/* Quantity Badge */}
-                    <div className="absolute top-2 right-2 bg-[#0F172A]/90 backdrop-blur-sm text-white font-mono text-xs font-bold px-2 py-0.5 rounded border border-white/20">
-                      x{entry.quantity}
-                    </div>
-                  </div>
-
-                  <div className="bg-white/10 backdrop-blur-md p-2.5 rounded-md border border-white/10 text-white space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-heading font-bold text-xs truncate">
-                        {card.name}
-                      </span>
-                      <span className="font-num font-bold text-xs text-[#FFD700]">
-                        {formatCurrency(card.prices.raw, currency)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between font-mono text-[10px] text-[#CBD5E1]">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: deckColor }} />
-                        {deckName}
-                      </span>
-                      <span>{card.set.name}</span>
-                    </div>
-                  </div>
+              {currentBinderCards.map(({ entry, card, deckName, deckColor, deckId }) => (
+                <div key={`${deckId}-${entry.id}`} className="relative group">
+                  <HolographicCard
+                    card={card}
+                    currency={currency}
+                    quantity={entry.quantity}
+                    deckName={deckName}
+                    deckColor={deckColor}
+                    onClick={() => onSelectCard(card)}
+                    onQuickLook={() => onQuickLookCard(card)}
+                  />
                 </div>
               ))}
             </div>
@@ -672,7 +705,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                           e.stopPropagation();
                           onQuickLookCard(card);
                         }}
-                        className="p-1.5 hover:bg-[#FFF0F3] hover:text-[#DC143C] text-[#64748B] rounded transition-colors"
+                        className="p-1.5 hover:bg-[#FFF0F3] hover:text-[#DC143C] text-[#64748B] rounded transition-colors cursor-pointer"
                         title="Quick Look"
                       >
                         <Eye className="w-4 h-4" />
@@ -685,40 +718,56 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           </div>
         </div>
       ) : (
-        /* GRID VIEW (WITH GROUPING SUPPORT) */
+        /* GRID VIEW (WITH GROUPING & CHUNKED SMOOTH SCROLLING) */
         <div className="space-y-8">
-          {groupedCollection.map((group) => (
-            <div key={group.groupName} className="space-y-4">
-              {groupBy !== 'none' && (
-                <div className="flex items-center justify-between px-4 py-2.5 glass-slab shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-heading font-bold text-base text-[#0F172A]">
-                      {group.groupName}
-                    </h3>
-                    <span className="font-mono text-xs font-bold bg-[#DC143C] text-white px-2 py-0.5 rounded">
-                      {group.items.length} Cards
-                    </span>
+          {groupedCollection.map((group) => {
+            const displayItems = groupBy === 'none' ? group.items.slice(0, visibleCardCount) : group.items;
+            return (
+              <div key={group.groupName} className="space-y-4">
+                {groupBy !== 'none' && (
+                  <div className="flex items-center justify-between px-4 py-2.5 glass-slab shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-heading font-bold text-base text-[#0F172A]">
+                        {group.groupName}
+                      </h3>
+                      <span className="font-mono text-xs font-bold bg-[#DC143C] text-white px-2 py-0.5 rounded">
+                        {group.items.length} Cards
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
-                {group.items.map(({ entry, card, deckName, deckColor, deckId }) => (
-                  <div key={`${deckId}-${entry.id}`} className="group relative">
-                    <HolographicCard
-                      card={card}
-                      currency={currency}
-                      quantity={entry.quantity}
-                      deckName={deckName}
-                      deckColor={deckColor}
-                      onClick={() => onSelectCard(card)}
-                      onQuickLook={() => onQuickLookCard(card)}
-                    />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                  {displayItems.map(({ entry, card, deckName, deckColor, deckId }) => (
+                    <div key={`${deckId}-${entry.id}`} className="group relative">
+                      <HolographicCard
+                        card={card}
+                        currency={currency}
+                        quantity={entry.quantity}
+                        deckName={deckName}
+                        deckColor={deckColor}
+                        onClick={() => onSelectCard(card)}
+                        onQuickLook={() => onQuickLookCard(card)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {groupBy === 'none' && visibleCardCount < group.items.length && (
+                  <div className="pt-4 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCardCount((prev) => Math.min(prev + COLLECTION_CHUNK_SIZE, group.items.length))}
+                      className="px-6 py-3 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] font-mono text-xs font-bold rounded-xl shadow-xs hover:border-[#DC143C] flex items-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
+                    >
+                      <ChevronDown className="w-4 h-4 text-[#DC143C]" />
+                      <span>Load More Cards ({group.items.length - visibleCardCount} remaining)</span>
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

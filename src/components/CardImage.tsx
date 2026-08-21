@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { Sparkles, Shield } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Shield, Loader2 } from 'lucide-react';
+import {
+  getOptimizedCardImageCandidates,
+  getCachedWorkingUrl,
+  markUrlWorking,
+  markUrlFailed,
+} from '../utils/progressiveImageLoader';
 
 interface CardImageProps {
   src?: string;
   alt: string;
   cardName?: string;
-  cardNumber?: string;
+  cardNumber?: string | number;
   setName?: string;
   rarity?: string;
   className?: string;
   loading?: 'lazy' | 'eager';
   setId?: string;
+  preferHighRes?: boolean;
 }
 
 export const CardImage: React.FC<CardImageProps> = ({
@@ -23,52 +30,66 @@ export const CardImage: React.FC<CardImageProps> = ({
   className = '',
   loading = 'lazy',
   setId,
+  preferHighRes = false,
 }) => {
-  const [attemptIndex, setAttemptIndex] = useState(0);
+  const cacheKey = `${setId || 'unknown'}-${cardNumber || '0'}-${preferHighRes ? 'high' : 'low'}-${src || ''}`;
+  const initialResolved = getCachedWorkingUrl(cacheKey);
 
-  // Generate candidate fallbacks array
-  const buildFallbackSources = (): string[] => {
-    const sources: string[] = [];
-    if (src) sources.push(src);
+  const [candidateList, setCandidateList] = useState<string[]>(() =>
+    initialResolved
+      ? [initialResolved]
+      : getOptimizedCardImageCandidates(src, setId, cardNumber, preferHighRes)
+  );
+  const [candidateIndex, setCandidateIndex] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(Boolean(initialResolved));
+  const [hasFailedAll, setHasFailedAll] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
-    if (setId && cardNumber) {
-      const cleanSet = setId.toLowerCase();
-      const cleanNum = cardNumber.toString().replace(/^0+/, ''); // e.g., '001' -> '1'
-      
-      // Candidate: TCGdex high webp
-      sources.push(`https://assets.tcgdex.net/en/${cleanSet}/${cardNumber}/high.webp`);
-      // Candidate: TCGdex high png
-      sources.push(`https://assets.tcgdex.net/en/${cleanSet}/${cardNumber}/high.png`);
-      // Candidate: TCGdex low png
-      sources.push(`https://assets.tcgdex.net/en/${cleanSet}/${cardNumber}/low.png`);
-      
-      // Candidate: PokemonTCG.io
-      sources.push(`https://images.pokemontcg.io/${cleanSet}/${cardNumber}.png`);
-      sources.push(`https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`);
-      sources.push(`https://images.pokemontcg.io/${cleanSet}/${cardNumber}_hq.png`);
-    }
-
-    return Array.from(new Set(sources.filter(Boolean)));
-  };
-
-  const fallbacks = buildFallbackSources();
-  const currentSrc = fallbacks[attemptIndex];
-
-  const handleError = () => {
-    if (attemptIndex < fallbacks.length - 1) {
-      setAttemptIndex((prev) => prev + 1);
+  // Update candidates if props change
+  useEffect(() => {
+    const cached = getCachedWorkingUrl(cacheKey);
+    if (cached) {
+      setCandidateList([cached]);
+      setCandidateIndex(0);
+      setIsLoaded(true);
+      setHasFailedAll(false);
     } else {
-      // Mark as fully failed to trigger dynamic graphic fallback
-      setAttemptIndex(fallbacks.length);
+      const candidates = getOptimizedCardImageCandidates(src, setId, cardNumber, preferHighRes);
+      setCandidateList(candidates);
+      setCandidateIndex(0);
+      setIsLoaded(false);
+      setHasFailedAll(candidates.length === 0);
+    }
+  }, [src, setId, cardNumber, preferHighRes, cacheKey]);
+
+  const currentSrc = candidateList[candidateIndex];
+
+  const handleLoadSuccess = () => {
+    if (currentSrc) {
+      markUrlWorking(cacheKey, currentSrc);
+    }
+    setIsLoaded(true);
+  };
+
+  const handleImageError = () => {
+    if (currentSrc) {
+      markUrlFailed(currentSrc);
+    }
+
+    if (candidateIndex < candidateList.length - 1) {
+      setCandidateIndex((prev) => prev + 1);
+    } else {
+      setHasFailedAll(true);
     }
   };
 
-  if (!currentSrc || attemptIndex >= fallbacks.length) {
-    // Dynamic TCG Stylized Card Fallback (when artwork is absent across all CDNs)
+  if (hasFailedAll || !currentSrc) {
+    // Dynamic TCG Stylized Card Fallback (rendered if CDNs have no artwork)
     return (
-      <div className={`relative aspect-[0.718] w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] border border-[#CBD5E1] rounded-lg p-3 flex flex-col justify-between overflow-hidden shadow-inner ${className}`}>
-        {/* Holographic Shimmer Background */}
-        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/20 via-transparent to-transparent pointer-events-none" />
+      <div
+        className={`relative aspect-[0.718] w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] border border-[#CBD5E1] rounded-lg p-3 flex flex-col justify-between overflow-hidden shadow-inner ${className}`}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/20 via-transparent to-transparent pointer-events-none" />
 
         {/* Top Header */}
         <div className="flex items-center justify-between text-white border-b border-white/10 pb-1 z-10">
@@ -80,8 +101,8 @@ export const CardImage: React.FC<CardImageProps> = ({
 
         {/* Center Emblem Illustration */}
         <div className="flex-1 flex flex-col items-center justify-center text-center my-2 z-10 px-1">
-          <div className="w-12 h-12 rounded-full bg-white/5 border border-white/15 flex items-center justify-center mb-1.5 shadow-lg backdrop-blur-xs">
-            <Shield className="w-6 h-6 text-[#DC143C]" />
+          <div className="w-10 h-10 rounded-full bg-white/5 border border-white/15 flex items-center justify-center mb-1 shadow-lg backdrop-blur-xs">
+            <Shield className="w-5 h-5 text-[#DC143C]" />
           </div>
           <span className="font-mono text-[9px] uppercase tracking-wider text-white/70 line-clamp-1">
             {setName || 'Official TCG'}
@@ -93,7 +114,7 @@ export const CardImage: React.FC<CardImageProps> = ({
 
         {/* Bottom Footer Details */}
         <div className="flex items-center justify-between text-[9px] font-mono text-white/60 border-t border-white/10 pt-1 z-10">
-          <span className="truncate">{rarity || 'Promo'}</span>
+          <span className="truncate">{rarity || 'Common'}</span>
           <span>#{cardNumber || '---'}</span>
         </div>
       </div>
@@ -101,12 +122,31 @@ export const CardImage: React.FC<CardImageProps> = ({
   }
 
   return (
-    <img
-      src={currentSrc}
-      alt={alt}
-      loading={loading}
-      onError={handleError}
-      className={className}
-    />
+    <div className="relative w-full h-full overflow-hidden bg-[#F1F5F9]/60 flex items-center justify-center">
+      {/* Progressive Shimmer placeholder while image loads */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-[#E2E8F0] animate-pulse flex flex-col items-center justify-center p-2 text-center select-none">
+          <div className="w-6 h-6 rounded-full bg-[#CBD5E1]/60 flex items-center justify-center mb-1">
+            <Sparkles className="w-3 h-3 text-[#DC143C] opacity-70 animate-spin" />
+          </div>
+          <span className="font-mono text-[9px] text-[#64748B] font-semibold truncate max-w-[80%]">
+            {cardName}
+          </span>
+        </div>
+      )}
+
+      <img
+        ref={imgRef}
+        src={currentSrc}
+        alt={alt}
+        loading={loading}
+        decoding="async"
+        onLoad={handleLoadSuccess}
+        onError={handleImageError}
+        className={`${className} ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        } transition-opacity duration-200`}
+      />
+    </div>
   );
 };

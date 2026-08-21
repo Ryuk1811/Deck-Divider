@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, ArrowRight, ShieldX, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ShieldX, RefreshCw } from 'lucide-react';
 
 interface PayPalCancelModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export const PayPalCancelModal: React.FC<PayPalCancelModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-md bg-white border-2 border-[#0F172A] p-6 shadow-2xl rounded-xl space-y-5 chamfer-corner-lg relative text-center">
+      <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative text-center">
         {/* Warning Icon */}
         <div className="mx-auto w-14 h-14 flex items-center justify-center rounded-full bg-[#FFF0F3] border-2 border-[#DC143C] text-[#DC143C]">
           <AlertTriangle className="w-8 h-8 text-[#DC143C]" />

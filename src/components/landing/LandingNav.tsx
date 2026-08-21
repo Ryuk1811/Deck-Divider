@@ -4,12 +4,16 @@ import { LogIn } from 'lucide-react';
 
 interface LandingNavProps {
   onOpenAuth: () => void;
+  onEnterApp?: () => void;
   onNavigateSection?: (sectionId: string) => void;
+  user?: any;
 }
 
 export const LandingNav: React.FC<LandingNavProps> = ({
   onOpenAuth,
+  onEnterApp,
   onNavigateSection,
+  user,
 }) => {
   const handleNav = (id: string) => {
     if (onNavigateSection) {
@@ -49,14 +53,23 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             </button>
           </nav>
 
-          {/* Sign In / Login Button */}
-          <button
-            onClick={onOpenAuth}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-[#0F172A] hover:text-[#DC143C] bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-lg transition-all border border-[#E2E8F0] hover:border-[#DC143C]/40 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
-          >
-            <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />
-            <span>Sign In <span className="hidden sm:inline">/ Login</span></span>
-          </button>
+          {/* Sign In / Dashboard Button */}
+          {user ? (
+            <button
+              onClick={onEnterApp}
+              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-lg transition-all border border-[#DC143C] cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
+            >
+              <span>Launch Studio</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenAuth}
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-[#0F172A] hover:text-[#DC143C] bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-lg transition-all border border-[#E2E8F0] hover:border-[#DC143C]/40 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
+            >
+              <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />
+              <span>Sign In <span className="hidden sm:inline">/ Login</span></span>
+            </button>
+          )}
         </div>
       </div>
     </header>

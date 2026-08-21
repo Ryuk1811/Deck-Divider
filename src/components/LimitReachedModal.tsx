@@ -74,7 +74,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-lg glass-panel p-6 border border-[#E2E8F0] shadow-xl space-y-5 chamfer-corner-lg">
+      <div className="w-full max-w-lg bg-white p-6 border border-[#E2E8F0] shadow-2xl rounded-2xl space-y-5 relative">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -93,47 +93,48 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3]"
+            className="p-1 rounded-md bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Explanation */}
-        <p className="font-mono text-xs text-[#64748B] leading-relaxed bg-[#F8FAFC] p-3 rounded-lg border border-[#E2E8F0]">
-          {description}
-        </p>
-
-        {/* Upgrade Callout Box */}
-        <div className="p-4 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 space-y-2">
-          <div className="flex items-center gap-2 font-heading font-bold text-xs text-[#DC143C]">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Next Tier Expansion ({nextTierName})</span>
-          </div>
-          <p className="font-mono text-xs text-[#0F172A]">
-            {unlockHighlight}
+        {/* Content */}
+        <div className="space-y-3">
+          <p className="font-mono text-xs text-[#64748B] leading-relaxed">
+            {description}
           </p>
+
+          <div className="p-3.5 bg-[#FFF0F3] border border-[#DC143C]/20 rounded-lg space-y-2">
+            <div className="flex items-center gap-2 text-[#DC143C] font-mono text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Recommended Upgrade: {nextTierName} Tier</span>
+            </div>
+            <p className="font-mono text-[11px] text-[#64748B]">
+              {unlockHighlight}
+            </p>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => {
-              onUpgradeToTier(nextTierName);
-              onClose();
-            }}
-            className="flex-1 neo-btn-primary py-3 text-xs flex items-center justify-center gap-2"
-          >
-            <span>Upgrade to {nextTierName} (${nextLimit.priceMonthly}/mo)</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </button>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-3 neo-btn-secondary text-xs"
+            className="neo-btn-secondary px-4 py-2 text-xs"
           >
-            Dismiss
+            Stay on {currentTier}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onUpgradeToTier(nextTierName);
+            }}
+            className="neo-btn-primary px-4 py-2 text-xs flex items-center gap-1.5 shadow-md"
+          >
+            <span>Upgrade to {nextTierName} (${nextLimit.priceMonthly}/mo)</span>
+            <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
       </div>

@@ -27,8 +27,10 @@ import {
   Menu,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
+import { initSnapshotMetronome, recordSnapshotCompleted } from './utils/cloudSnapshotMetronome';
+import { queueCardsForProgressivePrewarm } from './utils/progressiveImageLoader';
 import { Sidebar, ActiveTab } from './components/Sidebar';
-import { DeckDividerBrand } from './components/DeckDividerBrand';
+import { DeckDividerBrand, DeckDividersIcon } from './components/DeckDividerBrand';
 import { CommandPalette } from './components/CommandPalette';
 import { CardDetailModal } from './components/CardDetailModal';
 import { QuickLookModal } from './components/QuickLookModal';
@@ -55,6 +57,7 @@ import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } fro
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
 import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists, idbGetUserDecks, idbSaveUserDecks } from './lib/indexedDB';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc } from './lib/snapshotEngine';
+import { isShowcaseAccount, generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
@@ -238,29 +241,48 @@ export default function App() {
   const [lastSyncedTimestamp, setLastSyncedTimestamp] = useState<string | null>(null);
   const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
 
-  // Load from Local Encrypted Storage on initial mount
+  // Load from Local Encrypted Storage on initial mount & Seed Showcase data for gurutvamurdia@gmail.com
   React.useEffect(() => {
+    if (authLoading) return;
     const activeUid = user?.uid || 'guest_user';
-    idbGetUserDecks(activeUid).then((saved) => {
-      if (saved && saved.length > 0) {
-        setDecks(saved);
-      }
-    });
-    idbGetCustomLists(activeUid).then((saved) => {
-      if (saved && saved.length > 0) {
-        setCustomLists(saved);
-      }
-    });
-    idbGetSealedVault(activeUid).then((saved) => {
-      if (saved && saved.length > 0) {
-        setSealedEntries(saved);
-      }
-    });
-  }, [user]);
+    const isShowcase = isShowcaseAccount(user?.email);
 
-  // Initial cloud restore if local database is empty and user signs in
+    Promise.all([
+      idbGetUserDecks(activeUid),
+      idbGetCustomLists(activeUid),
+      idbGetSealedVault(activeUid),
+    ]).then(([savedDecks, savedLists, savedSealed]) => {
+      if (isShowcase && (!savedDecks || savedDecks.length === 0)) {
+        // Seed full-fledged showcase suite exclusively for gurutvamurdia@gmail.com
+        const showcaseDecks = generateShowcaseDecks(activeUid);
+        const showcaseLists = generateShowcaseCustomLists(activeUid);
+        const showcaseSealed = generateShowcaseSealed(activeUid);
+
+        setDecks(showcaseDecks);
+        setCustomLists(showcaseLists);
+        setSealedEntries(showcaseSealed);
+
+        idbSaveUserDecks(showcaseDecks, activeUid);
+        idbSaveCustomLists(showcaseLists, activeUid);
+        idbSaveSealedVault(showcaseSealed, activeUid);
+
+        // Also push initial snapshot to cloud
+        setTimeout(() => {
+          saveCompressedCloudSnapshot();
+        }, 500);
+      } else {
+        if (savedDecks && savedDecks.length > 0) setDecks(savedDecks);
+        if (savedLists && savedLists.length > 0) setCustomLists(savedLists);
+        if (savedSealed && savedSealed.length > 0) setSealedEntries(savedSealed);
+      }
+    });
+  }, [user, authLoading]);
+
+  // Initial cloud restore or automatic showcase generation if user signs in
   React.useEffect(() => {
-    if (!user) return;
+    if (!user || authLoading) return;
+    const isShowcase = isShowcaseAccount(user.email);
+
     const fetchLatestCloudSnapshot = async () => {
       try {
         const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
@@ -274,21 +296,57 @@ export default function App() {
             compressionRatio: docData.compressionRatio,
           });
 
-          // Unpack if local state has no decks or lists
+          // Unpack snapshot
           const unpacked = await unpackUserSnapshot(docData);
           if (unpacked) {
-            setDecks((prev) => (prev.length === 0 && unpacked.decks?.length > 0 ? unpacked.decks : prev));
-            setCustomLists((prev) => (prev.length === 0 && unpacked.customLists?.length > 0 ? unpacked.customLists : prev));
-            setSealedEntries((prev) => (prev.length === 0 && unpacked.sealedEntries?.length > 0 ? unpacked.sealedEntries : prev));
-            setSoldEntries((prev) => (prev.length === 0 && unpacked.soldEntries?.length > 0 ? unpacked.soldEntries : prev));
+            if (unpacked.decks && unpacked.decks.length > 0) {
+              setDecks(unpacked.decks);
+              idbSaveUserDecks(unpacked.decks, user.uid);
+            }
+            if (unpacked.customLists && unpacked.customLists.length > 0) {
+              setCustomLists(unpacked.customLists);
+              idbSaveCustomLists(unpacked.customLists, user.uid);
+            }
+            if (unpacked.sealedEntries && unpacked.sealedEntries.length > 0) {
+              setSealedEntries(unpacked.sealedEntries);
+              idbSaveSealedVault(unpacked.sealedEntries, user.uid);
+            }
+            if (unpacked.soldEntries && unpacked.soldEntries.length > 0) {
+              setSoldEntries(unpacked.soldEntries);
+            }
           }
+        } else if (isShowcase) {
+          // If no cloud snapshot exists yet for showcase account, seed it and upload snapshot
+          const showcaseDecks = generateShowcaseDecks(user.uid);
+          const showcaseLists = generateShowcaseCustomLists(user.uid);
+          const showcaseSealed = generateShowcaseSealed(user.uid);
+
+          setDecks(showcaseDecks);
+          setCustomLists(showcaseLists);
+          setSealedEntries(showcaseSealed);
+
+          idbSaveUserDecks(showcaseDecks, user.uid);
+          idbSaveCustomLists(showcaseLists, user.uid);
+          idbSaveSealedVault(showcaseSealed, user.uid);
+
+          setTimeout(() => {
+            saveCompressedCloudSnapshot();
+          }, 300);
         }
       } catch (err) {
         console.warn('Snapshot fetch notice:', err);
+        if (isShowcase) {
+          const showcaseDecks = generateShowcaseDecks(user.uid);
+          const showcaseLists = generateShowcaseCustomLists(user.uid);
+          const showcaseSealed = generateShowcaseSealed(user.uid);
+          setDecks(showcaseDecks);
+          setCustomLists(showcaseLists);
+          setSealedEntries(showcaseSealed);
+        }
       }
     };
     fetchLatestCloudSnapshot();
-  }, [user]);
+  }, [user, authLoading]);
 
   // Push compressed single-document snapshot to Firestore (overwriting existing)
   const saveCompressedCloudSnapshot = React.useCallback(async () => {
@@ -318,6 +376,7 @@ export default function App() {
       await setDoc(snapRef, packed, { merge: false });
 
       setLastSyncedTimestamp(packed.updatedAt);
+      recordSnapshotCompleted();
       setSnapshotMetrics({
         rawSize: packed.rawSize,
         byteSize: packed.byteSize,
@@ -329,14 +388,22 @@ export default function App() {
     }
   }, [user, profile, currentTier, displayCurrency, decks, customLists, sealedEntries, soldEntries, recentActivities]);
 
-  // Debounced auto-snapshot when local data changes
+  // 6-Hour Automated Snapshot Metronome
   React.useEffect(() => {
     if (!user) return;
-    const timer = setTimeout(() => {
+    const cleanupMetronome = initSnapshotMetronome(() => {
       saveCompressedCloudSnapshot();
-    }, 6000);
-    return () => clearTimeout(timer);
-  }, [decks, customLists, sealedEntries, soldEntries, user, saveCompressedCloudSnapshot]);
+    });
+    return cleanupMetronome;
+  }, [user, saveCompressedCloudSnapshot]);
+
+  // Progressive background prewarm of user's active collection cards
+  React.useEffect(() => {
+    if (decks.length > 0) {
+      const allCards = decks.flatMap((d) => d.entries.map((e) => e.card));
+      queueCardsForProgressivePrewarm(allCards, 'normal');
+    }
+  }, [decks]);
 
   // Sync local changes to Encrypted Local Storage
   React.useEffect(() => {
@@ -886,10 +953,24 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line h-16) */}
         <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2">
-          {/* Left: Mobile Drawer Trigger + Section Header Tag & Title */}
+          {/* Left: Mobile Drawer Trigger + App Logo fallback button + Section Header Tag & Title */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <button
+              type="button"
+              onClick={() => {
+                navigate('/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="md:hidden p-1 rounded-md hover:bg-slate-100 active:scale-95 transition-all cursor-pointer group flex items-center justify-center shrink-0"
+              title="DECK / divider — Return to main page"
+              aria-label="Deck Divider Home (Return to main page)"
+            >
+              <DeckDividersIcon className="w-6 h-6 transition-transform group-hover:scale-105" />
+            </button>
             <DeckDividerBrand
               size="xs"
+              showLogo={false}
+              collapsed={true}
               onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
               className="md:hidden flex-shrink-0 cursor-pointer mr-1"
             />
@@ -902,80 +983,27 @@ export default function App() {
             </h1>
           </div>
 
-          {/* Right: Symmetrical Inline Actions & Status Badges */}
+          {/* Right: Dynamic Metric Badge */}
           <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
-            {activeTab === 'collection' && (
-              <button
-                type="button"
-                onClick={() => setActiveTab('search')}
-                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span className="hidden sm:inline">Add Cards to Portfolio</span>
-                <span className="sm:hidden text-[11px]">Add Cards</span>
-              </button>
-            )}
-
-            {activeTab === 'metrics' && (
-              <button
-                type="button"
-                onClick={() => setActiveTab('collection')}
-                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span className="hidden sm:inline">View Inventory</span>
-                <span className="sm:hidden text-[11px]">Inventory</span>
-              </button>
-            )}
-
-            {activeTab === 'decks' && (
-              <button
-                type="button"
-                onClick={() => setCreateDeckSignal((s) => s + 1)}
-                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">
-                  Create New Deck ({decks.length}/
-                  {TIER_LIMITS[currentTier].maxDecks === Infinity
-                    ? '∞'
-                    : TIER_LIMITS[currentTier].maxDecks}
-                  )
-                </span>
-                <span className="sm:hidden text-[11px]">New Deck</span>
-              </button>
-            )}
-
-            {activeTab === 'sets' && (
-              <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-bold rounded-md shadow-xs">
-                <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span>{allSets.length} Sets</span>
-              </div>
-            )}
-
-            {activeTab === 'lists' && (
-              <button
-                type="button"
-                onClick={() => setCreateListSignal((s) => s + 1)}
-                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Create Custom List</span>
-                <span className="sm:hidden text-[11px]">New List</span>
-              </button>
-            )}
-
-            {activeTab === 'settings' && (
-              <button
-                type="button"
-                onClick={() => setExportDataSignal((s) => s + 1)}
-                className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] hover:border-[#DC143C] flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-bold rounded-md transition-all shadow-xs cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />
-                <span className="hidden sm:inline">Export Collection Data</span>
-                <span className="sm:hidden text-[11px]">Export</span>
-              </button>
-            )}
+            <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-bold rounded-md shadow-xs">
+              {activeTab === 'collection' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'decks' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'sets' && <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'lists' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'sealed_vault' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'metrics' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'search' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              {activeTab === 'settings' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+              
+              {activeTab === 'collection' && <span>Portfolio: {decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Total Cards</span>}
+              {activeTab === 'decks' && <span>Active Decks: {decks.length}</span>}
+              {activeTab === 'sets' && <span>{allSets.length} Expansions</span>}
+              {activeTab === 'lists' && <span>Custom Lists: {customLists.length}</span>}
+              {activeTab === 'sealed_vault' && <span>Sealed Assets: {sealedEntries.length}</span>}
+              {activeTab === 'metrics' && <span>Live Market Dashboard</span>}
+              {activeTab === 'search' && <span>Card Database</span>}
+              {activeTab === 'settings' && <span>System Config</span>}
+            </div>
           </div>
         </header>
 
@@ -997,6 +1025,7 @@ export default function App() {
                 setActiveTab('decks');
               }}
               onAddCardToList={handleAddCardToList}
+              onNavigateToSearch={() => setActiveTab('search')}
             />
           )}
 
@@ -1117,6 +1146,23 @@ export default function App() {
               onTriggerCloudSnapshot={saveCompressedCloudSnapshot}
               lastSyncedTimestamp={lastSyncedTimestamp}
               snapshotMetrics={snapshotMetrics}
+              userEmail={user?.email}
+              onResetShowcaseData={() => {
+                const targetUid = user?.uid || 'guest_user';
+                const showcaseDecks = generateShowcaseDecks(targetUid);
+                const showcaseLists = generateShowcaseCustomLists(targetUid);
+                const showcaseSealed = generateShowcaseSealed(targetUid);
+
+                setDecks(showcaseDecks);
+                setCustomLists(showcaseLists);
+                setSealedEntries(showcaseSealed);
+
+                idbSaveUserDecks(showcaseDecks, targetUid);
+                idbSaveCustomLists(showcaseLists, targetUid);
+                idbSaveSealedVault(showcaseSealed, targetUid);
+
+                saveCompressedCloudSnapshot();
+              }}
             />
           )}
         </main>
@@ -1155,6 +1201,7 @@ export default function App() {
               currentTier={currentTier}
               displayCurrency={displayCurrency}
               onSelectCurrency={setDisplayCurrency}
+              user={user}
             />
           }
         />
@@ -1188,10 +1235,6 @@ export default function App() {
           element={
             <AuthView
               onBack={() => navigate('/')}
-              onGuestAccess={() => {
-                setGuestMode(true);
-                navigate('/app');
-              }}
             />
           }
         />

@@ -23,6 +23,7 @@ interface LandingPageViewProps {
   currentTier?: AccountTier;
   displayCurrency: DisplayCurrency;
   onSelectCurrency: (c: DisplayCurrency) => void;
+  user?: any;
 }
 
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
@@ -34,6 +35,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   currentTier = 'Starter',
   displayCurrency,
   onSelectCurrency,
+  user,
 }) => {
   const scrollTo = (id: string) => {
     if (id === 'about' && onNavigateAbout) {
@@ -55,7 +57,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* 1. Header Navigation */}
       <LandingNav
         onOpenAuth={onOpenAuth}
+        onEnterApp={onEnterApp}
         onNavigateSection={scrollTo}
+        user={user}
       />
 
       {/* 2. Wide Hero Section / About Section */}

@@ -88,7 +88,7 @@ import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
   const normalizedTypes = card.types
-    ? (card.types.map((t) => (t === 'Lightning' ? 'Electric' : t === 'Metal' ? 'Steel' : t)) as EnergyType[])
+    ? (Array.from(new Set(card.types.map((t) => (t === 'Lightning' ? 'Electric' : t === 'Metal' ? 'Steel' : t)))) as EnergyType[])
     : undefined;
 
   return {

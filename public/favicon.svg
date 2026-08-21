@@ -1,0 +1,187 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {/* Soft Inter-layer Occlusion Drop Shadow */}
+    <filter id="fav-shadow" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="-1.5" dy="2.5" stdDeviation="2" floodColor="#090D14" floodOpacity="0.45" />
+    </filter>
+
+    <filter id="fav-shadow-deep" x="-40%" y="-40%" width="180%" height="180%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="-2" dy="4" stdDeviation="3.5" floodColor="#090D14" floodOpacity="0.55" />
+    </filter>
+
+    {/* 1. Yellow (Top-most) */}
+    <linearGradient id="fav-yellow" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#FFF14D" />
+      <stop offset="60%" stopColor="#FFD400" />
+      <stop offset="100%" stopColor="#F5B800" />
+    </linearGradient>
+
+    {/* 2. Orange */}
+    <linearGradient id="fav-orange" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#FF851B" />
+      <stop offset="70%" stopColor="#F55A00" />
+      <stop offset="100%" stopColor="#DD4300" />
+    </linearGradient>
+
+    {/* 3. Red */}
+    <linearGradient id="fav-red" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#ED2939" />
+      <stop offset="70%" stopColor="#D61828" />
+      <stop offset="100%" stopColor="#B30E1C" />
+    </linearGradient>
+
+    {/* 4. Magenta / Hot Pink */}
+    <linearGradient id="fav-pink" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#F43F9E" />
+      <stop offset="70%" stopColor="#E01E7E" />
+      <stop offset="100%" stopColor="#C00E65" />
+    </linearGradient>
+
+    {/* 5. Purple / Violet */}
+    <linearGradient id="fav-purple" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#7E22CE" />
+      <stop offset="70%" stopColor="#6415B5" />
+      <stop offset="100%" stopColor="#4C0D8E" />
+    </linearGradient>
+
+    {/* 6. Blue */}
+    <linearGradient id="fav-blue" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#0EA5E9" />
+      <stop offset="70%" stopColor="#0078D4" />
+      <stop offset="100%" stopColor="#005A9E" />
+    </linearGradient>
+
+    {/* 7. Green */}
+    <linearGradient id="fav-green" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#22C55E" />
+      <stop offset="70%" stopColor="#00A651" />
+      <stop offset="100%" stopColor="#057A3D" />
+    </linearGradient>
+
+    {/* 8. Pure White */}
+    <linearGradient id="fav-white" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="70%" stopColor="#F8FAFC" />
+      <stop offset="100%" stopColor="#E2E8F0" />
+    </linearGradient>
+
+    {/* 9. Frosted Milky White / Light Gray */}
+    <linearGradient id="fav-frosted" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#E2E8F0" stopOpacity="0.95" />
+      <stop offset="70%" stopColor="#94A3B8" stopOpacity="0.9" />
+      <stop offset="100%" stopColor="#64748B" stopOpacity="0.85" />
+    </linearGradient>
+
+    {/* 10. Charcoal / Near-Black */}
+    <linearGradient id="fav-charcoal" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stopColor="#272F3D" />
+      <stop offset="70%" stopColor="#171D27" />
+      <stop offset="100%" stopColor="#0C1017" />
+    </linearGradient>
+  </defs>
+
+  {/* Global Diagonal Fan Group: Center aligned */}
+  <g transform="translate(18, 14)">
+    
+    {/* Layer 10: Charcoal / Black Divider (Bottom-most) */}
+    <g transform="translate(12, 104) rotate(-33.5)" filter="url(#fav-shadow-deep)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-charcoal)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#3E4A5C" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#4B586E" stroke-width="0.6" opacity="0.4" />
+    </g>
+
+    {/* Layer 9: Frosted Milky White / Light Gray */}
+    <g transform="translate(20, 93) rotate(-32.8)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-frosted)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FFFFFF" stroke-width="0.8" opacity="0.5" />
+      <path d="M 1,2 L 1,68" stroke="#FFFFFF" stroke-width="0.6" opacity="0.6" />
+    </g>
+
+    {/* Layer 8: Pure White */}
+    <g transform="translate(28, 82) rotate(-32.1)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-white)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#CBD5E1" stroke-width="0.8" opacity="0.7" />
+      <path d="M 1,2 L 1,68" stroke="#FFFFFF" stroke-width="0.8" opacity="0.9" />
+    </g>
+
+    {/* Layer 7: Emerald Green */}
+    <g transform="translate(36, 71) rotate(-31.4)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-green)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#86EFAC" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#BBF7D0" stroke-width="0.6" opacity="0.7" />
+    </g>
+
+    {/* Layer 6: Royal Blue */}
+    <g transform="translate(44, 60) rotate(-30.7)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-blue)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#7DD3FC" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#BAE6FD" stroke-width="0.6" opacity="0.7" />
+    </g>
+
+    {/* Layer 5: Deep Purple / Violet */}
+    <g transform="translate(52, 49) rotate(-30)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-purple)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#C084FC" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#E9D5FF" stroke-width="0.6" opacity="0.7" />
+    </g>
+
+    {/* Layer 4: Hot Pink / Magenta */}
+    <g transform="translate(60, 38) rotate(-29.3)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-pink)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#F472B6" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#FBCFE8" stroke-width="0.6" opacity="0.7" />
+    </g>
+
+    {/* Layer 3: Pure Red */}
+    <g transform="translate(68, 27) rotate(-28.6)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-red)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FCA5A5" stroke-width="0.8" opacity="0.6" />
+      <path d="M 1,2 L 1,68" stroke="#FEE2E2" stroke-width="0.6" opacity="0.7" />
+    </g>
+
+    {/* Layer 2: Orange */}
+    <g transform="translate(76, 16) rotate(-27.9)" filter="url(#fav-shadow)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-orange)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FDBA74" stroke-width="0.8" opacity="0.7" />
+      <path d="M 1,2 L 1,68" stroke="#FFEDD5" stroke-width="0.6" opacity="0.8" />
+    </g>
+
+    {/* Layer 1: Bright Yellow (Top-most Front Layer) */}
+    <g transform="translate(84, 5) rotate(-27.2)" filter="url(#fav-shadow-deep)">
+      <path
+        d="M 4,0 L 22,0 C 23.5,0 24.5,-1 25,-2.5 L 25.5,-5.5 C 26,-7 27.5,-8 29.5,-8 L 41.5,-8 C 43.5,-8 45,-7 45.5,-5.5 L 46,-2.5 C 46.5,-1 47.5,0 49,0 L 51,0 C 53.5,0 55,1.5 55,4 L 55,68 C 55,71 53,73 50,73 L 5,73 C 2,73 0,71 0,68 L 0,4 C 0,1.5 1.5,0 4,0 Z"
+        fill="url(#fav-yellow)"
+      />
+      <line x1="2" y1="5.5" x2="53" y2="5.5" stroke="#FEF08A" stroke-width="1" opacity="0.9" />
+      <path d="M 1,2 L 1,68" stroke="#FEF9C3" stroke-width="0.8" opacity="0.9" />
+      <path d="M 3,6 L 52,6 L 50,66 L 3,66 Z" fill="white" opacity="0.08" />
+    </g>
+  </g>
+</svg>

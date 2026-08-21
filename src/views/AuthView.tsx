@@ -10,12 +10,11 @@ import {
 import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { validateEmailAddress } from '../lib/emailValidator';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 
 export function AuthView({ 
   onBack,
-  onGuestAccess,
 }: { 
   onBack?: () => void;
   onGuestAccess?: () => void;
@@ -224,7 +223,7 @@ export function AuthView({
           </button>
         </form>
 
-        <div className="mt-6 text-center space-y-3">
+        <div className="mt-6 text-center">
           <button
             type="button"
             onClick={() => {
@@ -235,20 +234,6 @@ export function AuthView({
           >
             {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
-
-          <div>
-            <button
-              type="button"
-              onClick={() => {
-                if (onGuestAccess) onGuestAccess();
-                navigate('/app');
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#DC143C] hover:text-[#B01030] transition-colors cursor-pointer"
-            >
-              <span>Explore Offline Workspace</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
         </div>
       </div>
     </div>

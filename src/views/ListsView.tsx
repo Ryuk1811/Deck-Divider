@@ -3,6 +3,7 @@ import { Plus, ListOrdered, Trash2, X, Sparkles, FolderPlus, Layers } from 'luci
 import { CustomList, PokemonCard, DisplayCurrency, AccountTier, TIER_LIMITS } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
 import { getCardByIdFromEngine, mapToPokemonCard } from '../lib/searchEngine';
+import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
 interface ListsViewProps {
   lists: CustomList[];
@@ -100,6 +101,13 @@ export const ListsView: React.FC<ListsViewProps> = ({
       } as PokemonCard;
     });
   }, [currentList, cards]);
+
+  // Progressive background prewarm for custom list cards
+  useEffect(() => {
+    if (listCards.length > 0) {
+      queueCardsForProgressivePrewarm(listCards, 'high');
+    }
+  }, [listCards]);
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();

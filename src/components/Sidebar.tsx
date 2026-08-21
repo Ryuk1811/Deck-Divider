@@ -20,7 +20,7 @@ import { AccountTier } from '../types';
 import { useAuth } from '../lib/AuthContext';
 import { auth } from '../lib/firebase';
 import { subscribeToSyncProgress, SyncProgressState } from '../lib/dataSyncEngine';
-import { DeckDividerBrand, DeckDividersIcon } from './DeckDividerBrand';
+import { DeckDividerBrand } from './DeckDividerBrand';
 
 export type ActiveTab =
   | 'collection'
@@ -133,6 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
+                showLogo={false}
                 className="w-full"
                 onClick={() => {
                   if (window.innerWidth < 768) {
@@ -149,6 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <DeckDividerBrand
                 size="sm"
                 collapsed={true}
+                showLogo={false}
                 onClick={() => setIsCollapsed(false)}
               />
             </div>

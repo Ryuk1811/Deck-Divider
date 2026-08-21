@@ -380,11 +380,11 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
               {/* Energy Types & Rarity Badges */}
               <div className="flex items-center justify-center gap-1.5 pt-1 flex-wrap">
-                {fullCardData.types?.map((type) => {
+                {fullCardData.types?.map((type, idx) => {
                   const style = ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
                   return (
                     <span
-                      key={type}
+                      key={`${type}-${idx}`}
                       className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-mono font-bold border ${style.bg} ${style.text} ${style.border}`}
                     >
                       {type}

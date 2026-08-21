@@ -34,6 +34,8 @@ interface SettingsViewProps {
   onTriggerCloudSnapshot?: () => Promise<void>;
   lastSyncedTimestamp?: string | null;
   snapshotMetrics?: { rawSize: number; byteSize: number; compressionRatio: string } | null;
+  userEmail?: string | null;
+  onResetShowcaseData?: () => void;
 }
 
 const SUPPORTED_CURRENCIES = [
@@ -71,9 +73,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onTriggerCloudSnapshot,
   lastSyncedTimestamp,
   snapshotMetrics,
+  userEmail,
+  onResetShowcaseData,
 }) => {
   const [isSnapshotting, setIsSnapshotting] = useState(false);
   const [snapshotSuccess, setSnapshotSuccess] = useState(false);
+  const [showcaseResetSuccess, setShowcaseResetSuccess] = useState(false);
+  const isShowcaseUser = userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
 
   const handleManualSnapshot = async () => {
     if (!onTriggerCloudSnapshot) return;
@@ -176,6 +182,32 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   return (
     <div className="app-view-container space-y-8 animate-fade-in">
+      {/* SECTION 0: BANNER AND ACTIONS */}
+      <div className="p-5 glass-slab shadow-md space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 flex items-center justify-center text-[#DC143C]">
+              <Layers className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-heading font-bold text-xl text-[#0F172A]">
+                System Configuration
+              </h2>
+              <p className="font-mono text-xs text-[#64748B] mt-0.5">
+                Manage global settings, currency preferences, and export your data.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleExportData}
+            className="h-9 px-4 bg-[#0F172A] text-white hover:bg-[#1E293B] flex items-center justify-center gap-1.5 text-xs font-mono font-bold rounded-lg transition-all cursor-pointer shadow-xs whitespace-nowrap self-start sm:self-auto"
+          >
+            <Download className="w-4 h-4 text-[#DC143C]" />
+            <span>Export Collection Data</span>
+          </button>
+        </div>
+      </div>
       {/* SECTION 1: GLOBAL DISPLAY CURRENCY */}
       <div className="p-6 space-y-6 glass-slab shadow-md relative z-30 overflow-visible">
         <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-4">
@@ -265,71 +297,60 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* SECTION 2: ENCRYPTED LOCAL STORAGE & COMPRESSED FIRESTORE BACKUP */}
-      <div className="p-6 space-y-4 glass-slab shadow-md">
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+      {/* SECTION 2: CLOUD SNAPSHOT & BACKUP */}
+      <div className="p-6 space-y-5 glass-slab shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0]">
+            <div className="p-2.5 rounded-lg bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] shadow-sm">
               <Shield className="w-5 h-5 text-[#16A34A]" />
             </div>
             <div>
               <h2 className="font-heading font-bold text-lg text-[#0F172A]">
-                Encrypted Local Database & Cloud Snapshot
+                Cloud Storage & Backup
               </h2>
               <p className="font-mono text-xs text-[#64748B]">
-                Hardware-derived AES-GCM 256-bit encryption with micro-compressed single-document cloud backups.
+                Automated continuous synchronization for decks, custom lists, and collection inventory.
               </p>
             </div>
           </div>
-          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-[#F0FDF4] border border-[#86EFAC] rounded text-emerald-800 font-mono text-xs font-bold">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F0FDF4] border border-[#86EFAC] rounded-md text-emerald-800 font-mono text-xs font-bold">
             <Check className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Vault Encrypted (AES-256)</span>
+            <span>Automatic Sync Active (6h Interval)</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Storage Architecture</span>
-            <span className="font-mono text-xs font-bold text-[#0F172A] block">Zero-Knowledge Local DB</span>
-            <span className="text-[11px] text-[#64748B] block">Plaintext never exposed across network</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+          <div className="space-y-1 font-mono text-xs">
+            <div className="text-[#0F172A] font-semibold">
+              Last Cloud Snapshot:{' '}
+              <span className="font-bold text-[#DC143C]">
+                {lastSyncedTimestamp
+                  ? new Date(lastSyncedTimestamp).toLocaleString()
+                  : 'Current Session Active'}
+              </span>
+            </div>
+            <p className="text-[#64748B]">
+              Your data automatically backs up in the background every 6 hours. You can also save a snapshot anytime.
+            </p>
           </div>
-          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Firestore Cloud Footprint</span>
-            <span className="font-mono text-xs font-bold text-[#0F172A] block">
-              {snapshotMetrics ? `${(snapshotMetrics.byteSize / 1024).toFixed(1)} KB (${snapshotMetrics.compressionRatio})` : 'Micro Snapshot (~8-15 KB)'}
-            </span>
-            <span className="text-[11px] text-[#64748B] block">Single document overwrite per user</span>
-          </div>
-          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-            <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider block">Last Cloud Sync</span>
-            <span className="font-mono text-xs font-bold text-[#0F172A] block">
-              {lastSyncedTimestamp ? new Date(lastSyncedTimestamp).toLocaleTimeString() : 'Current Session Active'}
-            </span>
-            <span className="text-[11px] text-[#64748B] block">Automatic debounced backup</span>
-          </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3">
-          <p className="font-mono text-xs text-[#64748B]">
-            Manual snapshot force-packs all local encrypted state and writes a compressed single doc.
-          </p>
           <button
             type="button"
             onClick={handleManualSnapshot}
             disabled={isSnapshotting}
-            className="neo-btn-primary px-4 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap"
+            className="neo-btn-primary px-5 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer self-start sm:self-auto shadow-xs"
           >
             {isSnapshotting ? (
-              <span>Compressing & Syncing...</span>
+              <span>Saving to Cloud...</span>
             ) : snapshotSuccess ? (
               <>
                 <Check className="w-4 h-4 text-white" />
-                <span>Cloud Snapshot Saved!</span>
+                <span>Cloud Backup Saved!</span>
               </>
             ) : (
               <>
                 <Zap className="w-4 h-4 text-white" />
-                <span>Save Compressed Cloud Snapshot</span>
+                <span>Save Snapshot to Cloud</span>
               </>
             )}
           </button>
@@ -366,6 +387,59 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* SHOWCASE DEMO MANAGEMENT (Visible exclusively for gurutvamurdia@gmail.com) */}
+      {isShowcaseUser && (
+        <div className="p-6 space-y-4 glass-slab border-2 border-[#DC143C]/40 shadow-md bg-[#FFF5F5]">
+          <div className="flex items-center gap-3 border-b border-[#FECDD3] pb-3">
+            <div className="p-2 rounded-lg bg-[#DC143C] text-white shadow-xs">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-heading font-bold text-lg text-[#9F1239]">
+                  Showcase Suite Management
+                </h2>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#DC143C] text-white">
+                  VIP EXCLUSIVE
+                </span>
+              </div>
+              <p className="font-mono text-xs text-[#9F1239]/80">
+                Logged in as <span className="font-bold">{userEmail}</span>. Re-seed or restore pristine demonstration portfolio, grail slabs, competitive tournament decks, and sealed products.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="font-mono text-xs text-[#9F1239]">
+              Re-populates all graded slabs (BGS 9.5 Moonbreon, PSA 10 Grey Felt Hat), Sealed Evolving Skies & 151 UPC cases, and tournament decks.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (onResetShowcaseData) {
+                  onResetShowcaseData();
+                  setShowcaseResetSuccess(true);
+                  setTimeout(() => setShowcaseResetSuccess(false), 3000);
+                }
+              }}
+              className="neo-btn-primary px-4 py-2.5 text-xs flex items-center gap-2 whitespace-nowrap self-start sm:self-auto cursor-pointer"
+            >
+              {showcaseResetSuccess ? (
+                <>
+                  <Check className="w-4 h-4 text-white" />
+                  <span>Showcase Data Re-seeded!</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-white" />
+                  <span>Re-seed Showcase Suite</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* SECTION 3: SUBSCRIPTION MANAGEMENT & TIER COMPARISON */}
       <div className="p-6 space-y-6 glass-slab shadow-md">

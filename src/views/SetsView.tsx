@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, CheckCircle2, Search, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown } from 'lucide-react';
 import { CardSet, PokemonCard, Deck, DisplayCurrency } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
 import { getCardsBySetCatalog, getExpansionsCatalog } from '../lib/dataSyncEngine';
 import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
+import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
 interface SetsViewProps {
   sets: CardSet[];
@@ -13,6 +14,8 @@ interface SetsViewProps {
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
 }
+
+const SET_PAGE_SIZE = 40;
 
 export const SetsView: React.FC<SetsViewProps> = ({
   sets: propSets,
@@ -30,6 +33,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
   const [setCards, setSetCards] = useState<PokemonCard[]>([]);
   const [isLoadingSetCards, setIsLoadingSetCards] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(SET_PAGE_SIZE);
 
   // Fetch all expansions on mount
   useEffect(() => {
@@ -48,6 +52,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
   useEffect(() => {
     if (!activeSet?.id) return;
     const setId = activeSet.id;
+    setVisibleCount(SET_PAGE_SIZE);
 
     if (loadedCardsMap[setId]) {
       setSetCards(loadedCardsMap[setId]);
@@ -68,34 +73,53 @@ export const SetsView: React.FC<SetsViewProps> = ({
       });
   }, [activeSet?.id]);
 
+  const displayedSetCards = useMemo(() => {
+    return setCards.slice(0, visibleCount);
+  }, [setCards, visibleCount]);
+
+  // Progressive background prewarm for set cards
+  useEffect(() => {
+    if (displayedSetCards.length > 0) {
+      queueCardsForProgressivePrewarm(displayedSetCards.slice(0, 40), 'high');
+    }
+  }, [displayedSetCards]);
+
   const [selectedSeriesFilter, setSelectedSeriesFilter] = useState<string>('All');
 
   // Filter expansions by series filter & search query
-  const filteredExpansions = allExpansions.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.series.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.id.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredExpansions = useMemo(() => {
+    return allExpansions.filter((s) => {
+      const matchesSearch =
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.series.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.id.toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (!matchesSearch) return false;
-    if (selectedSeriesFilter === 'All') return true;
-    return s.series.toLowerCase() === selectedSeriesFilter.toLowerCase();
-  });
+      if (!matchesSearch) return false;
+      if (selectedSeriesFilter === 'All') return true;
+      return s.series.toLowerCase() === selectedSeriesFilter.toLowerCase();
+    });
+  }, [allExpansions, searchQuery, selectedSeriesFilter]);
 
   // Calculate set completion percentage based on owned cards in user's decks
-  const ownedCardIds = new Set<string>();
-  decks.forEach((deck) => {
-    deck.entries.forEach((e) => {
-      if (!e.isSold) ownedCardIds.add(e.cardId);
+  const ownedCardIds = useMemo(() => {
+    const ids = new Set<string>();
+    decks.forEach((deck) => {
+      deck.entries.forEach((e) => {
+        if (!e.isSold) ids.add(e.cardId);
+      });
     });
-  });
+    return ids;
+  }, [decks]);
 
-  const ownedInSet = setCards.filter((c) => ownedCardIds.has(c.id)).length;
+  const ownedInSet = useMemo(() => {
+    return setCards.filter((c) => ownedCardIds.has(c.id)).length;
+  }, [setCards, ownedCardIds]);
+
   const setCompletionPercent =
     setCards.length > 0 ? Math.round((ownedInSet / setCards.length) * 100) : 0;
 
   return (
-    <div className="app-view-container space-y-8 animate-fade-in">
+    <div className="app-view-container space-y-8">
       {/* EXPANSIONS HEADER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-6">
         <div>
@@ -128,7 +152,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
               key={cat}
               type="button"
               onClick={() => setSelectedSeriesFilter(cat)}
-              className={`px-3 py-1.5 rounded-md font-mono text-xs font-bold whitespace-nowrap transition-all border ${
+              className={`px-3 py-1.5 rounded-md font-mono text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
                 isActive
                   ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-xs'
                   : 'bg-white text-[#475569] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
@@ -139,8 +163,9 @@ export const SetsView: React.FC<SetsViewProps> = ({
           );
         })}
       </div>
+
       {/* SETS LIST GRID */}
-      <div className="scroller-bounding-box h-[440px]">
+      <div className="scroller-bounding-box h-[380px]">
         <div className="scroller-bounding-box-inner p-3 custom-scrollbar h-full">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExpansions.map((s) => {
@@ -235,34 +260,49 @@ export const SetsView: React.FC<SetsViewProps> = ({
             </div>
           ) : (
             /* Cards Grid */
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
-              {setCards.map((card) => {
-                const isOwned = ownedCardIds.has(card.id);
-                return (
-                  <div key={card.id} className="relative group">
-                    <HolographicCard
-                      card={card}
-                      currency={currency}
-                      onClick={() => onSelectCard(card)}
-                      onQuickLook={() => onQuickLookCard(card)}
-                    />
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                {displayedSetCards.map((card) => {
+                  const isOwned = ownedCardIds.has(card.id);
+                  return (
+                    <div key={card.id} className="relative group">
+                      <HolographicCard
+                        card={card}
+                        currency={currency}
+                        onClick={() => onSelectCard(card)}
+                        onQuickLook={() => onQuickLookCard(card)}
+                      />
 
-                    <div className="absolute top-2 left-2 pointer-events-none z-10">
-                      {isOwned ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#16A34A] text-white font-mono text-[9px] font-bold shadow-md">
-                          <CheckCircle2 className="w-2.5 h-2.5" />
-                          Owned
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F172A]/90 text-white font-mono text-[9px] font-bold shadow-md">
-                          Unowned
-                        </span>
-                      )}
+                      <div className="absolute top-2 left-2 pointer-events-none z-10">
+                        {isOwned ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#16A34A] text-white font-mono text-[9px] font-bold shadow-md">
+                            <CheckCircle2 className="w-2.5 h-2.5" />
+                            Owned
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F172A]/90 text-white font-mono text-[9px] font-bold shadow-md">
+                            Unowned
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+
+              {displayedSetCards.length < setCards.length && (
+                <div className="pt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setVisibleCount((prev) => Math.min(prev + SET_PAGE_SIZE, setCards.length))}
+                    className="px-6 py-3 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] font-mono text-xs font-bold rounded-xl shadow-xs hover:border-[#DC143C] flex items-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
+                  >
+                    <ChevronDown className="w-4 h-4 text-[#DC143C]" />
+                    <span>Load More Set Cards ({setCards.length - displayedSetCards.length} remaining)</span>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

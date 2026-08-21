@@ -32,6 +32,7 @@ import {
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
 import { DropdownMenu } from '../components/DropdownMenu';
+import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
 interface DecksViewProps {
   decks: Deck[];
@@ -130,6 +131,33 @@ export const DecksView: React.FC<DecksViewProps> = ({
     setEditDeckColor(currentDeck.colorHex || '#DC143C');
     setIsEditModalOpen(true);
   };
+
+  const handleDeleteDeckConfirm = (deckToDelete: Deck, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (
+      window.confirm(
+        `Are you sure you want to delete deck "${deckToDelete.name}"? The deck structure will be removed. All cards remain safely stored in your collection.`
+      )
+    ) {
+      onDeleteDeck(deckToDelete.id);
+      const remaining = decks.filter((d) => d.id !== deckToDelete.id);
+      if (remaining.length > 0) {
+        setSelectedDeckId(remaining[0].id);
+      } else {
+        setSelectedDeckId('');
+      }
+    }
+  };
+
+  // Progressive background prewarm of current deck card images
+  useEffect(() => {
+    if (currentDeck?.entries && currentDeck.entries.length > 0) {
+      queueCardsForProgressivePrewarm(
+        currentDeck.entries.map((e) => e.card),
+        'high'
+      );
+    }
+  }, [currentDeck]);
 
   useEffect(() => {
     if (createDeckSignal && createDeckSignal > 0) {
@@ -287,18 +315,15 @@ export const DecksView: React.FC<DecksViewProps> = ({
               </button>
             )}
 
-            {currentDeck && decks.length > 1 && (
+            {currentDeck && (
               <button
                 type="button"
-                onClick={() => {
-                  if (confirm(`Delete deck "${currentDeck.name}"? Cards will remain in collection.`)) {
-                    onDeleteDeck(currentDeck.id);
-                  }
-                }}
+                onClick={(e) => handleDeleteDeckConfirm(currentDeck, e)}
                 className="h-9 px-4 bg-white text-[#EF4444] border border-[#E2E8F0] hover:bg-[#FEF2F2] hover:border-[#EF4444] font-mono text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
+                title={`Delete ${currentDeck.name}`}
               >
                 <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">Delete</span>
+                <span className="truncate">Delete Deck</span>
               </button>
             )}
 
@@ -360,7 +385,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 <div
                   key={deck.id}
                   onClick={() => setSelectedDeckId(deck.id)}
-                  className={`p-3.5 cursor-pointer transition-all duration-200 relative overflow-hidden glass-slab shadow-sm ${
+                  className={`group p-3.5 cursor-pointer transition-all duration-200 relative overflow-hidden glass-slab shadow-sm ${
                     isSelected
                       ? 'border-[#DC143C] ring-1 ring-[#DC143C] bg-[#FFF0F3]/10 shadow-xs'
                       : 'shadow-xs hover:shadow-md'
@@ -376,11 +401,21 @@ export const DecksView: React.FC<DecksViewProps> = ({
                         {deck.name}
                       </h3>
                     </div>
-                    {deck.isPublic && (
-                      <span className="font-mono text-[9px] font-bold bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/30 px-1 py-0.2 rounded">
-                        Public
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {deck.isPublic && (
+                        <span className="font-mono text-[9px] font-bold bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/30 px-1 py-0.2 rounded">
+                          Public
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteDeckConfirm(deck, e)}
+                        title={`Delete ${deck.name}`}
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-[#FEF2F2] hover:text-[#EF4444] text-[#94A3B8] rounded transition-all cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between font-mono text-[11px] pt-1.5 border-t border-[#E2E8F0]">

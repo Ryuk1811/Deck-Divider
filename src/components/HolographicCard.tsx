@@ -183,12 +183,12 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
             </span>
           )}
 
-          {card.types && card.types.length > 0 && card.types.map((type) => {
+          {card.types && card.types.length > 0 && card.types.map((type, idx) => {
             const style = ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
             const displayTypeName = type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type;
             return (
               <span
-                key={type}
+                key={`${type}-${idx}`}
                 className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-semibold border ${style.bg} ${style.text} ${style.border}`}
               >
                 {displayTypeName}

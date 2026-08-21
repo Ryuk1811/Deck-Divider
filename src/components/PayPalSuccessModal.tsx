@@ -21,7 +21,7 @@ export const PayPalSuccessModal: React.FC<PayPalSuccessModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-md bg-white border-2 border-[#16A34A] p-6 shadow-2xl rounded-xl space-y-5 chamfer-corner-lg relative text-center">
+      <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative text-center">
         {/* Animated Success Icon */}
         <div className="relative mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-[#F0FDF4] border-2 border-[#16A34A] text-[#16A34A] shadow-inner">
           <CheckCircle2 className="w-10 h-10 text-[#16A34A] animate-bounce" />
@@ -86,7 +86,7 @@ export const PayPalSuccessModal: React.FC<PayPalSuccessModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="neo-btn-primary w-full py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold flex items-center justify-center gap-2 rounded-lg shadow-md cursor-pointer"
+          className="w-full py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold flex items-center justify-center gap-2 rounded-lg shadow-md cursor-pointer transition-all"
         >
           <span>Continue to Portfolio</span>
           <ArrowRight className="w-4 h-4 text-[#DC143C]" />

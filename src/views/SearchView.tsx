@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useTransition } from 'react';
 import {
   Search as SearchIcon,
   Filter,
   X,
   SlidersHorizontal,
   RotateCcw,
+  ChevronDown,
 } from 'lucide-react';
 import {
   PokemonCard,
@@ -15,8 +16,8 @@ import {
   DisplayCurrency,
 } from '../types';
 import { HolographicCard } from '../components/HolographicCard';
-import { DropdownMenu } from '../components/DropdownMenu';
 import { searchCards, mapToPokemonCard } from '../lib/searchEngine';
+import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
 interface SearchViewProps {
   sets: CardSet[];
@@ -51,6 +52,8 @@ const ALL_RARITIES: CardRarity[] = [
   'Special Illustration Rare',
 ];
 
+const PAGE_CHUNK_SIZE = 40;
+
 export const SearchView: React.FC<SearchViewProps> = ({
   sets,
   currency,
@@ -59,32 +62,55 @@ export const SearchView: React.FC<SearchViewProps> = ({
   onSelectCard,
   onQuickLookCard,
 }) => {
-  const [filters, setFilters] = useState<SearchFilters>(savedFilters);
+  // Input query state is kept decoupled from heavy filtering to guarantee 0ms typing latency
+  const [searchInputText, setSearchInputText] = useState(savedFilters.query || '');
+  const [activeFilters, setActiveFilters] = useState<SearchFilters>(savedFilters);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
+  const [, startTransition] = useTransition();
 
-  // Sync state changes upward so search state survives navigation
-  const updateLocalFilters = (newF: SearchFilters) => {
-    setFilters(newF);
+  // Debounce search query text update into activeFilters
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setActiveFilters((prev) => {
+          if (prev.query === searchInputText) return prev;
+          const updated = { ...prev, query: searchInputText };
+          onUpdateFilters(updated);
+          return updated;
+        });
+        setVisibleCount(PAGE_CHUNK_SIZE);
+      });
+    }, 160);
+
+    return () => clearTimeout(timer);
+  }, [searchInputText, onUpdateFilters]);
+
+  // Synchronize non-query filter mutations smoothly
+  const updateStructuredFilters = (newF: SearchFilters) => {
+    setActiveFilters(newF);
     onUpdateFilters(newF);
+    setVisibleCount(PAGE_CHUNK_SIZE);
   };
 
   const handleToggleType = (type: EnergyType) => {
-    const exists = (filters.types || []).includes(type);
+    const exists = (activeFilters.types || []).includes(type);
     const updated = exists
-      ? (filters.types || []).filter((t) => t !== type)
-      : [...(filters.types || []), type];
-    updateLocalFilters({ ...filters, types: updated });
+      ? (activeFilters.types || []).filter((t) => t !== type)
+      : [...(activeFilters.types || []), type];
+    updateStructuredFilters({ ...activeFilters, types: updated });
   };
 
   const handleToggleRarity = (rarity: CardRarity) => {
-    const exists = (filters.rarities || []).includes(rarity);
+    const exists = (activeFilters.rarities || []).includes(rarity);
     const updated = exists
-      ? (filters.rarities || []).filter((r) => r !== rarity)
-      : [...(filters.rarities || []), rarity];
-    updateLocalFilters({ ...filters, rarities: updated });
+      ? (activeFilters.rarities || []).filter((r) => r !== rarity)
+      : [...(activeFilters.rarities || []), rarity];
+    updateStructuredFilters({ ...activeFilters, rarities: updated });
   };
 
   const handleReset = () => {
+    setSearchInputText('');
     const resetF: SearchFilters = {
       query: '',
       types: [],
@@ -97,57 +123,79 @@ export const SearchView: React.FC<SearchViewProps> = ({
       illustrator: '',
       sortBy: 'price-desc',
     };
-    updateLocalFilters(resetF);
+    updateStructuredFilters(resetF);
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (filters.category) count++;
-    if (filters.stage) count++;
-    if (filters.variant) count++;
-    if (filters.legality) count++;
-    if (filters.regulationMark) count++;
-    if (filters.artist || filters.illustrator) count++;
-    if (filters.types.length > 0) count += filters.types.length;
-    if (filters.rarities.length > 0) count += filters.rarities.length;
-    if (filters.setId) count++;
-    if (filters.hpMin !== undefined || filters.hpMax !== undefined) count++;
-    if (filters.priceMin !== undefined || filters.priceMax !== undefined) count++;
+    if (activeFilters.category) count++;
+    if (activeFilters.stage) count++;
+    if (activeFilters.variant) count++;
+    if (activeFilters.legality) count++;
+    if (activeFilters.regulationMark) count++;
+    if (activeFilters.artist || activeFilters.illustrator) count++;
+    if (activeFilters.types && activeFilters.types.length > 0) count += activeFilters.types.length;
+    if (activeFilters.rarities && activeFilters.rarities.length > 0) count += activeFilters.rarities.length;
+    if (activeFilters.setId) count++;
+    if (activeFilters.hpMin !== undefined || activeFilters.hpMax !== undefined) count++;
+    if (activeFilters.priceMin !== undefined || activeFilters.priceMax !== undefined) count++;
     return count;
-  }, [filters]);
+  }, [activeFilters]);
 
-  // Run the actual local search engine query!
+  // Run the search query
   const filteredCards = useMemo(() => {
-    const rawResults = searchCards(filters);
+    const rawResults = searchCards(activeFilters);
     const mapped = rawResults.map(mapToPokemonCard);
 
     return mapped.sort((a, b) => {
-      if (filters.sortBy === 'price-desc') return b.prices.raw - a.prices.raw;
-      if (filters.sortBy === 'price-asc') return a.prices.raw - b.prices.raw;
-      if (filters.sortBy === 'name') return a.name.localeCompare(b.name);
-      if (filters.sortBy === 'hp') return (b.hp || 0) - (a.hp || 0);
+      if (activeFilters.sortBy === 'price-desc') return b.prices.raw - a.prices.raw;
+      if (activeFilters.sortBy === 'price-asc') return a.prices.raw - b.prices.raw;
+      if (activeFilters.sortBy === 'name') return a.name.localeCompare(b.name);
+      if (activeFilters.sortBy === 'hp') return (b.hp || 0) - (a.hp || 0);
       return 0;
     });
-  }, [filters]);
+  }, [activeFilters]);
+
+  // Paginated window for optimal frame-rate
+  const displayedCards = useMemo(() => {
+    return filteredCards.slice(0, visibleCount);
+  }, [filteredCards, visibleCount]);
+
+  // Progressive background prewarm of currently visible cards
+  useEffect(() => {
+    if (displayedCards.length > 0) {
+      queueCardsForProgressivePrewarm(displayedCards.slice(0, 40), 'high');
+    }
+  }, [displayedCards]);
+
+  const loadMoreCards = () => {
+    setVisibleCount((prev) => Math.min(prev + PAGE_CHUNK_SIZE, filteredCards.length));
+  };
 
   return (
-    <div className="app-view-container space-y-6 animate-fade-in">
+    <div className="app-view-container space-y-6">
       {/* Main Search Input bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 glass-slab shadow-md">
         <div className="flex-1 flex items-center gap-3 px-2">
           <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
           <input
             type="text"
-            value={filters.query}
-            onChange={(e) => updateLocalFilters({ ...filters, query: e.target.value })}
-            placeholder="Search Pokemon cards by name, set, or artist..."
+            value={searchInputText}
+            onChange={(e) => setSearchInputText(e.target.value)}
+            placeholder="Search Pokémon cards by name, set, or artist..."
+            autoComplete="off"
+            spellCheck="false"
             className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B]"
           />
-          {filters.query && (
+          {searchInputText && (
             <button
               type="button"
-              onClick={() => updateLocalFilters({ ...filters, query: '' })}
-              className="p-1 text-[#64748B] hover:text-[#0F172A]"
+              onClick={() => {
+                setSearchInputText('');
+                updateStructuredFilters({ ...activeFilters, query: '' });
+              }}
+              className="p-1 text-[#64748B] hover:text-[#0F172A] cursor-pointer"
+              title="Clear search"
             >
               <X className="w-4 h-4" />
             </button>
@@ -157,7 +205,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
         <button
           type="button"
           onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-          className={`h-10 px-4 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-md border transition-all cursor-pointer ${
+          className={`h-10 px-4 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-md border transition-all cursor-pointer select-none ${
             isFilterPanelOpen || activeFilterCount > 0
               ? 'bg-[#0F172A] text-white border-[#0F172A]'
               : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
@@ -175,7 +223,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
       {/* Expandable Inline Filter Panel */}
       {isFilterPanelOpen && (
-        <div className="p-6 glass-slab space-y-6 animate-fade-in shadow-md">
+        <div className="p-6 glass-slab space-y-6 shadow-md">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />
@@ -184,7 +232,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <button
               type="button"
               onClick={handleReset}
-              className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1.5"
+              className="font-mono text-xs font-bold text-[#DC143C] hover:underline flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset All Filters</span>
@@ -196,8 +244,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Category</label>
               <select
-                value={filters.category || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, category: e.target.value })}
+                value={activeFilters.category || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, category: e.target.value })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Categories (Pokémon, Trainer, Energy)</option>
@@ -210,8 +258,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Stage / Form</label>
               <select
-                value={filters.stage || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, stage: e.target.value })}
+                value={activeFilters.stage || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, stage: e.target.value })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Stages</option>
@@ -229,8 +277,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Card Printing Variant</label>
               <select
-                value={filters.variant || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, variant: e.target.value })}
+                value={activeFilters.variant || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, variant: e.target.value })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Printings</option>
@@ -247,8 +295,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Format Legality</label>
               <select
-                value={filters.legality || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, legality: (e.target.value as any) || undefined })}
+                value={activeFilters.legality || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, legality: (e.target.value as any) || undefined })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Formats</option>
@@ -260,8 +308,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Regulation Mark</label>
               <select
-                value={filters.regulationMark || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, regulationMark: e.target.value })}
+                value={activeFilters.regulationMark || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, regulationMark: e.target.value })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
                 <option value="">All Regulation Marks</option>
@@ -279,8 +327,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
               <input
                 type="text"
                 placeholder="Filter by Artist (e.g. Ken Sugimori)"
-                value={filters.artist || filters.illustrator || ''}
-                onChange={(e) => updateLocalFilters({ ...filters, artist: e.target.value, illustrator: e.target.value })}
+                value={activeFilters.artist || activeFilters.illustrator || ''}
+                onChange={(e) => updateStructuredFilters({ ...activeFilters, artist: e.target.value, illustrator: e.target.value })}
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               />
             </div>
@@ -289,9 +337,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Expansion Set</label>
               <select
-                value={filters.setId || ''}
+                value={activeFilters.setId || ''}
                 onChange={(e) =>
-                  updateLocalFilters({ ...filters, setId: e.target.value || undefined })
+                  updateStructuredFilters({ ...activeFilters, setId: e.target.value || undefined })
                 }
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
@@ -307,9 +355,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Sort Ordering</label>
               <select
-                value={filters.sortBy}
+                value={activeFilters.sortBy}
                 onChange={(e) =>
-                  updateLocalFilters({ ...filters, sortBy: e.target.value as any })
+                  updateStructuredFilters({ ...activeFilters, sortBy: e.target.value as any })
                 }
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
@@ -327,9 +375,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 <input
                   type="number"
                   placeholder="Min Price"
-                  value={filters.priceMin ?? ''}
+                  value={activeFilters.priceMin ?? ''}
                   onChange={(e) =>
-                    updateLocalFilters({ ...filters, priceMin: e.target.value ? Number(e.target.value) : undefined })
+                    updateStructuredFilters({ ...activeFilters, priceMin: e.target.value ? Number(e.target.value) : undefined })
                   }
                   className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
                 />
@@ -337,9 +385,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 <input
                   type="number"
                   placeholder="Max Price"
-                  value={filters.priceMax ?? ''}
+                  value={activeFilters.priceMax ?? ''}
                   onChange={(e) =>
-                    updateLocalFilters({ ...filters, priceMax: e.target.value ? Number(e.target.value) : undefined })
+                    updateStructuredFilters({ ...activeFilters, priceMax: e.target.value ? Number(e.target.value) : undefined })
                   }
                   className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
                 />
@@ -351,7 +399,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Energy Types</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_ENERGY_TYPES.map((type) => {
-                  const isSelected = filters.types.includes(type);
+                  const isSelected = (activeFilters.types || []).includes(type);
                   return (
                     <button
                       key={type}
@@ -375,7 +423,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Rarity Tiers</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {ALL_RARITIES.map((rarity) => {
-                  const isSelected = filters.rarities.includes(rarity);
+                  const isSelected = (activeFilters.rarities || []).includes(rarity);
                   return (
                     <button
                       key={rarity}
@@ -401,22 +449,51 @@ export const SearchView: React.FC<SearchViewProps> = ({
       <div className="space-y-4">
         {/* Results Header Bar */}
         <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl shadow-xs font-mono text-xs text-[#666666]">
-          <span className="font-bold text-[#0F172A]">Showing {filteredCards.length} matching card records</span>
-          <span>Press Space on any card for Quick Look</span>
+          <span className="font-bold text-[#0F172A]">
+            Showing {Math.min(displayedCards.length, filteredCards.length)} of {filteredCards.length} matching cards
+          </span>
+          <span className="hidden sm:inline">Press Space on any card for Quick Look</span>
         </div>
 
         {/* Results Card Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
-          {filteredCards.map((card) => (
-            <HolographicCard
-              key={card.id}
-              card={card}
-              currency={currency}
-              onClick={() => onSelectCard(card)}
-              onQuickLook={() => onQuickLookCard(card)}
-            />
-          ))}
-        </div>
+        {displayedCards.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+            {displayedCards.map((card) => (
+              <HolographicCard
+                key={card.id}
+                card={card}
+                currency={currency}
+                onClick={() => onSelectCard(card)}
+                onQuickLook={() => onQuickLookCard(card)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="p-12 text-center glass-slab shadow-sm">
+            <p className="font-mono text-sm text-[#64748B]">No Pokémon cards match your current search filters.</p>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="mt-3 px-4 py-2 bg-[#0F172A] text-white rounded-lg font-mono text-xs font-bold cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+
+        {/* Load More Button for buttery smooth scrolling */}
+        {displayedCards.length < filteredCards.length && (
+          <div className="pt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={loadMoreCards}
+              className="px-6 py-3 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] font-mono text-xs font-bold rounded-xl shadow-xs hover:border-[#DC143C] flex items-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
+            >
+              <ChevronDown className="w-4 h-4 text-[#DC143C]" />
+              <span>Load More Cards ({filteredCards.length - displayedCards.length} remaining)</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
