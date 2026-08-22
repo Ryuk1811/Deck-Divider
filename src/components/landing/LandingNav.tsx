@@ -51,6 +51,20 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             >
               How it works
             </button>
+            <button
+              type="button"
+              onClick={() => handleNav('pricing')}
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            >
+              Pricing
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNav('faq-and-insights')}
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            >
+              FAQ & Insights
+            </button>
           </nav>
 
           {/* Sign In / Dashboard Button */}

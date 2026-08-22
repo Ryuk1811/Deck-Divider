@@ -83,6 +83,14 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               </li>
               <li>
                 <button
+                  onClick={() => scrollTo('faq-and-insights')}
+                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
+                >
+                  FAQ & Insights
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => scrollTo('collection')}
                   className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
                 >

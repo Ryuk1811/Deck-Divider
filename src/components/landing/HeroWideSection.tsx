@@ -9,6 +9,8 @@ interface HeroWideSectionProps {
 }
 
 export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
+  onEnterApp,
+  onExploreFeatures,
   displayCurrency,
 }) => {
   return (
@@ -45,6 +47,19 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
             <span>Championship Format Validation</span>
           </div>
         </div>
+
+        {/* Primary Call to Action Button */}
+        {onEnterApp && (
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={onEnterApp}
+              className="inline-flex items-center gap-2 px-7 py-3.5 text-sm sm:text-base font-bold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-xl transition-all shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
+            >
+              <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 fill-amber-300" />
+              <span>Launch Portfolio Studio</span>
+            </button>
+          </div>
+        )}
 
         {/* 3-Depth Light Studio Glass Slab Window Showcase - Full Width Scaling */}
         <div className="pt-8 w-full">

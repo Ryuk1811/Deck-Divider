@@ -36,11 +36,14 @@ interface CollectionViewProps {
   allCards: PokemonCard[];
   currency: DisplayCurrency;
   customLists: CustomList[];
+  userEmail?: string;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
   onSelectDeck: (deckId: string) => void;
   onAddCardToList?: (listId: string, cardId: string) => void;
   onNavigateToSearch?: () => void;
+  onLoadShowcase?: () => void;
+  onAddSampleDeck?: () => void;
 }
 
 export type GroupByOption = 'none' | 'type' | 'rarity' | 'set' | 'deck' | 'supertype';
@@ -67,11 +70,14 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   allCards,
   currency,
   customLists,
+  userEmail,
   onSelectCard,
   onQuickLookCard,
   onSelectDeck,
   onAddCardToList,
   onNavigateToSearch,
+  onLoadShowcase,
+  onAddSampleDeck,
 }) => {
   // View & Grouping Controls State
   const [viewMode, setViewMode] = useState<ViewModeOption>('grid');
@@ -570,16 +576,63 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
       )}
 
       {/* 3. DYNAMIC VIEW DISPLAY (BINDER / TABLE / GRID) */}
-      {filteredEntries.length === 0 ? (
-        <div className="p-12 text-center glass-slab shadow-sm space-y-3">
+      {collectionEntries.length === 0 ? (
+        <div className="p-8 sm:p-12 text-center glass-slab shadow-sm space-y-6 rounded-2xl border border-[#E2E8F0]">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center mx-auto text-[#DC143C] shadow-xs">
+            <Sparkles className="w-8 h-8" />
+          </div>
+          <div className="max-w-md mx-auto space-y-2">
+            <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#0F172A]">
+              Portfolio Collection is Ready
+            </h3>
+            <p className="font-mono text-xs sm:text-sm text-[#64748B] leading-relaxed">
+              No cards are currently assigned to your decks or binders. Populate your portfolio by exploring the card database or instantly loading the curated showcase suite.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            {onLoadShowcase && (
+              <button
+                type="button"
+                onClick={onLoadShowcase}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Load Showcase Slabs & Grails</span>
+              </button>
+            )}
+            {onAddSampleDeck && (
+              <button
+                type="button"
+                onClick={onAddSampleDeck}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <Layers className="w-4 h-4" />
+                <span>Load Standard Championship Deck</span>
+              </button>
+            )}
+            {onNavigateToSearch && (
+              <button
+                type="button"
+                onClick={onNavigateToSearch}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer"
+              >
+                <Search className="w-4 h-4 text-[#DC143C]" />
+                <span>Search Card Catalog</span>
+              </button>
+            )}
+          </div>
+        </div>
+      ) : filteredEntries.length === 0 ? (
+        <div className="p-12 text-center glass-slab shadow-sm space-y-3 rounded-2xl border border-[#E2E8F0]">
           <p className="font-mono text-sm text-[#64748B]">
-            No card holdings match your current collection filters.
+            No card holdings match your active search or filters.
           </p>
           {hasActiveFilters && (
             <button
               type="button"
               onClick={clearAllFilters}
-              className="px-4 py-2 bg-[#0F172A] text-white rounded-lg font-mono text-xs font-bold cursor-pointer"
+              className="px-4 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-lg font-mono text-xs font-bold cursor-pointer transition-all shadow-xs"
             >
               Clear All Filters
             </button>

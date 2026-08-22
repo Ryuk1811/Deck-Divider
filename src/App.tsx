@@ -241,111 +241,136 @@ export default function App() {
   const [lastSyncedTimestamp, setLastSyncedTimestamp] = useState<string | null>(null);
   const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
 
+  // Helper to load complete Showcase Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
+  const handleLoadShowcaseData = React.useCallback(async () => {
+    const targetUid = user?.uid || 'guest_user';
+    const showcaseDecks = generateShowcaseDecks(targetUid);
+    const showcaseLists = generateShowcaseCustomLists(targetUid);
+    const showcaseSealed = generateShowcaseSealed(targetUid);
+
+    setDecks(showcaseDecks);
+    setCustomLists(showcaseLists);
+    setSealedEntries(showcaseSealed);
+
+    await idbSaveUserDecks(showcaseDecks, targetUid);
+    await idbSaveCustomLists(showcaseLists, targetUid);
+    await idbSaveSealedVault(showcaseSealed, targetUid);
+
+    if (user) {
+      setTimeout(() => {
+        saveCompressedCloudSnapshot();
+      }, 300);
+    }
+  }, [user]);
+
+  // Helper to load standard competitive sample deck
+  const handleLoadSampleDeck = React.useCallback(async () => {
+    const targetUid = user?.uid || 'guest_user';
+    const sampleDecks = generateShowcaseDecks(targetUid).slice(0, 1); // Charizard Championship 60
+    
+    setDecks((prev) => {
+      const merged = [...sampleDecks, ...prev.filter(d => d.id !== sampleDecks[0].id)];
+      idbSaveUserDecks(merged, targetUid);
+      return merged;
+    });
+
+    if (user) {
+      setTimeout(() => {
+        saveCompressedCloudSnapshot();
+      }, 300);
+    }
+  }, [user]);
+
   // Load from Local Encrypted Storage on initial mount & Seed Showcase data for gurutvamurdia@gmail.com
   React.useEffect(() => {
     if (authLoading) return;
     const activeUid = user?.uid || 'guest_user';
     const isShowcase = isShowcaseAccount(user?.email);
 
-    Promise.all([
-      idbGetUserDecks(activeUid),
-      idbGetCustomLists(activeUid),
-      idbGetSealedVault(activeUid),
-    ]).then(([savedDecks, savedLists, savedSealed]) => {
-      if (isShowcase && (!savedDecks || savedDecks.length === 0)) {
-        // Seed full-fledged showcase suite exclusively for gurutvamurdia@gmail.com
-        const showcaseDecks = generateShowcaseDecks(activeUid);
-        const showcaseLists = generateShowcaseCustomLists(activeUid);
-        const showcaseSealed = generateShowcaseSealed(activeUid);
-
-        setDecks(showcaseDecks);
-        setCustomLists(showcaseLists);
-        setSealedEntries(showcaseSealed);
-
-        idbSaveUserDecks(showcaseDecks, activeUid);
-        idbSaveCustomLists(showcaseLists, activeUid);
-        idbSaveSealedVault(showcaseSealed, activeUid);
-
-        // Also push initial snapshot to cloud
-        setTimeout(() => {
-          saveCompressedCloudSnapshot();
-        }, 500);
-      } else {
-        if (savedDecks && savedDecks.length > 0) setDecks(savedDecks);
-        if (savedLists && savedLists.length > 0) setCustomLists(savedLists);
-        if (savedSealed && savedSealed.length > 0) setSealedEntries(savedSealed);
-      }
-    });
-  }, [user, authLoading]);
-
-  // Initial cloud restore or automatic showcase generation if user signs in
-  React.useEffect(() => {
-    if (!user || authLoading) return;
-    const isShowcase = isShowcaseAccount(user.email);
-
-    const fetchLatestCloudSnapshot = async () => {
+    const initializeAppState = async () => {
       try {
-        const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
-        const snapDoc = await getDoc(snapRef);
-        if (snapDoc.exists()) {
-          const docData = snapDoc.data() as CompressedSnapshotDoc;
-          setLastSyncedTimestamp(docData.updatedAt);
-          setSnapshotMetrics({
-            rawSize: docData.rawSize,
-            byteSize: docData.byteSize,
-            compressionRatio: docData.compressionRatio,
-          });
+        const [savedDecks, savedLists, savedSealed] = await Promise.all([
+          idbGetUserDecks(activeUid),
+          idbGetCustomLists(activeUid),
+          idbGetSealedVault(activeUid),
+        ]);
 
-          // Unpack snapshot
-          const unpacked = await unpackUserSnapshot(docData);
-          if (unpacked) {
-            if (unpacked.decks && unpacked.decks.length > 0) {
-              setDecks(unpacked.decks);
-              idbSaveUserDecks(unpacked.decks, user.uid);
+        let currentDecks = savedDecks || [];
+        let currentLists = savedLists || [];
+        let currentSealed = savedSealed || [];
+
+        // If authenticated, check Firestore snapshot
+        if (user) {
+          try {
+            const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
+            const snapDoc = await getDoc(snapRef);
+            if (snapDoc.exists()) {
+              const docData = snapDoc.data() as CompressedSnapshotDoc;
+              setLastSyncedTimestamp(docData.updatedAt);
+              setSnapshotMetrics({
+                rawSize: docData.rawSize,
+                byteSize: docData.byteSize,
+                compressionRatio: docData.compressionRatio,
+              });
+
+              const unpacked = await unpackUserSnapshot(docData);
+              if (unpacked) {
+                if (unpacked.decks && unpacked.decks.length > 0) {
+                  currentDecks = unpacked.decks;
+                  await idbSaveUserDecks(unpacked.decks, user.uid);
+                }
+                if (unpacked.customLists && unpacked.customLists.length > 0) {
+                  currentLists = unpacked.customLists;
+                  await idbSaveCustomLists(unpacked.customLists, user.uid);
+                }
+                if (unpacked.sealedEntries && unpacked.sealedEntries.length > 0) {
+                  currentSealed = unpacked.sealedEntries;
+                  await idbSaveSealedVault(unpacked.sealedEntries, user.uid);
+                }
+                if (unpacked.soldEntries && unpacked.soldEntries.length > 0) {
+                  setSoldEntries(unpacked.soldEntries);
+                }
+              }
             }
-            if (unpacked.customLists && unpacked.customLists.length > 0) {
-              setCustomLists(unpacked.customLists);
-              idbSaveCustomLists(unpacked.customLists, user.uid);
-            }
-            if (unpacked.sealedEntries && unpacked.sealedEntries.length > 0) {
-              setSealedEntries(unpacked.sealedEntries);
-              idbSaveSealedVault(unpacked.sealedEntries, user.uid);
-            }
-            if (unpacked.soldEntries && unpacked.soldEntries.length > 0) {
-              setSoldEntries(unpacked.soldEntries);
-            }
+          } catch (cloudErr) {
+            console.warn('Snapshot cloud fetch warning:', cloudErr);
           }
-        } else if (isShowcase) {
-          // If no cloud snapshot exists yet for showcase account, seed it and upload snapshot
-          const showcaseDecks = generateShowcaseDecks(user.uid);
-          const showcaseLists = generateShowcaseCustomLists(user.uid);
-          const showcaseSealed = generateShowcaseSealed(user.uid);
-
-          setDecks(showcaseDecks);
-          setCustomLists(showcaseLists);
-          setSealedEntries(showcaseSealed);
-
-          idbSaveUserDecks(showcaseDecks, user.uid);
-          idbSaveCustomLists(showcaseLists, user.uid);
-          idbSaveSealedVault(showcaseSealed, user.uid);
-
-          setTimeout(() => {
-            saveCompressedCloudSnapshot();
-          }, 300);
         }
+
+        // Automatic seeding for showcase account if decks are empty
+        if (isShowcase && currentDecks.length === 0) {
+          currentDecks = generateShowcaseDecks(activeUid);
+          currentLists = generateShowcaseCustomLists(activeUid);
+          currentSealed = generateShowcaseSealed(activeUid);
+
+          await idbSaveUserDecks(currentDecks, activeUid);
+          await idbSaveCustomLists(currentLists, activeUid);
+          await idbSaveSealedVault(currentSealed, activeUid);
+
+          if (user) {
+            setTimeout(() => {
+              saveCompressedCloudSnapshot();
+            }, 500);
+          }
+        }
+
+        setDecks(currentDecks);
+        setCustomLists(currentLists);
+        setSealedEntries(currentSealed);
       } catch (err) {
-        console.warn('Snapshot fetch notice:', err);
+        console.error('Data initialization error:', err);
         if (isShowcase) {
-          const showcaseDecks = generateShowcaseDecks(user.uid);
-          const showcaseLists = generateShowcaseCustomLists(user.uid);
-          const showcaseSealed = generateShowcaseSealed(user.uid);
+          const showcaseDecks = generateShowcaseDecks(activeUid);
+          const showcaseLists = generateShowcaseCustomLists(activeUid);
+          const showcaseSealed = generateShowcaseSealed(activeUid);
           setDecks(showcaseDecks);
           setCustomLists(showcaseLists);
           setSealedEntries(showcaseSealed);
         }
       }
     };
-    fetchLatestCloudSnapshot();
+
+    initializeAppState();
   }, [user, authLoading]);
 
   // Push compressed single-document snapshot to Firestore (overwriting existing)
@@ -1015,6 +1040,7 @@ export default function App() {
               allCards={effectiveCards}
               currency={displayCurrency}
               customLists={customLists}
+              userEmail={user?.email || undefined}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
@@ -1026,6 +1052,8 @@ export default function App() {
               }}
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
+              onLoadShowcase={handleLoadShowcaseData}
+              onAddSampleDeck={handleLoadSampleDeck}
             />
           )}
 
@@ -1068,6 +1096,8 @@ export default function App() {
               }
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
+              onLoadShowcase={handleLoadShowcaseData}
+              onAddSampleDeck={handleLoadSampleDeck}
             />
           )}
 

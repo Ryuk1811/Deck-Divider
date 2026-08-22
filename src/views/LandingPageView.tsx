@@ -4,6 +4,7 @@ import { LandingNav } from '../components/landing/LandingNav';
 import { HeroWideSection } from '../components/landing/HeroWideSection';
 import { ZigZagSection } from '../components/landing/ZigZagSection';
 import { PricingHeroSection } from '../components/landing/PricingHeroSection';
+import { LandingFaqAndBlogs } from '../components/landing/LandingFaqAndBlogs';
 import { LandingFooter } from '../components/landing/LandingFooter';
 
 import { CollectionMockup } from '../components/landing/mockups/CollectionMockup';
@@ -65,6 +66,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       {/* 2. Wide Hero Section / About Section */}
       <div id="about" className="scroll-mt-16">
         <HeroWideSection
+          onEnterApp={onEnterApp}
           displayCurrency={displayCurrency}
         />
       </div>
@@ -268,7 +270,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         displayCurrency={displayCurrency}
       />
 
-      {/* 5. Page Footer */}
+      {/* 5. FAQ & Collector Insights (Side-by-Side Internal Scrolling) */}
+      <LandingFaqAndBlogs />
+
+      {/* 6. Page Footer */}
       <LandingFooter
         onEnterApp={onEnterApp}
         onOpenAuth={onOpenAuth}

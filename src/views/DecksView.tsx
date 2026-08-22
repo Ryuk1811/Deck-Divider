@@ -55,6 +55,8 @@ interface DecksViewProps {
   ) => void;
   initialSelectedDeckId?: string;
   createDeckSignal?: number;
+  onLoadShowcase?: () => void;
+  onAddSampleDeck?: () => void;
 }
 
 export const DecksView: React.FC<DecksViewProps> = ({
@@ -71,6 +73,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
   onTriggerLimitModal,
   initialSelectedDeckId,
   createDeckSignal,
+  onLoadShowcase,
+  onAddSampleDeck,
 }) => {
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     initialSelectedDeckId || decks[0]?.id || ''
@@ -470,22 +474,46 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* EMPTY STATE WHEN NO DECKS EXIST */}
       {decks.length === 0 && (
-        <div className="p-12 text-center glass-slab space-y-4 rounded-xl border border-[#E2E8F0] shadow-sm">
-          <Layers className="w-10 h-10 text-[#CBD5E1] mx-auto" />
-          <div className="space-y-1">
-            <h3 className="font-heading font-bold text-base text-[#0F172A]">No Decks or Binders Created Yet</h3>
-            <p className="font-mono text-xs text-[#64748B] max-w-md mx-auto">
-              Construct tournament-grade 60-card decks or organized binder segregations with custom colors and labels.
+        <div className="p-12 text-center glass-slab space-y-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center mx-auto text-[#DC143C] shadow-xs">
+            <Layers className="w-8 h-8" />
+          </div>
+          <div className="space-y-1 max-w-md mx-auto">
+            <h3 className="font-heading font-extrabold text-lg text-[#0F172A]">No Decks or Binders Created Yet</h3>
+            <p className="font-mono text-xs text-[#64748B] leading-relaxed">
+              Construct tournament-grade 60-card decks or organized binder segregations with custom colors, labels, and market valuations.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors shadow-xs cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create First Deck</span>
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={handleOpenCreateModal}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-xl hover:bg-[#B01030] transition-all shadow-xs cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create First Deck</span>
+            </button>
+            {onLoadShowcase && (
+              <button
+                type="button"
+                onClick={onLoadShowcase}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Load Showcase Suite (3 Decks & Grails)</span>
+              </button>
+            )}
+            {onAddSampleDeck && (
+              <button
+                type="button"
+                onClick={onAddSampleDeck}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+              >
+                <Layers className="w-4 h-4 text-[#DC143C]" />
+                <span>Add Charizard Championship Deck</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 
