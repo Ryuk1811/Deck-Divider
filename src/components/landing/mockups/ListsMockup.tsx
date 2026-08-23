@@ -54,9 +54,9 @@ export const ListsMockup: React.FC<ListsMockupProps> = ({ currency = 'USD' }) =>
           <span className="text-xs font-semibold font-mono">Custom Curated Watchlists & Targets</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-[#64748B] bg-[#F8FAFC] px-2 py-0.5 rounded border border-[#E2E8F0] flex items-center gap-1">
-            <Bell className="w-3 h-3 text-[#DC143C]" />
-            Price Alerts Active
+          <span className="text-[10px] font-mono text-[#DC143C] bg-red-50 border border-red-200 px-2 py-0.5 rounded flex items-center gap-1.5 font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C] animate-ping" />
+            Active Target Triggers
           </span>
         </div>
       </div>

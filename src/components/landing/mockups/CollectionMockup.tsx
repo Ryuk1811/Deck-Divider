@@ -169,7 +169,10 @@ export const CollectionMockup: React.FC<CollectionMockupProps> = ({ currency = '
       </div>
 
       {/* Cards Display Grid */}
-      <div className="p-3.5 sm:p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#F8FAFC]">
+      <div className="p-3.5 sm:p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#F8FAFC] relative overflow-hidden">
+        {/* Continuous Active Laser Scan Line */}
+        <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#DC143C]/80 to-transparent pointer-events-none z-10 animate-[bounce_4s_infinite_ease-in-out]" />
+        
         {filteredCards.map((card) => {
           const isSlab = card.isGraded;
           return (

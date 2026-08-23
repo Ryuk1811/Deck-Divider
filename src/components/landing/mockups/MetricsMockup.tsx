@@ -102,8 +102,9 @@ export const MetricsMockup: React.FC<MetricsMockupProps> = ({ currency = 'USD' }
                 strokeWidth="2.5"
                 strokeLinecap="round"
               />
-              {/* Interactive Endpoint marker */}
-              <circle cx="500" cy="10" r="4" fill="#DC143C" stroke="#FFFFFF" strokeWidth="2" />
+              {/* Interactive Endpoint marker with living pulse */}
+              <circle cx="500" cy="10" r="5" fill="#DC143C" stroke="#FFFFFF" strokeWidth="2" />
+              <circle cx="500" cy="10" r="10" fill="#DC143C" opacity="0.3" className="animate-ping" />
             </svg>
           </div>
         </div>

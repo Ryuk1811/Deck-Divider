@@ -42,9 +42,10 @@
 
   body {
     font-family: 'IBM Plex Mono', monospace;
-    background-color: #F4F4F6;
-    background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);
-    background-size: 16px 16px;
+    background-color: #F8FAFC;
+    background-image: radial-gradient(rgba(148, 163, 184, 0.45) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    background-position: 0 0;
     color: var(--text-primary);
     margin: 0;
     padding: 0;

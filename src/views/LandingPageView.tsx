@@ -6,6 +6,7 @@ import { ZigZagSection } from '../components/landing/ZigZagSection';
 import { PricingHeroSection } from '../components/landing/PricingHeroSection';
 import { LandingFaqAndBlogs } from '../components/landing/LandingFaqAndBlogs';
 import { LandingFooter } from '../components/landing/LandingFooter';
+import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
 
 import { CollectionMockup } from '../components/landing/mockups/CollectionMockup';
 import { MetricsMockup } from '../components/landing/mockups/MetricsMockup';
@@ -54,7 +55,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] bg-[radial-gradient(#CBD5E1_1.2px,transparent_1.2px)] [background-size:16px_16px] text-[#0F172A] flex flex-col font-sans overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative">
+      {/* Global Scroll Progress & Continuous Ambient Motion Directorate */}
+      <LandingMotionDirectorate />
+
       {/* 1. Header Navigation */}
       <LandingNav
         onOpenAuth={onOpenAuth}

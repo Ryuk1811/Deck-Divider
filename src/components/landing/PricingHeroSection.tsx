@@ -84,7 +84,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
   ];
 
   return (
-    <section id="pricing" className="relative w-full py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 border-b border-[#E2E8F0] scroll-mt-16">
+    <section id="pricing" className="relative w-full py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 scroll-mt-16">
       <div className="w-full max-w-[2200px] mx-auto space-y-12 lg:space-y-16">
         {/* Section Header Card */}
         <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-10 lg:p-12 text-center space-y-4 max-w-5xl mx-auto">

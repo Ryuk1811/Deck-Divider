@@ -60,8 +60,9 @@ export const SetsMockup: React.FC<SetsMockupProps> = ({ currency = 'USD' }) => {
           <span className="text-xs font-semibold font-mono">Master Set Tracker</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-[#64748B] bg-[#F8FAFC] px-2 py-0.5 rounded border border-[#E2E8F0]">
-            148+ Expansions Cataloged
+          <span className="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+            Live Completion Matrix
           </span>
         </div>
       </div>

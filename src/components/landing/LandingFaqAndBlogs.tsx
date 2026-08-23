@@ -188,10 +188,7 @@ export const LandingFaqAndBlogs: React.FC = () => {
   const blogCategories = ['All', 'Market Trends', 'Deck Meta', 'Grading & Slabs', 'Security'];
 
   return (
-    <section id="faq-and-insights" className="py-16 sm:py-24 bg-[#F8FAFC] border-t border-[#E2E8F0] relative overflow-hidden">
-      {/* Background Subtle Accent Grids */}
-      <div className="absolute inset-0 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
-
+    <section id="faq-and-insights" className="py-16 sm:py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
