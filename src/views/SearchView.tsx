@@ -69,28 +69,39 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
   const [, startTransition] = useTransition();
 
-  // Debounce search query text update into activeFilters
+  // Sync with savedFilters if changed externally
   useEffect(() => {
+    if (savedFilters.query !== undefined && savedFilters.query !== searchInputText) {
+      setSearchInputText(savedFilters.query);
+    }
+    setActiveFilters(savedFilters);
+  }, [savedFilters]);
+
+  // Debounce search query text update into activeFilters and parent state
+  useEffect(() => {
+    if ((activeFilters.query || '') === searchInputText) {
+      return;
+    }
+
     const timer = setTimeout(() => {
+      const updated = { ...activeFilters, query: searchInputText };
       startTransition(() => {
-        setActiveFilters((prev) => {
-          if (prev.query === searchInputText) return prev;
-          const updated = { ...prev, query: searchInputText };
-          onUpdateFilters(updated);
-          return updated;
-        });
+        setActiveFilters(updated);
         setVisibleCount(PAGE_CHUNK_SIZE);
       });
+      onUpdateFilters(updated);
     }, 160);
 
     return () => clearTimeout(timer);
-  }, [searchInputText, onUpdateFilters]);
+  }, [searchInputText, activeFilters, onUpdateFilters]);
 
   // Synchronize non-query filter mutations smoothly
   const updateStructuredFilters = (newF: SearchFilters) => {
-    setActiveFilters(newF);
+    startTransition(() => {
+      setActiveFilters(newF);
+      setVisibleCount(PAGE_CHUNK_SIZE);
+    });
     onUpdateFilters(newF);
-    setVisibleCount(PAGE_CHUNK_SIZE);
   };
 
   const handleToggleType = (type: EnergyType) => {
