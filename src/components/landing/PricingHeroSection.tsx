@@ -25,10 +25,10 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       features: [
         'Up to 4 custom decks',
         'Max 25 cards per deck',
-        'Up to 3 curated watchlists',
+        'Up to 3 card wishlists',
         'Max 20 items per list',
-        'Instant real-time search',
-        'Multi-currency valuations',
+        'Instant card search',
+        'Live TCGplayer prices',
       ],
     },
     {
@@ -37,7 +37,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       features: [
         'Up to 9 custom decks',
         'Max 40 cards per deck',
-        'Up to 8 curated watchlists',
+        'Up to 8 card wishlists',
         'Max 50 items per list',
         'PSA, BGS & CGC grade logging',
         'Historical price trends',
@@ -49,9 +49,9 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       features: [
         'Up to 15 custom decks',
         'Max 50 cards per deck',
-        'Up to 15 curated watchlists',
+        'Up to 15 card wishlists',
         'Max 100 items per list',
-        'Shareable public deck links',
+        'Shareable deck links',
         'Master set checklist tracking',
       ],
     },
@@ -61,11 +61,11 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       features: [
         'Up to 18 custom decks',
         'Full 60-card tournament decks',
-        'Up to 25 curated watchlists',
+        'Up to 25 card wishlists',
         'Max 200 items per list',
-        'Shareable public deck links',
-        'PTCGL deck export',
-        'Sealed vault box & case tracker',
+        'PTCGL text export',
+        'Sealed booster box tracker',
+        'Price drop alerts',
       ],
     },
     {
@@ -73,12 +73,12 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: false,
       features: [
         'Unlimited custom decks (∞)',
-        'Unlimited cards per deck (∞)',
-        'Unlimited curated watchlists (∞)',
+        'Full 60-card tournament decks (∞)',
+        'Unlimited card wishlists (∞)',
         'Unlimited items per list (∞)',
         'Shareable public deck links',
-        'Priority real-time price sync',
-        'Complete portfolio backup export',
+        'Priority price updates',
+        'Full CSV collection export',
       ],
     },
   ];
@@ -90,13 +90,13 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
         <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-10 lg:p-12 text-center space-y-4 max-w-5xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>TRANSPARENT PLANS</span>
+            <span>COLLECTOR PLANS</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F172A] tracking-tight font-heading text-balance">
-            Scale Your Operations
+            Pick the plan for your collection
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-[#64748B] max-w-3xl mx-auto">
-            Engineered for casual collectors, tournament champions, and institutional vault investors. Simple monthly pricing, unparalleled scale.
+            From casual binder collectors to active tournament players with boxes of graded slabs. Start free and upgrade as your collection grows.
           </p>
         </div>
 

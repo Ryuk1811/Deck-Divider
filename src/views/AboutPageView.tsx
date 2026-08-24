@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Sparkles, Shield, Cpu, Layers, Database, CheckCircle2, ChevronRight, BookOpen, Lock, Globe, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Sparkles, Shield, Cpu, Layers, Database, CheckCircle2, ChevronRight, BookOpen, Lock, Globe, ArrowRight, Award, Zap, TrendingUp } from 'lucide-react';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
-import { DeckDividerBrand } from '../components/DeckDividerBrand';
+import { HeroFluidMotionCanvas } from '../components/landing/HeroFluidMotionCanvas';
+import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../types';
 
 interface AboutPageViewProps {
@@ -19,6 +21,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
   displayCurrency,
 }) => {
   const [activePillar, setActivePillar] = useState<number>(0);
+  const easeCurve = [0.16, 1, 0.3, 1];
 
   const pillars = [
     {
@@ -56,7 +59,10 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] bg-[radial-gradient(#CBD5E1_1.2px,transparent_1.2px)] [background-size:16px_16px] text-[#0F172A] flex flex-col font-sans overflow-x-hidden selection:bg-[#DC143C] selection:text-white">
+    <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
+      {/* Global Scroll Progress & Continuous Ambient Motion Directorate */}
+      <LandingMotionDirectorate />
+
       {/* Shared Header Navigation */}
       <LandingNav
         onOpenAuth={onOpenAuth}
@@ -71,29 +77,55 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
         }}
       />
 
-      <main className="flex-1 w-full max-w-[2200px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 py-12 sm:py-20 lg:py-24 space-y-20 lg:space-y-32">
+      <main className="flex-1 w-full max-w-[2200px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 py-12 sm:py-20 lg:py-24 space-y-20 lg:space-y-32 relative">
+        {/* 0. Tri-Slab Floating Collector Motion Canvas */}
+        <HeroFluidMotionCanvas />
+
         {/* Hero Section */}
-        <section className="text-center space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-4">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full">
+        <section className="text-center space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeCurve }}
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full"
+          >
             <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-            <span className="truncate sm:whitespace-normal">THE ARCHITECTURE BEHIND DECK / DIVIDER</span>
-          </div>
+            <span className="truncate sm:whitespace-normal font-mono tracking-tight">THE ARCHITECTURE BEHIND DECK / DIVIDER</span>
+          </motion.div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] font-heading text-balance">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] font-heading text-balance"
+          >
             Engineered for Precision in the Modern <span className="text-[#DC143C]">Pokémon TCG</span> Ecosystem
-          </h1>
+          </motion.h1>
 
-          <p className="text-base sm:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
+            className="text-base sm:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance"
+          >
             DECK / divider bridges the gap between casual card tracking and institutional-grade portfolio intelligence. Built by players and collectors for high-net-worth vaults and tournament champions.
-          </p>
+          </motion.p>
         </section>
 
         {/* 3-Depth Light Studio Glass Slab Window Showcase - Full Width Scaling */}
-        <div className="pt-8 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: easeCurve }}
+          className="pt-8 w-full relative z-10"
+        >
           {/* Depth 0: Glass Slab Shell */}
-          <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left">
+          <div className="bg-white/90 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left relative overflow-hidden">
+            {/* Ambient subtle light sweep */}
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#DC143C]/5 rounded-full blur-3xl pointer-events-none" />
+
             {/* Depth 1: Studio Floor Wrapper */}
-            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl overflow-hidden">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl overflow-hidden relative">
               {/* Studio Window Header Bar */}
               <div className="px-4 sm:px-6 py-3.5 bg-white border-b border-[#E2E8F0] flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -108,6 +140,12 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                     Architecture Detail
                   </span>
                 </div>
+                <div className="flex items-center gap-3 text-xs font-mono text-[#64748B]">
+                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Active Matrix
+                  </span>
+                </div>
               </div>
 
               {/* Depth 2: Main Application Canvas */}
@@ -115,8 +153,13 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                 
                 {/* The Origin / Problem & Solution Section */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-                  <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-8 space-y-4 flex flex-col justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.6, ease: easeCurve }}
+                    className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-8 space-y-4 flex flex-col justify-between relative overflow-hidden transform-gpu"
+                  >
                     <div className="space-y-3 relative">
                       <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-[#94A3B8]">The Challenge</span>
                       <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] tracking-tight">The Fragmentation of TCG Asset Tracking</h2>
@@ -141,10 +184,25 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                     <div className="pt-4 border-t border-[#F1F5F9] text-[11px] font-mono text-[#94A3B8] relative">
                       Status Quo: High maintenance overhead & zero unified visibility.
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="bg-[#0F172A] text-white border border-[#1E293B] rounded-2xl shadow-xl p-6 sm:p-8 space-y-4 flex flex-col justify-between relative overflow-hidden ring-1 ring-white/10 inset-0">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#DC143C]/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.6, delay: 0.1, ease: easeCurve }}
+                    className="bg-[#0F172A] text-white border border-[#1E293B] rounded-2xl shadow-xl p-6 sm:p-8 space-y-4 flex flex-col justify-between relative overflow-hidden ring-1 ring-white/10 inset-0 transform-gpu"
+                  >
+                    {/* Non-Intrusive Floating Architecture Badge */}
+                    <motion.div
+                      animate={{ y: [0, -6, 2, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute top-4 right-4 z-20 pointer-events-none hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px]"
+                    >
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span>ZERO DRIFT COMPLIANCE</span>
+                    </motion.div>
+
                     <div className="space-y-3 relative">
                       <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-[#DC143C]">The Solution</span>
                       <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">The DECK / divider Unified Architecture</h2>
@@ -170,97 +228,119 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                       <span>DECK / divider: Zero drift, zero guesswork.</span>
                       <span className="text-slate-400">Currencies: 15+ Live</span>
                     </div>
-                  </div>
+                  </motion.div>
                 </section>
 
-        {/* Interactive 4 Pillars Architecture Grid */}
-        <section className="space-y-10 lg:space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-              Core Engineering Tenets
-            </h2>
-            <p className="text-xs sm:text-sm text-[#64748B]">
-              Explore the four foundational principles that govern every algorithm, database schema, and interface in DECK / divider.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {pillars.map((pillar) => {
-              const isSelected = activePillar === pillar.id;
-              return (
-                <div
-                  key={pillar.id}
-                  onClick={() => setActivePillar(pillar.id)}
-                  className={`rounded-xl p-5 border transition-all cursor-pointer flex flex-col justify-between text-left ${
-                    isSelected
-                      ? 'bg-white border-[#DC143C] shadow-md ring-1 ring-[#DC143C]'
-                      : 'bg-white/80 hover:bg-white border-[#E2E8F0] hover:border-slate-300 shadow-2xs'
-                  }`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="w-9 h-9 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center">
-                        {pillar.icon}
-                      </div>
-                      <span className="text-[11px] font-mono text-[#94A3B8] font-semibold">
-                        0{pillar.id + 1} / 04
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#0F172A]">{pillar.title}</h3>
-                      <span className="text-[11px] font-mono text-[#DC143C]">{pillar.tagline}</span>
-                    </div>
-
-                    <p className="text-xs text-[#64748B] leading-relaxed">
-                      {pillar.description}
+                {/* Interactive 4 Pillars Architecture Grid */}
+                <section className="space-y-10 lg:space-y-12">
+                  <div className="text-center space-y-3 max-w-2xl mx-auto">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
+                      Core Engineering Tenets
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#64748B]">
+                      Explore the four foundational principles that govern every algorithm, database schema, and interface in DECK / divider.
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#F1F5F9] text-[11px] text-[#0F172A] font-medium">
-                    <span className="text-[#DC143C] font-bold">Key Spec: </span>
-                    <span>{pillar.highlight}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                    {pillars.map((pillar, pIdx) => {
+                      const isSelected = activePillar === pillar.id;
+                      return (
+                        <motion.div
+                          key={pillar.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: '-50px' }}
+                          transition={{ duration: 0.5, delay: pIdx * 0.08, ease: easeCurve }}
+                          onClick={() => setActivePillar(pillar.id)}
+                          className={`rounded-xl p-5 border transition-all cursor-pointer flex flex-col justify-between text-left transform-gpu ${
+                            isSelected
+                              ? 'bg-white border-[#DC143C] shadow-md ring-1 ring-[#DC143C]'
+                              : 'bg-white/80 hover:bg-white border-[#E2E8F0] hover:border-slate-300 shadow-2xs'
+                          }`}
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="w-9 h-9 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center">
+                                {pillar.icon}
+                              </div>
+                              <span className="text-[11px] font-mono text-[#94A3B8] font-semibold">
+                                0{pillar.id + 1} / 04
+                              </span>
+                            </div>
+
+                            <div>
+                              <h3 className="text-sm sm:text-base font-bold text-[#0F172A]">{pillar.title}</h3>
+                              <span className="text-[11px] font-mono text-[#DC143C]">{pillar.tagline}</span>
+                            </div>
+
+                            <p className="text-xs text-[#64748B] leading-relaxed">
+                              {pillar.description}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 pt-3 border-t border-[#F1F5F9] text-[11px] text-[#0F172A] font-medium">
+                            <span className="text-[#DC143C] font-bold">Key Spec: </span>
+                            <span>{pillar.highlight}</span>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+                </section>
 
-        {/* By The Numbers Grid */}
-        <section className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-8 sm:p-12 lg:p-16 space-y-10">
-          <div className="text-center space-y-1.5">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">Platform Capacity</span>
-            <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A]">DECK / divider by the Numbers</h3>
-          </div>
+                {/* By The Numbers Grid with Stagger & Live Metrics Chip */}
+                <section className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-8 sm:p-12 lg:p-16 space-y-10 relative overflow-hidden">
+                  {/* Floating Metric Badge */}
+                  <motion.div
+                    animate={{ y: [0, -6, 2, 0] }}
+                    transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute top-6 right-6 hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 shadow-xs"
+                  >
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>AUDIT: 100% PASS</span>
+                  </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 text-center">
-            <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-              <div className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] font-heading">148+</div>
-              <div className="text-xs text-[#64748B] font-medium mt-1">Master Set Expansions</div>
-            </div>
-            <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-              <div className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] font-heading">3</div>
-              <div className="text-xs text-[#64748B] font-medium mt-1">Grading Scales (PSA/BGS/CGC)</div>
-            </div>
-            <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-              <div className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] font-heading">15+</div>
-              <div className="text-xs text-[#64748B] font-medium mt-1">Active Global Currencies</div>
-            </div>
-            <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-              <div className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] font-heading">100%</div>
-              <div className="text-xs text-[#64748B] font-medium mt-1">Championship Format Audit</div>
-            </div>
-          </div>
-        </section>
+                  <div className="text-center space-y-1.5">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">Platform Capacity</span>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A]">DECK / divider by the Numbers</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 text-center">
+                    {[
+                      { num: '148+', label: 'Master Set Expansions' },
+                      { num: '3', label: 'Grading Scales (PSA/BGS/CGC)' },
+                      { num: '15+', label: 'Active Global Currencies' },
+                      { num: '100%', label: 'Championship Format Audit' },
+                    ].map((stat, sIdx) => (
+                      <motion.div
+                        key={sIdx}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: sIdx * 0.08, ease: easeCurve }}
+                        className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] transform-gpu hover:border-[#DC143C]/40 transition-colors"
+                      >
+                        <div className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] font-heading">{stat.num}</div>
+                        <div className="text-xs text-[#64748B] font-medium mt-1">{stat.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
 
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA to How It Works */}
-        <section className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-left max-w-5xl mx-auto">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: easeCurve }}
+          className="bg-white/90 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-left max-w-5xl mx-auto relative z-10"
+        >
           <div className="space-y-2">
             <h3 className="text-lg sm:text-xl font-bold text-[#0F172A]">Ready to see the workflow in action?</h3>
             <p className="text-xs sm:text-sm text-[#64748B] max-w-xl">
@@ -282,12 +362,21 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
               <span>Sign In / Login</span>
             </button>
           </div>
-        </section>
+        </motion.section>
       </main>
 
       {/* Shared Footer */}
       <LandingFooter
         displayCurrency={displayCurrency}
+        onNavigateSection={(id) => {
+          if (id === 'about') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (id === 'how-it-works') {
+            onNavigateHowItWorks();
+          } else {
+            onNavigateHome();
+          }
+        }}
       />
     </div>
   );

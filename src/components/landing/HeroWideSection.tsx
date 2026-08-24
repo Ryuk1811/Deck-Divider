@@ -22,15 +22,15 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
 
       {/* Foreground Container with Guaranteed High-Contrast Readability */}
       <div className="relative z-10 w-full max-w-[2200px] mx-auto text-center space-y-8 lg:space-y-12">
-        {/* Top Tagline Pill with Sub-layer blur */}
+        {/* Top Tagline Pill */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full"
         >
           <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-          <span className="truncate sm:whitespace-normal font-mono tracking-tight">Next-Gen Pokémon TCG Asset Intelligence</span>
+          <span className="truncate sm:whitespace-normal font-mono tracking-tight">POKÉMON CARD COLLECTOR & PLAYER WORKBENCH</span>
         </motion.div>
 
         {/* Singular Wide Hero Title with High Contrast */}
@@ -38,39 +38,39 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-          className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] max-w-6xl mx-auto font-heading text-balance drop-shadow-2xs"
+          className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.05] max-w-6xl mx-auto font-heading text-balance"
         >
-          Institutional-Grade Intelligence for <span className="text-[#DC143C]">Pokémon TCG</span> Collectors & Competitors
+          Keep track of your Pokémon binders, graded slabs, and tournament decks.
         </motion.h1>
 
-        {/* Subtitle with High-Contrast Slate */}
+        {/* Subtitle with Grounded Hobby Voice */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
           className="text-base sm:text-lg lg:text-xl text-[#475569] max-w-3xl lg:max-w-4xl mx-auto font-normal leading-relaxed text-balance"
         >
-          A unified platform engineered for high-net-worth collectors and competitive players. Seamlessly manage portfolio valuations, track graded slabs, architect tournament-legal decks, and optimize your sealed vault assets in real time.
+          Log raw cards and graded certs, check off complete master sets, monitor TCGplayer market prices, and build 60-card standard decks for PTCGL and local league nights.
         </motion.p>
 
-        {/* Quick Trust / Feature Chips */}
+        {/* Quick Proof Chips */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
           className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-8 pt-2 text-[11px] sm:text-sm font-medium text-[#475569]"
         >
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
-            <span>Low-Latency Card Indexing</span>
+            <span>PSA, BGS & CGC Slab Certs</span>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
-            <span>Real-Time Market Valuation</span>
+            <span>Live TCGplayer Market Comps</span>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A]" />
-            <span>Championship Format Validation</span>
+            <span>Standard 60-Card Deck Legality</span>
           </div>
         </motion.div>
 
@@ -87,7 +87,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
               className="inline-flex items-center gap-2.5 px-8 py-3.5 text-sm sm:text-base font-bold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-xl transition-all shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
             >
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 fill-amber-300" />
-              <span>Launch Portfolio Studio</span>
+              <span>Open Collection</span>
               <ArrowRight className="w-4 h-4 text-white/80" />
             </button>
           </motion.div>
@@ -101,7 +101,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
           className="pt-8 w-full"
         >
           {/* Depth 0: Glass Slab Shell */}
-          <div className="bg-white/85 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left relative overflow-hidden">
+          <div className="bg-white border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left relative overflow-hidden">
             {/* Ambient subtle light sweep */}
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#DC143C]/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -116,13 +116,13 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                     <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A] inline-block"></span>
                   </div>
                   <span className="text-xs sm:text-sm font-mono font-semibold text-[#0F172A] ml-2">
-                    DECK / divider Studio
+                    DECK / divider Binder
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs font-mono text-[#64748B]">
                   <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    Market Sync Active
+                    TCGplayer Market Live
                   </span>
                   <span className="hidden sm:inline bg-slate-100 px-2.5 py-1 rounded border border-slate-200 text-[#0F172A]">
                     Currency: {displayCurrency}
@@ -137,7 +137,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-[10px] font-mono text-[#DC143C] font-bold uppercase tracking-wider">
-                        PSA 10 Gem Mint Slab
+                        Graded Slab
                       </span>
                       <span className="px-2 py-0.5 rounded bg-[#FFF0F3] text-[#DC143C] text-[10px] font-bold font-mono border border-[#DC143C]/30">
                         PSA 10
@@ -154,7 +154,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                     </div>
                     <div className="mt-3">
                       <div className="text-sm font-bold text-[#0F172A]">Charizard ex #199</div>
-                      <div className="text-xs text-[#64748B]">Scarlet & Violet 151 • SIR</div>
+                      <div className="text-xs text-[#64748B]">Scarlet & Violet 151 • Special Illustration Rare</div>
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
@@ -165,20 +165,20 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                   </div>
                 </div>
 
-                {/* Panel 2 (Depth 2): Financial Performance HUD */}
+                {/* Panel 2 (Depth 2): Collection Value HUD */}
                 <div className="bg-white rounded-xl p-4 border border-[#E2E8F0] shadow-xs flex flex-col justify-between hover:shadow-md transition-all">
                   <div>
                     <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-wider">
-                      Portfolio Valuation
+                      Collection Value
                     </span>
                     <div className="text-2xl font-bold font-mono text-[#0F172A] mt-1">$14,892.40</div>
                     <div className="text-xs font-mono text-emerald-600 mt-0.5 flex items-center gap-1 font-semibold">
-                      <TrendingUp className="w-3.5 h-3.5" /> +24.8% total profit
+                      <TrendingUp className="w-3.5 h-3.5" /> +24.8% over buy cost
                     </div>
 
                     <div className="mt-4 space-y-2 text-xs font-mono">
                       <div className="flex justify-between text-[#64748B] pb-1 border-b border-[#F1F5F9]">
-                        <span>Total Tracked Cards</span>
+                        <span>Total Cards Logged</span>
                         <span className="text-[#0F172A] font-bold">342</span>
                       </div>
                       <div className="flex justify-between text-[#64748B] pb-1 border-b border-[#F1F5F9]">
@@ -187,21 +187,21 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                       </div>
                       <div className="flex justify-between text-[#64748B] pb-1 border-b border-[#F1F5F9]">
                         <span>Tournament Decks</span>
-                        <span className="text-emerald-600 font-bold">6 Legal</span>
+                        <span className="text-emerald-600 font-bold">6 Standard Legal</span>
                       </div>
                       <div className="flex justify-between text-[#64748B]">
-                        <span>Master Set Progress</span>
-                        <span className="text-[#DC143C] font-bold">91.3% (151)</span>
+                        <span>151 Master Set Progress</span>
+                        <span className="text-[#DC143C] font-bold">91.3% (151/165)</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-[#64748B]">Real-Time Ledger:</span>
+                      <span className="text-[#64748B]">Market Price Sync:</span>
                       <span className="text-emerald-600 font-bold flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Synchronized
+                        Up to Date
                       </span>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-wider">
-                        Active Tournament Deck
+                        Active 60-Card Deck
                       </span>
                       <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold font-mono border border-emerald-200">
                         Standard Legal
@@ -220,7 +220,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                     </div>
 
                     <div className="text-sm font-bold text-[#0F172A]">Charizard ex / Pidgeot Control</div>
-                    <div className="text-xs text-[#64748B] mt-0.5">Tier 1 Championship Meta • 60/60</div>
+                    <div className="text-xs text-[#64748B] mt-0.5">Tournament Ready • 60/60 Cards</div>
 
                     {/* Ratio Bar */}
                     <div className="mt-3 space-y-1">
@@ -253,7 +253,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
 
                   <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-[#64748B]">Sealed Vault:</span>
+                      <span className="text-[#64748B]">Sealed Boxes:</span>
                       <span className="text-emerald-600 font-bold">+$4,105 (+279%)</span>
                     </div>
                   </div>

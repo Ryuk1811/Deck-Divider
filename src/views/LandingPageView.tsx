@@ -1,13 +1,6 @@
-import React from 'react';
-import { AccountTier, DisplayCurrency } from '../types';
-import { LandingNav } from '../components/landing/LandingNav';
+import React, { useEffect } from 'react';
 import { HeroWideSection } from '../components/landing/HeroWideSection';
 import { ZigZagSection } from '../components/landing/ZigZagSection';
-import { PricingHeroSection } from '../components/landing/PricingHeroSection';
-import { LandingFaqAndBlogs } from '../components/landing/LandingFaqAndBlogs';
-import { LandingFooter } from '../components/landing/LandingFooter';
-import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
-
 import { CollectionMockup } from '../components/landing/mockups/CollectionMockup';
 import { MetricsMockup } from '../components/landing/mockups/MetricsMockup';
 import { DecksMockup } from '../components/landing/mockups/DecksMockup';
@@ -15,37 +8,64 @@ import { SetsMockup } from '../components/landing/mockups/SetsMockup';
 import { SearchMockup } from '../components/landing/mockups/SearchMockup';
 import { ListsMockup } from '../components/landing/mockups/ListsMockup';
 import { SealedVaultMockup } from '../components/landing/mockups/SealedVaultMockup';
+import { PricingHeroSection } from '../components/landing/PricingHeroSection';
+import { LandingFaqAndBlogs } from '../components/landing/LandingFaqAndBlogs';
+import { LandingFooter } from '../components/landing/LandingFooter';
+import { LandingNav } from '../components/landing/LandingNav';
+import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
+import { AccountTier, DisplayCurrency } from '../types';
 
 interface LandingPageViewProps {
-  onEnterApp: () => void;
   onOpenAuth: () => void;
+  onEnterApp?: () => void;
   onNavigateAbout?: () => void;
   onNavigateHowItWorks?: () => void;
-  onSelectTier: (tier: AccountTier) => void;
   currentTier?: AccountTier;
+  onSelectTier: (tier: AccountTier) => void;
   displayCurrency: DisplayCurrency;
-  onSelectCurrency: (c: DisplayCurrency) => void;
   user?: any;
 }
 
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
-  onEnterApp,
   onOpenAuth,
+  onEnterApp,
   onNavigateAbout,
   onNavigateHowItWorks,
-  onSelectTier,
   currentTier = 'Starter',
+  onSelectTier,
   displayCurrency,
-  onSelectCurrency,
   user,
 }) => {
-  const scrollTo = (id: string) => {
+  // Listen for hash in URL on initial mount or updates
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        const el = document.getElementById(hash);
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      }
+    };
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleNavClick = (id: string) => {
     if (id === 'about' && onNavigateAbout) {
       onNavigateAbout();
       return;
     }
     if (id === 'how-it-works' && onNavigateHowItWorks) {
       onNavigateHowItWorks();
+      return;
+    }
+    if (id === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     const el = document.getElementById(id);
@@ -55,7 +75,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative">
+    <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative select-none">
       {/* Global Scroll Progress & Continuous Ambient Motion Directorate */}
       <LandingMotionDirectorate />
 
@@ -63,7 +83,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <LandingNav
         onOpenAuth={onOpenAuth}
         onEnterApp={onEnterApp}
-        onNavigateSection={scrollTo}
+        onNavigateSection={handleNavClick}
         user={user}
       />
 
@@ -81,26 +101,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <ZigZagSection
           id="collection"
           index="01/07"
-          badge="SLAB & RAW ASSET REGISTRY"
-          title="Cryptographic-Grade Slab & Binder Management"
-          description="Maintain a flawless ledger of your graded slabs (PSA, BGS, CGC) and raw inventory. Features include authentic certification metadata parsing, real-time market price syncing, and interactive holographic physics."
+          badge="RAW CARDS & GRADED SLABS"
+          title="Keep your binder copies and graded slabs organized in one place"
+          description="Add raw cards by condition (Near Mint down to Damaged) or log your graded slabs with cert numbers, grading company, and subgrades. Keep track of what you paid for each card so you always know your cost basis."
           bulletPoints={[
             {
-              title: 'Certification Integrity',
-              desc: 'Log and verify unique certificate numbers, grading company metadata, and detailed subgrades (Centering, Surface, Corners, Edges).',
+              title: 'PSA, BGS & CGC Cert Logging',
+              desc: 'Record cert numbers, grades, and subgrades (Centering, Surface, Corners, Edges) for every slab in your box.',
             },
             {
-              title: 'Continuous Valuation Sync',
-              desc: 'Live price aggregation from verified marketplace APIs and historical sales data to determine true asset net worth.',
+              title: 'Raw Condition Tracking',
+              desc: 'Separate binder copies from mint gradable pulls using standard hobby condition tags (NM, LP, MP, HP, DMG).',
             },
             {
-              title: 'Digital Twin Physics',
-              desc: 'Immersive interactive card shimmer that accurately replicates rainbow foil, secret rare textures, and gold finishes.',
+              title: 'Purchase Price Log',
+              desc: 'Note down what you bought each card for, trade values, and grading submission costs to see your true break-even price.',
             },
           ]}
           mockup={<CollectionMockup currency={displayCurrency} />}
           reversed={false}
-          ctaText="Explore Asset Registry"
+          ctaText="Open Collection"
           onCtaClick={onOpenAuth}
         />
       </div>
@@ -109,26 +129,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="metrics"
         index="02/07"
-        badge="FINANCIAL INTELLIGENCE"
-        title="Real-Time NAV Curves & Asset Allocation"
-        description="Monitor your collection's financial health with terminal-grade analytics. Track aggregate portfolio equity, absolute cost basis, unrealized capital gains, and segmented market performance."
+        badge="PORTFOLIO VALUE & PRICE HISTORY"
+        title="See what your Pokémon collection is worth based on live market sales"
+        description="Stop updating spreadsheets by hand. Your collection total updates automatically using verified TCGplayer market prices and recent eBay sales."
         bulletPoints={[
           {
-            title: 'Equity Growth Trajectories',
-            desc: 'Visualize 7D, 30D, 90D, and All-Time portfolio equity curves against baseline market performance.',
+            title: 'Value History Charts',
+            desc: 'Look at 7-day, 30-day, and all-time value trends for your entire collection or individual cards.',
           },
           {
-            title: 'Era & Rarity Segmentation',
-            desc: 'Break down asset distribution across modern expansions (Scarlet & Violet) to Vintage WOTC with precision charting.',
+            title: 'Era Breakdown',
+            desc: 'See how much of your collection is Vintage (Base Set through Neo), Mid-Era (EX, Diamond & Pearl, BW), or Modern (Sword & Shield, Scarlet & Violet).',
           },
           {
-            title: 'Live FX Conversion',
-            desc: 'Seamless multi-currency settlement and real-time exchange rates across USD, EUR, GBP, JPY, and 20+ global fiat currencies.',
+            title: 'Currency Switcher',
+            desc: 'Switch prices between USD ($), EUR (€), GBP (£), JPY (¥), CAD, and AUD with current exchange rates.',
           },
         ]}
         mockup={<MetricsMockup currency={displayCurrency} />}
         reversed={true}
-        ctaText="View Portfolio Analytics"
+        ctaText="View Collection Value"
         onCtaClick={onEnterApp}
       />
 
@@ -136,26 +156,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="decks"
         index="03/07"
-        badge="TOURNAMENT ARCHITECTURE"
-        title="Championship-Grade 60-Card Engineering"
-        description="Construct optimal tournament decks with strict regulation mark validation (Standard/Expanded). Analyze Pokémon, Trainer, and Energy distribution metrics before exporting directly to PTCGL."
+        badge="60-CARD TOURNAMENT DECKS"
+        title="Build and test 60-card decks with current standard format legality"
+        description="Put together your deck lists for local league cups or online testing. The builder verifies standard regulation marks (F, G, H, I blocks) and keeps your Pokémon, Trainer, and Energy counts balanced."
         bulletPoints={[
           {
-            title: 'Automated Format Validation',
-            desc: 'Real-time legality enforcement ensuring complete compliance with the latest official Play! Pokémon tournament rulesets.',
+            title: 'Standard & Expanded Format Checks',
+            desc: 'Flags expired rotation blocks and banned cards before you register for a tournament or league night.',
           },
           {
-            title: 'Engine Stability Metrics',
-            desc: 'Visual distribution histograms detailing optimal card ratios, draw power probabilities, and energy counts.',
+            title: 'Card Count Ratios',
+            desc: 'See your card splits at a glance — basic Pokémon, search items, draw supporters, stadium cards, and energy counts.',
           },
           {
-            title: 'Seamless PTCGL Export',
-            desc: 'Generate standardized deck strings for immediate import into Pokémon TCG Live or print high-fidelity proxy sheets.',
+            title: 'Export to PTCGL',
+            desc: 'Copy your deck list in the standard format ready to paste directly into Pokémon TCG Live or tournament registration sheets.',
           },
         ]}
         mockup={<DecksMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Architect Your First Deck"
+        ctaText="Build a 60-Card Deck"
         onCtaClick={onEnterApp}
       />
 
@@ -163,26 +183,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="sets"
         index="04/07"
-        badge="MASTER EXPANSION TRACKING"
-        title="Complete Matrix of 148+ Printed Expansions"
-        description="Execute comprehensive master set tracking across the entire history of the Pokémon TCG. Automatically isolate regular prints, reverse holos, secret rares, and illustration rares."
+        badge="MASTER SET CHECKLISTS"
+        title="Check off every card from Base Set to the latest expansion"
+        description="Complete checklists for every English and Japanese set released. Track your progress across regular set numbers, parallel reverse holos, Secret Illustration Rares (SIRs), Special Art Rares (SARs), and black star promos."
         bulletPoints={[
           {
-            title: 'Definitive Checklist Ledgers',
-            desc: 'Granular progress rings and missing-asset identifiers designed to streamline the acquisition of exact singles needed.',
+            title: 'Complete Variant Tracking',
+            desc: 'Separate checkboxes for regular cards, reverse holos, Pokéball/Masterball holos, and secret rares.',
           },
           {
-            title: 'Historical Era Catalogs',
-            desc: 'Access high-resolution archival scans and metadata from the 1999 Base Set through the current generation.',
+            title: 'Missing Cards List',
+            desc: 'See which cards you still need to finish a binder, sorted by card number or lowest market price.',
           },
           {
-            title: 'Completion Milestones',
-            desc: 'Cryptographic badges and mastery statistics awarded upon achieving 100% completion of any official expansion.',
+            title: 'Card Art & Details',
+            desc: 'Full card scans with illustrator credits, set numbers, retreat costs, and rarity symbols.',
           },
         ]}
         mockup={<SetsMockup currency={displayCurrency} />}
         reversed={true}
-        ctaText="View Expansion Ledgers"
+        ctaText="Explore Set Checklists"
         onCtaClick={onEnterApp}
       />
 
@@ -190,26 +210,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="search"
         index="05/07"
-        badge="LOW-LATENCY INDEXING"
-        title="High-Frequency Multi-Vector Search Matrix"
-        description="Query tens of thousands of printed cards with zero-latency response times. Combine complex filters for HP, Artist, Attack metrics, Rarity, and Live Price boundaries instantly."
+        badge="CARD DATABASE SEARCH"
+        title="Find any Pokémon card instantly by name, artist, type, or set"
+        description="Search through the entire history of the Pokémon TCG without waiting for pages to load. Filter cards by Pokémon type, stage (Basic, Stage 1, Stage 2), illustrator, HP, attack damage, or price range."
         bulletPoints={[
           {
-            title: 'Sub-Millisecond Querying',
-            desc: 'Optimized local indexing and fuzzy string matching for instantaneous browsing, even under heavy network latency.',
+            title: 'Search by Illustrator',
+            desc: 'Find every card drawn by your favorite artists like Mitsuhiro Arita, Tomokazu Komiya, or Ken Sugimori.',
           },
           {
-            title: 'Advanced Parameter Stacking',
-            desc: 'Chain complex queries: isolate Fire-type Pokémon with 280+ HP and Special Illustration Rare status in a single keystroke.',
+            title: 'Fast Filter Combinations',
+            desc: 'Combine set name, rarity, and card type to find exact prints in seconds.',
           },
           {
-            title: 'Global Command Architecture',
-            desc: 'Utilize the ⌘K command palette from anywhere in the workspace to instantly traverse to assets, decks, or tools.',
+            title: 'Quick Keyboard Search',
+            desc: 'Press ⌘K on Mac or Ctrl+K on Windows to open the search bar from any screen.',
           },
         ]}
         mockup={<SearchMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Execute a Query"
+        ctaText="Search Cards"
         onCtaClick={onEnterApp}
       />
 
@@ -217,26 +237,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="lists"
         index="06/07"
-        badge="ALGORITHMIC WATCHLISTS"
-        title="Bespoke Targeting & Price Action Alerts"
-        description="Structure targeted acquisition lists, trade binders, and speculative watchlists. Define exact buy/sell price thresholds and monitor real-time market action against your goals."
+        badge="GRAIL LISTS & PRICE ALERTS"
+        title="Set price alerts on cards you are chasing"
+        description="Create wishlists for cards you want to buy at card shows or trade for at local meetups. Set price targets and get notified when a card drops into your price range."
         bulletPoints={[
           {
-            title: 'Threshold Triggers',
-            desc: 'Establish definitive entry points for grail assets and monitor market retracements with visual price indicators.',
+            title: 'Price Target Notifications',
+            desc: 'Set a target price on raw cards or PSA 10 slabs (e.g. notify if a raw Gengar Alt Art drops under $300).',
           },
           {
-            title: 'Categorical Organization',
-            desc: 'Segment targeted cards into isolated lists for Trade Show Events, Bulk PSA Submissions, or Long-Term Holds.',
+            title: 'Custom Wishlists',
+            desc: 'Keep your chase cards separate — make lists for Personal Collection grails, trade binder targets, and deck upgrades.',
           },
           {
-            title: 'Data Portability',
-            desc: 'Export curated watchlists into standardized CSV formats for external inventory audits, ledgers, and institutional records.',
+            title: 'Market Drops',
+            desc: 'See which cards on your wishlist have dropped in price over the past week.',
           },
         ]}
         mockup={<ListsMockup currency={displayCurrency} />}
         reversed={true}
-        ctaText="Build Target Parameters"
+        ctaText="Create a Wishlist"
         onCtaClick={onEnterApp}
       />
 
@@ -244,26 +264,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <ZigZagSection
         id="sealed-vault"
         index="07/07"
-        badge="SEALED ASSET VAULT"
-        title="Institutional Sealed Inventory Management"
-        description="Manage high-value sealed inventory including Booster Boxes, Elite Trainer Boxes, and Ultra-Premium Collections. Track wholesale case multipliers and compound ROI."
+        badge="SEALED PRODUCT & HIGH-END CARDS"
+        title="Keep a separate record for sealed boxes, cases, and high-value grails"
+        description="Track factory-sealed booster boxes, Elite Trainer Boxes (ETBs), booster bundles, and collection boxes alongside your high-value vintage slabs."
         bulletPoints={[
           {
-            title: 'Comprehensive Unit Taxonomy',
-            desc: 'Native infrastructure for tracking sleeved booster packs, blister packs, ETBs, tins, and master cases.',
+            title: 'Sealed Box Tracking',
+            desc: 'Log sealed booster boxes, cases, Pokémon Center ETBs, and special collection tins with original purchase prices.',
           },
           {
-            title: 'Wholesale Case Multipliers',
-            desc: 'Automatic aggregation of 6x booster box cases or 10x ETB cases, mapping individual unit costs to total case valuation.',
+            title: 'High-Value Slabs',
+            desc: 'Keep records and high-resolution front/back scans of your most valuable cards.',
           },
           {
-            title: 'ROI & Margin Analytics',
-            desc: 'Instantaneous profit margin visualizations and compound return performance metrics across your entire sealed position.',
+            title: 'Total Cost vs. Market Value',
+            desc: 'Compare what you paid for sealed product versus current market prices.',
           },
         ]}
         mockup={<SealedVaultMockup currency={displayCurrency} />}
         reversed={false}
-        ctaText="Open Sealed Vault"
+        ctaText="Open Sealed Tracker"
         onCtaClick={onEnterApp}
       />
 
@@ -281,7 +301,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       <LandingFooter
         onEnterApp={onEnterApp}
         onOpenAuth={onOpenAuth}
-        onNavigateSection={scrollTo}
+        onNavigateSection={handleNavClick}
         displayCurrency={displayCurrency}
       />
     </div>

@@ -42,49 +42,49 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'faq-1',
     category: 'Pricing & Data',
-    question: 'How accurate is the TCGplayer and Cardmarket pricing data?',
+    question: 'Where do the card market prices come from?',
     answer:
-      'We aggregate verified market pricing from official TCGplayer market data feeds, Cardmarket 7-day rolling averages, and completed sales indexes. Card valuations, holo variants, and graded slab multipliers update dynamically with automatic 5-minute client caching.',
-    highlight: 'Real-time multi-currency conversions for USD, EUR, GBP, JPY, CAD, and AUD.',
+      'Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values.',
+    highlight: 'Real-time conversions available for USD, EUR, GBP, JPY, CAD, and AUD.',
   },
   {
     id: 'faq-2',
-    category: 'Security & Cloud',
-    question: 'How does client-side encryption and zero-knowledge cloud sync work?',
+    category: 'General',
+    question: 'Can I track graded slabs (PSA, BGS, CGC, ACE) and sealed boxes?',
     answer:
-      'Your card records, purchase costs, and custom binders are stored in your browser’s encrypted IndexedDB. When cloud backup is enabled, the data is compressed into a single compact binary payload before reaching Firestore, ensuring lightning-fast synchronization.',
-    highlight: 'Your exact card collection holdings and purchase costs remain completely private to you.',
+      'Yes. You can log certificate numbers, grading company names, and full subgrades (Centering, Surface, Corners, Edges) for your slabs. You can also track sealed booster boxes, booster bundles, and Elite Trainer Boxes with original purchase costs.',
+    highlight: 'Track raw Near Mint binder cards and graded slab values side by side.',
   },
   {
     id: 'faq-3',
-    category: 'General',
-    question: 'What are the differences between Starter, Collector, and Syndicate tiers?',
+    category: 'Decks & Tournaments',
+    question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
     answer:
-      'Starter gives full access to search, standard portfolio tracking, and up to 3 custom decks/binders with 250 cards. Collector raises limits to 25 decks and 2,500 cards with CSV/PDF exports. Syndicate unlocks limitless decks, advanced grading sub-grade telemetry, and priority market indexing.',
-    highlight: 'Upgrade or downgrade anytime without losing your saved cards or binder structures.',
+      'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+    highlight: 'Compatible with PTCGL, LimitlessTCG, and official Play! Pokémon events.',
   },
   {
     id: 'faq-4',
-    category: 'Decks & Tournaments',
-    question: 'Can I export official decklists for Pokémon Play! Regional championships?',
+    category: 'Pricing & Data',
+    question: 'How do master set checklists handle reverse holos and secret rares?',
     answer:
-      'Yes. The Deck Builder automatically validates standard 60-card legalities (including Rule of 4 copies, Basic Pokémon presence, and energy curves) and exports clean Play! Pokémon tournament text format, ready for immediate submission.',
-    highlight: 'Includes one-click clipboard copying for LimitlessTCG and Pokémon TCG Live imports.',
+      'Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.',
+    highlight: 'Filter missing cards by lowest market price to finish binders efficiently.',
   },
   {
     id: 'faq-5',
-    category: 'Pricing & Data',
-    question: 'Can I track graded slabs (PSA, BGS, CGC, ARS) and sealed booster boxes?',
+    category: 'Security & Cloud',
+    question: 'How is my collection data saved and kept private?',
     answer:
-      'Yes. The portfolio features a dedicated Sealed Vault for booster boxes, booster bundles, and Elite Trainer Boxes with historical ROI tracking, as well as graded slab tracking with PSA/BGS 10 multipliers and cert verification logs.',
-    highlight: 'Tracks both raw Near Mint values and custom graded slab premiums side by side.',
+      'Your card inventory and purchase prices are stored securely in your browser and synced to your private account. Your collection data is completely private and is never sold to third-party ad networks.',
+    highlight: 'Export your complete card list and purchase logs to CSV anytime.',
   },
   {
     id: 'faq-6',
     category: 'Security & Cloud',
-    question: 'Can I use Deck Divider offline or on mobile devices?',
+    question: 'Can I use DECK / divider on my phone at card shows and trade nights?',
     answer:
-      'Deck Divider is engineered as a responsive Progressive Web App with offline-first caching. You can audit your binders, view deck compositions, and check card stats on convention floors even when mobile cellular connectivity is limited.',
+      'Yes. The app is fully responsive on mobile phones and tablets. You can check your want lists, verify deck counts, and lookup card market prices while walking convention floors.',
   },
 ];
 
@@ -92,69 +92,69 @@ const BLOG_POSTS: BlogPost[] = [
   {
     id: 'blog-1',
     category: 'Market Trends',
-    title: 'The 2026 Modern Alt-Art & Special Illustration Rare Supercycle',
+    title: 'Modern Special Illustration Rares (SIRs) vs. Vintage Singles',
     excerpt:
-      'Why Moonbreon, Gengar VMAX, and Scarlet & Violet 151 SIRs continue to outperform traditional vintage singles in secondary market liquidity.',
+      'Why modern chase cards like Moonbreon, Gengar VMAX Alt Art, and 151 Charizard ex have high collector demand alongside classic WOTC prints.',
     content: [
-      'The modern Pokémon TCG investment paradigm has shifted decisively from vintage Base Set nostalgia to the iconic Special Illustration Rares (SIR) and Alternate Art VMAX era.',
-      'Unlike the 2020 speculative boom, modern liquidity is driven by player-collector crossover demand: cards like Charizard ex (151 SIR) and Umbreon VMAX (Evolving Skies) boast genuine cross-demographic prestige and high submission demand at PSA and CGC.',
-      'When managing high-value modern singles, tracking pop reports alongside Near Mint raw price movement is critical to timing purchases before print runs dry up completely.',
+      'In recent years, collector demand has expanded from classic vintage sets to modern Special Illustration Rares (SIRs) and Alternate Art cards.',
+      'Unlike older sets where standard holos were the top pulls, modern sets feature full-art textured cards with detailed artwork by renowned illustrators.',
+      'When building a modern collection, checking population reports and raw Near Mint condition before buying helps you get the best value for your binder.',
     ],
     readTime: '4 min read',
     date: 'August 2026',
-    author: 'Deck Divider Analytics Desk',
-    tags: ['Alt Arts', 'Market Index', '151 & Evolving Skies'],
-    featuredCard: 'Umbreon VMAX (Alt Art)',
+    author: 'DECK / divider Team',
+    tags: ['Alt Arts', 'SIRs', '151', 'Evolving Skies'],
+    featuredCard: 'Charizard ex (#199)',
   },
   {
     id: 'blog-2',
     category: 'Deck Meta',
-    title: 'Constructing Tournament-Legal 60-Card Decks in Current Standard',
+    title: 'Building Consistent 60-Card Standard Decks for League Nights',
     excerpt:
-      'Mastering search sequencing, supporter ratios, and prize-card math for competitive tournament players.',
+      'Balancing search items, supporter draw engines, and energy counts for standard format tournaments.',
     content: [
-      'Top-tier competitive Pokémon TCG play demands ruthless consistency. A tournament-winning 60-card list isn’t just about heavy hitters—it relies on item search engines (Nest Ball, Ultra Ball, Buddy-Buddy Poffin) and draw support engines.',
-      'Our built-in Deck Validator continuously tracks card legalities, warning you immediately if you exceed 4 copies of a unique card name (excluding Basic Energy) or fail standard 60-card deck minimums.',
-      'Use the Deck Analytics tab to review your Energy curve, type coverage, and estimated total deck construction cost before ordering singles.',
+      'A consistent Pokémon deck needs reliable search items like Nest Ball, Ultra Ball, and Buddy-Buddy Poffin to find basic Pokémon on turn one.',
+      'Our built-in deck checker tests your list against standard rotation blocks and confirms card count splits before you bring your deck box to a local event.',
+      'Check your energy counts and average prize-card trade before trading for the singles needed to finish your deck.',
     ],
-    readTime: '6 min read',
+    readTime: '5 min read',
     date: 'August 2026',
-    author: 'Competitive Play Council',
-    tags: ['Standard Meta', 'Deck Validation', 'Tournaments'],
+    author: 'Tournament Players Group',
+    tags: ['Standard Format', '60 Cards', 'PTCGL'],
     featuredCard: 'Charizard ex (#054)',
   },
   {
     id: 'blog-3',
     category: 'Grading & Slabs',
-    title: 'Slab Valuation 101: Understanding PSA 10 vs. BGS 9.5 vs. Raw NM',
+    title: 'Raw vs. Graded: Deciding When to Submit Cards to PSA or BGS',
     excerpt:
-      'How to calculate realistic grading ROI, factoring in centering standards, grading fees, and turnaround timelines.',
+      'Evaluating centering, corner whiting, and print lines on raw cards before paying grading fees.',
     content: [
-      'A common pitfall in card collecting is assuming every raw pack-fresh card will grade a Gem Mint 10. Modern print defects—such as print lines, corner whiting, and 60/40 centering shifts—mean average gem rates often hover below 45% on demanding sets.',
-      'Deck Divider allows you to record exact sub-conditions, grading company cert numbers, and custom grade multipliers to reflect realistic realized market values.',
-      'Reviewing past sales on Cardmarket and TCGplayer reveals that while PSA 10 commands strong premiums, pristine raw Near Mint cards often provide superior liquidity during market volatility.',
+      'Before submitting raw pulls to grading companies, carefully inspect centering (aiming for 60/40 or better on the front) and check edges under good lighting.',
+      'You can log subgrades and cert numbers directly in your collection tab to keep your slab boxes organized.',
+      'Tracking both your purchase cost and grading submission fees gives you a clear picture of your total investment in every slab.',
     ],
     readTime: '5 min read',
     date: 'July 2026',
-    author: 'Archival & Grading Group',
-    tags: ['PSA 10', 'BGS', 'Slab ROI', 'Condition Guide'],
-    featuredCard: 'Pikachu (Grey Felt Hat #085)',
+    author: 'Slab Collector Desk',
+    tags: ['PSA 10', 'BGS', 'Grading Tips', 'Raw Cards'],
+    featuredCard: 'Pikachu (#085)',
   },
   {
     id: 'blog-4',
     category: 'Security',
-    title: 'Zero-Knowledge Portfolio Management: Keeping Your Vault Private',
+    title: 'Keeping Your High-Value Pokémon Card Collection Secure & Backed Up',
     excerpt:
-      'Why client-side AES cryptography and single-document Firestore sync are essential for high-net-worth collectors.',
+      'Best practices for organizing binder insurance logs, purchase receipts, and digital backups.',
     content: [
-      'Public card inventory sites often leak sensitive location and financial telemetry to third-party ad networks and open databases. High-value collectors need institutional privacy.',
-      'Deck Divider implements a client-first security model: your cards and purchase cost data are stored in local IndexedDB. Cloud synchronization compresses your entire vault into an opaque document.',
-      'Enjoy seamless cross-device synchronization without ever exposing your physical card storage locations or exact portfolio holdings to third parties.',
+      'Keeping accurate records of cert numbers, purchase dates, and condition photos is essential for protecting your collection.',
+      'DECK / divider lets you back up your entire binder structure and export CSV spreadsheets anytime for your personal records.',
+      'Your collection data stays private to your account, giving you a clean digital inventory of every card you own.',
     ],
     readTime: '3 min read',
     date: 'July 2026',
-    author: 'Engineering & Cryptography',
-    tags: ['Security', 'Zero Knowledge', 'Encrypted Vault'],
+    author: 'Collector Security',
+    tags: ['Backups', 'CSV Export', 'Inventory'],
   },
 ];
 
@@ -166,7 +166,11 @@ export const LandingFaqAndBlogs: React.FC = () => {
 
   // Blog State
   const [blogCategory, setBlogCategory] = useState<string>('All');
-  const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
+
+  const toggleFaq = (id: string) => {
+    setOpenFaqId((prev) => (prev === id ? null : id));
+  };
 
   // Filtered FAQs
   const filteredFaqs = FAQ_ITEMS.filter((item) => {
@@ -195,14 +199,14 @@ export const LandingFaqAndBlogs: React.FC = () => {
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E2E8F0] shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#DC143C]" />
             <span className="font-mono text-[11px] uppercase tracking-wider font-bold text-[#0F172A]">
-              Knowledge Base & Market Intel
+              FAQ & COLLECTOR GUIDES
             </span>
           </div>
           <h2 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#0F172A] tracking-tight">
-            Frequently Asked Questions & Collector Insights
+            Frequently Asked Questions & Collector Notes
           </h2>
-          <p className="font-mono text-xs sm:text-sm text-[#64748B] max-w-2xl mx-auto leading-relaxed">
-            Everything you need to know about pricing accuracy, encrypted backups, tournament deck validation, and modern market trends.
+          <p className="text-xs sm:text-sm text-[#64748B] max-w-2xl mx-auto leading-relaxed">
+            Common questions about TCGplayer market prices, graded slab logs, 60-card deck rules, and collection backups.
           </p>
         </div>
 
@@ -224,8 +228,8 @@ export const LandingFaqAndBlogs: React.FC = () => {
                     <h3 className="font-heading font-bold text-base text-[#0F172A]">
                       Frequently Asked Questions
                     </h3>
-                    <p className="font-mono text-[11px] text-[#64748B]">
-                      Instant answers to common platform questions
+                    <p className="text-[11px] text-[#64748B]">
+                      Quick answers to common questions
                     </p>
                   </div>
                 </div>
@@ -250,21 +254,20 @@ export const LandingFaqAndBlogs: React.FC = () => {
                       onClick={() => setFaqSearch('')}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                     >
-                      <X className="w-3 h-3" />
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
 
-                {/* Filter Pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                   {faqCategories.map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setFaqCategory(cat)}
-                      className={`whitespace-nowrap px-2.5 py-1 rounded-md font-mono text-[10px] font-bold transition-colors cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-mono whitespace-nowrap transition-colors cursor-pointer ${
                         faqCategory === cat
-                          ? 'bg-[#0F172A] text-white'
-                          : 'bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A] hover:bg-[#E2E8F0]'
+                          ? 'bg-[#DC143C] text-white font-bold'
+                          : 'bg-[#F8FAFC] text-[#64748B] hover:bg-[#F1F5F9] border border-[#E2E8F0]'
                       }`}
                     >
                       {cat}
@@ -275,65 +278,33 @@ export const LandingFaqAndBlogs: React.FC = () => {
             </div>
 
             {/* Scrollable FAQ List */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 divide-y-0 custom-scrollbar">
-              {filteredFaqs.length === 0 ? (
-                <div className="p-8 text-center space-y-2">
-                  <p className="font-mono text-xs text-[#64748B]">No matching questions found.</p>
-                  <button
-                    onClick={() => {
-                      setFaqSearch('');
-                      setFaqCategory('All');
-                    }}
-                    className="font-mono text-[11px] font-bold text-[#DC143C] hover:underline"
-                  >
-                    Reset Search & Filters
-                  </button>
-                </div>
-              ) : (
+            <div className="flex-1 overflow-y-auto p-5 space-y-3 divide-y divide-[#F1F5F9]">
+              {filteredFaqs.length > 0 ? (
                 filteredFaqs.map((faq) => {
                   const isOpen = openFaqId === faq.id;
                   return (
-                    <div
-                      key={faq.id}
-                      className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-                        isOpen
-                          ? 'border-[#DC143C]/30 bg-[#FFFDFD] shadow-2xs ring-1 ring-[#DC143C]/10'
-                          : 'border-[#E2E8F0] bg-white hover:border-[#CBD5E1]'
-                      }`}
-                    >
+                    <div key={faq.id} className="pt-3 first:pt-0">
                       <button
-                        type="button"
-                        onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                        className="w-full text-left p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer focus-visible:outline-none focus-visible:bg-[#FFF0F3]/30"
+                        onClick={() => toggleFaq(faq.id)}
+                        className="w-full flex items-center justify-between text-left gap-4 py-2 hover:text-[#DC143C] transition-colors cursor-pointer group"
                       >
-                        <div className="space-y-0.5 flex-1 pr-2">
-                          <span className="font-mono text-[9px] uppercase tracking-wider font-bold text-[#DC143C]">
-                            {faq.category}
-                          </span>
-                          <h4 className="font-heading font-bold text-xs sm:text-sm text-[#0F172A] leading-snug">
-                            {faq.question}
-                          </h4>
-                        </div>
-                        <div
-                          className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 ${
-                            isOpen ? 'bg-[#DC143C] text-white rotate-180' : 'bg-[#F1F5F9] text-[#64748B]'
+                        <span className="font-heading font-bold text-sm text-[#0F172A] group-hover:text-[#DC143C] transition-colors leading-snug">
+                          {faq.question}
+                        </span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-[#94A3B8] group-hover:text-[#DC143C] shrink-0 transition-transform duration-200 ${
+                            isOpen ? 'rotate-180 text-[#DC143C]' : ''
                           }`}
-                        >
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </div>
+                        />
                       </button>
 
                       {isOpen && (
-                        <div className="px-3.5 sm:px-4 pb-4 pt-1 space-y-2 border-t border-[#F1F5F9]">
-                          <p className="font-mono text-xs text-[#475569] leading-relaxed">
-                            {faq.answer}
-                          </p>
+                        <div className="mt-2 text-xs text-[#475569] leading-relaxed space-y-2.5 pb-2 pl-1 border-l-2 border-[#DC143C]/40">
+                          <p>{faq.answer}</p>
                           {faq.highlight && (
-                            <div className="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] flex items-start gap-2">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0 mt-0.5" />
-                              <span className="font-mono text-[11px] font-medium text-[#0F172A]">
-                                {faq.highlight}
-                              </span>
+                            <div className="p-2 bg-[#FFF0F3] rounded border border-[#DC143C]/15 text-[#DC143C] text-[11px] font-medium flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                              <span>{faq.highlight}</span>
                             </div>
                           )}
                         </div>
@@ -341,27 +312,32 @@ export const LandingFaqAndBlogs: React.FC = () => {
                     </div>
                   );
                 })
+              ) : (
+                <div className="h-48 flex flex-col items-center justify-center text-center p-4 text-[#94A3B8]">
+                  <HelpCircle className="w-8 h-8 mb-2 opacity-40" />
+                  <p className="text-xs font-mono">No matching FAQ entries found.</p>
+                </div>
               )}
             </div>
           </div>
 
           {/* ========================================================================= */}
-          {/* RIGHT BOX: BLOGS & COLLECTOR INTEL (Internal Scroll) */}
+          {/* RIGHT BOX: COLLECTOR INSIGHTS & ARTICLES (Internal Scroll) */}
           {/* ========================================================================= */}
           <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col h-[580px] overflow-hidden">
             {/* Box Header */}
             <div className="p-5 border-b border-[#E2E8F0] bg-white sticky top-0 z-10 space-y-3 shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white">
+                  <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] border border-blue-200 flex items-center justify-center text-blue-600">
                     <BookOpen className="w-4 h-4" />
                   </div>
                   <div>
                     <h3 className="font-heading font-bold text-base text-[#0F172A]">
-                      Collector & Market Insights
+                      Collector Notes & Guides
                     </h3>
-                    <p className="font-mono text-[11px] text-[#64748B]">
-                      Deep dives on grading, deck meta, and asset valuation
+                    <p className="text-[11px] text-[#64748B]">
+                      Market notes and deck building guides
                     </p>
                   </div>
                 </div>
@@ -371,15 +347,15 @@ export const LandingFaqAndBlogs: React.FC = () => {
               </div>
 
               {/* Category Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                 {blogCategories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setBlogCategory(cat)}
-                    className={`whitespace-nowrap px-2.5 py-1 rounded-md font-mono text-[10px] font-bold transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-mono whitespace-nowrap transition-colors cursor-pointer ${
                       blogCategory === cat
-                        ? 'bg-[#DC143C] text-white'
-                        : 'bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A] hover:bg-[#E2E8F0]'
+                        ? 'bg-blue-600 text-white font-bold'
+                        : 'bg-[#F8FAFC] text-[#64748B] hover:bg-[#F1F5F9] border border-[#E2E8F0]'
                     }`}
                   >
                     {cat}
@@ -388,52 +364,48 @@ export const LandingFaqAndBlogs: React.FC = () => {
               </div>
             </div>
 
-            {/* Scrollable Blog Feed */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 custom-scrollbar">
+            {/* Scrollable Blog List */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {filteredBlogs.map((post) => (
                 <div
                   key={post.id}
-                  onClick={() => setSelectedArticle(post)}
-                  className="p-4 rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#F8FAFC] hover:border-[#DC143C]/40 transition-all cursor-pointer shadow-2xs group flex flex-col justify-between space-y-3"
+                  onClick={() => setSelectedBlog(post)}
+                  className="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-blue-400 hover:bg-blue-50/20 transition-all cursor-pointer group space-y-2.5"
                 >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20">
-                        {post.category}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="px-2 py-0.5 rounded bg-white border border-[#E2E8F0] text-[10px] font-mono font-bold text-[#475569]">
+                      {post.category}
+                    </span>
+                    <div className="flex items-center gap-3 text-[11px] text-[#94A3B8] font-mono">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {post.date}
                       </span>
-                      <div className="flex items-center gap-2 font-mono text-[10px] text-[#94A3B8]">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {post.readTime}
-                        </span>
-                        <span>•</span>
-                        <span>{post.date}</span>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {post.readTime}
+                      </span>
                     </div>
-
-                    <h4 className="font-heading font-bold text-sm text-[#0F172A] group-hover:text-[#DC143C] transition-colors leading-snug">
-                      {post.title}
-                    </h4>
-
-                    <p className="font-mono text-xs text-[#64748B] line-clamp-2 leading-relaxed">
-                      {post.excerpt}
-                    </p>
                   </div>
 
-                  <div className="pt-2 border-t border-[#F1F5F9] flex items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {post.tags.slice(0, 2).map((t) => (
-                        <span
-                          key={t}
-                          className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#475569]"
-                        >
+                  <h4 className="font-heading font-bold text-sm text-[#0F172A] group-hover:text-blue-600 transition-colors leading-snug">
+                    {post.title}
+                  </h4>
+
+                  <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed">
+                    {post.excerpt}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[#E2E8F0]/60">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {post.tags.slice(0, 2).map((t, idx) => (
+                        <span key={idx} className="text-[10px] font-mono text-[#64748B]">
                           #{t}
                         </span>
                       ))}
                     </div>
-                    <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-[#DC143C] group-hover:translate-x-0.5 transition-transform shrink-0">
-                      <span>Read article</span>
-                      <ArrowRight className="w-3 h-3" />
+                    <span className="text-xs font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      Read article <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>
                 </div>
@@ -444,73 +416,49 @@ export const LandingFaqAndBlogs: React.FC = () => {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* ARTICLE READER MODAL */}
-      {/* ========================================================================= */}
-      {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F172A]/70 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-scaleUp">
+      {/* Blog Full Reader Modal */}
+      {selectedBlog && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-scale-up">
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between gap-4 shrink-0">
-              <div className="space-y-1">
-                <span className="font-mono text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20">
-                  {selectedArticle.category}
-                </span>
-                <div className="flex items-center gap-2 font-mono text-[11px] text-[#64748B] pt-1">
-                  <span>{selectedArticle.author}</span>
-                  <span>•</span>
-                  <span>{selectedArticle.date}</span>
-                  <span>•</span>
-                  <span>{selectedArticle.readTime}</span>
+            <div className="p-6 border-b border-[#E2E8F0] flex items-start justify-between gap-4 bg-white sticky top-0">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-mono font-bold border border-blue-200">
+                    {selectedBlog.category}
+                  </span>
+                  <span className="text-xs text-[#64748B] font-mono">
+                    {selectedBlog.date} • {selectedBlog.readTime}
+                  </span>
                 </div>
+                <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-[#0F172A] leading-tight">
+                  {selectedBlog.title}
+                </h3>
+                <p className="text-xs text-[#64748B] font-mono">
+                  By {selectedBlog.author}
+                </p>
               </div>
               <button
-                type="button"
-                onClick={() => setSelectedArticle(null)}
-                className="w-8 h-8 rounded-lg bg-white border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
+                onClick={() => setSelectedBlog(null)}
+                className="w-8 h-8 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] flex items-center justify-center cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Scroll Content */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-5">
-              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-[#0F172A] leading-snug">
-                {selectedArticle.title}
-              </h3>
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4 text-sm text-[#334155] leading-relaxed">
+              {selectedBlog.content.map((paragraph, idx) => (
+                <p key={idx}>{paragraph}</p>
+              ))}
 
-              <div className="p-3.5 rounded-xl bg-[#FFF0F3]/50 border border-[#DC143C]/20 font-mono text-xs text-[#0F172A] font-semibold">
-                "{selectedArticle.excerpt}"
-              </div>
-
-              <div className="space-y-4 font-mono text-xs sm:text-sm text-[#334155] leading-relaxed">
-                {selectedArticle.content.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
-              </div>
-
-              {selectedArticle.featuredCard && (
-                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <span className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider">
-                      Featured Subject Reference
-                    </span>
-                    <p className="font-heading font-bold text-sm text-[#0F172A]">
-                      {selectedArticle.featuredCard}
-                    </p>
-                  </div>
-                  <span className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-lg font-mono text-xs font-bold text-[#DC143C] shadow-2xs">
-                    Market Tracked
-                  </span>
-                </div>
-              )}
-
-              <div className="pt-4 border-t border-[#E2E8F0] flex flex-wrap items-center gap-2">
+              {/* Tags */}
+              <div className="pt-4 border-t border-[#F1F5F9] flex items-center gap-2 flex-wrap">
                 <Tag className="w-3.5 h-3.5 text-[#94A3B8]" />
-                {selectedArticle.tags.map((tag) => (
+                {selectedBlog.tags.map((tag, idx) => (
                   <span
-                    key={tag}
-                    className="font-mono text-[11px] px-2.5 py-1 rounded-md bg-[#F1F5F9] text-[#475569] font-medium"
+                    key={idx}
+                    className="px-2 py-0.5 rounded bg-[#F8FAFC] border border-[#E2E8F0] text-[11px] font-mono text-[#64748B]"
                   >
                     #{tag}
                   </span>
@@ -519,11 +467,10 @@ export const LandingFaqAndBlogs: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-[#E2E8F0] bg-[#F8FAFC] flex justify-end shrink-0">
+            <div className="p-4 border-t border-[#E2E8F0] bg-[#F8FAFC] flex justify-end">
               <button
-                type="button"
-                onClick={() => setSelectedArticle(null)}
-                className="px-5 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-colors cursor-pointer"
+                onClick={() => setSelectedBlog(null)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
               >
                 Close Article
               </button>

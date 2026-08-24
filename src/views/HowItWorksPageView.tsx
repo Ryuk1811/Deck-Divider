@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, CheckCircle2, ChevronDown, Layers, Database, Shield, Zap, Search, SlidersHorizontal, Trophy, Package } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Sparkles, ArrowRight, CheckCircle2, ChevronDown, Layers, Database, Shield, Zap, Search, SlidersHorizontal, Trophy, Package, Award } from 'lucide-react';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
+import { HeroFluidMotionCanvas } from '../components/landing/HeroFluidMotionCanvas';
+import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../types';
 
 interface HowItWorksPageViewProps {
@@ -19,6 +22,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
 }) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const easeCurve = [0.16, 1, 0.3, 1];
 
   const steps = [
     {
@@ -119,7 +123,10 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] bg-[radial-gradient(#CBD5E1_1.2px,transparent_1.2px)] [background-size:16px_16px] text-[#0F172A] flex flex-col font-sans overflow-x-hidden selection:bg-[#DC143C] selection:text-white">
+    <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
+      {/* Global Scroll Progress & Continuous Ambient Motion Directorate */}
+      <LandingMotionDirectorate />
+
       {/* Shared Header Navigation */}
       <LandingNav
         onOpenAuth={onOpenAuth}
@@ -134,29 +141,55 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         }}
       />
 
-      <main className="flex-1 w-full max-w-[2200px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 py-12 sm:py-20 lg:py-24 space-y-20 lg:space-y-32">
+      <main className="flex-1 w-full max-w-[2200px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 py-12 sm:py-20 lg:py-24 space-y-20 lg:space-y-32 relative">
+        {/* 0. Tri-Slab Floating Collector Motion Canvas */}
+        <HeroFluidMotionCanvas />
+
         {/* Hero Section */}
-        <section className="text-center space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-4">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full">
+        <section className="text-center space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeCurve }}
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[10px] sm:text-xs font-semibold shadow-xs text-center max-w-full"
+          >
             <span className="w-2 h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-            <span className="truncate sm:whitespace-normal">SYSTEM WORKFLOW & LIFECYCLE</span>
-          </div>
+            <span className="truncate sm:whitespace-normal font-mono tracking-tight">SYSTEM WORKFLOW & LIFECYCLE</span>
+          </motion.div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] font-heading text-balance">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.04] font-heading text-balance"
+          >
             From Raw Binders to Real-Time Ledger in <span className="text-[#DC143C]">Four Simple Steps</span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-base sm:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
+            className="text-base sm:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance"
+          >
             Explore how DECK / divider streamlines asset intake, valuation indexing, championship deck validation, and sealed vault management into a seamless, high-density workflow.
-          </p>
+          </motion.p>
         </section>
 
         {/* 3-Depth Light Studio Glass Slab Window Showcase */}
-        <div className="pt-8 w-full max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: easeCurve }}
+          className="pt-8 w-full max-w-6xl mx-auto relative z-10"
+        >
           {/* Depth 0: Glass Slab Shell */}
-          <div className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left">
+          <div className="bg-white/90 backdrop-blur-md border border-[#E2E8F0] shadow-2xl rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-6 text-left relative overflow-hidden">
+            {/* Ambient subtle light sweep */}
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#DC143C]/5 rounded-full blur-3xl pointer-events-none" />
+
             {/* Depth 1: Studio Floor Wrapper */}
-            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl overflow-hidden">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl overflow-hidden relative">
               {/* Studio Window Header Bar */}
               <div className="px-4 sm:px-6 py-3.5 bg-white border-b border-[#E2E8F0] flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -171,6 +204,10 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
                     Interactive Workflow
                   </span>
                 </div>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#64748B]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Pipeline Ready</span>
+                </div>
               </div>
 
               {/* Depth 2: Main Application Canvas */}
@@ -178,165 +215,196 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
                 
                 {/* 4-Step Interactive Pipeline Showcase */}
                 <section className="space-y-12 lg:space-y-16">
-          {/* Step Selector Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
-            {steps.map((s, idx) => {
-              const isCurrent = activeStep === idx;
-              return (
-                <button
-                  key={s.stepNumber}
-                  onClick={() => setActiveStep(idx)}
-                  className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                    isCurrent
-                      ? 'bg-[#DC143C] text-white shadow-md'
-                      : 'bg-white text-[#475569] hover:text-[#0F172A] hover:bg-slate-100 border border-[#E2E8F0]'
-                  }`}
-                >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono ${
-                    isCurrent ? 'bg-white text-[#DC143C]' : 'bg-[#F1F5F9] text-[#64748B]'
-                  }`}>
-                    {s.stepNumber}
-                  </span>
-                  <span>{s.title}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Step Showcase Glass Card */}
-          <div className="bg-white/90 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-8 sm:p-12 lg:p-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-              {/* Left Details Column */}
-              <div className="lg:col-span-7 space-y-6 text-left">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">
-                    <span>Step {steps[activeStep].stepNumber}</span>
-                    <span>•</span>
-                    <span className="text-[#64748B]">{steps[activeStep].subtitle}</span>
+                  {/* Step Selector Pills */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+                    {steps.map((s, idx) => {
+                      const isCurrent = activeStep === idx;
+                      return (
+                        <button
+                          key={s.stepNumber}
+                          onClick={() => setActiveStep(idx)}
+                          className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                            isCurrent
+                              ? 'bg-[#DC143C] text-white shadow-md'
+                              : 'bg-white text-[#475569] hover:text-[#0F172A] hover:bg-slate-100 border border-[#E2E8F0]'
+                          }`}
+                        >
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono ${
+                            isCurrent ? 'bg-white text-[#DC143C]' : 'bg-[#F1F5F9] text-[#64748B]'
+                          }`}>
+                            {s.stepNumber}
+                          </span>
+                          <span>{s.title}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
-                    {steps[activeStep].title}
-                  </h2>
-                </div>
 
-                <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                  {steps[activeStep].description}
-                </p>
-
-                {/* Feature Chips */}
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {steps[activeStep].tags.map((tag, tIdx) => (
-                    <span
-                      key={tIdx}
-                      className="px-2.5 py-1 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-medium text-[#475569]"
+                  {/* Active Step Showcase Glass Card */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeStep}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -16 }}
+                      transition={{ duration: 0.4, ease: easeCurve }}
+                      className="bg-white/95 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-8 sm:p-12 lg:p-16 relative"
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+                        {/* Left Details Column */}
+                        <div className="lg:col-span-7 space-y-6 text-left">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">
+                              <span>Step {steps[activeStep].stepNumber}</span>
+                              <span>•</span>
+                              <span className="text-[#64748B]">{steps[activeStep].subtitle}</span>
+                            </div>
+                            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
+                              {steps[activeStep].title}
+                            </h2>
+                          </div>
 
-                {/* Bullet Points */}
-                <div className="space-y-3 pt-3 border-t border-[#F1F5F9]">
-                  {steps[activeStep].details.map((d, dIdx) => (
-                    <div key={dIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#475569]">
-                      <CheckCircle2 className="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5" />
-                      <span>{d}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                          <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
+                            {steps[activeStep].description}
+                          </p>
 
-              {/* Right Live Simulation Mockup Column */}
-              <div className="lg:col-span-5">
-                <div className="bg-[#0F172A] text-white rounded-xl p-6 border border-slate-800 shadow-2xl space-y-5 text-left">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span className="px-2.5 py-1 rounded bg-[#DC143C]/20 text-[#DC143C] text-[10px] font-mono font-bold tracking-wider uppercase border border-[#DC143C]/40">
-                      {steps[activeStep].previewContent.badge}
-                    </span>
-                    <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      {steps[activeStep].previewContent.status}
-                    </span>
+                          {/* Feature Chips */}
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {steps[activeStep].tags.map((tag, tIdx) => (
+                              <span
+                                key={tIdx}
+                                className="px-2.5 py-1 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-medium text-[#475569]"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Bullet Points with cascading checkmarks */}
+                          <div className="space-y-3 pt-3 border-t border-[#F1F5F9]">
+                            {steps[activeStep].details.map((d, dIdx) => (
+                              <motion.div
+                                key={dIdx}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: dIdx * 0.06, ease: easeCurve }}
+                                className="flex items-start gap-2.5 text-xs sm:text-sm text-[#475569]"
+                              >
+                                <CheckCircle2 className="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5" />
+                                <span>{d}</span>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Right Live Simulation Mockup Column */}
+                        <div className="lg:col-span-5 relative">
+                          {/* Floating Non-Intrusive Workflow Indicator */}
+                          <motion.div
+                            animate={{ y: [0, -6, 2, 0] }}
+                            transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
+                            className="absolute -top-4 -right-4 z-20 pointer-events-none hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-800 shadow-md font-mono text-[10px]"
+                          >
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>VERIFIED {steps[activeStep].stepNumber}/04</span>
+                          </motion.div>
+
+                          <div className="bg-[#0F172A] text-white rounded-xl p-6 border border-slate-800 shadow-2xl space-y-5 text-left transform-gpu">
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                              <span className="px-2.5 py-1 rounded bg-[#DC143C]/20 text-[#DC143C] text-[10px] font-mono font-bold tracking-wider uppercase border border-[#DC143C]/40">
+                                {steps[activeStep].previewContent.badge}
+                              </span>
+                              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                {steps[activeStep].previewContent.status}
+                              </span>
+                            </div>
+
+                            <div className="space-y-1">
+                              <span className="text-xs text-slate-400 font-mono">Asset Identifier</span>
+                              <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                                {steps[activeStep].previewContent.title}
+                              </h3>
+                            </div>
+
+                            <div className="bg-[#1E293B] rounded-lg p-3.5 border border-slate-700 space-y-1.5">
+                              <div className="text-xs text-slate-400 font-mono">Certification Standard</div>
+                              <div className="text-xs font-semibold text-slate-200">
+                                {steps[activeStep].previewContent.certNumber}
+                              </div>
+                            </div>
+
+                            <div className="pt-2 flex items-center justify-between">
+                              <div>
+                                <span className="text-[11px] text-slate-400 font-mono block">Indexed Value</span>
+                                <span className="text-sm sm:text-base font-extrabold text-white font-mono">
+                                  {steps[activeStep].previewContent.estValue}
+                                </span>
+                              </div>
+                              <span className="text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded">
+                                Sync: Active
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </section>
+
+                {/* Interactive FAQ Section */}
+                <section className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-8 sm:p-12 lg:p-16 space-y-12 max-w-4xl mx-auto">
+                  <div className="text-center space-y-3">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">Architecture FAQ</span>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
+                      Frequently Asked Questions
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#64748B]">
+                      Everything you need to know about cataloging, valuation data feeds, and championship rules.
+                    </p>
                   </div>
 
-                  <div className="space-y-1">
-                    <span className="text-xs text-slate-400 font-mono">Asset Identifier</span>
-                    <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                      {steps[activeStep].previewContent.title}
-                    </h3>
-                  </div>
+                  <div className="space-y-4 text-left">
+                    {faqs.map((faq, fIdx) => {
+                      const isOpen = openFaq === fIdx;
+                      return (
+                        <div
+                          key={fIdx}
+                          className="border border-[#E2E8F0] rounded-xl overflow-hidden transition-all"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setOpenFaq(isOpen ? null : fIdx)}
+                            className="w-full px-5 py-4 bg-[#F8FAFC] hover:bg-slate-100 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
+                          >
+                            <span className="text-xs sm:text-sm font-bold text-[#0F172A]">{faq.q}</span>
+                            <ChevronDown className={`w-4 h-4 text-[#64748B] transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#DC143C]' : ''}`} />
+                          </button>
 
-                  <div className="bg-[#1E293B] rounded-lg p-3.5 border border-slate-700 space-y-1.5">
-                    <div className="text-xs text-slate-400 font-mono">Certification Standard</div>
-                    <div className="text-xs font-semibold text-slate-200">
-                      {steps[activeStep].previewContent.certNumber}
-                    </div>
+                          {isOpen && (
+                            <div className="px-5 py-4 bg-white border-t border-[#E2E8F0] text-xs sm:text-sm text-[#64748B] leading-relaxed">
+                              {faq.a}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
+                </section>
 
-                  <div className="pt-2 flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] text-slate-400 font-mono block">Indexed Value</span>
-                      <span className="text-sm sm:text-base font-extrabold text-white font-mono">
-                        {steps[activeStep].previewContent.estValue}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded">
-                      Sync: Active
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
-        </section>
-
-        {/* Interactive FAQ Section */}
-        <section className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-8 sm:p-12 lg:p-16 space-y-12 max-w-4xl mx-auto">
-          <div className="text-center space-y-3">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#DC143C]">Architecture FAQ</span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xs sm:text-sm text-[#64748B]">
-              Everything you need to know about cataloging, valuation data feeds, and championship rules.
-            </p>
-          </div>
-
-          <div className="space-y-4 text-left">
-            {faqs.map((faq, fIdx) => {
-              const isOpen = openFaq === fIdx;
-              return (
-                <div
-                  key={fIdx}
-                  className="border border-[#E2E8F0] rounded-xl overflow-hidden transition-all"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : fIdx)}
-                    className="w-full px-5 py-4 bg-[#F8FAFC] hover:bg-slate-100 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-[#0F172A]">{faq.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-[#64748B] transition-transform ${isOpen ? 'rotate-180 text-[#DC143C]' : ''}`} />
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-5 py-4 bg-white border-t border-[#E2E8F0] text-xs sm:text-sm text-[#64748B] leading-relaxed">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-              </div>
-            </div>
-          </div>
-        </div>
+        </motion.div>
 
         {/* Bottom Callout */}
-        <section className="bg-white/80 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-left max-w-5xl mx-auto">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: easeCurve }}
+          className="bg-white/90 backdrop-blur-md border border-[#E2E8F0] shadow-xl rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-left max-w-5xl mx-auto relative z-10"
+        >
           <div className="space-y-2">
             <h3 className="text-lg sm:text-xl font-bold text-[#0F172A]">Experience the platform firsthand</h3>
             <p className="text-xs sm:text-sm text-[#64748B] max-w-xl">
@@ -358,12 +426,21 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
               <span>Sign In / Login</span>
             </button>
           </div>
-        </section>
+        </motion.section>
       </main>
 
       {/* Shared Footer */}
       <LandingFooter
         displayCurrency={displayCurrency}
+        onNavigateSection={(id) => {
+          if (id === 'about') {
+            onNavigateAbout();
+          } else if (id === 'how-it-works') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            onNavigateHome();
+          }
+        }}
       />
     </div>
   );
