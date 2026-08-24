@@ -977,32 +977,22 @@ export default function App() {
       {/* Main Panel Area */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line h-16) */}
-        <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2">
-          {/* Left: Mobile Drawer Trigger + App Logo fallback button + Section Header Tag & Title */}
+        <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2 sm:gap-4">
+          {/* Left: Mobile/Tablet Drawer Trigger + Section Header Tag & Title */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <button
               type="button"
-              onClick={() => {
-                navigate('/');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="md:hidden p-1 rounded-md hover:bg-slate-100 active:scale-95 transition-all cursor-pointer group flex items-center justify-center shrink-0"
-              title="DECK / divider — Return to main page"
-              aria-label="Deck Divider Home (Return to main page)"
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="md:hidden p-2 -ml-1 rounded-lg text-[#0F172A] hover:bg-slate-100 active:bg-slate-200 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+              title="Open Navigation Menu"
+              aria-label="Open Navigation Menu"
             >
-              <DeckDividersIcon className="w-6 h-6 transition-transform group-hover:scale-105" />
+              <Menu className="w-5 h-5 text-[#0F172A]" />
             </button>
-            <DeckDividerBrand
-              size="xs"
-              showLogo={false}
-              collapsed={true}
-              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-              className="md:hidden flex-shrink-0 cursor-pointer mr-1"
-            />
-            <span className="hidden sm:inline-flex font-mono text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
+            <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2 sm:px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
               {sectionMeta[activeTab].tag}
             </span>
-            <span className="hidden sm:inline text-[#CBD5E1] font-mono text-sm flex-shrink-0">/</span>
+            <span className="text-[#CBD5E1] font-mono text-sm flex-shrink-0">/</span>
             <h1 className="font-heading font-bold text-sm sm:text-base md:text-lg text-[#0F172A] truncate">
               {sectionMeta[activeTab].title}
             </h1>
@@ -1010,24 +1000,26 @@ export default function App() {
 
           {/* Right: Dynamic Metric Badge */}
           <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
-            <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-bold rounded-md shadow-xs">
-              {activeTab === 'collection' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'decks' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'sets' && <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'lists' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'sealed_vault' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'metrics' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'search' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
-              {activeTab === 'settings' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C]" />}
+            <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold rounded-md shadow-xs max-w-[170px] sm:max-w-none truncate">
+              {activeTab === 'collection' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'decks' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'sets' && <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'lists' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'sealed_vault' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'metrics' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'search' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'settings' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
               
-              {activeTab === 'collection' && <span>Portfolio: {decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Total Cards</span>}
-              {activeTab === 'decks' && <span>Active Decks: {decks.length}</span>}
-              {activeTab === 'sets' && <span>{allSets.length} Expansions</span>}
-              {activeTab === 'lists' && <span>Custom Lists: {customLists.length}</span>}
-              {activeTab === 'sealed_vault' && <span>Sealed Assets: {sealedEntries.length}</span>}
-              {activeTab === 'metrics' && <span>Live Market Dashboard</span>}
-              {activeTab === 'search' && <span>Card Database</span>}
-              {activeTab === 'settings' && <span>System Config</span>}
+              <span className="truncate">
+                {activeTab === 'collection' && `Portfolio: ${decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Cards`}
+                {activeTab === 'decks' && `Decks: ${decks.length}`}
+                {activeTab === 'sets' && `${allSets.length} Expansions`}
+                {activeTab === 'lists' && `Lists: ${customLists.length}`}
+                {activeTab === 'sealed_vault' && `Vault: ${sealedEntries.length}`}
+                {activeTab === 'metrics' && 'Market Stats'}
+                {activeTab === 'search' && 'Card Database'}
+                {activeTab === 'settings' && 'System Config'}
+              </span>
             </div>
           </div>
         </header>

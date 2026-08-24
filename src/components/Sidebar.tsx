@@ -126,15 +126,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* 1. Header Section - Height exactly h-16 to perfectly align inline with Top Bar */}
-        <div className="h-16 flex items-center justify-center px-3 border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC]">
+        <div className="h-16 flex items-center justify-between px-3 border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC]">
           {!isCollapsed ? (
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-between w-full">
               {/* Wordmark functions directly as drawer opener and closer, spanning sidebar width */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
                 showLogo={false}
-                className="w-full"
+                className="flex-1"
                 onClick={() => {
                   if (window.innerWidth < 768) {
                     setIsMobileOpen(false);
@@ -143,6 +143,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }
                 }}
               />
+              {/* Explicit Dismiss Button for Mobile Drawer */}
+              <button
+                type="button"
+                onClick={() => setIsMobileOpen(false)}
+                className="md:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-200/70 transition-colors ml-1 shrink-0 cursor-pointer"
+                title="Close Navigation"
+                aria-label="Close Navigation Drawer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
           ) : (
             <div className="w-full flex items-center justify-center">
