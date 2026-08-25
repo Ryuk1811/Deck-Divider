@@ -38,6 +38,7 @@ interface DecksViewProps {
   decks: Deck[];
   currentTier: AccountTier;
   currency: DisplayCurrency;
+  userEmail?: string;
   onCreateDeck: (deck: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => void;
   onUpdateDeck: (deck: Deck) => void;
   onDeleteDeck: (deckId: string) => void;
@@ -63,6 +64,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
   decks,
   currentTier,
   currency,
+  userEmail,
   onCreateDeck,
   onUpdateDeck,
   onDeleteDeck,
@@ -76,6 +78,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
   onLoadShowcase,
   onAddSampleDeck,
 }) => {
+  const isSuperUser = userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     initialSelectedDeckId || decks[0]?.id || ''
   );
@@ -493,24 +496,14 @@ export const DecksView: React.FC<DecksViewProps> = ({
               <Plus className="w-4 h-4" />
               <span>Create First Deck</span>
             </button>
-            {onLoadShowcase && (
+            {isSuperUser && onLoadShowcase && (
               <button
                 type="button"
                 onClick={onLoadShowcase}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
               >
-                <Sparkles className="w-4 h-4" />
-                <span>Load Showcase Suite (3 Decks & Grails)</span>
-              </button>
-            )}
-            {onAddSampleDeck && (
-              <button
-                type="button"
-                onClick={onAddSampleDeck}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
-              >
-                <Layers className="w-4 h-4 text-[#DC143C]" />
-                <span>Add Charizard Championship Deck</span>
+                <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
+                <span>Super User: Restore Showcase</span>
               </button>
             )}
           </div>

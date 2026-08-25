@@ -65,6 +65,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
   // Input query state is kept decoupled from heavy filtering to guarantee 0ms typing latency
   const [searchInputText, setSearchInputText] = useState(savedFilters.query || '');
   const [activeFilters, setActiveFilters] = useState<SearchFilters>(savedFilters);
+  const activeFiltersRef = useRef(activeFilters);
+  activeFiltersRef.current = activeFilters;
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
   const [, startTransition] = useTransition();
@@ -74,17 +76,20 @@ export const SearchView: React.FC<SearchViewProps> = ({
     if (savedFilters.query !== undefined && savedFilters.query !== searchInputText) {
       setSearchInputText(savedFilters.query);
     }
-    setActiveFilters(savedFilters);
-  }, [savedFilters]);
+    setActiveFilters((prev) => {
+      if (prev === savedFilters) return prev;
+      return savedFilters;
+    });
+  }, [savedFilters, searchInputText]);
 
   // Debounce search query text update into activeFilters and parent state
   useEffect(() => {
-    if ((activeFilters.query || '') === searchInputText) {
+    if ((activeFiltersRef.current.query || '') === searchInputText) {
       return;
     }
 
     const timer = setTimeout(() => {
-      const updated = { ...activeFilters, query: searchInputText };
+      const updated = { ...activeFiltersRef.current, query: searchInputText };
       startTransition(() => {
         setActiveFilters(updated);
         setVisibleCount(PAGE_CHUNK_SIZE);
@@ -93,7 +98,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
     }, 160);
 
     return () => clearTimeout(timer);
-  }, [searchInputText, activeFilters, onUpdateFilters]);
+  }, [searchInputText, onUpdateFilters]);
 
   // Synchronize non-query filter mutations smoothly
   const updateStructuredFilters = (newF: SearchFilters) => {

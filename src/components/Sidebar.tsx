@@ -120,21 +120,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Main Sidebar Component */}
       <aside
         className={`fixed md:static inset-y-0 left-0 z-[70] flex flex-col h-screen bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-14' : 'w-56 max-w-[85vw]'
+          isCollapsed ? 'w-16' : 'w-56 max-w-[85vw]'
         } ${
           isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* 1. Header Section - Height exactly h-16 to perfectly align inline with Top Bar */}
-        <div className="h-16 flex items-center justify-between px-3 border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC]">
+        <div className={`h-16 flex items-center justify-center border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {!isCollapsed ? (
-            <div className="flex items-center justify-between w-full">
-              {/* Wordmark functions directly as drawer opener and closer, spanning sidebar width */}
+            <div className="w-full flex items-center justify-center">
+              {/* Full-width Wordmark spanning entire header with nothing beside it */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
                 showLogo={false}
-                className="flex-1"
+                fullWidth={true}
                 onClick={() => {
                   if (window.innerWidth < 768) {
                     setIsMobileOpen(false);
@@ -142,33 +142,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     setIsCollapsed(true);
                   }
                 }}
+                className="w-full cursor-pointer"
               />
-              {/* Explicit Dismiss Button for Mobile Drawer */}
-              <button
-                type="button"
-                onClick={() => setIsMobileOpen(false)}
-                className="md:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-200/70 transition-colors ml-1 shrink-0 cursor-pointer"
-                title="Close Navigation"
-                aria-label="Close Navigation Drawer"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
           ) : (
             <div className="w-full flex items-center justify-center">
-              {/* Collapsed wordmark displays "D / d" and expands drawer on click */}
+              {/* Collapsed square wordmark displays "D / d" and expands sidebar on click */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={true}
                 showLogo={false}
                 onClick={() => setIsCollapsed(false)}
+                className="cursor-pointer flex items-center justify-center"
               />
             </div>
           )}
         </div>
 
         {/* 2. Middle Scrollable Navigation List */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-4">
+        <div className={`flex-1 overflow-y-auto ${isCollapsed ? 'px-2 py-3.5 space-y-3 flex flex-col items-center' : 'p-3 space-y-4'}`}>
           {/* Quick Search Shortcut Trigger */}
           {!isCollapsed ? (
             <button
@@ -189,21 +181,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               onClick={onOpenCommandPalette}
-              className="w-10 h-10 mx-auto flex items-center justify-center bg-[#F8FAFC] border border-[#E2E8F0] text-[#64748B] hover:text-[#DC143C] hover:border-[#DC143C] transition-all rounded-lg group"
+              className="w-10 h-10 flex items-center justify-center bg-[#F8FAFC] border border-[#E2E8F0] text-[#64748B] hover:text-[#DC143C] hover:border-[#DC143C] hover:bg-[#FFF0F3] transition-all rounded-lg cursor-pointer shrink-0"
               title="Quick Find (Cmd + K)"
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-4.5 h-4.5" />
             </button>
           )}
 
           {/* Navigation Items */}
-          <div>
+          <div className={isCollapsed ? 'w-full' : ''}>
             {!isCollapsed && (
               <span className="font-mono text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider px-2 block mb-2">
                 System Redirects
               </span>
             )}
-            <nav className="space-y-1">
+            <nav className={isCollapsed ? 'w-full flex flex-col items-center space-y-1.5' : 'space-y-1'}>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -215,14 +207,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       type="button"
                       onClick={() => handleNavClick(item.id as ActiveTab)}
                       title={item.label}
-                      className={`w-10 h-10 mx-auto flex items-center justify-center text-xs font-mono font-semibold transition-all duration-200 border rounded-lg ${
+                      className={`w-10 h-10 flex items-center justify-center text-xs font-mono font-semibold transition-all duration-150 border rounded-lg shrink-0 cursor-pointer ${
                         isActive
-                          ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C] font-bold shadow-xs'
-                          : 'bg-transparent text-[#64748B] border-transparent hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                          ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C] shadow-xs'
+                          : 'bg-transparent text-[#64748B] border-transparent hover:bg-slate-100 hover:text-[#0F172A]'
                       }`}
                     >
                       <Icon
-                        className={`w-4 h-4 ${
+                        className={`w-4.5 h-4.5 ${
                           isActive ? 'text-[#DC143C]' : 'text-[#64748B]'
                         }`}
                       />
@@ -255,7 +247,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* 3. Footer Settings & Account */}
-        <div className="p-3 border-t border-[#E2E8F0] flex-shrink-0 bg-white">
+        <div className={`border-t border-[#E2E8F0] flex-shrink-0 bg-white ${isCollapsed ? 'px-2 py-3' : 'p-3'}`}>
           {!isCollapsed ? (
             <div className="space-y-2.5">
               <button
@@ -316,7 +308,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="p-1.5 text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] rounded-md transition-colors"
+                  className="p-1.5 text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] rounded-md transition-colors cursor-pointer"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -324,22 +316,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2">
+            <div className="w-full flex flex-col items-center space-y-2.5">
               <button
                 type="button"
                 onClick={() => handleNavClick('settings')}
                 title="System Settings"
-                className={`w-10 h-10 flex items-center justify-center text-xs font-mono font-semibold transition-all duration-200 border rounded-lg ${
+                className={`w-10 h-10 flex items-center justify-center text-xs font-mono font-semibold transition-all duration-150 border rounded-lg shrink-0 cursor-pointer ${
                   activeTab === 'settings'
-                    ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C] font-bold shadow-xs'
-                    : 'bg-transparent text-[#64748B] border-transparent hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                    ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C] shadow-xs'
+                    : 'bg-transparent text-[#64748B] border-transparent hover:bg-slate-100 hover:text-[#0F172A]'
                 }`}
               >
-                <SettingsIcon className="w-4 h-4" />
+                <SettingsIcon className="w-4.5 h-4.5" />
               </button>
 
               <div
-                className="relative group cursor-pointer"
+                className="w-10 h-10 flex items-center justify-center relative cursor-pointer group shrink-0"
                 onClick={() => handleNavClick('settings')}
                 title={`${displayName} (${isSuperUser ? 'Super User - Unlimited' : currentTier + ' Tier'})`}
               >
@@ -347,18 +339,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <img
                     src={avatarUrl}
                     alt={displayName}
-                    className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1]"
+                    className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1] group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all"
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all">
                     {initials}
                   </div>
                 )}
                 <div
                   title={isSyncing ? 'Syncing...' : 'Synced'}
-                  className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${
+                  className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
                     isSyncing ? 'bg-[#DC143C] animate-sync-pulse' : 'bg-[#16A34A]'
                   }`}
                 />
@@ -366,10 +358,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               <button
                 onClick={handleSignOut}
-                className="p-1.5 text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] rounded-lg transition-colors"
+                className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C]/20 rounded-lg transition-all shrink-0 cursor-pointer"
                 title="Sign Out"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4.5 h-4.5" />
               </button>
             </div>
           )}

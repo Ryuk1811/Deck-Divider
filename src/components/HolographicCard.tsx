@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { PokemonCard, DisplayCurrency } from '../types';
 import { holographicEngine } from '../utils/holographicEngine';
 import { formatCurrency, RARITY_BADGE_STYLE, ENERGY_COLORS } from '../utils/formatters';
@@ -18,7 +18,7 @@ interface HolographicCardProps {
   isFocused?: boolean;
 }
 
-export const HolographicCard: React.FC<HolographicCardProps> = ({
+export const HolographicCard: React.FC<HolographicCardProps> = memo(({
   card,
   currency = 'USD',
   quantity,
@@ -68,9 +68,10 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
       }}
       style={{
         transform: 'perspective(1000px) scale(var(--card-scale, 1)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
-        transition: 'var(--card-transition, transform 220ms cubic-bezier(0.4, 0, 0.2, 1))',
+        transition: 'var(--card-transition, transform 180ms ease-out)',
+        willChange: 'transform',
       }}
-      className={`group relative bg-gradient-to-b from-white/95 via-white/85 to-white/90 backdrop-blur-md px-3 pt-3 pb-3.5 border border-white/80 ring-1 ring-[#0F172A]/10 shadow-[0_6px_20px_-4px_rgba(15,23,42,0.1),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_12px_32px_-6px_rgba(220,20,60,0.16),inset_0_1.5px_1px_rgba(255,255,255,1)] cursor-pointer transition-all duration-200 select-none overflow-hidden rounded-2xl ${
+      className={`group relative bg-gradient-to-b from-white/95 via-white/85 to-white/90 backdrop-blur-md px-3 pt-3 pb-3.5 border border-white/80 ring-1 ring-[#0F172A]/10 shadow-[0_6px_20px_-4px_rgba(15,23,42,0.1),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_12px_32px_-6px_rgba(220,20,60,0.16),inset_0_1.5px_1px_rgba(255,255,255,1)] cursor-pointer select-none overflow-hidden rounded-2xl ${
         isFocused ? 'ring-2 ring-[#DC143C] ring-offset-2' : ''
       } ${className}`}
     >
@@ -100,12 +101,12 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
           rarity={card.rarity}
           setId={card.set?.id}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
         />
 
         {/* Glare Layer */}
         <div
-          className="pointer-events-none fixed inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-200"
+          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-150"
           style={{
             background:
               'radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%)',
@@ -115,7 +116,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
         {/* Standard Shimmer Layer */}
         {isHolo && (
           <div
-            className="pointer-events-none fixed inset-0 mix-blend-color-dodge opacity-30 group-hover:opacity-80 transition-opacity duration-300 holo-shimmer animate-holo-idle"
+            className="pointer-events-none absolute inset-0 mix-blend-color-dodge opacity-30 group-hover:opacity-80 transition-opacity duration-200 holo-shimmer animate-holo-idle"
             style={{
               backgroundPosition: 'var(--shimmer-x, 0%) center',
             }}
@@ -124,7 +125,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
 
         {/* Glitter Layer */}
         {isGlitter && (
-          <div className="pointer-events-none fixed inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300 bg-[radial-gradient(#FFD700_1px,transparent_1px)] [background-size:12px_12px]" />
+          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-200 bg-[radial-gradient(#FFD700_1px,transparent_1px)] [background-size:12px_12px]" />
         )}
 
         {/* Quantity Badge - Continuous State */}
@@ -215,4 +216,6 @@ export const HolographicCard: React.FC<HolographicCardProps> = ({
       </div>
     </div>
   );
-};
+});
+
+HolographicCard.displayName = 'HolographicCard';

@@ -102,8 +102,9 @@ export async function setEncryptedItem<T>(key: string, value: T, userId: string 
     const tx = db.transaction(ENCRYPTED_STORE_NAME, 'readwrite');
     const store = tx.objectStore(ENCRYPTED_STORE_NAME);
 
+    const scopedKey = `${userId}::${key}`;
     const record: EncryptedPayloadRecord = {
-      key,
+      key: scopedKey,
       iv: ivStr,
       ciphertext: ciphertextStr,
       updatedAt: new Date().toISOString(),
@@ -128,7 +129,8 @@ export async function getEncryptedItem<T>(key: string, userId: string = 'guest_u
     const db = await openVaultDB();
     const tx = db.transaction(ENCRYPTED_STORE_NAME, 'readonly');
     const store = tx.objectStore(ENCRYPTED_STORE_NAME);
-    const req = store.get(key);
+    const scopedKey = `${userId}::${key}`;
+    const req = store.get(scopedKey);
 
     const record: EncryptedPayloadRecord | undefined = await new Promise((resolve, reject) => {
       req.onsuccess = () => resolve(req.result);
@@ -162,7 +164,7 @@ export async function getEncryptedItem<T>(key: string, userId: string = 'guest_u
     const jsonStr = dec.decode(decryptedBuffer);
     return JSON.parse(jsonStr) as T;
   } catch (err) {
-    console.warn('Failed to get/decrypt encrypted item:', key, err);
+    // Normal for newly registered users with no records yet
     return null;
   }
 }
@@ -170,11 +172,12 @@ export async function getEncryptedItem<T>(key: string, userId: string = 'guest_u
 /**
  * Remove an item from the encrypted vault
  */
-export async function removeEncryptedItem(key: string): Promise<void> {
+export async function removeEncryptedItem(key: string, userId: string = 'guest_user'): Promise<void> {
   try {
     const db = await openVaultDB();
     const tx = db.transaction(ENCRYPTED_STORE_NAME, 'readwrite');
-    tx.objectStore(ENCRYPTED_STORE_NAME).delete(key);
+    const scopedKey = `${userId}::${key}`;
+    tx.objectStore(ENCRYPTED_STORE_NAME).delete(scopedKey);
     await new Promise<void>((resolve, reject) => {
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);

@@ -241,8 +241,84 @@ export default function App() {
   const [lastSyncedTimestamp, setLastSyncedTimestamp] = useState<string | null>(null);
   const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
 
+  // Maintain a stable stateRef to prevent saveCompressedCloudSnapshot from changing reference on every state update
+  const stateRef = React.useRef({
+    decks,
+    customLists,
+    sealedEntries,
+    soldEntries,
+    recentActivities,
+    profile,
+    currentTier,
+    displayCurrency,
+    user,
+  });
+
+  React.useEffect(() => {
+    stateRef.current = {
+      decks,
+      customLists,
+      sealedEntries,
+      soldEntries,
+      recentActivities,
+      profile,
+      currentTier,
+      displayCurrency,
+      user,
+    };
+  });
+
+  // Push compressed single-document snapshot to Firestore (overwriting existing)
+  const saveCompressedCloudSnapshot = React.useCallback(async (overrideState?: {
+    decks?: Deck[];
+    customLists?: CustomList[];
+    sealedEntries?: PortfolioSealedEntry[];
+  }) => {
+    const curUser = stateRef.current.user;
+    if (!curUser) return;
+    try {
+      const stateToCompress = {
+        version: 2,
+        userId: curUser.uid,
+        updatedAt: new Date().toISOString(),
+        profile: {
+          displayName: stateRef.current.profile?.displayName || curUser.displayName || '',
+          email: curUser.email || '',
+          tier: stateRef.current.currentTier,
+          currency: stateRef.current.displayCurrency,
+        },
+        decks: overrideState?.decks ?? stateRef.current.decks,
+        customLists: overrideState?.customLists ?? stateRef.current.customLists,
+        sealedEntries: overrideState?.sealedEntries ?? stateRef.current.sealedEntries,
+        soldEntries: stateRef.current.soldEntries,
+        recentActivities: stateRef.current.recentActivities,
+      };
+
+      const packed = await packageUserSnapshot(stateToCompress);
+      const snapRef = doc(db, 'users', curUser.uid, 'snapshot', 'current');
+      
+      // Strict overwrite (merge: false) to prevent historical document bloat
+      await setDoc(snapRef, packed, { merge: false });
+
+      setLastSyncedTimestamp(packed.updatedAt);
+      recordSnapshotCompleted();
+      setSnapshotMetrics({
+        rawSize: packed.rawSize,
+        byteSize: packed.byteSize,
+        compressionRatio: packed.compressionRatio,
+      });
+      triggerSyncPulse();
+    } catch (err) {
+      console.warn('Cloud snapshot overwrite warning:', err);
+    }
+  }, []);
+
   // Helper to load complete Showcase Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
   const handleLoadShowcaseData = React.useCallback(async () => {
+    if (!isShowcaseAccount(user?.email)) {
+      console.warn('Showcase presets are reserved exclusively for the super user account.');
+      return;
+    }
     const targetUid = user?.uid || 'guest_user';
     const showcaseDecks = generateShowcaseDecks(targetUid);
     const showcaseLists = generateShowcaseCustomLists(targetUid);
@@ -258,13 +334,21 @@ export default function App() {
 
     if (user) {
       setTimeout(() => {
-        saveCompressedCloudSnapshot();
+        saveCompressedCloudSnapshot({
+          decks: showcaseDecks,
+          customLists: showcaseLists,
+          sealedEntries: showcaseSealed,
+        });
       }, 300);
     }
-  }, [user]);
+  }, [user, saveCompressedCloudSnapshot]);
 
   // Helper to load standard competitive sample deck
   const handleLoadSampleDeck = React.useCallback(async () => {
+    if (!isShowcaseAccount(user?.email)) {
+      console.warn('Sample decks are reserved exclusively for the super user account.');
+      return;
+    }
     const targetUid = user?.uid || 'guest_user';
     const sampleDecks = generateShowcaseDecks(targetUid).slice(0, 1); // Charizard Championship 60
     
@@ -279,7 +363,7 @@ export default function App() {
         saveCompressedCloudSnapshot();
       }, 300);
     }
-  }, [user]);
+  }, [user, saveCompressedCloudSnapshot]);
 
   // Load from Local Encrypted Storage on initial mount & Seed Showcase data for gurutvamurdia@gmail.com
   React.useEffect(() => {
@@ -288,6 +372,12 @@ export default function App() {
     const isShowcase = isShowcaseAccount(user?.email);
 
     const initializeAppState = async () => {
+      // Reset collection state to prevent state bleed between user accounts
+      setDecks([]);
+      setCustomLists([]);
+      setSealedEntries([]);
+      setSoldEntries([]);
+
       try {
         const [savedDecks, savedLists, savedSealed] = await Promise.all([
           idbGetUserDecks(activeUid),
@@ -337,7 +427,7 @@ export default function App() {
           }
         }
 
-        // Automatic seeding for showcase account if decks are empty
+        // Automatic seeding ONLY for the designated showcase account (gurutvamurdia@gmail.com) if empty
         if (isShowcase && currentDecks.length === 0) {
           currentDecks = generateShowcaseDecks(activeUid);
           currentLists = generateShowcaseCustomLists(activeUid);
@@ -349,7 +439,11 @@ export default function App() {
 
           if (user) {
             setTimeout(() => {
-              saveCompressedCloudSnapshot();
+              saveCompressedCloudSnapshot({
+                decks: currentDecks,
+                customLists: currentLists,
+                sealedEntries: currentSealed,
+              });
             }, 500);
           }
         }
@@ -366,52 +460,16 @@ export default function App() {
           setDecks(showcaseDecks);
           setCustomLists(showcaseLists);
           setSealedEntries(showcaseSealed);
+        } else {
+          setDecks([]);
+          setCustomLists([]);
+          setSealedEntries([]);
         }
       }
     };
 
     initializeAppState();
-  }, [user, authLoading]);
-
-  // Push compressed single-document snapshot to Firestore (overwriting existing)
-  const saveCompressedCloudSnapshot = React.useCallback(async () => {
-    if (!user) return;
-    try {
-      const stateToCompress = {
-        version: 2,
-        userId: user.uid,
-        updatedAt: new Date().toISOString(),
-        profile: {
-          displayName: profile?.displayName || user.displayName || '',
-          email: user.email || '',
-          tier: currentTier,
-          currency: displayCurrency,
-        },
-        decks,
-        customLists,
-        sealedEntries,
-        soldEntries,
-        recentActivities,
-      };
-
-      const packed = await packageUserSnapshot(stateToCompress);
-      const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
-      
-      // Strict overwrite (merge: false) to prevent historical document bloat
-      await setDoc(snapRef, packed, { merge: false });
-
-      setLastSyncedTimestamp(packed.updatedAt);
-      recordSnapshotCompleted();
-      setSnapshotMetrics({
-        rawSize: packed.rawSize,
-        byteSize: packed.byteSize,
-        compressionRatio: packed.compressionRatio,
-      });
-      triggerSyncPulse();
-    } catch (err) {
-      console.warn('Cloud snapshot overwrite warning:', err);
-    }
-  }, [user, profile, currentTier, displayCurrency, decks, customLists, sealedEntries, soldEntries, recentActivities]);
+  }, [user?.uid, authLoading, saveCompressedCloudSnapshot]);
 
   // 6-Hour Automated Snapshot Metronome
   React.useEffect(() => {
@@ -436,21 +494,21 @@ export default function App() {
     if (decks.length > 0) {
       idbSaveUserDecks(decks, activeUid);
     }
-  }, [decks, user]);
+  }, [decks, user?.uid]);
 
   React.useEffect(() => {
     const activeUid = user?.uid || 'guest_user';
     if (customLists.length > 0) {
       idbSaveCustomLists(customLists, activeUid);
     }
-  }, [customLists, user]);
+  }, [customLists, user?.uid]);
 
   React.useEffect(() => {
     const activeUid = user?.uid || 'guest_user';
     if (sealedEntries.length > 0) {
       idbSaveSealedVault(sealedEntries, activeUid);
     }
-  }, [sealedEntries, user]);
+  }, [sealedEntries, user?.uid]);
 
   // Persistent Search Filters
   const [savedFilters, setSavedFilters] = useState<SearchFilters>({
@@ -1044,8 +1102,8 @@ export default function App() {
               }}
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
-              onLoadShowcase={handleLoadShowcaseData}
-              onAddSampleDeck={handleLoadSampleDeck}
+              onLoadShowcase={isShowcaseAccount(user?.email) ? handleLoadShowcaseData : undefined}
+              onAddSampleDeck={isShowcaseAccount(user?.email) ? handleLoadSampleDeck : undefined}
             />
           )}
 
@@ -1073,6 +1131,7 @@ export default function App() {
               decks={decks}
               currentTier={currentTier}
               currency={displayCurrency}
+              userEmail={user?.email || undefined}
               onCreateDeck={handleCreateDeck}
               onUpdateDeck={handleUpdateDeck}
               onDeleteDeck={handleDeleteDeck}
@@ -1088,8 +1147,8 @@ export default function App() {
               }
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
-              onLoadShowcase={handleLoadShowcaseData}
-              onAddSampleDeck={handleLoadSampleDeck}
+              onLoadShowcase={isShowcaseAccount(user?.email) ? handleLoadShowcaseData : undefined}
+              onAddSampleDeck={isShowcaseAccount(user?.email) ? handleLoadSampleDeck : undefined}
             />
           )}
 

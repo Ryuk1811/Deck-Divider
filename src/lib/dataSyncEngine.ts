@@ -37,9 +37,18 @@ function notifySyncListeners(state: SyncProgressState) {
 // Helper to format image URLs
 function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): string {
   if (!imageStr) return 'https://images.pokemontcg.io/cardback.png';
+  if (imageStr.includes('pokemontcg.io')) {
+    if (quality === 'high' && !imageStr.includes('_hires.png') && imageStr.endsWith('.png')) {
+      return imageStr.replace('.png', '_hires.png');
+    }
+    if (quality === 'low' && imageStr.includes('_hires.png')) {
+      return imageStr.replace('_hires.png', '.png');
+    }
+    return imageStr;
+  }
   if (imageStr.includes('/high.') || imageStr.includes('/low.')) return imageStr;
   const clean = imageStr.replace(/\.(png|webp|jpg)$/i, '');
-  return `${clean}/${quality}.png`;
+  return `${clean}/${quality}.webp`;
 }
 
 // Map TCGdex Set schema to app CardSet schema

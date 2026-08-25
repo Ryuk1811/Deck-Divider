@@ -23,6 +23,37 @@ const memoryImageCache = new Map<string, ImageCacheEntry>();
 const prefetchQueue: string[] = [];
 let isQueueProcessing = false;
 
+// Set mappings between pokemontcg.io and tcgdex path formats
+const SET_PATH_MAPPINGS: Record<string, { tcgdexSeries?: string; tcgdexSet?: string; pokemontcgSet?: string }> = {
+  sv3pt5: { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
+  'sv03.5': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
+  '151': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
+  swsh7: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh07', pokemontcgSet: 'swsh7' },
+  swsh07: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh07', pokemontcgSet: 'swsh7' },
+  swsh8: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh08', pokemontcgSet: 'swsh8' },
+  swsh08: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh08', pokemontcgSet: 'swsh8' },
+  swsh11: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh11', pokemontcgSet: 'swsh11' },
+  swsh12: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12', pokemontcgSet: 'swsh12' },
+  swsh12pt5: { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12.5', pokemontcgSet: 'swsh12pt5' },
+  'swsh12.5': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12.5', pokemontcgSet: 'swsh12pt5' },
+  sv1: { tcgdexSeries: 'sv', tcgdexSet: 'sv01', pokemontcgSet: 'sv1' },
+  sv01: { tcgdexSeries: 'sv', tcgdexSet: 'sv01', pokemontcgSet: 'sv1' },
+  sv2: { tcgdexSeries: 'sv', tcgdexSet: 'sv02', pokemontcgSet: 'sv2' },
+  sv02: { tcgdexSeries: 'sv', tcgdexSet: 'sv02', pokemontcgSet: 'sv2' },
+  sv3: { tcgdexSeries: 'sv', tcgdexSet: 'sv03', pokemontcgSet: 'sv3' },
+  sv03: { tcgdexSeries: 'sv', tcgdexSet: 'sv03', pokemontcgSet: 'sv3' },
+  sv4: { tcgdexSeries: 'sv', tcgdexSet: 'sv04', pokemontcgSet: 'sv4' },
+  sv04: { tcgdexSeries: 'sv', tcgdexSet: 'sv04', pokemontcgSet: 'sv4' },
+  sv4pt5: { tcgdexSeries: 'sv', tcgdexSet: 'sv04.5', pokemontcgSet: 'sv4pt5' },
+  'sv04.5': { tcgdexSeries: 'sv', tcgdexSet: 'sv04.5', pokemontcgSet: 'sv4pt5' },
+  sv5: { tcgdexSeries: 'sv', tcgdexSet: 'sv05', pokemontcgSet: 'sv5' },
+  sv05: { tcgdexSeries: 'sv', tcgdexSet: 'sv05', pokemontcgSet: 'sv5' },
+  sv6: { tcgdexSeries: 'sv', tcgdexSet: 'sv06', pokemontcgSet: 'sv6' },
+  sv06: { tcgdexSeries: 'sv', tcgdexSet: 'sv06', pokemontcgSet: 'sv6' },
+  svp: { tcgdexSeries: 'sv', tcgdexSet: 'svp', pokemontcgSet: 'svp' },
+  base1: { tcgdexSeries: 'base', tcgdexSet: 'base1', pokemontcgSet: 'base1' },
+};
+
 /**
  * Generates an array of prioritized image candidate URLs
  * (Fastest modern WebP low-res first, followed by fallbacks)
@@ -35,38 +66,67 @@ export function getOptimizedCardImageCandidates(
 ): string[] {
   const candidates: string[] = [];
 
+  // 1. If explicit src is provided and is a real image URL (not broken or cardback)
+  if (src && !src.includes('cardback.png') && !src.includes('undefined')) {
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      if (preferHighRes) {
+        if (src.includes('.png') && !src.includes('_hires.png') && src.includes('pokemontcg.io')) {
+          candidates.push(src.replace('.png', '_hires.png'));
+        }
+        candidates.push(src);
+      } else {
+        candidates.push(src);
+        if (src.includes('_hires.png')) {
+          candidates.push(src.replace('_hires.png', '.png'));
+        }
+      }
+    } else if (src.startsWith('/')) {
+      candidates.push(src);
+    }
+  }
+
+  // 2. Generate candidates from set & card number
   const cleanNum = cardNumber ? String(cardNumber).replace(/^0+/, '') : '';
   const paddedNum = cardNumber ? String(cardNumber) : '';
   const cleanSet = setId ? setId.toLowerCase().trim() : '';
 
   if (cleanSet && paddedNum) {
+    const mapping = SET_PATH_MAPPINGS[cleanSet];
+    const ptcgSet = mapping?.pokemontcgSet || cleanSet;
+    const tSeries = mapping?.tcgdexSeries;
+    const tSet = mapping?.tcgdexSet || cleanSet;
+
     if (preferHighRes) {
-      candidates.push(`https://assets.tcgdex.net/en/${cleanSet}/${paddedNum}/high.webp`);
-      candidates.push(`https://assets.tcgdex.net/en/${cleanSet}/${paddedNum}/high.png`);
-      candidates.push(`https://images.pokemontcg.io/${cleanSet}/${paddedNum}_hires.png`);
+      candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${paddedNum}_hires.png`);
+      if (cleanNum && cleanNum !== paddedNum) {
+        candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${cleanNum}_hires.png`);
+      }
+      if (tSeries) {
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.png`);
+      }
     }
 
-    // Fast-path low WebP (ultra-lightweight, loads in ~30-50ms)
-    candidates.push(`https://assets.tcgdex.net/en/${cleanSet}/${paddedNum}/low.webp`);
-    candidates.push(`https://assets.tcgdex.net/en/${cleanSet}/${paddedNum}/low.png`);
-    
-    // PokémonTCG.io standard CDN
+    // Standard high-speed CDN candidates
+    candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${paddedNum}.png`);
+    if (cleanNum && cleanNum !== paddedNum) {
+      candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${cleanNum}.png`);
+    }
+
+    if (tSeries) {
+      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.webp`);
+      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.png`);
+      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
+    }
+
+    // Generic pokemontcg.io fallback
     candidates.push(`https://images.pokemontcg.io/${cleanSet}/${paddedNum}.png`);
-    if (cleanNum !== paddedNum) {
-      candidates.push(`https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`);
-    }
-  }
-
-  if (src) {
-    // If src contains high.png, provide low.webp equivalent first for fast streaming
-    if (src.includes('tcgdex.net') && src.includes('/high.')) {
-      candidates.unshift(src.replace('/high.png', '/low.webp').replace('/high.webp', '/low.webp'));
-    }
-    candidates.push(src);
+    candidates.push(`https://images.pokemontcg.io/${cleanSet}/${paddedNum}_hires.png`);
   }
 
   // Remove duplicates and known failed URLs
-  return Array.from(new Set(candidates)).filter((url) => !failedUrlSet.has(url));
+  const unique = Array.from(new Set(candidates)).filter((url) => !failedUrlSet.has(url));
+  return unique;
 }
 
 /**

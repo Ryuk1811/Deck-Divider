@@ -79,6 +79,8 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onLoadShowcase,
   onAddSampleDeck,
 }) => {
+  const isSuperUser = userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
+
   // View & Grouping Controls State
   const [viewMode, setViewMode] = useState<ViewModeOption>('grid');
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
@@ -586,39 +588,29 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               Portfolio Collection is Ready
             </h3>
             <p className="font-mono text-xs sm:text-sm text-[#64748B] leading-relaxed">
-              No cards are currently assigned to your decks or binders. Populate your portfolio by exploring the card database or instantly loading the curated showcase suite.
+              No cards are currently assigned to your decks or binders. Search the Pokémon card catalog to add singles, slabs, or build new tournament decks.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            {onLoadShowcase && (
-              <button
-                type="button"
-                onClick={onLoadShowcase}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Load Showcase Slabs & Grails</span>
-              </button>
-            )}
-            {onAddSampleDeck && (
-              <button
-                type="button"
-                onClick={onAddSampleDeck}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm cursor-pointer"
-              >
-                <Layers className="w-4 h-4" />
-                <span>Load Standard Championship Deck</span>
-              </button>
-            )}
             {onNavigateToSearch && (
               <button
                 type="button"
                 onClick={onNavigateToSearch}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] hover:border-[#DC143C] rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm cursor-pointer"
               >
-                <Search className="w-4 h-4 text-[#DC143C]" />
+                <Search className="w-4 h-4" />
                 <span>Search Card Catalog</span>
+              </button>
+            )}
+            {isSuperUser && onLoadShowcase && (
+              <button
+                type="button"
+                onClick={onLoadShowcase}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
+                <span>Super User: Restore Showcase</span>
               </button>
             )}
           </div>

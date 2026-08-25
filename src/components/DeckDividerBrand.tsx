@@ -8,6 +8,7 @@ export interface DeckDividerBrandProps {
   onLogoClick?: () => void;
   collapsed?: boolean;
   showLogo?: boolean;
+  fullWidth?: boolean;
 }
 
 export interface DeckDividersIconProps {
@@ -266,8 +267,9 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   className = '',
   onClick,
   onLogoClick,
-  collapsed,
+  collapsed = false,
   showLogo = true,
+  fullWidth = false,
 }) => {
   const navigate = useNavigate();
 
@@ -284,35 +286,35 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   const gapSize = {
     xs: 'gap-1.5',
     sm: 'gap-2',
-    md: 'gap-2.5 sm:gap-3',
-    lg: 'gap-3 sm:gap-3.5',
-    xl: 'gap-4',
+    md: 'gap-2.5',
+    lg: 'gap-3',
+    xl: 'gap-3.5',
   }[size];
 
   // Square dimensions for collapsed mode (1:1 ratio)
   const squareSizes = {
     xs: 'w-7 h-7 rounded-md text-[10px]',
     sm: 'w-9 h-9 rounded-lg text-xs',
-    md: 'w-10 h-10 rounded-xl text-xs sm:text-sm',
-    lg: 'w-12 h-12 rounded-xl text-sm sm:text-base',
-    xl: 'w-14 h-14 rounded-2xl text-base sm:text-lg',
+    md: 'w-10 h-10 rounded-xl text-xs',
+    lg: 'w-11 h-11 rounded-xl text-sm',
+    xl: 'w-13 h-13 rounded-xl text-base',
   }[size];
 
-  // Rectangular box padding and radius for normal mode (defined sides, rounded corners, NOT pill)
-  const rectBoxPadding = {
-    xs: 'px-2.5 py-1 rounded-md text-[11px]',
-    sm: 'px-3 py-1.5 rounded-lg text-xs',
-    md: 'px-3.5 py-2 rounded-lg text-xs sm:text-sm',
+  // Rectangular box padding and font styles for normal mode (crisp, single-line, calibrated tracking)
+  const rectBoxStyles = {
+    xs: 'px-2 py-1 rounded-md text-[10px]',
+    sm: 'px-3 py-1.5 rounded-lg text-[12px]',
+    md: 'px-4 py-2 rounded-lg text-[13px] sm:text-[14px]',
     lg: 'px-5 py-2.5 rounded-xl text-sm sm:text-base',
-    xl: 'px-6 py-3 rounded-xl text-lg sm:text-xl',
+    xl: 'px-6 py-3 rounded-xl text-base sm:text-lg',
   }[size];
 
   const iconSizes = {
     xs: 'w-5 h-5',
     sm: 'w-6 h-6',
-    md: 'w-7 h-7 sm:w-8 sm:h-8',
-    lg: 'w-9 h-9 sm:w-10 sm:h-10',
-    xl: 'w-11 h-11 sm:w-13 sm:h-13',
+    md: 'w-7 h-7',
+    lg: 'w-9 h-9',
+    xl: 'w-11 h-11',
   }[size];
 
   // Helper render for Logo Fallback Button
@@ -320,19 +322,19 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
     <button
       type="button"
       onClick={handleLogoClick}
-      className="flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg hover:bg-slate-100 active:scale-95 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C]"
+      className="flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg hover:bg-slate-100/80 active:scale-95 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C]"
       title="DECK / divider — Return to main page"
       aria-label="Deck Divider Home (Return to main page)"
     >
-      <DeckDividersIcon className={`${iconClass} transition-transform duration-300 group-hover:scale-110`} />
+      <DeckDividersIcon className={`${iconClass} transition-transform duration-300 group-hover:scale-105`} />
     </button>
   );
 
   // Helper render for Collapsed Square wordmark ("D / d")
   const renderCollapsedWordmark = () => (
-    <div className={`bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${squareSizes}`}>
+    <div className={`shrink-0 bg-[#111111] p-[1px] shadow-xs border border-[#262626] hover:border-[#DC143C]/60 transition-all ${squareSizes}`}>
       <div className="w-full h-full bg-black flex items-center justify-center rounded-[inherit]">
-        <div className="font-heading font-black flex items-center justify-center leading-none">
+        <div className="font-heading font-black flex items-center justify-center leading-none select-none">
           <span className="text-white uppercase tracking-tight">D</span>
           <span className="text-[#DC143C] font-mono font-bold mx-[1px]">/</span>
           <span className="text-[#DC143C] lowercase font-bold tracking-tight">d</span>
@@ -341,25 +343,39 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
     </div>
   );
 
+  const isFull = fullWidth || className.includes('w-full');
+
   // Helper render for Normal Expanded Wordmark ("DECK / divider")
-  const renderExpandedWordmark = (isFullWidth = false) => (
-    <div className={`${isFullWidth ? 'w-full' : ''} bg-[#111111] p-[1px] shadow-sm border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxPadding.split(' ').filter(c => c.startsWith('rounded-')).join(' ')}`}>
-      <div className={`${isFullWidth ? 'w-full' : ''} bg-black flex items-center justify-center rounded-[inherit] ${rectBoxPadding}`}>
-        <div className="font-heading font-black flex items-center justify-center leading-none">
-          <span className="text-white tracking-[0.16em] uppercase">DECK</span>
-          <span className="text-[#DC143C] font-mono font-bold opacity-90 text-[1.1em] mx-1">/</span>
-          <span className="text-[#DC143C] font-semibold tracking-[0.12em] lowercase">divider</span>
+  const renderExpandedWordmark = () => (
+    <div
+      className={`${
+        isFull ? 'w-full flex-1' : 'shrink-0 inline-flex'
+      } bg-[#111111] p-[1px] shadow-xs border border-[#262626] hover:border-[#DC143C]/60 transition-all ${rectBoxStyles
+        .split(' ')
+        .filter((c) => c.startsWith('rounded-'))
+        .join(' ')}`}
+    >
+      <div
+        className={`${
+          isFull ? 'w-full' : ''
+        } bg-black flex items-center justify-center rounded-[inherit] whitespace-nowrap ${rectBoxStyles}`}
+      >
+        <div className="font-heading font-black flex items-center justify-center leading-none select-none">
+          <span className="text-white tracking-[0.14em] uppercase">DECK</span>
+          <span className="text-[#DC143C] font-mono font-bold opacity-90 text-[1.1em] mx-1.5">/</span>
+          <span className="text-[#DC143C] font-semibold tracking-[0.08em] lowercase">divider</span>
         </div>
       </div>
     </div>
   );
 
-  const containerClasses = `${className.includes('w-full') ? 'flex w-full' : 'inline-flex'} items-center select-none transition-all ${gapSize} ${
+  const containerClasses = `${
+    isFull ? 'flex w-full' : 'inline-flex'
+  } items-center select-none transition-all ${gapSize} ${
     onClick ? 'cursor-pointer hover:opacity-90 active:scale-[0.98]' : ''
   } ${className}`;
 
-  // If explicitly forced collapsed
-  if (collapsed === true) {
+  if (collapsed) {
     return (
       <div onClick={onClick} className={containerClasses} title={onClick ? 'Expand Sidebar' : undefined}>
         {showLogo && renderLogoButton(iconSizes)}
@@ -368,30 +384,10 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
     );
   }
 
-  // If explicitly forced expanded
-  if (collapsed === false) {
-    return (
-      <div onClick={onClick} className={containerClasses} title={onClick ? 'Collapse Sidebar' : undefined}>
-        {showLogo && renderLogoButton(iconSizes)}
-        {renderExpandedWordmark(className.includes('w-full'))}
-      </div>
-    );
-  }
-
-  // Automatic Responsive Mode (collapsed on mobile < md, full on desktop >= md)
   return (
-    <div onClick={onClick} className={containerClasses}>
-      {/* 1. Mobile representation (automatically collapsed) */}
-      <div className="flex md:hidden items-center gap-1.5">
-        {showLogo && renderLogoButton('w-5 h-5')}
-        {renderCollapsedWordmark()}
-      </div>
-
-      {/* 2. Desktop representation (expanded) */}
-      <div className="hidden md:flex items-center gap-2.5">
-        {showLogo && renderLogoButton(iconSizes)}
-        {renderExpandedWordmark(className.includes('w-full'))}
-      </div>
+    <div onClick={onClick} className={containerClasses} title={onClick ? 'Collapse Sidebar' : undefined}>
+      {showLogo && renderLogoButton(iconSizes)}
+      {renderExpandedWordmark()}
     </div>
   );
 };

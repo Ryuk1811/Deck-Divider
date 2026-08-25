@@ -268,7 +268,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [card]);
+  }, [card?.id, currency]);
 
   const chartData = React.useMemo(() => {
     if (!fullCardData) return [];
