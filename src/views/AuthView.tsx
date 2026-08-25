@@ -90,21 +90,37 @@ export function AuthView({
 
     try {
       const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
       provider.setCustomParameters({
         prompt: 'select_account'
       });
       await signInWithPopup(auth, provider);
       navigate('/app');
     } catch (err: any) {
-      console.error(err);
-      let msg = err.message || 'Failed to sign in with Google.';
-      if (err.code === 'auth/popup-closed-by-user') {
-        msg = 'Google sign-in popup was closed before completing.';
-      } else if (err.code === 'auth/unauthorized-domain') {
-        msg = 'This domain is not authorized in Firebase. Please add this app URL to Authorized Domains in Firebase Console.';
-      }
-      setError(msg);
+      console.warn('[Google Auth]', err);
       setGoogleLoading(false);
+
+      // If the user closed or cancelled the popup intentionally, gracefully reset without showing a jarring error banner
+      if (
+        err.code === 'auth/popup-closed-by-user' || 
+        err.code === 'auth/cancelled-popup-request' ||
+        err.message?.includes('closed-by-user')
+      ) {
+        return;
+      }
+
+      let msg = err.message || 'Failed to sign in with Google.';
+      if (err.code === 'auth/unauthorized-domain') {
+        const currentDomain = window.location.hostname;
+        msg = `Domain "${currentDomain}" is not in Firebase Authorized Domains. To enable Google Sign-In, go to Firebase Console > Authentication > Settings > Authorized Domains and add "${currentDomain}".`;
+      } else if (err.code === 'auth/popup-blocked') {
+        msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
+      } else if (err.code === 'auth/network-request-failed') {
+        msg = 'Network connection issue. Please check your internet connection and try again.';
+      }
+      
+      setError(msg);
     }
   };
 

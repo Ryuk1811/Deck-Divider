@@ -120,15 +120,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    provider.addScope('profile');
-    provider.addScope('email');
-    provider.setCustomParameters({
-      prompt: 'select_account',
-    });
-    const result = await signInWithPopup(auth, provider);
-    if (result.user) {
-      await fetchProfileAndSubscription(result.user);
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      });
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        await fetchProfileAndSubscription(result.user);
+      }
+    } catch (err: any) {
+      if (
+        err.code === 'auth/popup-closed-by-user' || 
+        err.code === 'auth/cancelled-popup-request' ||
+        err.message?.includes('closed-by-user')
+      ) {
+        // Benign user popup dismissal
+        return;
+      }
+      console.warn('[AuthContext] Google Sign In error:', err);
+      throw err;
     }
   };
 
