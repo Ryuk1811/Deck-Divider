@@ -24,6 +24,12 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const handleClose = () => {
+    setErrorMessage(null);
+    setIsProcessing(false);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   const tierInfo = TIER_LIMITS[tierName];
@@ -48,7 +54,7 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1.5 rounded-md bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -112,8 +118,6 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
                       application_context: {
                         shipping_preference: 'NO_SHIPPING',
                         user_action: 'SUBSCRIBE_NOW',
-                        return_url: window.location.href,
-                        cancel_url: window.location.href,
                       },
                     });
                   }}
@@ -132,9 +136,29 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
                       setIsProcessing(false);
                     }
                   }}
-                  onError={(err) => {
-                    console.error('PayPal Subscription Error:', err);
-                    setErrorMessage('PayPal Checkout issue. Please try again.');
+                  onCancel={() => {
+                    setIsProcessing(false);
+                    setErrorMessage(null);
+                  }}
+                  onError={(err: any) => {
+                    const errMsg = String(err?.message || err || '');
+                    // PayPal zoid window close or user popup dismissal
+                    const isWindowClosed =
+                      errMsg.toLowerCase().includes('window is closed') ||
+                      errMsg.toLowerCase().includes('can not determine type') ||
+                      errMsg.toLowerCase().includes('window_closed') ||
+                      errMsg.toLowerCase().includes('popup_closed') ||
+                      errMsg.toLowerCase().includes('closed');
+
+                    if (isWindowClosed) {
+                      // Benign user window close - reset processing without noisy error
+                      setIsProcessing(false);
+                      return;
+                    }
+
+                    console.warn('PayPal Checkout notice:', errMsg);
+                    setErrorMessage('PayPal checkout encountered an issue. Please try again.');
+                    setIsProcessing(false);
                   }}
                 />
               </PayPalScriptProvider>
