@@ -5,6 +5,7 @@ export async function scrapeTAG(certId: string) {
   let page = null;
   try {
     const browser = await getBrowser();
+    if (!browser) return null;
     page = await browser.newPage();
 
     await page.setExtraHTTPHeaders({

@@ -5,6 +5,7 @@ export async function scrapePSA(certId: string) {
   let page = null;
   try {
     const browser = await getBrowser();
+    if (!browser) return null;
     page = await browser.newPage();
     
     // Set realistic headers

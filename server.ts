@@ -19,7 +19,7 @@ import {
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   // Trust reverse proxy headers (Cloud Run / Nginx)
   app.set('trust proxy', 1);
