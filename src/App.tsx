@@ -1018,7 +1018,7 @@ export default function App() {
     }
 
     return (
-      <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A] select-none">
+      <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A]">
       {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}

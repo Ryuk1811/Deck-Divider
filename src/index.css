@@ -92,6 +92,13 @@
     }
   }
 
+  /* Ensure all inputs and text controls always support selection and keyboard entry */
+  input, textarea, select {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    pointer-events: auto !important;
+  }
+
   h1, h2, h3, h4, .font-heading {
     font-family: 'Space Grotesk', sans-serif;
   }

@@ -67,26 +67,28 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const [activeFilters, setActiveFilters] = useState<SearchFilters>(savedFilters);
   const activeFiltersRef = useRef(activeFilters);
   activeFiltersRef.current = activeFilters;
-  const lastSyncedQueryRef = useRef(savedFilters.query || '');
+  const isUserTypingRef = useRef(false);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
   const [, startTransition] = useTransition();
 
-  // Sync when savedFilters.query changes externally (e.g. navigation or reset)
+  // Sync when savedFilters changes from an external reset (not from user typing)
   useEffect(() => {
-    if (savedFilters.query !== undefined && savedFilters.query !== lastSyncedQueryRef.current) {
-      lastSyncedQueryRef.current = savedFilters.query;
-      setSearchInputText(savedFilters.query);
+    if (!isUserTypingRef.current) {
+      const externalQuery = savedFilters.query || '';
+      if (externalQuery !== searchInputText) {
+        setSearchInputText(externalQuery);
+      }
       setActiveFilters(savedFilters);
     }
-  }, [savedFilters.query]);
+  }, [savedFilters]);
 
   // Debounce search query text update into activeFilters and parent state
   useEffect(() => {
     const timer = setTimeout(() => {
+      isUserTypingRef.current = false;
       if ((activeFiltersRef.current.query || '') !== searchInputText) {
         const updated = { ...activeFiltersRef.current, query: searchInputText };
-        lastSyncedQueryRef.current = searchInputText;
         startTransition(() => {
           setActiveFilters(updated);
           setVisibleCount(PAGE_CHUNK_SIZE);
@@ -100,7 +102,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
   // Synchronize non-query filter mutations smoothly
   const updateStructuredFilters = (newF: SearchFilters) => {
-    lastSyncedQueryRef.current = newF.query || '';
+    isUserTypingRef.current = false;
     startTransition(() => {
       setActiveFilters(newF);
       setVisibleCount(PAGE_CHUNK_SIZE);
@@ -194,13 +196,18 @@ export const SearchView: React.FC<SearchViewProps> = ({
         <div className="flex-1 flex items-center gap-3 px-2">
           <SearchIcon className="w-5 h-5 text-[#DC143C] flex-shrink-0" />
           <input
+            id="global-card-search-input"
             type="text"
             value={searchInputText}
-            onChange={(e) => setSearchInputText(e.target.value)}
+            onChange={(e) => {
+              isUserTypingRef.current = true;
+              setSearchInputText(e.target.value);
+            }}
             placeholder="Search Pokémon cards by name, set, or artist..."
             autoComplete="off"
             spellCheck="false"
-            className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B]"
+            aria-label="Search Pokémon cards by name, set, or artist"
+            className="w-full bg-transparent font-mono text-sm text-[#0F172A] focus:outline-none placeholder:text-[#64748B] select-text cursor-text relative z-10"
           />
           {searchInputText && (
             <button
