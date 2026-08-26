@@ -294,87 +294,164 @@ export const getAvailableSets = (): CardSet[] => {
   return sortSetsChronologically(Array.from(setsMap.values()));
 };
 
-export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
-  if (!miniSearch) return [];
+function normalizeText(str?: string): string {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
 
-  // Filter function applied to all matches (or all documents if no query is provided)
-  const filterFn = (result: any) => {
-    let match = true;
+export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
+  const normCategory = normalizeText(filters.category);
+  const normStage = normalizeText(filters.stage);
+  const normReg = normalizeText(filters.regulationMark);
+  const normArtist = normalizeText(filters.artist || filters.illustrator);
+  const normVariant = normalizeText(filters.variant);
+
+  // Robust filter function applied to documents
+  const filterFn = (doc: any): boolean => {
+    if (!doc) return false;
+
+    // 1. Type matching (Electric/Lightning, Steel/Metal)
     if (filters.types && filters.types.length > 0) {
-      if (!result.types) {
-        match = false;
-      } else {
-        const expandedFilterTypes = filters.types.flatMap(t => {
-          if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
-          if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
-          return [t];
-        });
-        if (!expandedFilterTypes.some(t => result.types.includes(t))) match = false;
+      if (!doc.types || !Array.isArray(doc.types) || doc.types.length === 0) {
+        return false;
+      }
+      const expandedFilterTypes = filters.types.flatMap((t) => {
+        if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
+        if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
+        return [t];
+      });
+      const hasMatchingType = expandedFilterTypes.some((reqType) =>
+        doc.types.some((cardType: string) => cardType.toLowerCase() === reqType.toLowerCase())
+      );
+      if (!hasMatchingType) return false;
+    }
+
+    // 2. Category matching ('Pokemon' matches 'Pokémon')
+    if (normCategory) {
+      const docCategory = normalizeText(doc.category);
+      if (docCategory !== normCategory) return false;
+    }
+
+    // 3. Stage matching
+    if (normStage) {
+      const docStage = normalizeText(doc.stage);
+      if (normStage === 'ex') {
+        const isEx = docStage.includes('ex') || normalizeText(doc.name).includes(' ex');
+        if (!isEx) return false;
+      } else if (docStage !== normStage) {
+        return false;
       }
     }
-    if (filters.category && filters.category !== '') {
-      if (!result.category || result.category.toLowerCase() !== filters.category.toLowerCase()) match = false;
+
+    // 4. Regulation mark
+    if (normReg) {
+      const docReg = normalizeText(doc.regulationMark);
+      if (docReg !== normReg) return false;
     }
-    if (filters.stage && filters.stage !== '') {
-      if (!result.stage || result.stage.toLowerCase() !== filters.stage.toLowerCase()) match = false;
-    }
-    if (filters.regulationMark && filters.regulationMark !== '') {
-      if (!result.regulationMark || result.regulationMark.toLowerCase() !== filters.regulationMark.toLowerCase()) match = false;
-    }
+
+    // 5. Legality
     if (filters.legality) {
-      if (!result.legal || !result.legal[filters.legality]) match = false;
+      if (!doc.legal || !doc.legal[filters.legality]) return false;
     }
-    if (filters.variant && filters.variant !== '') {
-      if (!result.variants || !result.variants[filters.variant]) match = false;
+
+    // 6. Variant
+    if (normVariant) {
+      if (!doc.variants) return false;
+      const key = filters.variant as keyof typeof doc.variants;
+      if (!doc.variants[key]) return false;
     }
+
+    // 7. HP range
     if (filters.hpMin !== undefined) {
-      if (result.hp === undefined || result.hp < filters.hpMin) match = false;
+      const hp = typeof doc.hp === 'number' ? doc.hp : parseInt(String(doc.hp || 0), 10);
+      if (isNaN(hp) || hp < filters.hpMin) return false;
     }
     if (filters.hpMax !== undefined) {
-      if (result.hp === undefined || result.hp > filters.hpMax) match = false;
-    }
-    if (filters.rarities && filters.rarities.length > 0) {
-      if (!result.rarity || !filters.rarities.includes(result.rarity)) match = false;
-    }
-    if (filters.setId) {
-      if (!result.set || result.set.id !== filters.setId) match = false;
-    }
-    const artistSearch = filters.artist || filters.illustrator;
-    if (artistSearch && artistSearch.trim() !== '') {
-      if (!result.illustrator || !result.illustrator.toLowerCase().includes(artistSearch.toLowerCase())) match = false;
-    }
-    
-    // Price filtering using deterministic price
-    if (filters.priceMin !== undefined || filters.priceMax !== undefined) {
-      const price = generateDeterministicPrice(result.id);
-      if (filters.priceMin !== undefined && price < filters.priceMin) match = false;
-      if (filters.priceMax !== undefined && price > filters.priceMax) match = false;
+      const hp = typeof doc.hp === 'number' ? doc.hp : parseInt(String(doc.hp || 0), 10);
+      if (isNaN(hp) || hp > filters.hpMax) return false;
     }
 
-    return match;
+    // 8. Rarity
+    if (filters.rarities && filters.rarities.length > 0) {
+      if (!doc.rarity || !filters.rarities.some((r) => r.toLowerCase() === (doc.rarity || '').toLowerCase())) {
+        return false;
+      }
+    }
+
+    // 9. Set ID
+    if (filters.setId) {
+      if (!doc.set || doc.set.id !== filters.setId) return false;
+    }
+
+    // 10. Artist / Illustrator
+    if (normArtist) {
+      const docArtist = normalizeText(doc.illustrator);
+      if (!docArtist.includes(normArtist)) return false;
+    }
+
+    // 11. Price filtering using deterministic price calculation
+    if (filters.priceMin !== undefined || filters.priceMax !== undefined) {
+      const price = generateDeterministicPrice(doc.id);
+      if (filters.priceMin !== undefined && price < filters.priceMin) return false;
+      if (filters.priceMax !== undefined && price > filters.priceMax) return false;
+    }
+
+    return true;
   };
 
-  if (filters.query && filters.query.trim().length > 0) {
-    // Text search + filtering
-    const searchResults = miniSearch.search(filters.query, {
-      prefix: true,
-      fuzzy: 0.2,
-      filter: filterFn,
-    });
-    // miniSearch.search returns matching items with id, score, match, and stored fields
-    return searchResults.map(r => {
-      const { id, score, match, terms, ...rest } = r;
-      return { id, ...rest } as unknown as TCGdexCard;
-    });
-  } else {
-    // If no query, we filter directly on the raw data
-    const results: TCGdexCard[] = [];
-    for (const doc of allDocsData) {
-       if (filterFn(doc)) {
-         results.push(doc);
-       }
-       if (results.length > 300) break; // Limit to 300 to prevent rendering freezes
+  const rawQuery = (filters.query || '').trim();
+
+  // If a text query is present
+  if (rawQuery.length > 0) {
+    let results: TCGdexCard[] = [];
+
+    // Try MiniSearch first
+    if (miniSearch) {
+      try {
+        const miniSearchResults = miniSearch.search(rawQuery, {
+          prefix: true,
+          fuzzy: 0.2,
+          combineWith: 'OR',
+          filter: filterFn,
+        });
+
+        if (miniSearchResults && miniSearchResults.length > 0) {
+          results = miniSearchResults.map((r) => {
+            const { id, score, match, terms, ...rest } = r;
+            return { id, ...rest } as unknown as TCGdexCard;
+          });
+        }
+      } catch (err) {
+        console.warn('MiniSearch fallback to token scan:', err);
+      }
     }
+
+    // If MiniSearch returned nothing or failed, perform high-performance token substring matching
+    if (results.length === 0) {
+      const queryTokens = normalizeText(rawQuery).split(/\s+/).filter(Boolean);
+      results = allDocsData.filter((doc) => {
+        if (!filterFn(doc)) return false;
+        const searchableCorpus = normalizeText(
+          `${doc.name || ''} ${doc.set?.name || ''} ${doc.localId || ''} ${doc.illustrator || ''} ${doc.category || ''} ${doc.stage || ''} ${doc.rarity || ''} ${(doc.types || []).join(' ')}`
+        );
+        return queryTokens.every((token) => searchableCorpus.includes(token));
+      });
+    }
+
     return results;
   }
+
+  // If no text query, filter directly on all documents
+  const results: TCGdexCard[] = [];
+  for (const doc of allDocsData) {
+     if (filterFn(doc)) {
+       results.push(doc);
+     }
+     if (results.length > 300) break; // Limit to 300 to prevent rendering freezes
+  }
+  return results;
 };

@@ -67,41 +67,40 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const [activeFilters, setActiveFilters] = useState<SearchFilters>(savedFilters);
   const activeFiltersRef = useRef(activeFilters);
   activeFiltersRef.current = activeFilters;
+  const lastSyncedQueryRef = useRef(savedFilters.query || '');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
   const [, startTransition] = useTransition();
 
-  // Sync with savedFilters if changed externally
+  // Sync when savedFilters.query changes externally (e.g. navigation or reset)
   useEffect(() => {
-    if (savedFilters.query !== undefined && savedFilters.query !== searchInputText) {
+    if (savedFilters.query !== undefined && savedFilters.query !== lastSyncedQueryRef.current) {
+      lastSyncedQueryRef.current = savedFilters.query;
       setSearchInputText(savedFilters.query);
+      setActiveFilters(savedFilters);
     }
-    setActiveFilters((prev) => {
-      if (prev === savedFilters) return prev;
-      return savedFilters;
-    });
-  }, [savedFilters, searchInputText]);
+  }, [savedFilters.query]);
 
   // Debounce search query text update into activeFilters and parent state
   useEffect(() => {
-    if ((activeFiltersRef.current.query || '') === searchInputText) {
-      return;
-    }
-
     const timer = setTimeout(() => {
-      const updated = { ...activeFiltersRef.current, query: searchInputText };
-      startTransition(() => {
-        setActiveFilters(updated);
-        setVisibleCount(PAGE_CHUNK_SIZE);
-      });
-      onUpdateFilters(updated);
-    }, 160);
+      if ((activeFiltersRef.current.query || '') !== searchInputText) {
+        const updated = { ...activeFiltersRef.current, query: searchInputText };
+        lastSyncedQueryRef.current = searchInputText;
+        startTransition(() => {
+          setActiveFilters(updated);
+          setVisibleCount(PAGE_CHUNK_SIZE);
+        });
+        onUpdateFilters(updated);
+      }
+    }, 120);
 
     return () => clearTimeout(timer);
   }, [searchInputText, onUpdateFilters]);
 
   // Synchronize non-query filter mutations smoothly
   const updateStructuredFilters = (newF: SearchFilters) => {
+    lastSyncedQueryRef.current = newF.query || '';
     startTransition(() => {
       setActiveFilters(newF);
       setVisibleCount(PAGE_CHUNK_SIZE);
