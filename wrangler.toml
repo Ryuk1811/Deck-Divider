@@ -1,0 +1,11 @@
+name = "deck-divider"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist"
+
+[vars]
+PAYPAL_MODE = "live"
+PAYPAL_PLAN_BUNCH = "P-86F48638UK390893LNJY5FHQ"
+PAYPAL_PLAN_STACK = "P-62J90197VJ601823CNJY5GFI"
+PAYPAL_PLAN_DECK = "P-8K993431SB9741949NJY5GVY"
+PAYPAL_PLAN_COLLECTION = "P-1EH4703021893203DNJY5HII"
