@@ -303,6 +303,10 @@ function normalizeText(str?: string): string {
     .trim();
 }
 
+export const getCardById = (id: string): TCGdexCard | undefined => {
+  return allDocsData.find(c => c.id === id);
+};
+
 export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
   const normCategory = normalizeText(filters.category);
   const normStage = normalizeText(filters.stage);

@@ -1,185 +1,103 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { DeckDividerBrand } from '../DeckDividerBrand';
-import { ArrowUp, Shield, Database, Layers } from 'lucide-react';
-import { DisplayCurrency } from '../../types';
 
 interface LandingFooterProps {
-  onEnterApp?: () => void;
-  onOpenAuth?: () => void;
-  onNavigateSection?: (id: string) => void;
-  displayCurrency: DisplayCurrency;
+  onEnterApp: () => void;
+  onOpenAuth: () => void;
+  onNavigateSection: (id: string) => void;
+  displayCurrency: string;
 }
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({
-  displayCurrency,
+  onEnterApp,
+  onOpenAuth,
   onNavigateSection,
+  displayCurrency,
 }) => {
-  const scrollTo = (id: string) => {
-    if (onNavigateSection) {
-      onNavigateSection(id);
-      return;
-    }
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <footer className="w-full bg-white text-[#0F172A] border-t border-[#E2E8F0] pt-12 lg:pt-16 pb-12 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24">
-      <div className="w-full max-w-[2200px] mx-auto space-y-8 lg:space-y-10">
-        {/* Main Grid: Structured 4-column layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-10 text-left">
-          {/* Column 1: Brand & Platform Summary */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="flex items-center gap-2">
-              <DeckDividerBrand size="md" />
-            </div>
-            <p className="text-xs sm:text-sm text-[#64748B] max-w-sm leading-relaxed">
-              Track raw cards, graded slabs, master sets, and tournament deck lists for the Pokémon Trading Card Game.
-            </p>
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-[#475569] font-mono">
-              <span className="inline-flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-1.5 rounded whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                Currency: {displayCurrency}
-              </span>
-              <span className="inline-flex items-center gap-1 bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-1.5 rounded whitespace-nowrap">
-                <Shield className="w-3 h-3 text-[#16A34A] shrink-0" />
-                Private Backups
-              </span>
-            </div>
+    <footer className="bg-white border-t border-slate-200 mt-20 relative overflow-hidden">
+      <div className="w-full px-6 lg:px-12 py-8 flex flex-col gap-6">
+        {/* Top Row: Inline Config */}
+        <div className="flex items-center gap-4 w-full overflow-hidden">
+          <div className="flex-shrink-0">
+            <DeckDividerBrand />
           </div>
-
-          {/* Column 2: Navigation */}
-          <div className="lg:col-span-3 space-y-3 sm:space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] font-mono">
-              Navigation
-            </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-[#64748B]">
-              <li>
-                <button
-                  onClick={() => scrollTo('about')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  About
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('how-it-works')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  How It Works
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('pricing')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Plans & Pricing
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('faq-and-insights')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  FAQ & Notes
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('collection')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Raw & Slabs
-                </button>
-              </li>
-            </ul>
+          <div className="flex-shrink-0 px-3 py-1.5 border border-slate-200 bg-slate-50 rounded-md flex items-center justify-center">
+            <span className="font-mono text-[11px] font-bold text-slate-700 tracking-wider">SUPPORT: deckdivider@outlook.com</span>
           </div>
-
-          {/* Column 3: Features */}
-          <div className="lg:col-span-3 space-y-3 sm:space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] font-mono">
-              Features
-            </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-[#64748B]">
-              <li>
-                <button
-                  onClick={() => scrollTo('metrics')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Collection Value
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('decks')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  60-Card Deck Builder
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('sets')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Master Set Checklists
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('search')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Card Search
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('lists')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Wishlists & Alerts
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollTo('sealed-vault')}
-                  className="hover:text-[#DC143C] transition-colors cursor-pointer text-left block w-full py-0.5"
-                >
-                  Sealed Boxes
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Legal & Disclaimer */}
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A] font-mono">
-              Disclaimer
-            </h4>
-            <p className="text-[11px] text-[#64748B] leading-relaxed">
-              Pokémon and Pokémon character names are trademarks of Nintendo, Creatures Inc., and Game Freak. DECK / divider is an independent tool and is not affiliated with, endorsed by, or sponsored by Nintendo or The Pokémon Company.
-            </p>
+          <div className="text-slate-500 text-sm truncate flex-grow">
+            Track raw cards, graded slabs, sealed products, and build competitive decks with live market data.
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Back to Top */}
-        <div className="pt-8 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#64748B]">
-          <div className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} DECK / divider. Built for Pokémon card collectors.</span>
+        {/* Divider 1 */}
+        <div className="w-full h-px bg-slate-200" />
+
+        {/* Middle Row: Expanded Chart Form */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 w-full text-sm text-slate-600">
+          {/* Navigation Chart */}
+          <div className="md:col-span-4 lg:col-span-3">
+            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+              Navigation
+            </div>
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+              <Link to="/about" className="hover:text-cyan-600 transition-colors font-medium">About</Link>
+              <Link to="/how-it-works" className="hover:text-cyan-600 transition-colors font-medium">How It Works</Link>
+              <button onClick={() => onNavigateSection('pricing')} className="text-left hover:text-cyan-600 transition-colors font-medium">Pricing</button>
+              <button onClick={() => onNavigateSection('faq')} className="text-left hover:text-cyan-600 transition-colors font-medium">FAQ & Notes</button>
+            </div>
           </div>
 
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#475569] hover:text-[#DC143C] transition-colors cursor-pointer"
-          >
-            <span>Back to top</span>
-            <ArrowUp className="w-3.5 h-3.5" />
-          </button>
+          {/* Features Chart */}
+          <div className="md:col-span-8 lg:col-span-9">
+            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+              Features
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-y-3 gap-x-4">
+              <button onClick={() => onNavigateSection('collection')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Raw & Slabs
+              </button>
+              <button onClick={() => onNavigateSection('collection')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Collection Value
+              </button>
+              <button onClick={() => onNavigateSection('decks')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Deck Builder
+              </button>
+              <button onClick={() => onNavigateSection('master-sets')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Master Sets
+              </button>
+              <button onClick={() => onNavigateSection('search')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Database Search
+              </button>
+              <button onClick={() => onNavigateSection('lists')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Wishlists
+              </button>
+              <button onClick={() => onNavigateSection('sealed-vault')} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                Sealed Vault
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider 2 */}
+        <div className="w-full h-px bg-slate-200 mt-2" />
+
+        {/* Bottom Row: Inline Legal & Disclaimer */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full text-xs text-slate-400 overflow-hidden">
+          <div className="flex-shrink-0 whitespace-nowrap font-medium">
+            © {new Date().getFullYear()} DECK / divider. All rights reserved.
+          </div>
+          <div className="truncate text-center md:text-right flex-grow" title="DECK / divider is not affiliated with, sponsored or endorsed by, or in any way associated with Pokémon or The Pokémon Company International Inc.">
+            DECK / divider is not affiliated with, sponsored or endorsed by, or in any way associated with Pokémon or The Pokémon Company International Inc.
+          </div>
         </div>
       </div>
     </footer>

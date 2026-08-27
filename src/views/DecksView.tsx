@@ -33,6 +33,7 @@ import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
 import { DropdownMenu } from '../components/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
+import { encodeDeckToUrlParam } from '../utils/deckUrlEncoder';
 
 interface DecksViewProps {
   decks: Deck[];
@@ -228,8 +229,16 @@ export const DecksView: React.FC<DecksViewProps> = ({
   };
 
   const handleCopyPublicLink = () => {
-    if (!currentDeck?.publicShareCode) return;
-    const link = `https://deckdivider.app/share/${currentDeck.publicShareCode}`;
+    if (!currentDeck) return;
+    
+    const isProd = window.location.hostname.includes('deckdivider.app');
+    const origin = window.location.origin;
+    
+    const encoded = encodeDeckToUrlParam(currentDeck);
+    const link = isProd
+      ? `https://deckdivider.app/deck/${currentDeck.id}?d=${encoded}`
+      : `${origin}/deck/${currentDeck.id}?d=${encoded}`;
+      
     navigator.clipboard.writeText(link);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);

@@ -61,6 +61,24 @@ import { isShowcaseAccount, generateShowcaseDecks, generateShowcaseSealed, gener
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { PublicDeckView } from './views/PublicDeckView';
+import { useParams, useSearchParams } from 'react-router-dom';
+
+const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayCurrency: string, setDisplayCurrency: (c: string) => void }) => {
+  const { deckId } = useParams<{ deckId: string }>();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  return (
+    <PublicDeckView 
+      deckId={deckId}
+      encodedData={searchParams.get('d') || undefined}
+      onOpenFullApp={() => navigate('/')}
+      activeCurrency={displayCurrency}
+      onCurrencyChange={setDisplayCurrency}
+    />
+  );
+};
 
 export default function App() {
   const navigate = useNavigate();
@@ -1320,6 +1338,7 @@ export default function App() {
           }
         />
 
+        <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<Navigate to="/" replace />} />
