@@ -60,61 +60,66 @@ export function resetIndexedDB() {
 
 export async function getIndexedDB(): Promise<IDBPDatabase<DeckDividerDBSchema>> {
   if (!dbPromise) {
-    dbPromise = openDB<DeckDividerDBSchema>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('cards')) {
-          const cardStore = db.createObjectStore('cards', { keyPath: 'id' });
-          cardStore.createIndex('by-setId', 'set.id');
-          cardStore.createIndex('by-category', 'category');
-          cardStore.createIndex('by-rarity', 'rarity');
-        }
+    try {
+      dbPromise = openDB<DeckDividerDBSchema>(DB_NAME, DB_VERSION, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains('cards')) {
+            const cardStore = db.createObjectStore('cards', { keyPath: 'id' });
+            cardStore.createIndex('by-setId', 'set.id');
+            cardStore.createIndex('by-category', 'category');
+            cardStore.createIndex('by-rarity', 'rarity');
+          }
 
-        if (!db.objectStoreNames.contains('expansions')) {
-          const expStore = db.createObjectStore('expansions', { keyPath: 'id' });
-          expStore.createIndex('by-releaseDate', 'releaseDate');
-        }
+          if (!db.objectStoreNames.contains('expansions')) {
+            const expStore = db.createObjectStore('expansions', { keyPath: 'id' });
+            expStore.createIndex('by-releaseDate', 'releaseDate');
+          }
 
-        if (!db.objectStoreNames.contains('syncMeta')) {
-          db.createObjectStore('syncMeta', { keyPath: 'key' });
-        }
+          if (!db.objectStoreNames.contains('syncMeta')) {
+            db.createObjectStore('syncMeta', { keyPath: 'key' });
+          }
 
-        if (!db.objectStoreNames.contains('userDecks')) {
-          db.createObjectStore('userDecks', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('userPortfolio')) {
-          db.createObjectStore('userPortfolio', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('sealedVault')) {
-          db.createObjectStore('sealedVault', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('customLists')) {
-          db.createObjectStore('customLists', { keyPath: 'id' });
-        }
-      },
-      blocked() {
+          if (!db.objectStoreNames.contains('userDecks')) {
+            db.createObjectStore('userDecks', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('userPortfolio')) {
+            db.createObjectStore('userPortfolio', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('sealedVault')) {
+            db.createObjectStore('sealedVault', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('customLists')) {
+            db.createObjectStore('customLists', { keyPath: 'id' });
+          }
+        },
+        blocked() {
+          dbPromise = null;
+        },
+        blocking() {
+          dbPromise = null;
+        },
+        terminated() {
+          dbPromise = null;
+        },
+      }).then((db) => {
+        db.onclose = () => {
+          dbPromise = null;
+        };
+        db.onversionchange = () => {
+          try {
+            db.close();
+          } catch (_) {}
+          dbPromise = null;
+        };
+        return db;
+      }).catch((err) => {
         dbPromise = null;
-      },
-      blocking() {
-        dbPromise = null;
-      },
-      terminated() {
-        dbPromise = null;
-      },
-    }).then((db) => {
-      db.onclose = () => {
-        dbPromise = null;
-      };
-      db.onversionchange = () => {
-        try {
-          db.close();
-        } catch (_) {}
-        dbPromise = null;
-      };
-      return db;
-    }).catch((err) => {
-      dbPromise = null;
-      throw err;
-    });
+        throw err;
+      });
+    } catch (err) {
+      console.warn("IndexedDB initialization failed synchronously.", err);
+      return Promise.reject(err);
+    }
   }
 
   try {

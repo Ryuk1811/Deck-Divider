@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -10,6 +10,7 @@ import {
 import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { validateEmailAddress } from '../lib/emailValidator';
+import { trackAuthView, trackSignupSubmit, trackSignupSuccess, trackLoginSuccess } from '../lib/analytics';
 import { Loader2 } from 'lucide-react';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 
@@ -29,20 +30,17 @@ export function AuthView({
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Track auth page view on mount
+  useEffect(() => {
+    trackAuthView();
+  }, []);
+
   // If user is already authenticated, automatically redirect to /app
   useEffect(() => {
     if (user) {
       navigate('/app', { replace: true });
     }
   }, [user, navigate]);
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate('/');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,14 +55,20 @@ export function AuthView({
 
     setLoading(true);
 
+    if (!isLogin) {
+      trackSignupSubmit('email');
+    }
+
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email.trim(), password);
+        trackLoginSuccess('email');
       } else {
         const userCred = await createUserWithEmailAndPassword(auth, email.trim(), password);
         if (name.trim()) {
           await updateProfile(userCred.user, { displayName: name.trim() });
         }
+        trackSignupSuccess('email');
       }
       navigate('/app');
     } catch (err: any) {
@@ -87,6 +91,7 @@ export function AuthView({
   const handleGoogleSignIn = async () => {
     setError(null);
     setGoogleLoading(true);
+    trackSignupSubmit('google');
 
     try {
       const provider = new GoogleAuthProvider();
@@ -96,6 +101,7 @@ export function AuthView({
         prompt: 'select_account'
       });
       await signInWithPopup(auth, provider);
+      trackSignupSuccess('google');
       navigate('/app');
     } catch (err: any) {
       console.warn('[Google Auth]', err);
@@ -127,15 +133,18 @@ export function AuthView({
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-dot-grid bg-[#F8FAFC] font-mono select-none p-4">
       <div className="w-full max-w-md bg-white p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl relative">
-        <button
-          onClick={handleBack}
+        <Link
+          to="/"
+          onClick={() => onBack && onBack()}
           className="absolute top-4 left-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] flex items-center gap-1 transition-colors cursor-pointer"
         >
-          <span>← Back</span>
-        </button>
+          <span>← Back to Home</span>
+        </Link>
 
         <div className="flex justify-center mb-6">
-          <DeckDividerBrand size="lg" showLogo={true} onClick={() => navigate('/')} className="cursor-pointer" />
+          <Link to="/" className="cursor-pointer" aria-label="DECK / divider Home">
+            <DeckDividerBrand size="lg" showLogo={true} />
+          </Link>
         </div>
 
         <h1 className="font-heading font-bold text-2xl text-center text-[#0F172A] mb-1">
@@ -252,6 +261,18 @@ export function AuthView({
           </button>
         </div>
       </div>
+
+      {/* Footer Disclaimer */}
+      <footer className="mt-8 text-center max-w-lg px-4 flex flex-col items-center gap-3">
+        <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+          <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
+          <span className="text-slate-300">•</span>
+          <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
+        </div>
+        <p className="text-[11px] leading-relaxed text-slate-400">
+          DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
+        </p>
+      </footer>
     </div>
   );
 }

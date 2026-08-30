@@ -35,7 +35,9 @@ export async function testConnection() {
     }
   }
 }
-testConnection();
+testConnection().catch((err) => {
+  console.warn('Firebase testConnection non-fatal error:', err);
+});
 
 // Structured Firestore error formatting
 export enum OperationType {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, ShieldCheck, Download } from 'lucide-react';
 import { DisplayCurrency } from '../../../types';
+import { CardImage } from '../../CardImage';
 
 interface DecksMockupProps {
   currency?: DisplayCurrency;
@@ -111,11 +112,12 @@ export const DecksMockup: React.FC<DecksMockupProps> = ({ currency = 'USD' }) =>
         {filteredCards.slice(0, 6).map((card, idx) => (
           <div key={idx} className="group relative rounded-xl border border-[#E2E8F0] p-1.5 bg-white hover:border-[#DC143C] transition-all shadow-2xs">
             <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-[#F8FAFC] flex items-center justify-center p-1">
-              <img
+              <CardImage
                 src={card.image}
                 alt={card.name}
+                cardName={card.name}
+                loading="lazy"
                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
-                onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
               />
               <span className="absolute top-1 right-1 bg-[#0F172A] text-white text-[10px] font-bold font-mono px-1.5 py-0.5 rounded shadow">
                 x{card.count}

@@ -243,7 +243,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                       <div className="flex items-center gap-3">
                         {entry.product.imageUrl && (
                           <div className="w-10 h-10 flex-shrink-0 bg-white border border-[#E2E8F0] rounded p-1 shadow-2xs">
-                            <img src={entry.product.imageUrl} alt={entry.product.name} className="w-full h-full object-contain" />
+                            <img src={entry.product.imageUrl} alt={entry.product.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
                           </div>
                         )}
                         <div>
@@ -253,7 +253,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                               {entry.product.type}
                             </span>
                             {entry.product.set.logoUrl && (
-                              <img src={entry.product.set.logoUrl} alt={entry.product.set.name} className="h-3 object-contain" />
+                              <img src={entry.product.set.logoUrl} alt={entry.product.set.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-3 object-contain" />
                             )}
                             <span>{entry.product.set.name}</span>
                           </div>
@@ -352,7 +352,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                   <div className="flex gap-4">
                     {activeProduct?.imageUrl && (
                       <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-white border border-[#E2E8F0] rounded-xl p-2 shadow-sm flex items-center justify-center">
-                        <img src={activeProduct.imageUrl} alt={activeProduct.name} className="max-w-full max-h-full object-contain" />
+                        <img src={activeProduct.imageUrl} alt={activeProduct.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="max-w-full max-h-full object-contain" />
                       </div>
                     )}
                     <select

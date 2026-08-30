@@ -43,6 +43,8 @@ export const SetsView: React.FC<SetsViewProps> = ({
       if (formatted.length > 0 && !selectedSetId) {
         setSelectedSetId(formatted[0].id);
       }
+    }).catch((err) => {
+      console.warn('SetsView getExpansionsCatalog warning:', err);
     });
   }, []);
 
@@ -187,6 +189,9 @@ export const SetsView: React.FC<SetsViewProps> = ({
                         <img
                           src={s.logoUrl}
                           alt={s.name}
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
                           className="w-8 h-8 object-contain"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
@@ -229,6 +234,9 @@ export const SetsView: React.FC<SetsViewProps> = ({
                 <img
                   src={activeSet.logoUrl}
                   alt={activeSet.name}
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
                   className="w-12 h-12 object-contain"
                 />
               )}

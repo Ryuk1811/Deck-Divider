@@ -1,11 +1,27 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      nodeProfilingIntegration(),
+    ],
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+  });
+}
+
 import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
 import { verifyPayPalWebhookSignature, handlePayPalWebhookEvent } from './server/paypalWebhook.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb } from './server/firebaseAdmin.js';
+import { renderSsrRoute, injectSsrIntoTemplate } from './server/ssrRenderer.js';
 import {
   getExpansions,
   getAllCardsSummary,
@@ -28,6 +44,24 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Security Headers
+  app.use((req, res, next) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+      "img-src 'self' data: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://www.paypalobjects.com; " +
+      "font-src 'self' data: https://fonts.gstatic.com; " +
+      "connect-src 'self' ws://localhost:3000 wss://localhost:3000 https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com https://www.sandbox.paypal.com; " +
+      "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com;"
+    );
+    res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
+
   // API Routes
   app.get('/api/health', (req, res) => {
     res.json({
@@ -35,6 +69,143 @@ async function startServer() {
       app: 'Deck Divider API',
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // --- PRIVACY-RESPECTING FUNNEL ANALYTICS ---
+  const funnelSessionsByStep: Record<string, Set<string>> = {
+    '1_landing_view': new Set(),
+    '2_cta_click': new Set(),
+    '3_auth_view': new Set(),
+    '4_signup_submit': new Set(),
+    '5_signup_success': new Set(),
+    '6_dashboard_view': new Set(),
+    '7_first_action': new Set(),
+  };
+
+  const funnelRawCounts: Record<string, number> = {
+    '1_landing_view': 0,
+    '2_cta_click': 0,
+    '3_auth_view': 0,
+    '4_signup_submit': 0,
+    '5_signup_success': 0,
+    '6_dashboard_view': 0,
+    '7_first_action': 0,
+  };
+
+  app.post('/api/analytics/event', (req, res) => {
+    try {
+      const { sid, step } = req.body || {};
+      if (!step || typeof step !== 'string') {
+        return res.status(400).json({ error: 'Invalid or missing step' });
+      }
+
+      if (funnelSessionsByStep[step]) {
+        const cleanSid = typeof sid === 'string' && sid.length < 100 ? sid : 'anon_' + Math.random().toString(36).substring(2, 8);
+        funnelSessionsByStep[step].add(cleanSid);
+        funnelRawCounts[step] = (funnelRawCounts[step] || 0) + 1;
+      }
+
+      return res.json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: 'Analytics processing error' });
+    }
+  });
+
+  app.get('/api/analytics/funnel-metrics', (req, res) => {
+    const STEPS_CONFIG = [
+      { key: '1_landing_view', label: '1. Landing Page View' },
+      { key: '2_cta_click', label: '2. CTA Clicked' },
+      { key: '3_auth_view', label: '3. Auth Page View' },
+      { key: '4_signup_submit', label: '4. Signup Attempted' },
+      { key: '5_signup_success', label: '5. Account Created' },
+      { key: '6_dashboard_view', label: '6. Dashboard Opened' },
+      { key: '7_first_action', label: '7. First Meaningful Action' },
+    ];
+
+    let prevCount = 0;
+    const firstStepCount = funnelSessionsByStep['1_landing_view'].size || funnelRawCounts['1_landing_view'] || 1;
+
+    const funnel = STEPS_CONFIG.map((stepCfg, idx) => {
+      const uniqueSessions = funnelSessionsByStep[stepCfg.key].size;
+      const count = uniqueSessions > 0 ? uniqueSessions : funnelRawCounts[stepCfg.key];
+
+      let conversionFromPrev = 100;
+      let dropoffFromPrev = 0;
+
+      if (idx > 0) {
+        conversionFromPrev = prevCount > 0 ? Number(((count / prevCount) * 100).toFixed(1)) : 0;
+        dropoffFromPrev = Number((100 - conversionFromPrev).toFixed(1));
+      }
+
+      const overallConversion = Number(((count / firstStepCount) * 100).toFixed(1));
+      prevCount = count;
+
+      return {
+        stepKey: stepCfg.key,
+        label: stepCfg.label,
+        count,
+        rawEventCount: funnelRawCounts[stepCfg.key],
+        conversionFromPrev: Math.min(100, conversionFromPrev),
+        dropoffFromPrev: Math.max(0, dropoffFromPrev),
+        overallConversion: Math.min(100, overallConversion),
+      };
+    });
+
+    const totalLandings = funnel[0].count;
+    const totalFirstActions = funnel[6].count;
+    const overallFunnelConversion = totalLandings > 0 ? Number(((totalFirstActions / totalLandings) * 100).toFixed(1)) : 0;
+
+    return res.json({
+      summary: {
+        totalLandings,
+        totalFirstActions,
+        overallFunnelConversion,
+        privacyMode: 'Zero PII / Anonymized Session Tracking',
+      },
+      funnel,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // SEO Static Deliverables
+  app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(`User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /app/*
+Disallow: /api
+Disallow: /api/*
+
+Sitemap: https://deckdivider.app/sitemap.xml
+`);
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://deckdivider.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/about</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/how-it-works</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/auth</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>`);
   });
 
   // TCG Companion Proxy Routes
@@ -884,19 +1055,60 @@ async function startServer() {
   });
   
   // --- End TCGdex Proxy ---
+  // --- SSR & Marketing Route Delivery Engine ---
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: 'spa',
+      appType: 'custom',
     });
     app.use(vite.middlewares);
+
+    app.get('*', async (req, res, next) => {
+      // Don't intercept API routes or asset files with extensions
+      if (req.path.startsWith('/api/') || req.path.includes('.')) {
+        return next();
+      }
+
+      try {
+        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
+          res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        }
+        const rawTemplate = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
+        const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'localhost:3000');
+        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr);
+        const transformedHtml = await vite.transformIndexHtml(req.originalUrl, populatedHtml);
+
+        res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(transformedHtml);
+      } catch (err) {
+        vite.ssrFixStacktrace(err as Error);
+        next(err);
+      }
+    });
   } else {
-const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath, { index: false }));
+
+    app.get('*', async (req, res, next) => {
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
+
+      try {
+        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
+          res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        }
+        const rawTemplate = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
+        const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'deckdivider.app');
+        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr);
+
+        res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(populatedHtml);
+      } catch (err) {
+        res.sendFile(path.join(distPath, 'index.html'));
+      }
     });
   }
+
+  Sentry.setupExpressErrorHandler(app);
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`[Deck Divider Express Server] Running on http://0.0.0.0:${PORT}`);

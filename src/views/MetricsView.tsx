@@ -24,6 +24,7 @@ import {
   PortfolioSealedEntry,
   CardSet,
 } from '../types';
+import { CardImage } from '../components/CardImage';
 import { formatCurrency, formatPercent } from '../utils/formatters';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
@@ -473,11 +474,15 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {act.cardImage && act.cardImage.length > 0 ? (
-                      <img
-                        src={act.cardImage}
-                        alt={act.title}
-                        className="w-8 h-10 object-cover border border-[#E2E8F0] rounded-md"
-                      />
+                      <div className="w-8 h-10 border border-[#E2E8F0] rounded-md overflow-hidden shrink-0">
+                        <CardImage
+                          src={act.cardImage}
+                          alt={act.title}
+                          cardName={act.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="w-8 h-8 bg-[#0F172A] text-white flex items-center justify-center font-mono font-bold text-xs rounded-md">
                         <Activity className="w-4 h-4 text-[#DC143C]" />
@@ -514,11 +519,17 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
                 onClick={() => onSelectCard(card)}
                 className="p-3 glass-slab flex items-center gap-3 cursor-pointer hover:border-[#DC143C] transition-all group shadow-md"
               >
-                <img
-                  src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
-                  alt={card.name}
-                  className="w-10 h-14 object-cover border border-[#E2E8F0] shadow-xs group-hover:scale-105 transition-transform rounded-md"
-                />
+                <div className="w-10 h-14 border border-[#E2E8F0] shadow-xs group-hover:scale-105 transition-transform rounded-md overflow-hidden shrink-0">
+                  <CardImage
+                    src={card.images.small}
+                    alt={card.name}
+                    cardName={card.name}
+                    cardNumber={card.number}
+                    setId={card.set?.id}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-heading font-bold text-xs text-[#0F172A] truncate">
                     {card.name}

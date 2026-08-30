@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { trackLandingView, trackCtaClick } from '../lib/analytics';
 import { HeroWideSection } from '../components/landing/HeroWideSection';
 import { ZigZagSection } from '../components/landing/ZigZagSection';
 import { CollectionMockup } from '../components/landing/mockups/CollectionMockup';
@@ -36,6 +37,16 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   displayCurrency,
   user,
 }) => {
+  // Track landing page view on mount
+  useEffect(() => {
+    trackLandingView();
+  }, []);
+
+  const handleOpenAuthWithAnalytics = (ctaSource?: string) => {
+    trackCtaClick(ctaSource || 'landing_cta');
+    onOpenAuth();
+  };
+
   // Listen for hash in URL on initial mount or updates
   useEffect(() => {
     const handleHash = () => {

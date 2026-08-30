@@ -1,3 +1,4 @@
+import { safeGetItem, safeSetItem } from './safeStorage';
 import { setLiveExchangeRates } from './formatters';
 
 const LAST_SYNC_KEY = 'tcg_forex_last_sync_timestamp';
@@ -9,7 +10,7 @@ export async function syncExchangeRatesIfNeeded(force: boolean = false): Promise
   if (isFetching) return;
 
   const now = Date.now();
-  const lastSyncStr = localStorage.getItem(LAST_SYNC_KEY);
+  const lastSyncStr = safeGetItem(LAST_SYNC_KEY);
   const lastSync = lastSyncStr ? parseInt(lastSyncStr, 10) : 0;
 
   // Sync if forced or if 6 hours have passed since the last sync
@@ -21,7 +22,7 @@ export async function syncExchangeRatesIfNeeded(force: boolean = false): Promise
         const data = await res.json();
         if (data && data.rates) {
           setLiveExchangeRates(data.rates);
-          localStorage.setItem(LAST_SYNC_KEY, now.toString());
+          safeSetItem(LAST_SYNC_KEY, now.toString());
         }
       }
     } catch (err) {

@@ -28,6 +28,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'rec
 
 import { CardImage } from './CardImage';
 import { GlassSlabFrame } from './GlassSlabFrame';
+import { trackFirstMeaningfulAction } from '../lib/analytics';
 
 interface CardDetailModalProps {
   card: PokemonCard | null;
@@ -285,6 +286,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    trackFirstMeaningfulAction('first_card_added', { cardId: fullCardData.id });
     if (targetType === 'list') {
       if (selectedListId) {
         onAddCardToList(selectedListId, fullCardData.id);
@@ -710,7 +712,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                         <div className="text-[10px] text-[#64748B] font-bold">EXPANSION LOGO</div>
                         <div className="font-bold text-[#0F172A]">{fullCardData.set.name}</div>
                       </div>
-                      <img src={fullCardData.set.logoUrl} alt={fullCardData.set.name} className="h-10 object-contain max-w-[120px]" />
+                      <img src={fullCardData.set.logoUrl} alt={fullCardData.set.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-10 object-contain max-w-[120px]" />
                     </div>
                   )}
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ExternalLink,
   Share2,
@@ -11,14 +12,16 @@ import {
   PieChart as PieIcon,
   Layers,
   Swords,
-  Grid3X3,
-  List as ListIcon
+  Grid,
+  Table,
 } from 'lucide-react';
 import { Deck, PortfolioCardEntry, PokemonCard } from '../types';
 import { decodeUrlParamToDeck } from '../utils/deckUrlEncoder';
 import { getCardById, mapToPokemonCard } from '../lib/searchEngine';
 import { HolographicCard } from '../components/HolographicCard';
 import { CardImage } from '../components/CardImage';
+import { QuickLookModal } from '../components/QuickLookModal';
+import { DeckDividerBrand } from '../components/DeckDividerBrand';
 import { formatCurrency } from '../utils/formatters';
 
 interface PublicDeckViewProps {
@@ -72,9 +75,10 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   const [deck, setDeck] = useState<Deck | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'stack' | 'list'>('stack');
+  const [viewMode, setViewMode] = useState<'binder' | 'table'>('binder');
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedPtcgl, setCopiedPtcgl] = useState(false);
+  const [quickLookCard, setQuickLookCard] = useState<PokemonCard | null>(null);
   
   // Hydrate card data with search engine
   const hydrateDeck = (partialDeck: Partial<Deck>) => {
@@ -194,12 +198,13 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
           </div>
           <h2 className="text-slate-900 font-bold text-2xl">Deck Not Found</h2>
           <p className="text-slate-500">{error || 'This link may be invalid or the deck was made private.'}</p>
-          <button
-            onClick={onOpenFullApp}
-            className="w-full mt-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition"
+          <Link
+            to="/"
+            onClick={() => onOpenFullApp && onOpenFullApp()}
+            className="w-full mt-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition inline-block text-center"
           >
             Go to DECK / divider
-          </button>
+          </Link>
         </div>
       </div>
     );
@@ -208,24 +213,18 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950 overflow-y-auto">
       {/* Top Banner (Header) */}
-      <div className="bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
+      <div className="bg-white sticky top-0 z-40 border-b border-[#E2E8F0] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button 
-              onClick={onOpenFullApp}
-              className="flex items-center gap-2 hover:bg-slate-800 p-2 rounded-lg transition text-slate-300 hover:text-white"
-            >
-              <div className="w-6 h-6 rounded bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-inner">
-                <span className="font-black text-[10px] text-white">D</span>
-              </div>
-              <span className="font-bold text-sm tracking-wide hidden sm:block">DECK / divider</span>
-            </button>
+            <Link to="/" className="flex items-center gap-3" aria-label="DECK / divider Home">
+              <DeckDividerBrand />
+            </Link>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-3">
             <select
               value={activeCurrency}
               onChange={(e) => onCurrencyChange(e.target.value)}
-              className="bg-slate-800 border-none text-xs text-slate-300 rounded-lg py-1.5 px-2 focus:ring-1 focus:ring-cyan-500"
+              className="bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono font-bold text-[#0F172A] rounded-lg py-2 px-3 focus:ring-1 focus:ring-[#DC143C] outline-none cursor-pointer"
             >
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
@@ -234,198 +233,201 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
               <option value="CAD">CAD ($)</option>
               <option value="AUD">AUD ($)</option>
             </select>
+            <Link 
+              to="/auth"
+              onClick={() => onOpenFullApp && onOpenFullApp()}
+              className="bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer inline-flex items-center"
+            >
+              Create Your Own Deck
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 pb-24">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 pb-24 space-y-6">
         {/* Deck Header Info */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: deck.colorHex || '#06B6D4' }} />
-          
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-            <div className="space-y-4 flex-1">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                    isStandardLegal ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                  }`}>
-                    Format
-                  </span>
-                  <span className="text-slate-400 text-xs">
+        <div className="p-5 glass-slab shadow-md space-y-5">
+          {/* Header Row: Title & Function Buttons */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <div
+                className="w-4 h-4 rounded-full border border-black/10 shadow-xs flex-shrink-0 mt-1 sm:mt-1.5"
+                style={{ backgroundColor: deck.colorHex || '#DC143C' }}
+              />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
+                    {deck.name}
+                  </h2>
+                  <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0">
                     {totalCardsCount}/60 Cards
                   </span>
+                  <span className={`font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border ${
+                    isStandardLegal ? 'bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30' : 'bg-[#FFFBEB] text-[#D97706] border-[#D97706]/30'
+                  }`}>
+                    {isStandardLegal ? 'Standard Legal' : 'Standard Illegal'}
+                  </span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">{deck.name}</h1>
                 {deck.description && (
-                  <p className="text-slate-500 mt-2 text-sm max-w-2xl">{deck.description}</p>
+                  <p className="font-mono text-[11px] sm:text-xs text-[#64748B] mt-0.5 max-w-xl truncate">
+                    {deck.description}
+                  </p>
                 )}
-              </div>
-              
-              {/* Stats Bar */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <div className="flex items-center gap-1.5 text-sm bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 text-slate-600 font-medium">
-                  <Zap className="w-4 h-4 text-cyan-500" />
-                  <span>{stats.pokemon} Pokémon</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-sm bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 text-slate-600 font-medium">
-                  <Layers className="w-4 h-4 text-blue-500" />
-                  <span>{stats.trainer} Trainer</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-sm bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 text-slate-600 font-medium">
-                  <PieIcon className="w-4 h-4 text-emerald-500" />
-                  <span>{stats.energy} Energy</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-sm bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 text-slate-600 font-bold ml-auto md:ml-0">
-                  <span className="text-slate-400 font-normal mr-1">Est. Value</span>
-                  {formatCurrency(stats.totalValue, activeCurrency as any)}
-                </div>
               </div>
             </div>
 
-            <div className="flex flex-row md:flex-col gap-2 shrink-0">
+            {/* Function Actions Toolbar */}
+            <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2 w-full lg:w-auto">
               <button
+                type="button"
                 onClick={handleCopyPtcgl}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-semibold transition"
+                className="h-9 px-3 text-xs font-mono font-bold rounded-lg border border-[#E2E8F0] hover:border-[#CBD5E1] bg-white text-[#0F172A] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
-                {copiedPtcgl ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                <span>{copiedPtcgl ? 'Exported!' : 'Export PTCGL'}</span>
+                {copiedPtcgl ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Copy className="w-3.5 h-3.5 text-[#64748B]" />}
+                <span>{copiedPtcgl ? 'Exported' : 'PTCGL'}</span>
               </button>
               <button
+                type="button"
                 onClick={handleCopyLink}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition shadow-sm"
+                className="h-9 px-3 text-xs font-mono font-bold rounded-lg border border-[#E2E8F0] hover:border-[#CBD5E1] bg-white text-[#0F172A] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
-                {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
-                <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
+                {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
+                <span>{copiedLink ? 'Copied' : 'Share'}</span>
               </button>
             </div>
           </div>
-        </div>
 
-        {/* View Toggles */}
-        <div className="flex items-center justify-end mb-6">
-          <div className="bg-white border border-slate-200 rounded-xl p-1 flex shadow-sm">
-            <button
-              onClick={() => setViewMode('stack')}
-              className={`p-2 rounded-lg flex items-center gap-2 transition ${viewMode === 'stack' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'}`}
-              title="Stacked View"
-            >
-              <Layers className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">Stacks</span>
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg flex items-center gap-2 transition ${viewMode === 'grid' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'}`}
-              title="Grid View"
-            >
-              <Grid3X3 className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">Grid</span>
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg flex items-center gap-2 transition ${viewMode === 'list' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'}`}
-              title="List View"
-            >
-              <ListIcon className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">List</span>
-            </button>
+          {/* View Mode Switcher Toolbar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#E2E8F0]">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+              {[
+                { id: 'binder', label: 'Binder View', icon: Grid },
+                { id: 'table', label: 'Data Table', icon: Table },
+              ].map((mode) => {
+                const isActive = viewMode === mode.id;
+                const Icon = mode.icon;
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => setViewMode(mode.id as any)}
+                    className={`h-9 px-3 text-xs font-mono font-bold rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer w-full sm:w-auto text-center ${
+                      isActive
+                        ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
+                        : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[#DC143C]' : 'text-[#64748B]'}`} />
+                    <span className="truncate">{mode.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="font-mono text-xs text-[#0F172A] font-bold text-right sm:text-left flex-shrink-0 flex items-center gap-2 bg-[#F8FAFC] px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+              <span className="text-[#64748B]">Est. Value:</span>
+              {formatCurrency(stats.totalValue, activeCurrency as any)}
+            </div>
           </div>
         </div>
 
         {/* Deck Contents */}
-        {viewMode === 'grid' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {deck.entries.map(entry => (
-              <div key={entry.card.id} className="relative group">
-                <HolographicCard card={entry.card} className="w-full">
-                  <div className="absolute top-2 right-2 bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shadow-xl border border-slate-700 z-10 pointer-events-none">
-                    {entry.quantity}
-                  </div>
-                  <CardImage card={entry.card} className="w-full h-auto rounded-xl shadow-lg" />
-                </HolographicCard>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {viewMode === 'stack' && (
-          <div className="space-y-12">
-            {[
-              { label: 'Pokémon', count: stats.pokemon, icon: Zap, filter: (c: PokemonCard) => (c.supertype || '').toLowerCase().includes('pokémon') },
-              { label: 'Trainer', count: stats.trainer, icon: Layers, filter: (c: PokemonCard) => { const sup = (c.supertype || '').toLowerCase(); return sup.includes('trainer') || sup.includes('supporter') || sup.includes('item'); } },
-              { label: 'Energy', count: stats.energy, icon: PieIcon, filter: (c: PokemonCard) => (c.supertype || '').toLowerCase().includes('energy') }
-            ].map((section, idx) => {
-              if (section.count === 0) return null;
-              const sectionCards = deck.entries.filter(e => section.filter(e.card));
-              
-              return (
-                <div key={idx} className="space-y-4">
-                  <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                    <section.icon className="w-5 h-5 text-slate-400" />
-                    <h3 className="font-bold text-lg text-slate-800">{section.label}</h3>
-                    <span className="text-slate-400 font-mono text-sm ml-2 bg-slate-100 px-2 py-0.5 rounded-md">{section.count}</span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {sectionCards.map(entry => (
-                      <div key={entry.card.id} className="relative group">
-                        <HolographicCard card={entry.card} className="w-full">
-                          <div className="absolute top-2 right-2 bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shadow-xl border border-slate-700 z-10 pointer-events-none">
-                            {entry.quantity}
-                          </div>
-                          <CardImage card={entry.card} className="w-full h-auto rounded-xl shadow-md" />
-                        </HolographicCard>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {viewMode === 'list' && (
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4 font-semibold w-16">Qty</th>
-                    <th className="px-6 py-4 font-semibold">Card Name</th>
-                    <th className="px-6 py-4 font-semibold">Set</th>
-                    <th className="px-6 py-4 font-semibold">Number</th>
-                    <th className="px-6 py-4 font-semibold text-right">Unit Value</th>
-                    <th className="px-6 py-4 font-semibold text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {deck.entries.map((entry) => {
-                    const price = entry.card.prices?.raw || 1.5;
-                    return (
-                      <tr key={entry.card.id} className="hover:bg-slate-50/50 transition">
-                        <td className="px-6 py-4 font-mono font-bold text-slate-700">{entry.quantity}</td>
-                        <td className="px-6 py-4 font-semibold text-slate-900 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded border border-slate-200 overflow-hidden shrink-0 bg-white">
-                            <CardImage card={entry.card} className="w-full h-full object-cover" />
-                          </div>
-                          {entry.card.name}
-                        </td>
-                        <td className="px-6 py-4 text-slate-600">{entry.card.set?.name}</td>
-                        <td className="px-6 py-4 text-slate-500 font-mono text-xs">{entry.card.number}</td>
-                        <td className="px-6 py-4 text-right text-slate-600">
-                          {formatCurrency(price, activeCurrency as any)}
-                        </td>
-                        <td className="px-6 py-4 text-right font-semibold text-slate-900">
-                          {formatCurrency((price * entry.quantity), activeCurrency as any)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+        {viewMode === 'binder' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono text-[#64748B]">
+              <span>Showing {deck.entries.length} unique cards in "{deck.name}"</span>
+              <span>3D Holographic Canvas</span>
             </div>
+
+            {deck.entries.length === 0 ? (
+              <div className="text-center py-12 space-y-2 glass-slab shadow-md">
+                <Layers className="w-8 h-8 text-[#CBD5E1] mx-auto" />
+                <p className="font-heading font-bold text-sm text-[#0F172A]">
+                  This deck has no active cards yet
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-5 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                {deck.entries.map((entry) => (
+                  <div key={entry.card.id} className="relative group cursor-pointer">
+                    <HolographicCard
+                      card={entry.card}
+                      currency={activeCurrency as any}
+                      quantity={entry.quantity}
+                      deckName={deck.name}
+                      deckColor={deck.colorHex}
+                      onClick={() => setQuickLookCard(entry.card)}
+                      onQuickLook={() => setQuickLookCard(entry.card)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {viewMode === 'table' && (
+          <div className="overflow-x-auto glass-slab shadow-md">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B]">
+                <tr>
+                  <th className="p-3">Card Name</th>
+                  <th className="p-3">Set</th>
+                  <th className="p-3">Qty</th>
+                  <th className="p-3">Unit Value</th>
+                  <th className="p-3">Total Value</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E2E8F0]">
+                {deck.entries.map((entry) => {
+                  const price = entry.card.prices?.raw || 1.5;
+                  return (
+                    <tr key={entry.card.id} className="hover:bg-[#F8FAFC] transition-colors cursor-pointer" onClick={() => setQuickLookCard(entry.card)}>
+                      <td className="p-3 font-heading font-semibold text-[#0F172A]">
+                        {entry.card.name}
+                      </td>
+                      <td className="p-3 text-[#64748B]">{entry.card.set?.name}</td>
+                      <td className="p-3 font-num font-bold">{entry.quantity}</td>
+                      <td className="p-3 font-num">
+                        {formatCurrency(price, activeCurrency as any)}
+                      </td>
+                      <td className="p-3 font-num font-bold text-[#DC143C]">
+                        {formatCurrency((price * entry.quantity), activeCurrency as any)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
+
+      {quickLookCard && (
+        <QuickLookModal
+          card={quickLookCard}
+          cardList={deck.entries.map(e => e.card)}
+          onClose={() => setQuickLookCard(null)}
+          onNavigateCard={setQuickLookCard}
+          currency={activeCurrency as any}
+        />
+      )}
+
+      {/* Footer Disclaimer */}
+      <footer className="mt-auto border-t border-slate-200 bg-white py-6 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div className="font-medium flex items-center gap-4">
+            <span>© {new Date().getFullYear()} DECK / divider. All rights reserved.</span>
+            <span className="hidden md:inline text-slate-300">|</span>
+            <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
+            <span className="hidden md:inline text-slate-300">|</span>
+            <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
+          </div>
+          <div className="text-center md:text-right text-[11px] leading-relaxed text-slate-400">
+            DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

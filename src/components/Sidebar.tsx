@@ -270,6 +270,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <img
                         src={avatarUrl}
                         alt={displayName}
+                        loading="lazy"
+                        decoding="async"
                         className="w-7 h-7 rounded-full object-cover border border-[#CBD5E1]"
                         referrerPolicy="no-referrer"
                         onError={() => setImgError(true)}
@@ -339,6 +341,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <img
                     src={avatarUrl}
                     alt={displayName}
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1] group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all"
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}

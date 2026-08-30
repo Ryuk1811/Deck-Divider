@@ -66,7 +66,41 @@ export function getOptimizedCardImageCandidates(
 ): string[] {
   const candidates: string[] = [];
 
-  // 1. If explicit src is provided and is a real image URL (not broken or cardback)
+  // Extract set & card number if not provided explicitly but src matches pokemontcg URL
+  let cleanSet = setId ? setId.toLowerCase().trim() : '';
+  let paddedNum = cardNumber ? String(cardNumber) : '';
+
+  if ((!cleanSet || !paddedNum) && src) {
+    const ptcgMatch = src.match(/images\.pokemontcg\.io\/([^/]+)\/([a-zA-Z0-9_\-]+)/i);
+    if (ptcgMatch) {
+      if (!cleanSet) cleanSet = ptcgMatch[1].toLowerCase().trim();
+      if (!paddedNum) paddedNum = ptcgMatch[2];
+    }
+  }
+
+  const cleanNum = paddedNum ? paddedNum.replace(/^0+/, '') : '';
+
+  // 1. WebP / AVIF modern compressed candidates from TCGDex CDN if set and card number exist
+  if (cleanSet && paddedNum) {
+    const mapping = SET_PATH_MAPPINGS[cleanSet];
+    const tSeries = mapping?.tcgdexSeries || (cleanSet.startsWith('sv') ? 'sv' : cleanSet.startsWith('swsh') ? 'swsh' : undefined);
+    const tSet = mapping?.tcgdexSet || cleanSet;
+
+    if (tSeries && tSet) {
+      if (preferHighRes) {
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.avif`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.png`);
+      } else {
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.webp`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.avif`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.png`);
+        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
+      }
+    }
+  }
+
+  // 2. Direct src if provided
   if (src && !src.includes('cardback.png') && !src.includes('undefined')) {
     if (src.startsWith('http://') || src.startsWith('https://')) {
       if (preferHighRes) {
@@ -85,41 +119,23 @@ export function getOptimizedCardImageCandidates(
     }
   }
 
-  // 2. Generate candidates from set & card number
-  const cleanNum = cardNumber ? String(cardNumber).replace(/^0+/, '') : '';
-  const paddedNum = cardNumber ? String(cardNumber) : '';
-  const cleanSet = setId ? setId.toLowerCase().trim() : '';
-
+  // 3. pokemontcg.io CDN candidates (PNG fallback)
   if (cleanSet && paddedNum) {
     const mapping = SET_PATH_MAPPINGS[cleanSet];
     const ptcgSet = mapping?.pokemontcgSet || cleanSet;
-    const tSeries = mapping?.tcgdexSeries;
-    const tSet = mapping?.tcgdexSet || cleanSet;
 
     if (preferHighRes) {
       candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${paddedNum}_hires.png`);
       if (cleanNum && cleanNum !== paddedNum) {
         candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${cleanNum}_hires.png`);
       }
-      if (tSeries) {
-        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
-        candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.png`);
-      }
     }
 
-    // Standard high-speed CDN candidates
     candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${paddedNum}.png`);
     if (cleanNum && cleanNum !== paddedNum) {
       candidates.push(`https://images.pokemontcg.io/${ptcgSet}/${cleanNum}.png`);
     }
 
-    if (tSeries) {
-      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.webp`);
-      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/low.png`);
-      candidates.push(`https://assets.tcgdex.net/en/${tSeries}/${tSet}/${paddedNum}/high.webp`);
-    }
-
-    // Generic pokemontcg.io fallback
     candidates.push(`https://images.pokemontcg.io/${cleanSet}/${paddedNum}.png`);
     candidates.push(`https://images.pokemontcg.io/${cleanSet}/${paddedNum}_hires.png`);
   }

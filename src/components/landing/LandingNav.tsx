@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { DeckDividerBrand } from '../DeckDividerBrand';
 import { LogIn, Menu, X, ArrowRight, Shield, Layers, HelpCircle, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -33,66 +34,83 @@ export const LandingNav: React.FC<LandingNavProps> = ({
   return (
     <header className="sticky top-0 z-50 w-full bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-2.5 sm:py-3.5 transition-all">
       <div className="w-full max-w-[2200px] mx-auto flex items-center justify-between gap-3 sm:gap-6">
-        {/* Brand Zone */}
-        <div
-          className="flex items-center gap-3 cursor-pointer shrink-0"
+        {/* Brand Zone: Real anchor navigation to homepage */}
+        <Link
+          to="/"
+          className="flex items-center gap-3 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] rounded-lg"
           onClick={() => {
             setMobileMenuOpen(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
+          aria-label="DECK / divider Home"
         >
           <DeckDividerBrand size="md" />
-        </div>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-6 shrink-0">
           <nav className="hidden md:flex items-center gap-1 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => handleNav('about')}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            <Link
+              to="/about"
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               About
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNav('how-it-works')}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            </Link>
+            <Link
+              to="/how-it-works"
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               How it works
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNav('pricing')}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            </Link>
+            <a
+              href="/#pricing"
+              onClick={(e) => {
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  handleNav('pricing');
+                }
+              }}
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               Pricing
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNav('faq-and-insights')}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] cursor-pointer whitespace-nowrap"
+            </a>
+            <a
+              href="/#faq-and-insights"
+              onClick={(e) => {
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  handleNav('faq-and-insights');
+                }
+              }}
+              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               FAQ & Insights
-            </button>
+            </a>
           </nav>
 
-          {/* Action Button: Sign In / Studio Launch */}
+          {/* Action Button: Sign In / Studio Launch with real anchor tag */}
           {user ? (
-            <button
-              onClick={onEnterApp}
+            <Link
+              to="/app"
+              onClick={() => onEnterApp && onEnterApp()}
               className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-lg transition-all border border-[#DC143C] cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
             >
               <span>Launch Studio</span>
-            </button>
+            </Link>
           ) : (
-            <button
-              onClick={onOpenAuth}
+            <Link
+              to="/auth"
+              onClick={(e) => {
+                if (onOpenAuth) {
+                  // Allow client router navigation while triggering auth modal if attached
+                  onOpenAuth();
+                }
+              }}
               className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-[#0F172A] hover:text-[#DC143C] bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-lg transition-all border border-[#E2E8F0] hover:border-[#DC143C]/40 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
             >
               <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />
               <span>Sign In <span className="hidden sm:inline">/ Login</span></span>
-            </button>
+            </Link>
           )}
 
           {/* Mobile Hamburger Button */}
@@ -117,9 +135,9 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className="md:hidden overflow-hidden border-t border-slate-200 mt-2.5 pt-3 pb-4 bg-white space-y-1.5"
           >
-            <button
-              type="button"
-              onClick={() => handleNav('about')}
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
@@ -127,11 +145,11 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>About Platform</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => handleNav('how-it-works')}
+            <Link
+              to="/how-it-works"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
@@ -139,11 +157,17 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>How It Works (Workflow)</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => handleNav('pricing')}
+            <a
+              href="/#pricing"
+              onClick={(e) => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  handleNav('pricing');
+                }
+              }}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
@@ -151,11 +175,17 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>Pricing Tiers</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </button>
+            </a>
 
-            <button
-              type="button"
-              onClick={() => handleNav('faq-and-insights')}
+            <a
+              href="/#faq-and-insights"
+              onClick={(e) => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  handleNav('faq-and-insights');
+                }
+              }}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
@@ -163,11 +193,11 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>FAQ & Knowledge</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </button>
+            </a>
 
             <div className="pt-2 border-t border-slate-100">
-              <button
-                type="button"
+              <Link
+                to="/auth"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenAuth();
@@ -176,7 +206,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               >
                 <LogIn className="w-4 h-4" />
                 <span>Sign In / Create Free Account</span>
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}

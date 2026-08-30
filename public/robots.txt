@@ -1,15 +1,9 @@
 User-agent: *
-Disallow: /api/
-Disallow: /admin/
-Disallow: /dashboard/
-Disallow: /collection
-Disallow: /metrics
-Disallow: /decks
-Disallow: /sealed_vault
-Disallow: /psa_verify
-Disallow: /search
-Disallow: /sets
-Disallow: /lists
-Disallow: /settings
 Allow: /
+Disallow: /app
+Disallow: /app/*
+Disallow: /api
+Disallow: /api/*
+
+Sitemap: https://deckdivider.app/sitemap.xml
 

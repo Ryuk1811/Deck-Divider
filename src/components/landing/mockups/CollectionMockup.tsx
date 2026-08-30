@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Sparkles, Filter, ArrowUpRight, CheckCircle2, Layers } from 'lucide-react';
 import { DisplayCurrency } from '../../../types';
+import { CardImage } from '../../CardImage';
 
 interface CollectionMockupProps {
   currency?: DisplayCurrency;
@@ -209,13 +210,12 @@ export const CollectionMockup: React.FC<CollectionMockupProps> = ({ currency = '
 
               {/* Card Image Container */}
               <div className="p-2 pb-1 relative aspect-[3/4] flex items-center justify-center bg-[#F8FAFC]">
-                <img
+                <CardImage
                   src={card.image}
                   alt={card.name}
+                  cardName={card.name}
+                  loading="lazy"
                   className="w-full h-full object-contain drop-shadow transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
                 />
                 {hoveredCard === card.id && (
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/25 to-white/40 pointer-events-none rounded-lg mix-blend-overlay"></div>

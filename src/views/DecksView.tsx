@@ -29,6 +29,7 @@ import {
   PokemonCard,
   CardSet,
 } from '../types';
+import { CardImage } from '../components/CardImage';
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
 import { DropdownMenu } from '../components/DropdownMenu';
@@ -228,7 +229,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
     });
   };
 
-  const handleCopyPublicLink = () => {
+  const handleCopyPublicLink = async () => {
     if (!currentDeck) return;
     
     const isProd = window.location.hostname.includes('deckdivider.app');
@@ -239,7 +240,13 @@ export const DecksView: React.FC<DecksViewProps> = ({
       ? `https://deckdivider.app/deck/${currentDeck.id}?d=${encoded}`
       : `${origin}/deck/${currentDeck.id}?d=${encoded}`;
       
-    navigator.clipboard.writeText(link);
+    try {
+      if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        await navigator.clipboard.writeText(link);
+      }
+    } catch (err) {
+      console.warn('Clipboard writeText failed or blocked by iframe permissions:', err);
+    }
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -1003,11 +1010,17 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
             <form onSubmit={handleSoldSubmit} className="space-y-4">
               <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] flex items-center gap-3">
-                <img
-                  src={soldTargetEntry.card.images.small || 'https://images.pokemontcg.io/cardback.png'}
-                  alt={soldTargetEntry.card.name}
-                  className="w-8 h-11 object-cover rounded border border-[#0F172A]"
-                />
+                <div className="w-8 h-11 border border-[#0F172A] rounded overflow-hidden shrink-0">
+                  <CardImage
+                    src={soldTargetEntry.card.images.small}
+                    alt={soldTargetEntry.card.name}
+                    cardName={soldTargetEntry.card.name}
+                    cardNumber={soldTargetEntry.card.number}
+                    setId={soldTargetEntry.card.set?.id}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div>
                   <div className="font-heading font-bold text-xs text-[#0F172A]">
                     {soldTargetEntry.card.name}

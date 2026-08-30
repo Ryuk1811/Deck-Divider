@@ -163,6 +163,31 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
       return jsonResponse({ error: 'Set not found' }, 404);
     }
 
+    if (pathname === '/api/tcg/cards/summary') {
+      try {
+        const restRes = await fetch('https://api.tcgdex.net/v2/en/cards');
+        if (restRes.ok) {
+          const cards: any = await restRes.json();
+          return jsonResponse(cards);
+        }
+      } catch (_) {}
+      return jsonResponse([]);
+    }
+
+    if (pathname === '/api/tcg/cards/lazy-chunk') {
+      const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+      const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+      try {
+        const restRes = await fetch('https://api.tcgdex.net/v2/en/cards');
+        if (restRes.ok) {
+          const cards: any = await restRes.json();
+          const chunk = cards.slice(offset, offset + limit);
+          return jsonResponse(chunk);
+        }
+      } catch (_) {}
+      return jsonResponse([]);
+    }
+
     if (pathname.startsWith('/api/tcg/cards/')) {
       const cardId = pathname.replace('/api/tcg/cards/', '');
       const cardRes = await fetch(`https://api.tcgdex.net/v2/en/cards/${encodeURIComponent(cardId)}`);

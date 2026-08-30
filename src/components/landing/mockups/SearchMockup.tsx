@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Flame } from 'lucide-react';
 import { DisplayCurrency } from '../../../types';
+import { CardImage } from '../../CardImage';
 
 interface SearchMockupProps {
   currency?: DisplayCurrency;
@@ -104,11 +105,12 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
           >
             <div>
               <div className="aspect-[3/4] rounded-lg overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center p-2 mb-2">
-                <img
+                <CardImage
                   src={card.image}
                   alt={card.name}
+                  cardName={card.name}
+                  loading="lazy"
                   className="h-full object-contain hover:scale-105 transition-transform duration-200"
-                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                 />
               </div>
 

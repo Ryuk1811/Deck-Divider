@@ -208,7 +208,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
                   </div>
                   {list.coverImageUrl && (
                     <div className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] shadow-2xs">
-                      <img src={list.coverImageUrl} alt="List Cover" className="w-full h-full object-cover object-top" />
+                      <img src={list.coverImageUrl} alt="List Cover" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="w-full h-full object-cover object-top" />
                     </div>
                   )}
                 </div>

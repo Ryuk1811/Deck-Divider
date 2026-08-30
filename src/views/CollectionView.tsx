@@ -28,6 +28,7 @@ import {
 } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
+import { CardImage } from '../components/CardImage';
 import { DropdownMenu } from '../components/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 
@@ -702,11 +703,17 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     onClick={() => onSelectCard(card)}
                   >
                     <td className="p-3">
-                      <img
-                        src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
-                        alt={card.name}
-                        className="w-8 h-11 object-cover rounded border border-[#E2E8F0] group-hover:scale-105 transition-transform"
-                      />
+                      <div className="w-8 h-11 border border-[#E2E8F0] rounded overflow-hidden group-hover:scale-105 transition-transform">
+                        <CardImage
+                          src={card.images.small}
+                          alt={card.name}
+                          cardName={card.name}
+                          cardNumber={card.number}
+                          setId={card.set?.id}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </td>
                     <td className="p-3 font-heading font-bold text-[#0F172A] text-sm">
                       {card.name}

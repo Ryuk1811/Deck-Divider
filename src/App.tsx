@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   AccountTier,
   DisplayCurrency,
@@ -50,13 +50,21 @@ import { AuthView } from './views/AuthView';
 import { LandingPageView } from './views/LandingPageView';
 import { AboutPageView } from './views/AboutPageView';
 import { HowItWorksPageView } from './views/HowItWorksPageView';
+import { PrivacyPolicyView } from './views/PrivacyPolicyView';
+import { TermsOfServiceView } from './views/TermsOfServiceView';
+import { NotFoundView } from './views/NotFoundView';
+import { AnalyticsFunnelModal } from './components/AnalyticsFunnelModal';
+import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
 import { SealedPortfolioManager } from './components/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
 import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists, idbGetUserDecks, idbSaveUserDecks } from './lib/indexedDB';
-import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc } from './lib/snapshotEngine';
+import { safeGetItem, safeSetItem } from './utils/safeStorage';
+import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
+import { createCloudBackupPoint } from './lib/backupEngine';
+import { BackupRecoveryModal } from './components/BackupRecoveryModal';
 import { isShowcaseAccount, generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
@@ -82,16 +90,39 @@ const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayC
 
 export default function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile, subscription, loading: authLoading, refreshSubscription } = useAuth();
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
 
+  // Dynamically manage robots meta tag on route transitions
   React.useEffect(() => {
-    initSearchEngine().then(() => setEngineReady(true));
-    getExpansionsCatalog().then((sets) => {
-      if (sets && sets.length > 0) setLiveSets(sets);
-    });
-    startFullCatalogBackgroundSync();
+    let robotsMeta = document.querySelector('meta[name="robots"]') as HTMLMetaElement;
+    if (!robotsMeta) {
+      robotsMeta = document.createElement('meta');
+      robotsMeta.name = 'robots';
+      document.head.appendChild(robotsMeta);
+    }
+
+    if (location.pathname.startsWith('/app') || location.pathname.startsWith('/dashboard')) {
+      robotsMeta.content = 'noindex, nofollow';
+    } else {
+      robotsMeta.content = 'index, follow';
+    }
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    initSearchEngine()
+      .then(() => setEngineReady(true))
+      .catch((err) => console.warn('initSearchEngine non-fatal warning:', err));
+    getExpansionsCatalog()
+      .then((sets) => {
+        if (sets && sets.length > 0) setLiveSets(sets);
+      })
+      .catch((err) => console.warn('getExpansionsCatalog non-fatal warning:', err));
+    startFullCatalogBackgroundSync().catch((err) =>
+      console.warn('startFullCatalogBackgroundSync non-fatal warning:', err)
+    );
   }, []);
 
   const allCards = React.useMemo(
@@ -112,14 +143,14 @@ export default function App() {
   // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
   const [selectedCurrency, setSelectedCurrency] = useState<DisplayCurrency>(() => {
-    return (localStorage.getItem('displayCurrency') as DisplayCurrency) || profile?.displayCurrency || 'USD';
+    return (safeGetItem('displayCurrency') as DisplayCurrency) || profile?.displayCurrency || 'USD';
   });
   
   const displayCurrency = selectedCurrency;
 
   const setDisplayCurrency = (c: DisplayCurrency) => {
     setSelectedCurrency(c);
-    localStorage.setItem('displayCurrency', c);
+    safeSetItem('displayCurrency', c);
     triggerSyncPulse();
   };
 
@@ -133,6 +164,14 @@ export default function App() {
   const [paypalSuccessData, setPaypalSuccessData] = useState<{ tier: AccountTier; subId: string } | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isLaunchingPayPal, setIsLaunchingPayPal] = useState(false);
+  const [isFunnelModalOpen, setIsFunnelModalOpen] = useState(false);
+
+  // Track dashboard views when entering /app routes
+  React.useEffect(() => {
+    if (location.pathname.startsWith('/app')) {
+      trackDashboardView();
+    }
+  }, [location.pathname]);
 
   React.useEffect(() => {
     fetch('/api/billing/paypal-config')
@@ -200,29 +239,37 @@ export default function App() {
     const rawTier = (urlParams.get('tier') || 'Bunch') as AccountTier;
 
     // Inside popup window: notify opener and close self
-    if (window.opener && !window.opener.closed) {
-      if (paypalSuccess) {
-        try {
-          window.opener.postMessage({ 
-            type: 'PAYPAL_SUCCESS', 
-            subscriptionId: rawSubId, 
-            tier: rawTier 
-          }, '*');
-          window.close();
-          return;
-        } catch (e) {
-          console.warn('postMessage to window.opener failed:', e);
+    try {
+      if (typeof window !== 'undefined' && window.opener) {
+        let isClosed = false;
+        try { isClosed = window.opener.closed; } catch (e) { isClosed = true; }
+        if (!isClosed) {
+          if (paypalSuccess) {
+            try {
+              window.opener.postMessage({ 
+                type: 'PAYPAL_SUCCESS', 
+                subscriptionId: rawSubId, 
+                tier: rawTier 
+              }, '*');
+              window.close();
+              return;
+            } catch (e) {
+              console.warn('postMessage to window.opener failed:', e);
+            }
+          }
+          if (paypalCancel) {
+            try {
+              window.opener.postMessage({ type: 'PAYPAL_CANCEL' }, '*');
+              window.close();
+              return;
+            } catch (e) {
+              console.warn('postMessage to window.opener failed:', e);
+            }
+          }
         }
       }
-      if (paypalCancel) {
-        try {
-          window.opener.postMessage({ type: 'PAYPAL_CANCEL' }, '*');
-          window.close();
-          return;
-        } catch (e) {
-          console.warn('postMessage to window.opener failed:', e);
-        }
-      }
+    } catch (e) {
+      console.warn('window.opener check failed:', e);
     }
 
     // Direct window processing (when user is ready)
@@ -230,11 +277,19 @@ export default function App() {
       if (user) {
         const targetSubId = rawSubId || 'LIVE_APPROVED_' + Date.now();
         handleApproveSubscription(targetSubId, rawTier);
-        window.history.replaceState({}, document.title, window.location.pathname);
+        try {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+          console.warn('replaceState failed:', e);
+        }
       }
     } else if (paypalCancel) {
       setIsCancelModalOpen(true);
-      window.history.replaceState({}, document.title, window.location.pathname);
+      try {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (e) {
+        console.warn('replaceState failed:', e);
+      }
     }
 
     return () => window.removeEventListener('message', handleMessage);
@@ -258,6 +313,7 @@ export default function App() {
   // Encrypted Local Vault & Compressed Cloud Snapshot State
   const [lastSyncedTimestamp, setLastSyncedTimestamp] = useState<string | null>(null);
   const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
 
   // Maintain a stable stateRef to prevent saveCompressedCloudSnapshot from changing reference on every state update
   const stateRef = React.useRef({
@@ -318,6 +374,9 @@ export default function App() {
       // Strict overwrite (merge: false) to prevent historical document bloat
       await setDoc(snapRef, packed, { merge: false });
 
+      // Save rolling timestamped point-in-time cloud and local backup
+      await createCloudBackupPoint(stateToCompress);
+
       setLastSyncedTimestamp(packed.updatedAt);
       recordSnapshotCompleted();
       setSnapshotMetrics({
@@ -330,6 +389,34 @@ export default function App() {
       console.warn('Cloud snapshot overwrite warning:', err);
     }
   }, []);
+
+  // Restore state from a point-in-time cloud or local backup
+  const handleRestoreState = React.useCallback(async (restoredState: UserCompressedSnapshotState) => {
+    const targetUid = user?.uid || 'guest_user';
+    const newDecks = restoredState.decks || [];
+    const newLists = restoredState.customLists || [];
+    const newSealed = restoredState.sealedEntries || [];
+    const newSold = restoredState.soldEntries || [];
+
+    setDecks(newDecks);
+    setCustomLists(newLists);
+    setSealedEntries(newSealed);
+    setSoldEntries(newSold);
+
+    await Promise.all([
+      idbSaveUserDecks(newDecks, targetUid),
+      idbSaveCustomLists(newLists, targetUid),
+      idbSaveSealedVault(newSealed, targetUid),
+    ]);
+
+    if (user) {
+      await saveCompressedCloudSnapshot({
+        decks: newDecks,
+        customLists: newLists,
+        sealedEntries: newSealed,
+      });
+    }
+  }, [user, saveCompressedCloudSnapshot]);
 
   // Helper to load complete Showcase Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
   const handleLoadShowcaseData = React.useCallback(async () => {
@@ -573,10 +660,10 @@ export default function App() {
     action: 'CREATE_DECK',
   });
 
-  const [verifiedCertsCount, setVerifiedCertsCount] = useState<number>(() => parseInt(localStorage.getItem('verifiedCertsCount') || '0', 10));
+  const [verifiedCertsCount, setVerifiedCertsCount] = useState<number>(() => parseInt(safeGetItem('verifiedCertsCount') || '0', 10));
 
   React.useEffect(() => {
-    localStorage.setItem('verifiedCertsCount', verifiedCertsCount.toString());
+    safeSetItem('verifiedCertsCount', verifiedCertsCount.toString());
   }, [verifiedCertsCount]);
 
   // Trigger brief background sync indicator pulse
@@ -1262,8 +1349,22 @@ export default function App() {
 
                 saveCompressedCloudSnapshot();
               }}
+              onOpenFunnelMetrics={() => setIsFunnelModalOpen(true)}
+              onOpenBackupModal={() => setIsBackupModalOpen(true)}
             />
           )}
+
+          {/* Authenticated Workspace Footer Disclaimer */}
+          <footer className="mt-16 pt-6 pb-4 border-t border-slate-200 text-center flex flex-col items-center gap-3">
+            <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+              <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
+              <span className="text-slate-300">•</span>
+              <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-400 max-w-2xl text-center">
+              DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
+            </p>
+          </footer>
         </main>
       </div>
     </div>
@@ -1330,6 +1431,28 @@ export default function App() {
         />
 
         <Route
+          path="/privacy"
+          element={
+            <PrivacyPolicyView
+              onOpenAuth={() => navigate('/auth')}
+              onNavigateHome={() => navigate('/')}
+              onNavigateHowItWorks={() => navigate('/how-it-works')}
+            />
+          }
+        />
+
+        <Route
+          path="/terms"
+          element={
+            <TermsOfServiceView
+              onOpenAuth={() => navigate('/auth')}
+              onNavigateHome={() => navigate('/')}
+              onNavigateHowItWorks={() => navigate('/how-it-works')}
+            />
+          }
+        />
+
+        <Route
           path="/auth"
           element={
             <AuthView
@@ -1341,7 +1464,7 @@ export default function App() {
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundView />} />
       </Routes>
 
       {/* Global Modals & Overlays */}
@@ -1423,6 +1546,36 @@ export default function App() {
           setIsCancelModalOpen(false);
           if (paypalModalTier) handleChangeTier(paypalModalTier);
         }}
+      />
+
+      <AnalyticsFunnelModal
+        isOpen={isFunnelModalOpen}
+        onClose={() => setIsFunnelModalOpen(false)}
+      />
+
+      <BackupRecoveryModal
+        isOpen={isBackupModalOpen}
+        onClose={() => setIsBackupModalOpen(false)}
+        userId={user?.uid || 'guest_user'}
+        userEmail={user?.email || undefined}
+        activeState={{
+          version: 2,
+          userId: user?.uid || 'guest_user',
+          updatedAt: new Date().toISOString(),
+          profile: {
+            displayName: profile?.displayName || user?.displayName || '',
+            email: user?.email || '',
+            tier: currentTier,
+            currency: displayCurrency,
+          },
+          decks,
+          customLists,
+          sealedEntries,
+          soldEntries: allSoldEntries,
+          recentActivities,
+        }}
+        onRestoreState={handleRestoreState}
+        onTriggerNewBackup={() => saveCompressedCloudSnapshot()}
       />
     </>
   );

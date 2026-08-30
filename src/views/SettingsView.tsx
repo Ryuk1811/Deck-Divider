@@ -10,6 +10,8 @@ import {
   Globe,
   Search,
   ChevronDown,
+  BarChart3,
+  TrendingUp,
 } from 'lucide-react';
 import {
   DisplayCurrency,
@@ -36,6 +38,8 @@ interface SettingsViewProps {
   snapshotMetrics?: { rawSize: number; byteSize: number; compressionRatio: string } | null;
   userEmail?: string | null;
   onResetShowcaseData?: () => void;
+  onOpenFunnelMetrics?: () => void;
+  onOpenBackupModal?: () => void;
 }
 
 const SUPPORTED_CURRENCIES = [
@@ -75,6 +79,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   snapshotMetrics,
   userEmail,
   onResetShowcaseData,
+  onOpenFunnelMetrics,
+  onOpenBackupModal,
 }) => {
   const [isSnapshotting, setIsSnapshotting] = useState(false);
   const [snapshotSuccess, setSnapshotSuccess] = useState(false);
@@ -334,26 +340,39 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleManualSnapshot}
-            disabled={isSnapshotting}
-            className="neo-btn-primary px-5 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer self-start sm:self-auto shadow-xs"
-          >
-            {isSnapshotting ? (
-              <span>Saving to Cloud...</span>
-            ) : snapshotSuccess ? (
-              <>
-                <Check className="w-4 h-4 text-white" />
-                <span>Cloud Backup Saved!</span>
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4 text-white" />
-                <span>Save Snapshot to Cloud</span>
-              </>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 self-start sm:self-auto">
+            {onOpenBackupModal && (
+              <button
+                type="button"
+                onClick={onOpenBackupModal}
+                className="neo-btn-secondary px-4 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shadow-xs"
+              >
+                <Shield className="w-4 h-4 text-[#DC143C]" />
+                <span>Restore & Point-in-Time Backups</span>
+              </button>
             )}
-          </button>
+
+            <button
+              type="button"
+              onClick={handleManualSnapshot}
+              disabled={isSnapshotting}
+              className="neo-btn-primary px-5 py-2.5 text-xs flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shadow-xs"
+            >
+              {isSnapshotting ? (
+                <span>Saving to Cloud...</span>
+              ) : snapshotSuccess ? (
+                <>
+                  <Check className="w-4 h-4 text-white" />
+                  <span>Cloud Backup Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 text-white" />
+                  <span>Save Snapshot to Cloud</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -440,6 +459,35 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* SECTION: TELEMETRY & CONVERSION ANALYTICS FUNNEL */}
+      <div className="p-6 border border-[#E2E8F0] space-y-4 glass-slab bg-slate-900 text-white shadow-sm rounded-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30">
+              <BarChart3 className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-heading font-bold text-lg text-white flex items-center gap-2">
+                Signup & Activation Funnel Telemetry
+              </h2>
+              <p className="font-mono text-xs text-slate-400">
+                Privacy-preserving analytics tracking step-by-step conversion from Landing → Signup → Activation
+              </p>
+            </div>
+          </div>
+
+          {onOpenFunnelMetrics && (
+            <button
+              onClick={onOpenFunnelMetrics}
+              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono rounded-xl transition-all shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
+            >
+              <TrendingUp className="w-4 h-4" />
+              View Funnel Metrics & Drop-offs
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* SECTION 3: SUBSCRIPTION MANAGEMENT & TIER COMPARISON */}
       <div className="p-6 space-y-6 glass-slab shadow-md">

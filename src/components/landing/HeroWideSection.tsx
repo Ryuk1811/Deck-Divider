@@ -2,6 +2,7 @@ import React from 'react';
 import { Sparkles, Shield, Layers, TrendingUp, Zap, CheckCircle2, Activity, ArrowRight } from 'lucide-react';
 import { DisplayCurrency } from '../../types';
 import { HeroFluidMotionCanvas } from './HeroFluidMotionCanvas';
+import { CardImage } from '../CardImage';
 import { motion } from 'motion/react';
 
 interface HeroWideSectionProps {
@@ -144,11 +145,15 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                       </span>
                     </div>
                     <div className="aspect-[3/4] max-h-40 sm:max-h-48 mx-auto rounded-lg overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center p-2 relative">
-                      <img
+                      <CardImage
                         src="https://images.pokemontcg.io/sv3pt5/199_hires.png"
                         alt="Charizard ex"
+                        cardName="Charizard ex"
+                        cardNumber="199"
+                        setId="sv3pt5"
+                        preferHighRes
+                        loading="eager"
                         className="h-full object-contain drop-shadow transition-transform group-hover:scale-105 duration-300"
-                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
@@ -238,13 +243,21 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
 
                     {/* Mini Card Row */}
                     <div className="mt-3 sm:mt-4 grid grid-cols-4 gap-1 sm:gap-1.5">
-                      {['sv3pt5/199', 'sv3pt5/4', 'sv3/164', 'sv1/191'].map((id, idx) => (
+                      {[
+                        { set: 'sv3pt5', num: '199', name: 'Charizard ex' },
+                        { set: 'sv3pt5', num: '4', name: 'Charmander' },
+                        { set: 'sv3', num: '164', name: 'Pidgeot ex' },
+                        { set: 'sv1', num: '191', name: 'Nest Ball' },
+                      ].map((cardInfo, idx) => (
                         <div key={idx} className="aspect-[3/4] rounded bg-[#F8FAFC] border border-[#E2E8F0] p-0.5 overflow-hidden flex items-center justify-center">
-                          <img
-                            src={`https://images.pokemontcg.io/${id}_hires.png`}
-                            alt="Card"
+                          <CardImage
+                            src={`https://images.pokemontcg.io/${cardInfo.set}/${cardInfo.num}_hires.png`}
+                            alt={cardInfo.name}
+                            cardName={cardInfo.name}
+                            cardNumber={cardInfo.num}
+                            setId={cardInfo.set}
+                            loading="lazy"
                             className="h-full object-contain"
-                            onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                           />
                         </div>
                       ))}
