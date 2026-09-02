@@ -18,15 +18,25 @@
     },
     "SubscriptionRecord": {
       "title": "SubscriptionRecord",
-      "description": "User subscription status and tier",
+      "description": "User subscription status, governor period, and tier entitlements",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "tierName": { "type": "string" },
+        "effectiveTier": { "type": "string" },
         "isSuperUser": { "type": "boolean" },
         "billingStatus": { "type": "string" },
+        "paymentType": { "type": "string" },
+        "provider": { "type": "string" },
+        "currentPeriodStart": { "type": "string" },
+        "currentPeriodEnd": { "type": "string" },
+        "daysRemaining": { "type": "number" },
+        "isExpired": { "type": "boolean" },
+        "razorpayPaymentId": { "type": "string" },
+        "razorpayOrderId": { "type": "string" },
         "paypalSubscriptionId": { "type": "string" },
-        "updatedAt": { "type": "string" }
+        "updatedAt": { "type": "string" },
+        "governorNote": { "type": "string" }
       },
       "required": ["id", "tierName"]
     },

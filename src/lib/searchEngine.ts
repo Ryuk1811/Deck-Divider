@@ -41,8 +41,19 @@ export const initSearchEngine = async (): Promise<void> => {
     isIndexing = true;
     try {
       // 1. Try local IndexedDB cache first
-      let data: TCGdexCard[] | undefined = await get<TCGdexCard[]>(CACHE_KEY).catch(() => undefined);
-      const lastFetchTime = await get<number>(CACHE_TIME_KEY).catch(() => undefined);
+      let hasIDB = false;
+      try {
+        hasIDB = typeof window !== 'undefined' && !!window.indexedDB;
+      } catch (e) {}
+      let data: TCGdexCard[] | undefined;
+      let lastFetchTime: number | undefined;
+      try {
+        if (hasIDB) { data = await get<TCGdexCard[]>(CACHE_KEY);
+        lastFetchTime = await get<number>(CACHE_TIME_KEY); }
+      } catch (e) {
+        console.warn("IDB get failed", e);
+      }
+      
       const now = Date.now();
 
       if (data && data.length > 0) {
@@ -64,8 +75,8 @@ export const initSearchEngine = async (): Promise<void> => {
             if (fetchedCards && fetchedCards.length > 0) {
               allDocsData = fetchedCards;
               miniSearch = setupMiniSearch(fetchedCards);
-              set(CACHE_KEY, fetchedCards).catch(() => {});
-              set(CACHE_TIME_KEY, now).catch(() => {});
+              if (hasIDB) { try { set(CACHE_KEY, fetchedCards).catch(() => {}); } catch(e) {}
+              try { set(CACHE_TIME_KEY, now).catch(() => {}); } catch(e) {} }
             }
           }
         } catch (fetchErr) {

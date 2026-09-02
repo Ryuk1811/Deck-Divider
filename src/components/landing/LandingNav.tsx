@@ -62,8 +62,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             >
               How it works
             </Link>
-            <a
-              href="/#pricing"
+            <Link
+              to="/pricing"
               onClick={(e) => {
                 if (window.location.pathname === '/') {
                   e.preventDefault();
@@ -73,9 +73,9 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               Pricing
-            </a>
-            <a
-              href="/#faq-and-insights"
+            </Link>
+            <Link
+              to="/faq"
               onClick={(e) => {
                 if (window.location.pathname === '/') {
                   e.preventDefault();
@@ -85,7 +85,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
             >
               FAQ & Insights
-            </a>
+            </Link>
           </nav>
 
           {/* Action Button: Sign In / Studio Launch with real anchor tag */}
@@ -159,8 +159,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
 
-            <a
-              href="/#pricing"
+            <Link
+              to="/pricing"
               onClick={(e) => {
                 setMobileMenuOpen(false);
                 if (window.location.pathname === '/') {
@@ -175,10 +175,10 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>Pricing Tiers</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </a>
+            </Link>
 
-            <a
-              href="/#faq-and-insights"
+            <Link
+              to="/faq"
               onClick={(e) => {
                 setMobileMenuOpen(false);
                 if (window.location.pathname === '/') {
@@ -193,7 +193,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                 <span>FAQ & Knowledge</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
-            </a>
+            </Link>
 
             <div className="pt-2 border-t border-slate-100">
               <Link

@@ -34,7 +34,7 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
   return (
     <section
       id={id}
-      className="w-full py-10 sm:py-16 md:py-24 lg:py-32 px-3 sm:px-6 md:px-10 lg:px-14 xl:px-18 2xl:px-24 scroll-mt-16 relative overflow-hidden"
+      className="w-full py-8 sm:py-12 md:py-14 lg:py-16 px-3 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 scroll-mt-16 relative overflow-hidden"
     >
       <div className="w-full max-w-[2200px] mx-auto relative z-10">
         <div

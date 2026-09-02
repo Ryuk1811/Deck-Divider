@@ -604,14 +604,14 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 <span>Search Card Catalog</span>
               </button>
             )}
-            {isSuperUser && onLoadShowcase && (
+            {onLoadShowcase && (
               <button
                 type="button"
                 onClick={onLoadShowcase}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
-                <span>Super User: Restore Showcase</span>
+                <span>Load Sample Collection</span>
               </button>
             )}
           </div>

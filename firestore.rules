@@ -52,6 +52,11 @@ service cloud.firestore {
         (request.resource.data.isSuperUser != true || isSuperUser());
       allow delete: if isSuperUser();
 
+      match /snapshot/current {
+        allow read: if (isAuthenticated() && isOwner(userId)) || isSuperUser() || resource.data.isPublicProfile == true;
+        allow write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
+      }
+
       match /{allSubcollections=**} {
         allow read, write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
       }

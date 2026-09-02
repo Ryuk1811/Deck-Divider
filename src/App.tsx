@@ -52,6 +52,8 @@ import { AboutPageView } from './views/AboutPageView';
 import { HowItWorksPageView } from './views/HowItWorksPageView';
 import { PrivacyPolicyView } from './views/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/TermsOfServiceView';
+import { PricingPageView } from './views/PricingPageView';
+import { FaqPageView } from './views/FaqPageView';
 import { NotFoundView } from './views/NotFoundView';
 import { AnalyticsFunnelModal } from './components/AnalyticsFunnelModal';
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
@@ -65,12 +67,14 @@ import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
 import { BackupRecoveryModal } from './components/BackupRecoveryModal';
-import { isShowcaseAccount, generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
+import { generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
-import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { PublicDeckView } from './views/PublicDeckView';
 import { useParams, useSearchParams } from 'react-router-dom';
+
+import { PublicPortfolioView } from './views/PublicPortfolioView';
 
 const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayCurrency: string, setDisplayCurrency: (c: string) => void }) => {
   const { deckId } = useParams<{ deckId: string }>();
@@ -184,7 +188,7 @@ export default function App() {
       .catch((err) => console.warn('Failed to load PayPal config:', err));
   }, []);
 
-  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier) => {
+  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier, provider: 'paypal' | 'razorpay' = 'paypal') => {
     const token = await auth.currentUser?.getIdToken();
     const res = await fetch('/api/billing/execute', {
       method: 'POST',
@@ -192,7 +196,7 @@ export default function App() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ subscriptionId, tier }),
+      body: JSON.stringify({ subscriptionId, tier, provider }),
     });
     if (!res.ok) {
       const err = await res.json();
@@ -360,6 +364,8 @@ export default function App() {
           email: curUser.email || '',
           tier: stateRef.current.currentTier,
           currency: stateRef.current.displayCurrency,
+          isPublicProfile: stateRef.current.profile?.isPublicProfile,
+          publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode,
         },
         decks: overrideState?.decks ?? stateRef.current.decks,
         customLists: overrideState?.customLists ?? stateRef.current.customLists,
@@ -418,31 +424,27 @@ export default function App() {
     }
   }, [user, saveCompressedCloudSnapshot]);
 
-  // Helper to load complete Showcase Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
+  // Helper to load complete Showcase / Starter Sample Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
   const handleLoadShowcaseData = React.useCallback(async () => {
-    if (!isShowcaseAccount(user?.email)) {
-      console.warn('Showcase presets are reserved exclusively for the super user account.');
-      return;
-    }
     const targetUid = user?.uid || 'guest_user';
-    const showcaseDecks = generateShowcaseDecks(targetUid);
-    const showcaseLists = generateShowcaseCustomLists(targetUid);
-    const showcaseSealed = generateShowcaseSealed(targetUid);
+    const sampleDecks = generateShowcaseDecks(targetUid);
+    const sampleLists = generateShowcaseCustomLists(targetUid);
+    const sampleSealed = generateShowcaseSealed(targetUid);
 
-    setDecks(showcaseDecks);
-    setCustomLists(showcaseLists);
-    setSealedEntries(showcaseSealed);
+    setDecks(sampleDecks);
+    setCustomLists(sampleLists);
+    setSealedEntries(sampleSealed);
 
-    await idbSaveUserDecks(showcaseDecks, targetUid);
-    await idbSaveCustomLists(showcaseLists, targetUid);
-    await idbSaveSealedVault(showcaseSealed, targetUid);
+    await idbSaveUserDecks(sampleDecks, targetUid);
+    await idbSaveCustomLists(sampleLists, targetUid);
+    await idbSaveSealedVault(sampleSealed, targetUid);
 
     if (user) {
       setTimeout(() => {
         saveCompressedCloudSnapshot({
-          decks: showcaseDecks,
-          customLists: showcaseLists,
-          sealedEntries: showcaseSealed,
+          decks: sampleDecks,
+          customLists: sampleLists,
+          sealedEntries: sampleSealed,
         });
       }, 300);
     }
@@ -450,10 +452,6 @@ export default function App() {
 
   // Helper to load standard competitive sample deck
   const handleLoadSampleDeck = React.useCallback(async () => {
-    if (!isShowcaseAccount(user?.email)) {
-      console.warn('Sample decks are reserved exclusively for the super user account.');
-      return;
-    }
     const targetUid = user?.uid || 'guest_user';
     const sampleDecks = generateShowcaseDecks(targetUid).slice(0, 1); // Charizard Championship 60
     
@@ -470,11 +468,10 @@ export default function App() {
     }
   }, [user, saveCompressedCloudSnapshot]);
 
-  // Load from Local Encrypted Storage on initial mount & Seed Showcase data for gurutvamurdia@gmail.com
+  // Load from Local Encrypted Storage on initial mount & Seed Sample data for new users/guests if empty
   React.useEffect(() => {
     if (authLoading) return;
     const activeUid = user?.uid || 'guest_user';
-    const isShowcase = isShowcaseAccount(user?.email);
 
     const initializeAppState = async () => {
       // Reset collection state to prevent state bleed between user accounts
@@ -532,8 +529,8 @@ export default function App() {
           }
         }
 
-        // Automatic seeding ONLY for the designated showcase account (gurutvamurdia@gmail.com) if empty
-        if (isShowcase && currentDecks.length === 0) {
+        // Automatic seeding for any brand-new user or guest if collection is empty
+        if (currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
           currentDecks = generateShowcaseDecks(activeUid);
           currentLists = generateShowcaseCustomLists(activeUid);
           currentSealed = generateShowcaseSealed(activeUid);
@@ -558,18 +555,12 @@ export default function App() {
         setSealedEntries(currentSealed);
       } catch (err) {
         console.error('Data initialization error:', err);
-        if (isShowcase) {
-          const showcaseDecks = generateShowcaseDecks(activeUid);
-          const showcaseLists = generateShowcaseCustomLists(activeUid);
-          const showcaseSealed = generateShowcaseSealed(activeUid);
-          setDecks(showcaseDecks);
-          setCustomLists(showcaseLists);
-          setSealedEntries(showcaseSealed);
-        } else {
-          setDecks([]);
-          setCustomLists([]);
-          setSealedEntries([]);
-        }
+        const fallbackDecks = generateShowcaseDecks(activeUid);
+        const fallbackLists = generateShowcaseCustomLists(activeUid);
+        const fallbackSealed = generateShowcaseSealed(activeUid);
+        setDecks(fallbackDecks);
+        setCustomLists(fallbackLists);
+        setSealedEntries(fallbackSealed);
       }
     };
 
@@ -1109,6 +1100,25 @@ export default function App() {
     return [...deckSolds, ...extraSolds];
   }, [decks, soldEntries]);
 
+  const handleTogglePublicProfile = async (isPublic: boolean) => {
+    if (!user) return;
+    try {
+      // First force a cloud snapshot to ensure it's written properly 
+      // when AuthContext refreshes the profile
+      await saveCompressedCloudSnapshot();
+      
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        isPublicProfile: isPublic
+      });
+      // The AuthContext listens to this doc and will update 'profile' state automatically.
+      alert(`Public profile has been ${isPublic ? 'enabled' : 'disabled'}.`);
+    } catch (err) {
+      console.error('Failed to toggle public profile', err);
+      alert('Failed to update public profile settings.');
+    }
+  };
+
   const renderDashboard = () => {
     if (authLoading) {
       return (
@@ -1188,8 +1198,9 @@ export default function App() {
         </header>
 
         {/* Scrollable View Area (Infinite Scrolling inside Panel) */}
-        <main className="flex-1 overflow-y-auto pb-12">
-          {activeTab === 'collection' && (
+        <main className="flex-1 overflow-y-auto flex flex-col min-h-0">
+          <div className="flex-1">
+            {activeTab === 'collection' && (
             <CollectionView
               decks={decks}
               allCards={effectiveCards}
@@ -1207,8 +1218,8 @@ export default function App() {
               }}
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
-              onLoadShowcase={isShowcaseAccount(user?.email) ? handleLoadShowcaseData : undefined}
-              onAddSampleDeck={isShowcaseAccount(user?.email) ? handleLoadSampleDeck : undefined}
+              onLoadShowcase={handleLoadShowcaseData}
+              onAddSampleDeck={handleLoadSampleDeck}
             />
           )}
 
@@ -1252,8 +1263,8 @@ export default function App() {
               }
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
-              onLoadShowcase={isShowcaseAccount(user?.email) ? handleLoadShowcaseData : undefined}
-              onAddSampleDeck={isShowcaseAccount(user?.email) ? handleLoadSampleDeck : undefined}
+              onLoadShowcase={handleLoadShowcaseData}
+              onAddSampleDeck={handleLoadSampleDeck}
             />
           )}
 
@@ -1333,29 +1344,17 @@ export default function App() {
               lastSyncedTimestamp={lastSyncedTimestamp}
               snapshotMetrics={snapshotMetrics}
               userEmail={user?.email}
-              onResetShowcaseData={() => {
-                const targetUid = user?.uid || 'guest_user';
-                const showcaseDecks = generateShowcaseDecks(targetUid);
-                const showcaseLists = generateShowcaseCustomLists(targetUid);
-                const showcaseSealed = generateShowcaseSealed(targetUid);
-
-                setDecks(showcaseDecks);
-                setCustomLists(showcaseLists);
-                setSealedEntries(showcaseSealed);
-
-                idbSaveUserDecks(showcaseDecks, targetUid);
-                idbSaveCustomLists(showcaseLists, targetUid);
-                idbSaveSealedVault(showcaseSealed, targetUid);
-
-                saveCompressedCloudSnapshot();
-              }}
-              onOpenFunnelMetrics={() => setIsFunnelModalOpen(true)}
+              userId={user?.uid}
+              isPublicProfile={profile?.isPublicProfile}
+              onTogglePublicProfile={handleTogglePublicProfile}
               onOpenBackupModal={() => setIsBackupModalOpen(true)}
             />
           )}
 
+          </div>
+ 
           {/* Authenticated Workspace Footer Disclaimer */}
-          <footer className="mt-16 pt-6 pb-4 border-t border-slate-200 text-center flex flex-col items-center gap-3">
+          <footer className="mt-auto pt-8 pb-6 border-t border-slate-200 text-center flex flex-col items-center gap-3">
             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
               <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
               <span className="text-slate-300">•</span>
@@ -1453,6 +1452,38 @@ export default function App() {
         />
 
         <Route
+          path="/pricing"
+          element={
+            <PricingPageView
+              onOpenAuth={() => navigate('/auth')}
+              onEnterApp={() => navigate('/app')}
+              currentTier={currentTier}
+              onSelectTier={(tier) => {
+                if (!user) {
+                  navigate('/auth');
+                } else {
+                  handleChangeTier(tier);
+                }
+              }}
+              displayCurrency={displayCurrency}
+              user={user}
+            />
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <FaqPageView
+              onOpenAuth={() => navigate('/auth')}
+              onEnterApp={() => navigate('/app')}
+              displayCurrency={displayCurrency}
+              user={user}
+            />
+          }
+        />
+
+        <Route
           path="/auth"
           element={
             <AuthView
@@ -1462,6 +1493,7 @@ export default function App() {
         />
 
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+        <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<NotFoundView />} />

@@ -3,20 +3,20 @@ import { Link } from 'react-router-dom';
 import { DeckDividerBrand } from '../DeckDividerBrand';
 
 interface LandingFooterProps {
-  onEnterApp: () => void;
-  onOpenAuth: () => void;
-  onNavigateSection: (id: string) => void;
-  displayCurrency: string;
+  onEnterApp?: () => void;
+  onOpenAuth?: () => void;
+  onNavigateSection?: (id: string) => void;
+  displayCurrency?: string;
 }
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({
   onEnterApp,
   onOpenAuth,
   onNavigateSection,
-  displayCurrency,
+  displayCurrency = 'USD',
 }) => {
   return (
-    <footer className="bg-white border-t border-slate-200 mt-20 relative overflow-hidden">
+    <footer className="bg-white border-t border-slate-200 mt-auto relative z-10 w-full overflow-hidden">
       <div className="w-full px-6 lg:px-12 py-8 flex flex-col gap-6">
         {/* Top Row: Inline Config */}
         <div className="flex items-center gap-4 w-full overflow-hidden">
@@ -27,7 +27,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
             <span className="font-mono text-[11px] font-bold text-slate-700 tracking-wider">SUPPORT: deckdivider@outlook.com</span>
           </div>
           <div className="text-slate-500 text-sm truncate flex-grow">
-            Track raw cards, graded slabs, sealed products, and build competitive decks with live market data.
+            Raw cards, graded slabs, sealed product, and competitive decks — tracked live.
           </div>
         </div>
 
@@ -48,30 +48,12 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <Link to="/privacy" className="hover:text-cyan-600 transition-colors font-medium">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-cyan-600 transition-colors font-medium">Terms of Service</Link>
               <Link to="/auth" className="hover:text-cyan-600 transition-colors font-medium">Sign In</Link>
-              <a 
-                href="/#pricing" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('pricing');
-                  }
-                }} 
-                className="text-left hover:text-cyan-600 transition-colors font-medium"
-              >
+              <Link to="/pricing" className="text-left hover:text-cyan-600 transition-colors font-medium">
                 Pricing
-              </a>
-              <a 
-                href="/#faq" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('faq');
-                  }
-                }} 
-                className="text-left hover:text-cyan-600 transition-colors font-medium"
-              >
+              </Link>
+              <Link to="/faq" className="text-left hover:text-cyan-600 transition-colors font-medium">
                 FAQ & Notes
-              </a>
+              </Link>
             </div>
           </div>
 

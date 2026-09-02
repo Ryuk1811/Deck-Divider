@@ -9,6 +9,7 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { UserProfile, SubscriptionRecord } from '../types';
+import { evaluateSubscriptionGovernor } from '../utils/subscriptionGovernor';
 
 interface AuthContextValue {
   user: FirebaseUser | null;
@@ -101,21 +102,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const subRef = doc(db, 'subscriptions', uid);
       const subDoc = await getDoc(subRef);
       if (subDoc.exists()) {
-        const subData = subDoc.data() as SubscriptionRecord;
+        const rawSubData = subDoc.data() as SubscriptionRecord;
+        const governed = evaluateSubscriptionGovernor(rawSubData, isSuperUser);
+        
         if (isSuperUser) {
-          subData.tierName = 'Collection';
-          subData.isSuperUser = true;
-          await setDoc(subRef, { tierName: 'Collection', isSuperUser: true, billingStatus: 'active' }, { merge: true });
+          await setDoc(subRef, { 
+            tierName: 'Collection', 
+            effectiveTier: 'Collection', 
+            isSuperUser: true, 
+            billingStatus: 'active' 
+          }, { merge: true });
+        } else if (governed.isExpired && rawSubData.billingStatus !== 'expired') {
+          // Sync expired status back to Firestore doc so all sessions reflect it
+          await setDoc(subRef, { 
+            billingStatus: 'expired',
+            effectiveTier: 'Starter',
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
         }
-        setSubscription(subData);
+        setSubscription(governed);
       } else {
-        await setDoc(subRef, defaultSub, { merge: true });
-        setSubscription(defaultSub);
+        const governedDefault = evaluateSubscriptionGovernor(defaultSub, isSuperUser);
+        await setDoc(subRef, governedDefault, { merge: true });
+        setSubscription(governedDefault);
       }
     } catch (err) {
       console.warn('Firestore profile sync warning (using defaults):', err);
       setProfile((prev) => prev || defaultProf);
-      setSubscription((prev) => prev || defaultSub);
+      setSubscription((prev) => prev || evaluateSubscriptionGovernor(defaultSub, isSuperUser));
     }
   };
 
@@ -155,9 +169,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshSubscription = async () => {
     if (!user) return;
     try {
+      const isSuperUser = (user.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
       const subDoc = await getDoc(doc(db, 'subscriptions', user.uid));
       if (subDoc.exists()) {
-        setSubscription(subDoc.data() as SubscriptionRecord);
+        const governed = evaluateSubscriptionGovernor(subDoc.data() as SubscriptionRecord, isSuperUser);
+        setSubscription(governed);
       }
     } catch (e) {
       console.warn('Failed to refresh subscription:', e);

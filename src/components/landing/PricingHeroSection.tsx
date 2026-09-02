@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles, Zap, Shield } from 'lucide-react';
 import { AccountTier, DisplayCurrency, TIER_LIMITS } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 
@@ -84,20 +84,54 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
   ];
 
   return (
-    <section id="pricing" className="relative w-full py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 scroll-mt-16">
-      <div className="w-full max-w-[2200px] mx-auto space-y-12 lg:space-y-16">
-        {/* Section Header Card */}
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-xs p-6 sm:p-10 lg:p-12 text-center space-y-4 max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>COLLECTOR PLANS</span>
+    <section id="pricing" className="relative w-full py-6 sm:py-8 md:py-10 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-24 scroll-mt-16">
+      <div className="w-full max-w-[2200px] mx-auto space-y-6 sm:space-y-8">
+        {/* Immediate Offer Clarity: 3 Key Questions Answered */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs font-mono uppercase tracking-wider">
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200/60">
+                <Check className="w-4 h-4" />
+              </div>
+              <span>What's 100% Free?</span>
+            </div>
+            <h3 className="text-base font-bold text-[#0F172A] font-heading">
+              Starter Plan ($0 Free Forever)
+            </h3>
+            <p className="text-xs text-[#64748B] leading-relaxed">
+              Search 148+ expansions with live USD TCGplayer pricing, build up to 4 custom decks (max 25 cards each), and create 3 wishlists with no credit card required.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F172A] tracking-tight font-heading text-balance">
-            Pick the plan for your collection
-          </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-[#64748B] max-w-3xl mx-auto">
-            From casual binder collectors to active tournament players with boxes of graded slabs. Start free and upgrade as your collection grows.
-          </p>
+
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2 text-blue-700 font-bold text-xs font-mono uppercase tracking-wider">
+              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200/60">
+                <Zap className="w-4 h-4" />
+              </div>
+              <span>After Signing Up</span>
+            </div>
+            <h3 className="text-base font-bold text-[#0F172A] font-heading">
+              Instant Encrypted Cloud Sync
+            </h3>
+            <p className="text-xs text-[#64748B] leading-relaxed">
+              Your binders, tournament lists, and slab registry automatically synchronize to the cloud across all your desktop and mobile devices with zero setup.
+            </p>
+          </div>
+
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2 text-[#DC143C] font-bold text-xs font-mono uppercase tracking-wider">
+              <div className="p-1.5 rounded-lg bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20">
+                <Shield className="w-4 h-4" />
+              </div>
+              <span>No Account to Look Around</span>
+            </div>
+            <h3 className="text-base font-bold text-[#0F172A] font-heading">
+              Full Guest Exploration
+            </h3>
+            <p className="text-xs text-[#64748B] leading-relaxed">
+              Browse card catalogs, view real-time price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
+            </p>
+          </div>
         </div>
 
         {/* Pricing Cards Grid (All 5 Tiers) */}

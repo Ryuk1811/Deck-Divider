@@ -59,6 +59,16 @@ export function resetIndexedDB() {
 }
 
 export async function getIndexedDB(): Promise<IDBPDatabase<DeckDividerDBSchema>> {
+  let hasIDB = false;
+  try {
+    hasIDB = typeof window !== 'undefined' && !!window.indexedDB;
+  } catch (e) {
+    hasIDB = false;
+  }
+  if (!hasIDB) {
+    return Promise.reject(new Error("IndexedDB is not available in this environment"));
+  }
+
   if (!dbPromise) {
     try {
       dbPromise = openDB<DeckDividerDBSchema>(DB_NAME, DB_VERSION, {

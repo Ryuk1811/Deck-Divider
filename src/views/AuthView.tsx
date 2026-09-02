@@ -21,7 +21,7 @@ export function AuthView({
   onGuestAccess?: () => void;
 }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,6 +53,12 @@ export function AuthView({
       return;
     }
 
+    // Validate password
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+
     setLoading(true);
 
     if (!isLogin) {
@@ -72,17 +78,41 @@ export function AuthView({
       }
       navigate('/app');
     } catch (err: any) {
-      console.error(err);
-      let msg = err.message || 'An error occurred during authentication.';
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        msg = 'Invalid email or password.';
-      } else if (err.code === 'auth/email-already-in-use') {
-        msg = 'An account with this email address already exists.';
-      } else if (err.code === 'auth/weak-password') {
+      console.error('[Firebase Auth Error]', err);
+      let msg = 'An unexpected error occurred during authentication.';
+      
+      const errorCode = err.code || '';
+      if (
+        errorCode === 'auth/invalid-credential' || 
+        errorCode === 'auth/user-not-found' || 
+        errorCode === 'auth/wrong-password' ||
+        errorCode === 'auth/invalid-login-credentials'
+      ) {
+        msg = isLogin 
+          ? 'Invalid email or password. If you do not have an account yet, click "Sign up" below.'
+          : 'Invalid credentials provided.';
+      } else if (errorCode === 'auth/email-already-in-use') {
+        msg = 'An account with this email address already exists. Please switch to "Sign in" below.';
+      } else if (errorCode === 'auth/weak-password') {
         msg = 'Password should be at least 6 characters.';
-      } else if (err.code === 'auth/unauthorized-domain') {
-        msg = 'This domain is not authorized in Firebase Auth. Please add it in your Firebase Console > Auth > Settings > Authorized Domains.';
+      } else if (errorCode === 'auth/invalid-email') {
+        msg = 'Please provide a valid email address format.';
+      } else if (errorCode === 'auth/operation-not-allowed') {
+        msg = 'Email/Password sign-in is disabled in your Firebase project. Please enable "Email/Password" in Firebase Console > Authentication > Sign-in method.';
+      } else if (errorCode === 'auth/internal-error') {
+        msg = 'Firebase Auth Internal Error: Please ensure "Email/Password" sign-in provider is enabled in your Firebase Console (Authentication > Sign-in method), or use "Continue with Google".';
+      } else if (errorCode === 'auth/too-many-requests') {
+        msg = 'Access temporarily disabled due to multiple failed attempts. Please wait a moment and try again.';
+      } else if (errorCode === 'auth/network-request-failed') {
+        msg = 'Network error. Please check your internet connection and try again.';
+      } else if (errorCode === 'auth/unauthorized-domain') {
+        const currentDomain = window.location.hostname;
+        msg = `Domain "${currentDomain}" is not authorized. Add it in Firebase Console > Authentication > Settings > Authorized Domains.`;
+      } else if (err.message) {
+        // Strip raw "Firebase: Error (auth/...)" prefix if present for clean readability
+        msg = err.message.replace(/^Firebase:\s*Error\s*\((auth\/[^)]+)\)\.?/i, '$1:').trim() || err.message;
       }
+      
       setError(msg);
       setLoading(false);
     }
@@ -94,20 +124,23 @@ export function AuthView({
     trackSignupSubmit('google');
 
     try {
-      const provider = new GoogleAuthProvider();
-      provider.addScope('profile');
-      provider.addScope('email');
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-      await signInWithPopup(auth, provider);
+      if (signInWithGoogle) {
+        await signInWithGoogle();
+      } else {
+        const provider = new GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        provider.setCustomParameters({
+          prompt: 'select_account'
+        });
+        await signInWithPopup(auth, provider);
+      }
       trackSignupSuccess('google');
       navigate('/app');
     } catch (err: any) {
-      console.warn('[Google Auth]', err);
+      console.warn('[Google Auth Error]', err);
       setGoogleLoading(false);
 
-      // If the user closed or cancelled the popup intentionally, gracefully reset without showing a jarring error banner
       if (
         err.code === 'auth/popup-closed-by-user' || 
         err.code === 'auth/cancelled-popup-request' ||
@@ -116,14 +149,13 @@ export function AuthView({
         return;
       }
 
-      let msg = err.message || 'Failed to sign in with Google.';
-      if (err.code === 'auth/unauthorized-domain') {
-        const currentDomain = window.location.hostname;
-        msg = `Domain "${currentDomain}" is not in Firebase Authorized Domains. To enable Google Sign-In, go to Firebase Console > Authentication > Settings > Authorized Domains and add "${currentDomain}".`;
-      } else if (err.code === 'auth/popup-blocked') {
-        msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
-      } else if (err.code === 'auth/network-request-failed') {
-        msg = 'Network connection issue. Please check your internet connection and try again.';
+      let msg = 'Google Sign-In failed. Please try again.';
+      if (err.code === 'auth/popup-blocked') {
+        msg = 'Sign-in popup was blocked by the browser. Please allow popups for this site.';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        msg = 'This domain is not authorized in Firebase Auth settings.';
+      } else if (err.message) {
+        msg = err.message.replace(/^Firebase:\s*Error\s*\((auth\/[^)]+)\)\.?/i, '').trim() || err.message;
       }
       
       setError(msg);
@@ -131,8 +163,8 @@ export function AuthView({
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-dot-grid bg-[#F8FAFC] font-mono select-none p-4">
-      <div className="w-full max-w-md bg-white p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl relative">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-dot-grid bg-[#F8FAFC] font-mono select-none p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white p-6 sm:p-8 border border-[#E2E8F0] shadow-2xl rounded-2xl relative">
         <Link
           to="/"
           onClick={() => onBack && onBack()}
@@ -261,18 +293,6 @@ export function AuthView({
           </button>
         </div>
       </div>
-
-      {/* Footer Disclaimer */}
-      <footer className="mt-8 text-center max-w-lg px-4 flex flex-col items-center gap-3">
-        <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
-          <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
-          <span className="text-slate-300">•</span>
-          <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
-        </div>
-        <p className="text-[11px] leading-relaxed text-slate-400">
-          DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
-        </p>
-      </footer>
     </div>
   );
 }

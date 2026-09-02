@@ -43,48 +43,42 @@ const FAQ_ITEMS: FaqItem[] = [
     id: 'faq-1',
     category: 'Pricing & Data',
     question: 'Where do the card market prices come from?',
-    answer:
-      'Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values.',
-    highlight: 'Real-time conversions available for USD, EUR, GBP, JPY, CAD, and AUD.',
+    answer: 'Verified TCGplayer market prices and recent completed eBay sales. Automatic updates for collection and deck values.',
+    highlight: 'Real-time conversions for USD, EUR, GBP, JPY, CAD, and AUD.',
   },
   {
     id: 'faq-2',
     category: 'General',
     question: 'Can I track graded slabs (PSA, BGS, CGC, ACE) and sealed boxes?',
-    answer:
-      'Yes. You can log certificate numbers, grading company names, and full subgrades (Centering, Surface, Corners, Edges) for your slabs. You can also track sealed booster boxes, booster bundles, and Elite Trainer Boxes with original purchase costs.',
+    answer: 'Yes. Log certificate numbers, subgrades (Centering, Surface, Corners, Edges), and grading companies. Track sealed booster boxes, bundles, and Elite Trainer Boxes with purchase basis.',
     highlight: 'Track raw Near Mint binder cards and graded slab values side by side.',
   },
   {
     id: 'faq-3',
     category: 'Decks & Tournaments',
     question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
-    answer:
-      'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+    answer: 'Yes. Deck lists export directly for 1-click PTCGL import. Built-in verification for standard format legality and regulation marks.',
     highlight: 'Compatible with PTCGL, LimitlessTCG, and official Play! Pokémon events.',
   },
   {
     id: 'faq-4',
     category: 'Pricing & Data',
     question: 'How do master set checklists handle reverse holos and secret rares?',
-    answer:
-      'Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.',
+    answer: 'Separate independent checkboxes for regular cards, reverse holos, Masterball holos, and Secret Illustration Rares (SIRs).',
     highlight: 'Filter missing cards by lowest market price to finish binders efficiently.',
   },
   {
     id: 'faq-5',
     category: 'Security & Cloud',
     question: 'How is my collection data saved and kept private?',
-    answer:
-      'Your card inventory and purchase prices are stored securely in your browser and synced to your private account. Your collection data is completely private and is never sold to third-party ad networks.',
-    highlight: 'Export your complete card list and purchase logs to CSV anytime.',
+    answer: 'Data is synced to your private account. Collections are completely private and never sold to third parties.',
+    highlight: 'Export your complete card list and purchase logs to JSON anytime.',
   },
   {
     id: 'faq-6',
     category: 'Security & Cloud',
     question: 'Can I use DECK / divider on my phone at card shows and trade nights?',
-    answer:
-      'Yes. The app is fully responsive on mobile phones and tablets. You can check your want lists, verify deck counts, and lookup card market prices while walking convention floors.',
+    answer: 'Yes. Fully responsive on mobile phones and tablets. Check want lists, verify deck counts, and look up market prices on the go.',
   },
 ];
 
@@ -192,26 +186,10 @@ export const LandingFaqAndBlogs: React.FC = () => {
   const blogCategories = ['All', 'Market Trends', 'Deck Meta', 'Grading & Slabs', 'Security'];
 
   return (
-    <section id="faq-and-insights" className="py-16 sm:py-24 relative overflow-hidden">
+    <section id="faq-and-insights" className="py-6 sm:py-8 md:py-10 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E2E8F0] shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#DC143C]" />
-            <span className="font-mono text-[11px] uppercase tracking-wider font-bold text-[#0F172A]">
-              FAQ & COLLECTOR GUIDES
-            </span>
-          </div>
-          <h2 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-[#0F172A] tracking-tight">
-            Frequently Asked Questions & Collector Notes
-          </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] max-w-2xl mx-auto leading-relaxed">
-            Common questions about TCGplayer market prices, graded slab logs, 60-card deck rules, and collection backups.
-          </p>
-        </div>
-
         {/* 2-Column Side-by-Side Scrolling Containers */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
           
           {/* ========================================================================= */}
           {/* LEFT BOX: FAQ (Internal Scroll) */}

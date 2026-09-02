@@ -19,9 +19,17 @@ if (process.env.SENTRY_DSN) {
 
 import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
 import { verifyPayPalWebhookSignature, handlePayPalWebhookEvent } from './server/paypalWebhook.js';
+import { getExchangeRates } from './server/exchangeRates.js';
+import { createRazorpayOrder, verifyRazorpayWebhookSignature } from './server/razorpay.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb } from './server/firebaseAdmin.js';
 import { renderSsrRoute, injectSsrIntoTemplate } from './server/ssrRenderer.js';
+import { 
+  evaluateServerSubscription, 
+  getGovernedUserSubscription, 
+  calculateOneTimePeriod,
+  ONE_TIME_PASS_DURATION_DAYS
+} from './server/services/subscriptionGovernor.js';
 import {
   getExpansions,
   getAllCardsSummary,
@@ -49,12 +57,13 @@ async function startServer() {
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-      "img-src 'self' data: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://www.paypalobjects.com; " +
-      "font-src 'self' data: https://fonts.gstatic.com; " +
-      "connect-src 'self' ws://localhost:3000 wss://localhost:3000 https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com https://www.sandbox.paypal.com; " +
-      "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com;"
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paypal.com https://*.paypalobjects.com https://accounts.google.com; " +
+      "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.razorpay.com https://checkout.razorpay.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com; " +
+      "font-src 'self' data: https://fonts.gstatic.com https://*.paypalobjects.com; " +
+      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://api.razorpay.com https://*.razorpay.com https://lumberjack.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com; " +
+      "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com; " +
+      "child-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com;"
     );
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -197,6 +206,16 @@ Sitemap: https://deckdivider.app/sitemap.xml
   </url>
   <url>
     <loc>https://deckdivider.app/how-it-works</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/pricing</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/faq</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -388,15 +407,28 @@ Sitemap: https://deckdivider.app/sitemap.xml
     }
   });
 
-  app.get('/api/billing/subscription', verifyToken, async (req, res) => {
+  app.get('/api/billing/subscription', verifyToken, async (req: any, res: any) => {
     try {
-      const db = getAdminDb();
-      const doc = await db.collection('subscriptions').doc((req as any).uid).get();
-      if (doc.exists) {
-        res.json(doc.data());
-      } else {
-        res.json({ tierName: 'Starter', billingStatus: 'NONE' });
-      }
+      const isSuperUser = req.uid === 'gurutvamurdia@gmail.com' || (req.user?.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const governed = await getGovernedUserSubscription(req.uid, isSuperUser);
+      res.json(governed);
+    } catch (err: any) {
+      console.error('[Governor Route Error]', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  app.get('/api/billing/governor-status', verifyToken, async (req: any, res: any) => {
+    try {
+      const isSuperUser = req.uid === 'gurutvamurdia@gmail.com' || (req.user?.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const governed = await getGovernedUserSubscription(req.uid, isSuperUser);
+      res.json({
+        success: true,
+        governorVersion: '2.0-dual-edge-firestore',
+        governedSubscription: governed,
+        isAccessGranted: !governed.isExpired || governed.effectiveTier !== 'Starter',
+        timestamp: new Date().toISOString()
+      });
     } catch (err: any) {
       res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -428,6 +460,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
       const db = getAdminDb();
       await db.collection('subscriptions').doc((req as any).uid).set({
         tierName: newTier,
+        effectiveTier: newTier,
         paypalSubscriptionId: subscriptionId,
         billingStatus: 'REVISED',
         updatedAt: new Date().toISOString()
@@ -440,28 +473,57 @@ Sitemap: https://deckdivider.app/sitemap.xml
 
   app.post('/api/billing/execute', verifyToken, async (req, res) => {
     try {
-      const { subscriptionId, tier } = req.body;
+      const { subscriptionId, tier, provider } = req.body;
       let subStatus = 'ACTIVE';
-      try {
-        if (subscriptionId) {
-          const subDetails = await getSubscription(subscriptionId);
-          if (subDetails && subDetails.status) {
-            subStatus = subDetails.status;
+      
+      const db = getAdminDb();
+      const now = new Date();
+      
+      let updateData: any = {
+        tierName: tier,
+        effectiveTier: tier,
+        billingStatus: subStatus,
+        updatedAt: now.toISOString(),
+        provider: provider || 'paypal',
+        paymentType: provider === 'razorpay' ? 'one_time' : 'recurring'
+      };
+
+      if (provider === 'razorpay') {
+        // One-time payment logic for Razorpay
+        // Calculate 30 days period through Governor
+        const period = calculateOneTimePeriod(ONE_TIME_PASS_DURATION_DAYS, now);
+        updateData.razorpayPaymentId = subscriptionId;
+        updateData.currentPeriodStart = period.currentPeriodStart;
+        updateData.currentPeriodEnd = period.currentPeriodEnd;
+        updateData.daysRemaining = ONE_TIME_PASS_DURATION_DAYS;
+        updateData.isExpired = false;
+        updateData.governorNote = `Active one-time ${tier} pass via Razorpay`;
+      } else {
+        // Default PayPal mandate logic
+        try {
+          if (subscriptionId) {
+            const subDetails = await getSubscription(subscriptionId);
+            if (subDetails && subDetails.status) {
+              subStatus = subDetails.status;
+              updateData.billingStatus = subStatus;
+            }
           }
+        } catch (err: any) {
+          console.warn('PayPal live API subscription verification fallback:', err.message);
         }
-      } catch (err: any) {
-        console.warn('PayPal live API subscription verification fallback:', err.message);
+        updateData.paypalSubscriptionId = subscriptionId || 'LIVE_SUB_ACTIVATED';
       }
 
-      const db = getAdminDb();
-      await db.collection('subscriptions').doc((req as any).uid).set({
-        tierName: tier,
-        paypalSubscriptionId: subscriptionId || 'LIVE_SUB_ACTIVATED',
-        billingStatus: subStatus,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      await db.collection('subscriptions').doc((req as any).uid).set(updateData, { merge: true });
 
-      res.json({ success: true, tierName: tier, status: subStatus });
+      res.json({ 
+        success: true, 
+        tierName: tier, 
+        effectiveTier: tier, 
+        status: subStatus, 
+        provider: updateData.provider,
+        currentPeriodEnd: updateData.currentPeriodEnd 
+      });
     } catch (err: any) {
       console.error('Execute subscription error:', err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -483,8 +545,8 @@ Sitemap: https://deckdivider.app/sitemap.xml
     try {
       const { isPublic } = req.body;
       const db = getAdminDb();
-      const subDoc = await db.collection('subscriptions').doc(req.uid).get();
-      const tierName = subDoc.data()?.tierName || 'Starter';
+      const governed = await getGovernedUserSubscription(req.uid);
+      const tierName = governed.effectiveTier || 'Starter';
       const canShare = TIER_LIMITS[tierName]?.canSharePublicLinks ?? false;
 
       if (isPublic && !canShare) {
@@ -503,8 +565,8 @@ Sitemap: https://deckdivider.app/sitemap.xml
   app.post('/api/custom-lists', verifyToken, async (req: any, res: any) => {
     try {
       const db = getAdminDb();
-      const subDoc = await db.collection('subscriptions').doc(req.uid).get();
-      const tierName = subDoc.data()?.tierName || 'Starter';
+      const governed = await getGovernedUserSubscription(req.uid);
+      const tierName = governed.effectiveTier || 'Starter';
       const maxLists = TIER_LIMITS[tierName]?.maxLists || 3;
 
       const snapshot = await db.collection('users').doc(req.uid).collection('customLists').count().get();
@@ -527,22 +589,24 @@ Sitemap: https://deckdivider.app/sitemap.xml
     }
   });
 
-  app.post('/api/decks', verifyToken, async (req, res) => {
+  app.post('/api/decks', verifyToken, async (req: any, res: any) => {
     try {
       const db = getAdminDb();
-      const subDoc = await db.collection('subscriptions').doc((req as any).uid).get();
-      const tierName = subDoc.data()?.tierName || 'Starter';
+      const isSuperUser = req.uid === 'gurutvamurdia@gmail.com' || (req.user?.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const governed = await getGovernedUserSubscription(req.uid, isSuperUser);
+      const tierName = governed.effectiveTier || 'Starter';
       const maxDecks = TIER_LIMITS[tierName]?.maxDecks || 4;
 
-      const snapshot = await db.collection('users').doc((req as any).uid).collection('decks').count().get();
+      const snapshot = await db.collection('users').doc(req.uid).collection('decks').count().get();
       if (snapshot.data().count >= maxDecks) {
-        return res.status(403).json({ error: 'Tier limit exceeded for decks' });
+        return res.status(403).json({ error: `Tier limit exceeded: ${tierName} permits up to ${maxDecks} decks.` });
       }
 
-      const deckRef = db.collection('users').doc((req as any).uid).collection('decks').doc();
+      const deckRef = db.collection('users').doc(req.uid).collection('decks').doc();
       const newDeck = {
         ...req.body,
         id: deckRef.id,
+        ownerId: req.uid,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         entries: []
@@ -554,14 +618,15 @@ Sitemap: https://deckdivider.app/sitemap.xml
     }
   });
 
-  app.post('/api/decks/:deckId/cards', verifyToken, async (req, res) => {
+  app.post('/api/decks/:deckId/cards', verifyToken, async (req: any, res: any) => {
     try {
       const db = getAdminDb();
-      const subDoc = await db.collection('subscriptions').doc((req as any).uid).get();
-      const tierName = subDoc.data()?.tierName || 'Starter';
+      const isSuperUser = req.uid === 'gurutvamurdia@gmail.com' || (req.user?.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const governed = await getGovernedUserSubscription(req.uid, isSuperUser);
+      const tierName = governed.effectiveTier || 'Starter';
       const maxCards = TIER_LIMITS[tierName]?.maxCards || 25;
 
-      const deckRef = db.collection('users').doc((req as any).uid).collection('decks').doc(req.params.deckId);
+      const deckRef = db.collection('users').doc(req.uid).collection('decks').doc(req.params.deckId);
       
       await db.runTransaction(async (t) => {
         const deckDoc = await t.get(deckRef);
@@ -569,7 +634,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
         const deck = deckDoc.data();
         
         // Compute active cards
-        const activeCards = (deck.entries || []).filter(e => !e.isSold);
+        const activeCards = (deck.entries || []).filter((e: any) => !e.isSold);
         
         if (activeCards.length >= maxCards) {
           throw new Error('Tier limit exceeded for cards in this deck');
@@ -589,42 +654,44 @@ Sitemap: https://deckdivider.app/sitemap.xml
       });
       
       res.json({ success: true });
-    } catch (err) {
+    } catch (err: any) {
       if (err.message.includes('Tier limit exceeded')) {
-        return res.status(403).json({ error: 'Internal Server Error' });
+        return res.status(403).json({ error: 'Tier limit exceeded' });
       }
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
-  app.put('/api/decks/:deckId/split', verifyToken, async (req, res) => {
+  app.put('/api/decks/:deckId/split', verifyToken, async (req: any, res: any) => {
     try {
       const db = getAdminDb();
       const { cardIdsToSplit, newDeckName } = req.body;
       const sourceDeckId = req.params.deckId;
 
-      const subDoc = await db.collection('subscriptions').doc((req as any).uid).get();
-      const tierName = subDoc.data()?.tierName || 'Starter';
+      const isSuperUser = req.uid === 'gurutvamurdia@gmail.com' || (req.user?.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const governed = await getGovernedUserSubscription(req.uid, isSuperUser);
+      const tierName = governed.effectiveTier || 'Starter';
       const maxDecks = TIER_LIMITS[tierName]?.maxDecks || 4;
 
       await db.runTransaction(async (t) => {
         // Check deck limit
-        const snapshot = await t.get(db.collection('users').doc((req as any).uid).collection('decks'));
+        const snapshot = await t.get(db.collection('users').doc(req.uid).collection('decks'));
         if (snapshot.size >= maxDecks) {
           throw new Error('Tier limit exceeded for decks');
         }
         
-        const sourceRef = db.collection('users').doc((req as any).uid).collection('decks').doc(sourceDeckId);
+        const sourceRef = db.collection('users').doc(req.uid).collection('decks').doc(sourceDeckId);
         const sourceDoc = await t.get(sourceRef);
         if (!sourceDoc.exists) throw new Error('Source deck not found');
         const sourceData = sourceDoc.data();
         
-        const entriesToMove = sourceData.entries.filter(e => cardIdsToSplit.includes(e.cardId));
-        const remainingEntries = sourceData.entries.filter(e => !cardIdsToSplit.includes(e.cardId));
+        const entriesToMove = sourceData.entries.filter((e: any) => cardIdsToSplit.includes(e.cardId));
+        const remainingEntries = sourceData.entries.filter((e: any) => !cardIdsToSplit.includes(e.cardId));
         
-        const newDeckRef = db.collection('users').doc((req as any).uid).collection('decks').doc();
+        const newDeckRef = db.collection('users').doc(req.uid).collection('decks').doc();
         const newDeck = {
           id: newDeckRef.id,
+          ownerId: req.uid,
           name: newDeckName,
           description: `Split from ${sourceData.name}`,
           colorHex: sourceData.colorHex,
@@ -639,9 +706,9 @@ Sitemap: https://deckdivider.app/sitemap.xml
       });
       
       res.json({ success: true });
-    } catch (err) {
+    } catch (err: any) {
       if (err.message.includes('Tier limit exceeded')) {
-        return res.status(403).json({ error: 'Internal Server Error' });
+        return res.status(403).json({ error: 'Tier limit exceeded' });
       }
       res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -918,98 +985,96 @@ Sitemap: https://deckdivider.app/sitemap.xml
   });
 
   // --- Exchange Rate API Endpoint ---
-  let cachedExchangeRates: { rates: Record<string, number>; timestamp: number; provider: string } | null = null;
-
   app.get('/api/exchange-rates', async (req, res) => {
     try {
-      const NOW = Date.now();
-      // Use cache if less than 1 hour old and not forced refresh
-      if (cachedExchangeRates && (NOW - cachedExchangeRates.timestamp < 3600000) && !req.query.force) {
-        return res.json({
-          success: true,
-          base: 'USD',
-          rates: cachedExchangeRates.rates,
-          updated: new Date(cachedExchangeRates.timestamp).toISOString(),
-          provider: cachedExchangeRates.provider,
-          cached: true
-        });
-      }
-
-      const apiKey = process.env.EXCHANGE_RATE_API_KEY?.trim();
-      let rates: Record<string, number> | null = null;
-      let provider = 'ExchangeRate-API Open';
-
-      if (apiKey && apiKey !== 'MY_EXCHANGE_RATE_API_KEY') {
-        try {
-          const keyUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-          const apiRes = await fetch(keyUrl);
-          if (apiRes.ok) {
-            const data = await apiRes.json();
-            if (data.rates || data.conversion_rates) {
-              rates = data.rates || data.conversion_rates;
-              provider = 'ExchangeRate-API Pro (Key Configured)';
-            }
-          }
-        } catch (e) {
-          console.warn('Failed fetching with custom ExchangeRate API key, falling back to open endpoint:', e);
-        }
-      }
-
-      // Fallback to open ExchangeRate-API endpoint if no key or key fetch failed
-      if (!rates) {
-        try {
-          const openRes = await fetch('https://open.er-api.com/v6/latest/USD');
-          if (openRes.ok) {
-            const openData = await openRes.json();
-            if (openData.rates) {
-              rates = openData.rates;
-              provider = 'ExchangeRate-API Live (Open)';
-            }
-          }
-        } catch (e) {
-          console.warn('Failed fetching open ExchangeRate API:', e);
-        }
-      }
-
-      // Static fallback if network fails
-      if (!rates) {
-        rates = {
-          USD: 1.0,
-          EUR: 0.92,
-          GBP: 0.78,
-          JPY: 155.0,
-          CAD: 1.38,
-          AUD: 1.52,
-          CHF: 0.89,
-          INR: 83.5,
-          SGD: 1.35,
-          HKD: 7.82,
-          NZD: 1.65,
-          BRL: 5.65,
-          CNY: 7.25,
-          KRW: 1380.0,
-          MXN: 18.5,
-          SEK: 10.6,
-          NOK: 10.8,
-          DKK: 6.85,
-          PLN: 3.95,
-          TRY: 33.0,
-        };
-        provider = 'Fallback Default Rates';
-      }
-
-      cachedExchangeRates = { rates, timestamp: NOW, provider };
-
+      const data = await getExchangeRates(req.query.force === 'true');
       res.json({
         success: true,
         base: 'USD',
-        rates,
-        updated: new Date(NOW).toISOString(),
-        provider,
-        cached: false
+        rates: data.rates,
+        updated: new Date(data.timestamp).toISOString(),
+        provider: data.provider,
+        cached: true
       });
     } catch (err: any) {
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  // --- Razorpay API Endpoints ---
+  app.post('/api/v1/razorpay/create-order', billingLimiter, async (req, res) => {
+    try {
+      const { tier, userId } = req.body;
+      if (!tier || !userId) {
+        return res.status(400).json({ error: 'Missing tier or userId' });
+      }
+
+      // Map tier to USD price
+      const pricesUSD: Record<string, number> = {
+        'Starter': 0,
+        'Bunch': 11,
+        'Stack': 22,
+        'Deck': 33,
+        'Collection': 44
+      };
+
+      const usdPrice = pricesUSD[tier];
+      if (usdPrice === undefined || usdPrice === 0) {
+        return res.status(400).json({ error: 'Invalid tier for paid order' });
+      }
+
+      // Calculate INR amount dynamically using real exchange rates
+      const exchangeData = await getExchangeRates();
+      const inrRate = exchangeData.rates['INR'] || 83.5;
+      
+      // Calculate amount in paise (1 INR = 100 Paise)
+      const amountPaise = Math.round(usdPrice * inrRate * 100);
+
+      const order = await createRazorpayOrder(amountPaise, 'INR', `rcpt_${userId}_${Date.now()}`);
+
+      res.json({
+        success: true,
+        keyId: process.env.RAZORPAY_KEY_ID || 'rzp_live_TX714Wy6Wko6ZX',
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        tier
+      });
+    } catch (error: any) {
+      console.error('Error creating Razorpay order:', error);
+      res.status(500).json({ error: error.message || 'Failed to create Razorpay order' });
+    }
+  });
+
+  app.post('/api/v1/razorpay/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+      const signature = req.headers['x-razorpay-signature'] as string;
+      if (!signature) {
+        return res.status(400).send('No signature');
+      }
+
+      const isValid = verifyRazorpayWebhookSignature(req.body.toString(), signature);
+      if (!isValid) {
+        console.error('Invalid Razorpay signature');
+        return res.status(400).send('Invalid signature');
+      }
+
+      const event = JSON.parse(req.body.toString());
+
+      if (event.event === 'payment.captured' || event.event === 'order.paid') {
+        const payment = event.payload.payment.entity;
+        console.log('Razorpay payment captured for order:', payment.order_id);
+        
+        // Example: parse notes or receipt to get userId and tier, then grant subscription in DB
+        // const db = getAdminDb();
+        // Calculate subscription period start/end (30 days) for one-time payment simulation
+        // Write to user's subscription doc.
+      }
+
+      res.json({ status: 'ok' });
+    } catch (error: any) {
+      console.error('Razorpay Webhook Error:', error);
+      res.status(500).send(`Webhook Error: ${error.message}`);
     }
   });
 

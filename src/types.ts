@@ -35,7 +35,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxLists: 8,
     maxItemsPerList: 50,
     canSharePublicLinks: false,
-    tagline: 'For active player bundles',
+    tagline: 'For your first graded slabs',
   },
   Stack: {
     name: 'Stack',
@@ -325,16 +325,28 @@ export interface UserProfile {
   displayCurrency: DisplayCurrency;
   isSuperUser?: boolean;
   role?: string;
+  isPublicProfile?: boolean;
+  publicProfileShareCode?: string;
   createdAt: string;
 }
 
 export interface SubscriptionRecord {
   id: string; // auth.uid
   tierName: AccountTier;
-  billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid';
+  effectiveTier?: AccountTier;
+  billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
+  paymentType?: 'one_time' | 'recurring';
+  provider?: 'razorpay' | 'paypal' | 'system';
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  daysRemaining?: number;
+  isExpired?: boolean;
+  razorpayPaymentId?: string;
+  razorpayOrderId?: string;
   paypalSubscriptionId?: string;
   isSuperUser?: boolean;
   updatedAt: string;
+  governorNote?: string;
 }
 
 export interface SearchFilters {

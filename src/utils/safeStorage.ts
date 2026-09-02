@@ -3,7 +3,9 @@ const inMemorySessionStorage = new Map<string, string>();
 
 export function safeGetItem(key: string): string | null {
   try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
+    let hasLS = false;
+    try { hasLS = typeof window !== 'undefined' && !!window.localStorage; } catch (e) {}
+    if (hasLS) {
       const val = window.localStorage.getItem(key);
       if (val !== null) return val;
     }
@@ -16,7 +18,9 @@ export function safeGetItem(key: string): string | null {
 export function safeSetItem(key: string, value: string): void {
   inMemoryLocalStorage.set(key, value);
   try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
+    let hasLS = false;
+    try { hasLS = typeof window !== 'undefined' && !!window.localStorage; } catch (e) {}
+    if (hasLS) {
       window.localStorage.setItem(key, value);
     }
   } catch (err) {
@@ -27,7 +31,9 @@ export function safeSetItem(key: string, value: string): void {
 export function safeRemoveItem(key: string): void {
   inMemoryLocalStorage.delete(key);
   try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
+    let hasLS = false;
+    try { hasLS = typeof window !== 'undefined' && !!window.localStorage; } catch (e) {}
+    if (hasLS) {
       window.localStorage.removeItem(key);
     }
   } catch (err) {
@@ -37,7 +43,9 @@ export function safeRemoveItem(key: string): void {
 
 export function safeGetSessionItem(key: string): string | null {
   try {
-    if (typeof window !== 'undefined' && 'sessionStorage' in window) {
+    let hasSS = false;
+    try { hasSS = typeof window !== 'undefined' && !!window.sessionStorage; } catch (e) {}
+    if (hasSS) {
       const val = window.sessionStorage.getItem(key);
       if (val !== null) return val;
     }
@@ -50,7 +58,9 @@ export function safeGetSessionItem(key: string): string | null {
 export function safeSetSessionItem(key: string, value: string): void {
   inMemorySessionStorage.set(key, value);
   try {
-    if (typeof window !== 'undefined' && 'sessionStorage' in window) {
+    let hasSS = false;
+    try { hasSS = typeof window !== 'undefined' && !!window.sessionStorage; } catch (e) {}
+    if (hasSS) {
       window.sessionStorage.setItem(key, value);
     }
   } catch (err) {
@@ -61,7 +71,9 @@ export function safeSetSessionItem(key: string, value: string): void {
 export function safeRemoveSessionItem(key: string): void {
   inMemorySessionStorage.delete(key);
   try {
-    if (typeof window !== 'undefined' && 'sessionStorage' in window) {
+    let hasSS = false;
+    try { hasSS = typeof window !== 'undefined' && !!window.sessionStorage; } catch (e) {}
+    if (hasSS) {
       window.sessionStorage.removeItem(key);
     }
   } catch (err) {

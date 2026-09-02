@@ -143,38 +143,39 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       />
 
       <main className="flex-1 w-full max-w-[2200px] mx-auto px-3 sm:px-6 md:px-10 lg:px-14 xl:px-18 2xl:px-24 py-8 sm:py-16 lg:py-24 space-y-12 sm:space-y-20 lg:space-y-28 relative">
-        {/* 0. Tri-Slab Floating Collector Motion Canvas */}
-        <HeroFluidMotionCanvas />
-
         {/* Hero Section */}
-        <section className="text-center space-y-4 sm:space-y-6 md:space-y-8 max-w-5xl mx-auto pt-2 sm:pt-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeCurve }}
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[9px] sm:text-xs font-semibold shadow-xs text-center max-w-[95vw]"
-          >
-            <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-            <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">SYSTEM WORKFLOW & LIFECYCLE</span>
-          </motion.div>
+        <section className="relative overflow-hidden text-center space-y-4 sm:space-y-6 md:space-y-8 max-w-5xl mx-auto pt-2 sm:pt-4 rounded-3xl">
+          {/* Tri-Slab Floating Collector Motion Canvas scoped to Hero */}
+          <HeroFluidMotionCanvas />
+          <div className="relative z-10 space-y-4 sm:space-y-6 md:space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: easeCurve }}
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[9px] sm:text-xs font-semibold shadow-xs text-center max-w-[95vw]"
+            >
+              <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
+              <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">SYSTEM WORKFLOW & LIFECYCLE</span>
+            </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
-            className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.08] font-heading text-balance px-1"
-          >
-            From Raw Binders to Real-Time Ledger in <span className="text-[#DC143C]">Four Simple Steps</span>
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.08] font-heading text-balance px-1"
+            >
+              From Raw Binders to Real-Time Ledger in <span className="text-[#DC143C]">Four Simple Steps</span>
+            </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
-            className="text-xs sm:text-base md:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance px-2"
-          >
-            Explore how DECK / divider streamlines asset intake, valuation indexing, championship deck validation, and sealed vault management into a seamless, high-density workflow.
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
+              className="text-xs sm:text-base md:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance px-2"
+            >
+              Explore how DECK / divider streamlines asset intake, valuation indexing, championship deck validation, and sealed vault management into a seamless, high-density workflow.
+            </motion.p>
+          </div>
         </section>
 
         {/* 3-Depth Light Studio Glass Slab Window Showcase */}
@@ -434,6 +435,8 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
 
       {/* Shared Footer */}
       <LandingFooter
+        onEnterApp={onOpenAuth}
+        onOpenAuth={onOpenAuth}
         displayCurrency={displayCurrency}
         onNavigateSection={(id) => {
           if (id === 'about') {

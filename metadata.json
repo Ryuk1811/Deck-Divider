@@ -1,6 +1,6 @@
 {
   "name": "DECK / divider",
-  "description": "Standalone Pokemon TCG portfolio, deck management, set completion, and collection manager featuring Soft Neo-Brutalist Luxury UI/UX.",
+  "description": "Track your Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks, complete master sets, and view real-time collection values in 15+ currencies.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

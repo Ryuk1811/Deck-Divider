@@ -512,14 +512,14 @@ export const DecksView: React.FC<DecksViewProps> = ({
               <Plus className="w-4 h-4" />
               <span>Create First Deck</span>
             </button>
-            {isSuperUser && onLoadShowcase && (
+            {onLoadShowcase && (
               <button
                 type="button"
                 onClick={onLoadShowcase}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
-                <span>Super User: Restore Showcase</span>
+                <span>Load Sample Decks</span>
               </button>
             )}
           </div>

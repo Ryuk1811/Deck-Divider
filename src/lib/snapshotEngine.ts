@@ -18,6 +18,8 @@ export interface UserCompressedSnapshotState {
     tier: AccountTier;
     currency: string;
     settings?: Record<string, any>;
+    isPublicProfile?: boolean;
+    publicProfileShareCode?: string;
   };
   decks: Deck[];
   customLists: CustomList[];
@@ -33,6 +35,8 @@ export interface CompressedSnapshotDoc {
   byteSize: number;
   rawSize: number;
   compressionRatio: string;
+  isPublicProfile?: boolean;
+  publicProfileShareCode?: string;
   summary: {
     deckCount: number;
     cardCount: number;
@@ -130,6 +134,8 @@ export async function packageUserSnapshot(state: UserCompressedSnapshotState): P
     byteSize,
     rawSize,
     compressionRatio: ratio,
+    isPublicProfile: state.profile.isPublicProfile,
+    publicProfileShareCode: state.profile.publicProfileShareCode,
     summary: {
       deckCount: state.decks.length,
       cardCount: totalCards,

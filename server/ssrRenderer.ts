@@ -281,8 +281,8 @@ export async function renderSsrRoute(
 
   // 2. ABOUT PAGE ROUTE: /about
   if (cleanPath === '/about') {
-    const pageTitle = 'About Us & Architecture — DECK / divider Pokémon TCG';
-    const pageDesc = 'Engineered for precision in Pokémon TCG. Discover our 4 core tenets for real-time market valuation, championship deck legality, and graded slab certification.';
+    const pageTitle = 'About Us & Mission — DECK / divider Pokémon TCG';
+    const pageDesc = 'Built by lifelong Pokémon card collectors and tournament players. Discover our story, our 4 design principles, and our transparent pricing and card data provenance.';
     const canonicalUrl = `${canonicalOrigin}/about`;
 
     const jsonLd = {
@@ -311,7 +311,7 @@ export async function renderSsrRoute(
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="DECK / divider Architecture & Engineering Tenets" />
+    <meta property="og:image:alt" content="About DECK / divider" />
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DECK / divider" />
@@ -333,117 +333,118 @@ export async function renderSsrRoute(
         <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
         <a href="/about" style="color:#DC143C;text-decoration:none;">About</a>
         <a href="/how-it-works" style="color:#64748B;text-decoration:none;">How It Works</a>
+        <a href="/pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
+        <a href="/faq" style="color:#64748B;text-decoration:none;">FAQ</a>
         <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;">Sign In</a>
       </nav>
     </header>
 
     <main style="max-width:1100px;margin:0 auto;padding:48px 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
       <section style="text-align:center;margin-bottom:56px;">
-        <span style="display:inline-block;padding:4px 12px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">The Architecture Behind DECK / divider</span>
-        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 20px;">Engineered for Precision in the Modern Pokémon TCG Ecosystem</h1>
-        <p style="font-size:18px;color:#64748B;max-width:800px;margin:0 auto;">DECK / divider bridges the gap between casual card tracking and institutional-grade portfolio intelligence. Built by players and collectors for high-net-worth vaults and tournament champions.</p>
+        <span style="display:inline-block;padding:4px 12px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">ABOUT DECK / DIVIDER</span>
+        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 20px;">Built by Collectors, Crafted for the Pokémon TCG Community</h1>
+        <p style="font-size:18px;color:#64748B;max-width:800px;margin:0 auto;">DECK / divider is an independent fan project created by lifelong card collectors and competitive players who wanted a fast, clean, ad-free way to track raw binders, slabs, and tournament decks.</p>
       </section>
 
-      <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;margin-bottom:56px;">
-        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;box-shadow:0 2px 4px rgba(0,0,0,0.02);">
-          <span style="color:#94A3B8;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">The Challenge</span>
-          <h2 style="font-size:24px;font-weight:800;margin:12px 0 16px;letter-spacing:-0.5px;">The Fragmentation of TCG Asset Tracking</h2>
-          <p style="color:#64748B;font-size:15px;margin-bottom:16px;">For years, Pokémon collectors and competitors have been forced to juggle disjointed tools: manual spreadsheets with stale market prices, clunky deckbuilders without format checks, and unverified binder photos without grading metadata.</p>
-          <ul style="color:#64748B;font-size:14px;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:8px;">
-            <li>Unreliable valuations caused by unindexed currency fluctuations and delayed market sync.</li>
-            <li>Lack of subgrade and certificate audit trails for high-value PSA, BGS, and CGC slabs.</li>
-            <li>Disconnected deck lists with no automatic championship legality or energy distribution analysis.</li>
-          </ul>
+      <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:36px;box-shadow:0 1px 3px rgba(0,0,0,0.03);margin-bottom:48px;">
+        <h2 style="font-size:24px;font-weight:800;margin:0 0 16px;">Why We Built DECK / divider</h2>
+        <p style="color:#475569;font-size:15px;margin-bottom:16px;">Like many in the community, we spent years managing our cards across messy spreadsheets, taking photos of binder pages that we constantly lost track of, and juggling slow apps full of paywalled card lookups and intrusive banner ads.</p>
+        <p style="color:#475569;font-size:15px;margin-bottom:16px;">We built DECK / divider to provide the cleanest, fastest, and most transparent tool for tracking raw binders, authenticated slabs (PSA, BGS, CGC), sealed booster boxes, and 60-card tournament decks — with zero ad bloat and full respect for your data.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-top:24px;padding-top:24px;border-top:1px solid #F1F5F9;">
+          <div style="background:#F8FAFC;padding:16px;border-radius:10px;border:1px solid #E2E8F0;">
+            <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">01 • Community First</strong>
+            <span style="font-size:13px;color:#64748B;">Built by players who open packs, grade cards, and play at local leagues.</span>
+          </div>
+          <div style="background:#F8FAFC;padding:16px;border-radius:10px;border:1px solid #E2E8F0;">
+            <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">02 • Zero Ads</strong>
+            <span style="font-size:13px;color:#64748B;">Fast, clutter-free search with keyboard shortcuts and instant response.</span>
+          </div>
+          <div style="background:#F8FAFC;padding:16px;border-radius:10px;border:1px solid #E2E8F0;">
+            <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">03 • Open Data</strong>
+            <span style="font-size:13px;color:#64748B;">Export full CSV backups and 1-click PTCGL deck lists at any time.</span>
+          </div>
         </div>
+      </section>
 
-        <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:32px;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
-          <span style="color:#DC143C;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">The Solution</span>
-          <h2 style="font-size:24px;font-weight:800;margin:12px 0 16px;letter-spacing:-0.5px;color:#FFFFFF;">The DECK / divider Unified Architecture</h2>
-          <p style="color:#CBD5E1;font-size:15px;margin-bottom:16px;">A purpose-built suite bringing together live market valuation, slab certification validation, 60-card tournament deck engineering, and sealed vault asset management under a single, cohesive operating system.</p>
-          <ul style="color:#CBD5E1;font-size:14px;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:8px;">
-            <li>Real-time price reconciliation across major marketplace feeds and historical sales.</li>
-            <li>Complete master set matrix covering 148+ expansions from Base Set to modern sets.</li>
-            <li>Instant exportable tournament rosters compliant with Play! Pokémon regulations.</li>
-          </ul>
+      <section style="background:#0F172A;color:#FFFFFF;border-radius:16px;padding:36px;margin-bottom:48px;">
+        <span style="color:#34D399;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Data Transparency</span>
+        <h2 style="font-size:26px;font-weight:800;margin:8px 0 16px;color:#FFFFFF;">Where Our Price &amp; Card Data Comes From</h2>
+        <p style="color:#94A3B8;font-size:15px;margin-bottom:24px;">We believe in total transparency about how card values, set checklists, and format rules are calculated:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;">
+          <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
+            <strong style="color:#34D399;display:block;font-size:14px;margin-bottom:6px;">TCGplayer &amp; eBay Comps</strong>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Raw card values update from verified TCGplayer market prices and recent completed eBay sold transactions to filter out fraudulent listings.</p>
+          </div>
+          <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
+            <strong style="color:#60A5FA;display:block;font-size:14px;margin-bottom:6px;">Multi-Currency Exchange</strong>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Daily forex exchange feeds support USD, EUR, GBP, JPY, CAD, AUD, and 10+ currencies so international values stay accurate.</p>
+          </div>
+          <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
+            <strong style="color:#FBBF24;display:block;font-size:14px;margin-bottom:6px;">148+ Set Checklists</strong>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Comprehensive checklists spanning Vintage (Base Set 1999) to Scarlet &amp; Violet with reverse holo and secret rare tracking.</p>
+          </div>
+          <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
+            <strong style="color:#F43F5E;display:block;font-size:14px;margin-bottom:6px;">Play! Pokémon Legality</strong>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Standard regulation mark verification (F, G, H, I) and PTCGL export formats kept in sync with official tournament rotation bulletins.</p>
+          </div>
         </div>
       </section>
 
       <section style="margin-bottom:56px;">
-        <h2 style="font-size:32px;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-0.5px;">Core Engineering Tenets</h2>
-        <p style="text-align:center;color:#64748B;margin-bottom:36px;font-size:16px;">Explore the four foundational principles that govern every algorithm, database schema, and interface in DECK / divider.</p>
+        <h2 style="font-size:28px;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-0.5px;">Four Core Design Principles</h2>
+        <p style="text-align:center;color:#64748B;margin-bottom:36px;font-size:15px;">Every feature in DECK / divider is designed around these four collector-first commitments.</p>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;">
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">01 / 04</div>
-            <h3 style="font-size:18px;font-weight:700;margin:0 0 4px;">Real-Time Valuation & Anti-Drift</h3>
-            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Continuous Multi-Currency Aggregation</span>
+            <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">Real-Time Market Prices</h3>
+            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">TCGplayer Comps &amp; Currency Sync</span>
             <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Interfaces directly with market valuation endpoints across USD, JPY, EUR, GBP, and 10+ global currencies simultaneously.</p>
           </div>
 
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">02 / 04</div>
-            <h3 style="font-size:18px;font-weight:700;margin:0 0 4px;">Tournament-Grade Rules Engine</h3>
-            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Championship Formats & Deck Legality</span>
-            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Continuous 60-card format checks enforcing the 4-copy rule, Radiant limits, ACE SPEC restrictions, and regulation mark rules (F, G, H).</p>
+            <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">Tournament Deckbuilder</h3>
+            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Standard Format Legality &amp; PTCGL Export</span>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Continuous 60-card format checks enforcing the 4-copy rule, Radiant limits, ACE SPEC restrictions, and regulation mark rules (F, G, H, I).</p>
           </div>
 
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">03 / 04</div>
-            <h3 style="font-size:18px;font-weight:700;margin:0 0 4px;">Physical & Digital Twin Fidelity</h3>
-            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Authentic Slabs & Shimmer Physics</span>
-            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Support for PSA, BGS, and CGC certified certificates, individual subgrade breakdowns, and realistic holographic physics.</p>
+            <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">PSA, BGS &amp; CGC Slab Registry</h3>
+            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Cert Verification &amp; Subgrades</span>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Support for PSA, BGS, and CGC certified certificates, individual subgrade breakdowns, and high-resolution visual previews.</p>
           </div>
 
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">04 / 04</div>
-            <h3 style="font-size:18px;font-weight:700;margin:0 0 4px;">Privacy & Architectural Restraint</h3>
-            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Zero Bloat, High Density, Total Security</span>
-            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">No intrusive tracking, fast responsive interfaces, and AES-256 cloud encryption with offline-first client cache storage.</p>
-          </div>
-        </div>
-      </section>
-
-      <section style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:16px;padding:36px;text-align:center;margin-bottom:56px;">
-        <span style="color:#DC143C;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Platform Capacity</span>
-        <h3 style="font-size:24px;font-weight:800;margin:8px 0 24px;">DECK / divider by the Numbers</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:20px;">
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
-            <div style="font-size:36px;font-weight:900;color:#0F172A;">148+</div>
-            <div style="font-size:13px;color:#64748B;font-weight:600;margin-top:4px;">Master Expansions</div>
-          </div>
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
-            <div style="font-size:36px;font-weight:900;color:#0F172A;">3</div>
-            <div style="font-size:13px;color:#64748B;font-weight:600;margin-top:4px;">Grading Scales (PSA/BGS/CGC)</div>
-          </div>
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
-            <div style="font-size:36px;font-weight:900;color:#0F172A;">15+</div>
-            <div style="font-size:13px;color:#64748B;font-weight:600;margin-top:4px;">Active Currencies</div>
-          </div>
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
-            <div style="font-size:36px;font-weight:900;color:#0F172A;">100%</div>
-            <div style="font-size:13px;color:#64748B;font-weight:600;margin-top:4px;">Championship Formats</div>
+            <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">Privacy &amp; No-Ad Commitment</h3>
+            <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Zero Bloat, Fast Speed, Total Security</span>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">No intrusive tracking, fast responsive interfaces, and encrypted cloud sync with offline-first client cache storage.</p>
           </div>
         </div>
       </section>
 
       <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;">
         <div>
-          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;">Ready to see the workflow in action?</h3>
-          <p style="color:#64748B;margin:0;font-size:14px;">Learn how our 4-step pipeline transforms raw card boxes and graded slabs into an organized, real-time institutional asset ledger.</p>
+          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;">Ready to organize your collection?</h3>
+          <p style="color:#64748B;margin:0;font-size:14px;">Start with our free Starter plan to track raw binders, log graded slabs, and build 60-card tournament decks.</p>
         </div>
         <div style="display:flex;gap:12px;">
-          <a href="/how-it-works" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Explore How It Works</a>
-          <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Sign In / Login</a>
+          <a href="/pricing" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Plans</a>
+          <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Start Your Collection</a>
         </div>
       </section>
     </main>
 
     <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
-      <p style="margin:0 0 8px;">DECK / divider — Precision Pokémon TCG Deck Studio & Portfolio Operating System</p>
+      <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Collection Tracker, Slab Registry &amp; Deckbuilder</p>
       <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
         <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
-        <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About & Architecture</a>
+        <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About &amp; Team</a>
         <a href="/how-it-works" style="color:#0F172A;text-decoration:none;font-weight:600;">How It Works</a>
+        <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+        <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a>
         <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
         <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
         <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
@@ -679,6 +680,560 @@ export async function renderSsrRoute(
     return { title: pageTitle, metaTags, bodyHtml };
   }
 
+  // 5. PRICING PAGE ROUTE: /pricing
+  if (cleanPath === '/pricing') {
+    const pageTitle = 'Pricing Plans & Subscriptions — DECK / divider Pokémon TCG';
+    const pageDesc = 'Compare DECK / divider subscription tiers from free Starter to institutional Collection Vault. 60-card tournament builder, PSA slab tracking, and live market pricing.';
+    const canonicalUrl = `${canonicalOrigin}/pricing`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebPage',
+          '@id': `${canonicalOrigin}/pricing#webpage`,
+          url: canonicalUrl,
+          name: pageTitle,
+          description: pageDesc,
+          isPartOf: { '@id': 'https://deckdivider.app/#website' },
+        },
+        {
+          '@type': 'SoftwareApplication',
+          name: 'DECK / divider',
+          applicationCategory: 'EntertainmentApplication',
+          operatingSystem: 'Web, iOS, Android',
+          offers: {
+            '@type': 'AggregateOffer',
+            priceCurrency: 'USD',
+            lowPrice: '0',
+            highPrice: '19.99',
+            offerCount: 5,
+            offers: [
+              {
+                '@type': 'Offer',
+                name: 'Starter',
+                price: '0',
+                priceCurrency: 'USD',
+                description: 'Essential collection tracking and basic deckbuilder.',
+              },
+              {
+                '@type': 'Offer',
+                name: 'Bunch',
+                price: '4.99',
+                priceCurrency: 'USD',
+                description: 'For active players building competitive decks and logging grades.',
+              },
+              {
+                '@type': 'Offer',
+                name: 'Stack',
+                price: '6.99',
+                priceCurrency: 'USD',
+                description: 'Expanded capacity for serious binder completists.',
+              },
+              {
+                '@type': 'Offer',
+                name: 'Deck',
+                price: '9.99',
+                priceCurrency: 'USD',
+                description: 'Championship 60-card tournament decks, sealed vault, and alert tools.',
+              },
+              {
+                '@type': 'Offer',
+                name: 'Collection',
+                price: '19.99',
+                priceCurrency: 'USD',
+                description: 'Institutional-grade high-net-worth portfolio vault with unlimited headroom.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DECK / divider Pricing Tiers" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DECK / divider" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
+          DECK <span style="color:#DC143C;">/</span> divider
+        </a>
+      </div>
+      <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
+        <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
+        <a href="/about" style="color:#64748B;text-decoration:none;">About</a>
+        <a href="/how-it-works" style="color:#64748B;text-decoration:none;">How It Works</a>
+        <a href="/pricing" style="color:#DC143C;text-decoration:none;">Pricing</a>
+        <a href="/faq" style="color:#64748B;text-decoration:none;">FAQ</a>
+        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;">Sign In</a>
+      </nav>
+    </header>
+
+    <main style="max-width:1200px;margin:0 auto;padding:48px 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
+      <section style="text-align:center;margin-bottom:36px;">
+        <span style="display:inline-block;padding:4px 12px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">Transparent Subscription Tiers</span>
+        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 16px;">Predictable Pricing for Collectors &amp; Competitors</h1>
+        <p style="font-size:18px;color:#64748B;max-width:750px;margin:0 auto;">Start with our free Starter plan and scale as your collection grows. Live market valuations, 60-card tournament tools, and PSA slab tracking.</p>
+      </section>
+
+      <!-- Immediate Offer Clarity: 3 Key Questions Answered -->
+      <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;margin-bottom:48px;">
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="color:#059669;font-weight:800;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+            <span>✓ What's 100% Free?</span>
+          </div>
+          <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;">Starter Plan ($0 Free Forever)</h3>
+          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Search 148+ expansions with live USD TCGplayer pricing, build up to 4 custom decks (max 25 cards each), and create 3 wishlists with no credit card required.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="color:#2563EB;font-weight:800;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+            <span>⚡ After Signing Up</span>
+          </div>
+          <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;">Instant Encrypted Cloud Sync</h3>
+          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Your binders, tournament lists, and slab registry automatically synchronize to the cloud across all your desktop and mobile devices with zero setup.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="color:#DC143C;font-weight:800;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+            <span>🛡️ No Account to Look Around</span>
+          </div>
+          <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;">Full Guest Exploration</h3>
+          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Browse card catalogs, view real-time price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.</p>
+        </div>
+      </section>
+
+      <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px;margin-bottom:56px;">
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Starter</h2>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">Free <span style="font-size:13px;color:#64748B;font-weight:400;">/ forever</span></div>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Essential collection tracking and basic deckbuilder.</p>
+          <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Up to 4 custom decks</li>
+            <li>Max 25 cards per deck</li>
+            <li>Up to 3 wishlists</li>
+            <li>Live USD market prices</li>
+          </ul>
+          <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Get Started Free</a>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Bunch</h2>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$4.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">For your first graded slabs &amp; PSA cert logging.</p>
+          <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Up to 9 custom decks</li>
+            <li>Max 40 cards per deck</li>
+            <li>PSA, BGS &amp; CGC cert logging</li>
+            <li>Multi-currency conversion</li>
+          </ul>
+          <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Bunch</a>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Stack</h2>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$6.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Expanded capacity for serious binder completists.</p>
+          <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Up to 15 custom decks</li>
+            <li>Max 50 cards per deck</li>
+            <li>Master set checklist tracking</li>
+            <li>Shareable deck links</li>
+          </ul>
+          <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Stack</a>
+        </div>
+
+        <div style="background:#FFFFFF;border:2px solid #DC143C;border-radius:16px;padding:24px;position:relative;box-shadow:0 4px 12px rgba(220,20,60,0.1);">
+          <span style="position:absolute;top:-12px;right:16px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">MOST POPULAR</span>
+          <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Deck</h2>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$9.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Championship 60-card tournament decks and sealed vault.</p>
+          <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Up to 18 custom decks (60-card)</li>
+            <li>PTCGL 1-click text export</li>
+            <li>Sealed booster box tracker</li>
+            <li>Price drop alerts &amp; targets</li>
+          </ul>
+          <a href="/auth" style="display:block;text-align:center;background:#DC143C;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Deck</a>
+        </div>
+
+        <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;color:#FFFFFF;">Collection</h2>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;color:#FFFFFF;">$19.99 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
+          <p style="color:#94A3B8;font-size:13px;margin-bottom:16px;">Institutional high-net-worth portfolio vault.</p>
+          <ul style="color:#CBD5E1;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Unlimited decks &amp; wishlists (&infin;)</li>
+            <li>Full 60-card tournament decks</li>
+            <li>Priority sub-second market sync</li>
+            <li>Full CSV export &amp; cloud backup</li>
+          </ul>
+          <a href="/auth" style="display:block;text-align:center;background:#FFFFFF;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Collection</a>
+        </div>
+      </section>
+
+      <section style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:16px;padding:36px 24px;margin-bottom:48px;">
+        <h2 style="font-size:24px;font-weight:800;text-align:center;margin-bottom:24px;">Billing &amp; Subscription Questions</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
+            <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">What's 100% free, and do I need a credit card?</h3>
+            <p style="color:#64748B;font-size:13px;margin:0;">The Starter plan is $0 free forever. Search 148+ expansions, build up to 4 custom decks (25 cards/deck), and create 3 wishlists with no credit card required.</p>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
+            <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">What happens right after I sign up?</h3>
+            <p style="color:#64748B;font-size:13px;margin:0;">Your private encrypted workspace is created instantly. Your binders, decks, and wishlists automatically sync to the cloud across all your desktop and mobile devices.</p>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
+            <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">Is an account required just to look around?</h3>
+            <p style="color:#64748B;font-size:13px;margin:0;">No. You can search cards, check live market price charts, inspect set checklists, and test sample collections immediately as a guest without creating an account.</p>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
+            <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">Can I cancel anytime?</h3>
+            <p style="color:#64748B;font-size:13px;margin:0;">Yes. There are no contracts. You can manage or cancel your recurring subscription directly via your account settings or PayPal dashboard.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Precision Pokémon TCG Deck Studio & Portfolio Operating System</p>
+      <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+        <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About & Architecture</a>
+        <a href="/how-it-works" style="color:#0F172A;text-decoration:none;font-weight:600;">How It Works</a>
+        <a href="/pricing" style="color:#DC143C;text-decoration:none;font-weight:600;">Pricing</a>
+        <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a>
+        <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
+        <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
+        <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+      </div>
+      <p style="margin:0;font-size:11px;color:#94A3B8;max-width:700px;margin-left:auto;margin-right:auto;line-height:1.5;">DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.</p>
+    </footer>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
+  // 6. FAQ PAGE ROUTE: /faq
+  if (cleanPath === '/faq') {
+    const pageTitle = 'Frequently Asked Questions — DECK / divider Pokémon TCG';
+    const pageDesc = 'Answers to common questions about DECK / divider live market valuations, PSA slab certification logging, 60-card tournament deck rules, and collection security.';
+    const canonicalUrl = `${canonicalOrigin}/faq`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      '@id': `${canonicalOrigin}/faq#faqpage`,
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl,
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Where do the card market prices come from?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I track graded slabs (PSA, BGS, CGC, ACE) and sealed boxes?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. You can log certificate numbers, grading company names, and full subgrades (Centering, Surface, Corners, Edges) for your slabs. You can also track sealed booster boxes, booster bundles, and Elite Trainer Boxes with original purchase costs.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do master set checklists handle reverse holos and secret rares?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How is my collection data saved and kept private?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Your card inventory and purchase prices are stored securely in your browser and synced to your private account. Your collection data is completely private and is never sold to third-party ad networks.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I use DECK / divider on my phone at card shows and trade nights?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The app is fully responsive on mobile phones and tablets. You can check your want lists, verify deck counts, and lookup card market prices while walking convention floors.',
+          },
+        },
+      ],
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DECK / divider FAQ & Help Center" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DECK / divider" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
+          DECK <span style="color:#DC143C;">/</span> divider
+        </a>
+      </div>
+      <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
+        <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
+        <a href="/about" style="color:#64748B;text-decoration:none;">About</a>
+        <a href="/how-it-works" style="color:#64748B;text-decoration:none;">How It Works</a>
+        <a href="/pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
+        <a href="/faq" style="color:#DC143C;text-decoration:none;">FAQ</a>
+        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;">Sign In</a>
+      </nav>
+    </header>
+
+    <main style="max-width:900px;margin:0 auto;padding:48px 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
+      <section style="text-align:center;margin-bottom:48px;">
+        <span style="display:inline-block;padding:4px 12px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">Knowledge Base &amp; Help</span>
+        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 16px;">Frequently Asked Questions</h1>
+        <p style="font-size:18px;color:#64748B;max-width:700px;margin:0 auto;">Everything you need to know about DECK / divider valuations, format legality checks, PSA slab cert tracking, and subscription plans.</p>
+      </section>
+
+      <section style="display:flex;flex-direction:column;gap:16px;margin-bottom:48px;">
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Where do the card market prices come from?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values across 15+ fiat currencies.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Can I track graded slabs (PSA, BGS, CGC, ACE) and sealed boxes?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Yes. You can log certificate numbers, grading company names, and full subgrades (Centering, Surface, Corners, Edges) for your slabs. You can also track sealed booster boxes, booster bundles, and Elite Trainer Boxes with original purchase costs.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Can I export deck lists directly into Pokémon TCG Live (PTCGL)?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">How do master set checklists handle reverse holos and secret rares?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">How is my collection data saved and kept private?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Your card inventory and purchase prices are stored securely in your browser and synced to your private account. Your collection data is completely private and is never sold to third-party ad networks.</p>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Can I use DECK / divider on my phone at card shows and trade nights?</h2>
+          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The app is fully responsive on mobile phones and tablets. You can check your want lists, verify deck counts, and lookup card market prices while walking convention floors.</p>
+        </div>
+      </section>
+
+      <section style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:16px;padding:32px;text-align:center;">
+        <h2 style="font-size:20px;font-weight:800;margin:0 0 8px;">Still have questions?</h2>
+        <p style="color:#64748B;font-size:14px;margin:0 0 16px;">Contact our collector support desk anytime at <a href="mailto:deckdivider@outlook.com" style="color:#DC143C;text-decoration:none;font-weight:600;">deckdivider@outlook.com</a>.</p>
+        <a href="/auth" style="display:inline-block;background:#DC143C;color:#FFFFFF;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Launch App Free</a>
+      </section>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Precision Pokémon TCG Deck Studio & Portfolio Operating System</p>
+      <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+        <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About & Architecture</a>
+        <a href="/how-it-works" style="color:#0F172A;text-decoration:none;font-weight:600;">How It Works</a>
+        <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+        <a href="/faq" style="color:#DC143C;text-decoration:none;font-weight:600;">FAQ</a>
+        <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
+        <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
+        <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+      </div>
+      <p style="margin:0;font-size:11px;color:#94A3B8;max-width:700px;margin-left:auto;margin-right:auto;line-height:1.5;">DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.</p>
+    </footer>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
+  // 7. PRIVACY POLICY ROUTE: /privacy
+  if (cleanPath === '/privacy') {
+    const pageTitle = 'Privacy Policy — DECK / divider Pokémon TCG';
+    const pageDesc = 'DECK / divider privacy policy. Learn how your collection portfolio data, pricing records, and account credentials are encrypted and protected.';
+    const canonicalUrl = `${canonicalOrigin}/privacy`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DECK / divider Privacy Policy" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DECK / divider" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    `;
+
+    const bodyHtml = `
+    <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
+        DECK <span style="color:#DC143C;">/</span> divider
+      </a>
+      <a href="/" style="color:#64748B;text-decoration:none;font-size:14px;font-weight:600;">&larr; Back to Home</a>
+    </header>
+
+    <main style="max-width:800px;margin:48px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.7;">
+      <h1 style="font-size:36px;font-weight:900;margin:0 0 16px;">Privacy Policy</h1>
+      <p style="color:#64748B;font-size:14px;margin-bottom:32px;">Last updated: January 2026</p>
+      
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">1. Information We Collect</h2>
+        <p style="color:#475569;font-size:15px;">DECK / divider collects minimal user information strictly necessary to provide portfolio tracking services. This includes authentication credentials (via Google or Firebase Auth) and user-submitted card inventory, wishlist entries, and deck configurations.</p>
+      </section>
+
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">2. How Data is Stored &amp; Protected</h2>
+        <p style="color:#475569;font-size:15px;">Your collection entries and financial purchase records are stored in browser-local IndexedDB caches and synced to encrypted cloud databases using AES-256 standards. Your financial data is private and never sold to third-party ad networks.</p>
+      </section>
+
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">3. Third-Party Integrations</h2>
+        <p style="color:#475569;font-size:15px;">We interface with TCGplayer pricing feeds and PayPal Subscriptions to provide accurate market valuations and billing. No sensitive financial credentials or credit card numbers are stored on our servers.</p>
+      </section>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Portfolio &amp; Deck Studio</p>
+      <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; 2026 DECK / divider. All rights reserved.</p>
+    </footer>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
+  // 8. TERMS OF SERVICE ROUTE: /terms
+  if (cleanPath === '/terms') {
+    const pageTitle = 'Terms of Service — DECK / divider Pokémon TCG';
+    const pageDesc = 'DECK / divider terms of service and acceptable use policies for Pokémon TCG portfolio tracking, deckbuilder, and slab registries.';
+    const canonicalUrl = `${canonicalOrigin}/terms`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DECK / divider Terms of Service" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DECK / divider" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    `;
+
+    const bodyHtml = `
+    <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
+        DECK <span style="color:#DC143C;">/</span> divider
+      </a>
+      <a href="/" style="color:#64748B;text-decoration:none;font-size:14px;font-weight:600;">&larr; Back to Home</a>
+    </header>
+
+    <main style="max-width:800px;margin:48px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.7;">
+      <h1 style="font-size:36px;font-weight:900;margin:0 0 16px;">Terms of Service</h1>
+      <p style="color:#64748B;font-size:14px;margin-bottom:32px;">Last updated: January 2026</p>
+      
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">1. Service Description</h2>
+        <p style="color:#475569;font-size:15px;">DECK / divider provides portfolio tracking, deck construction, and valuation tools for Pokémon Trading Card Game collectors and players.</p>
+      </section>
+
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">2. Disclaimer of Affiliation</h2>
+        <p style="color:#475569;font-size:15px;">DECK / divider is an independent fan-created utility and is not affiliated with, endorsed by, or sponsored by Nintendo, Creatures Inc., Game Freak Inc., or The Pokémon Company.</p>
+      </section>
+
+      <section style="margin-bottom:32px;">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:12px;">3. Market Data &amp; Valuations</h2>
+        <p style="color:#475569;font-size:15px;">All card valuations and market trends are provided for informational and hobbyist entertainment purposes only and do not constitute formal financial appraisal.</p>
+      </section>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Portfolio &amp; Deck Studio</p>
+      <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; 2026 DECK / divider. All rights reserved.</p>
+    </footer>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
   // 5. AUTHENTICATED APP SHELL: /app, /app/*, /dashboard, /collection, /decks, /settings, /metrics, etc.
   if (
     cleanPath === '/app' ||
@@ -700,8 +1255,8 @@ export async function renderSsrRoute(
   }
 
   // 6. HOMEPAGE / LANDING ROUTE: /
-  const pageTitle = 'DECK / divider — Pokémon TCG Portfolio & Deck Studio';
-  const pageDesc = 'The unified operating system for Pokémon TCG collectors and players. Live market valuation, 60-card deckbuilder, PSA slab tracking, and sealed vault ledger.';
+  const pageTitle = 'DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder';
+  const pageDesc = 'Track your Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks, complete master sets, and view real-time collection values in 15+ currencies.';
   const canonicalUrl = `${canonicalOrigin}/`;
   const ogImageUrl = 'https://deckdivider.app/og-image.png';
 
@@ -719,7 +1274,7 @@ export async function renderSsrRoute(
           width: 1200,
           height: 630,
         },
-        description: 'Professional portfolio tracking, deck building, and PSA slab management platform for Pokémon TCG collectors and players.',
+        description: 'Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players.',
       },
       {
         '@type': 'WebSite',
@@ -823,7 +1378,7 @@ export async function renderSsrRoute(
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="DECK / divider — Pokémon TCG Portfolio & Deck Studio" />
+  <meta property="og:image:alt" content="DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DECK / divider" />
@@ -846,7 +1401,7 @@ export async function renderSsrRoute(
       <a href="#about" style="color:#64748B;text-decoration:none;">About</a>
       <a href="#how-it-works" style="color:#64748B;text-decoration:none;">How It Works</a>
       <a href="#pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
-      <a href="/about" style="color:#64748B;text-decoration:none;">Architecture</a>
+      <a href="/about" style="color:#64748B;text-decoration:none;">About &amp; Team</a>
       <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;">Sign In / Launch App</a>
     </nav>
   </header>
@@ -854,12 +1409,12 @@ export async function renderSsrRoute(
   <main style="font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
     <!-- Hero Section -->
     <section style="max-width:1100px;margin:0 auto;padding:64px 20px 48px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG PORTFOLIO &amp; DECK STUDIO</span>
+      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
       <h1 style="font-size:52px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 24px;color:#0F172A;">
-        The Institutional Operating System for Pokémon TCG Collectors &amp; Competitors
+        The Binder Tracker, Slab Registry, and Deckbuilder for Pokémon TCG Collectors
       </h1>
       <p style="font-size:20px;color:#64748B;max-width:820px;margin:0 auto 36px;line-height:1.5;">
-        Precision asset tracking, real-time multi-currency valuation, strict 60-card format legality verification, and sealed vault ledgers. Zero drift.
+        Live TCGplayer price comps, 60-card tournament deck legality, PSA/BGS/CGC subgrade certification tracking, and master set checklists in 15+ currencies. Zero ads.
       </p>
       <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
         <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);">Launch App Free</a>
@@ -1060,7 +1615,7 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): 
   if (html.includes('<div id="root"></div>')) {
     html = html.replace('<div id="root"></div>', `<div id="root">${ssr.bodyHtml}</div>`);
   } else if (html.includes('<div id="root">')) {
-    html = html.replace(/<div id="root">.*?<\/div>/s, `<div id="root">${ssr.bodyHtml}</div>`);
+    html = html.replace(/<div id="root">[\s\S]*?(?=\s*<script)/, `<div id="root">${ssr.bodyHtml}</div>\n    `);
   }
 
   return html;
