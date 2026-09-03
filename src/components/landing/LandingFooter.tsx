@@ -36,124 +36,58 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
 
         {/* Middle Row: Expanded Chart Form */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 w-full text-sm text-slate-600">
-          {/* Navigation Chart */}
-          <div className="md:col-span-4 lg:col-span-3">
-            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Navigation
-            </div>
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
-              <Link to="/" className="hover:text-cyan-600 transition-colors font-medium">Home</Link>
-              <Link to="/about" className="hover:text-cyan-600 transition-colors font-medium">About</Link>
-              <Link to="/how-it-works" className="hover:text-cyan-600 transition-colors font-medium">How It Works</Link>
-              <Link to="/privacy" className="hover:text-cyan-600 transition-colors font-medium">Privacy Policy</Link>
-              <Link to="/terms" className="hover:text-cyan-600 transition-colors font-medium">Terms of Service</Link>
-              <Link to="/auth" className="hover:text-cyan-600 transition-colors font-medium">Sign In</Link>
-              <Link to="/pricing" className="text-left hover:text-cyan-600 transition-colors font-medium">
-                Pricing
-              </Link>
-              <Link to="/faq" className="text-left hover:text-cyan-600 transition-colors font-medium">
-                FAQ & Notes
-              </Link>
+          
+          <div className="md:col-span-12 lg:col-span-4 space-y-6">
+            <div>
+              <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+                About the Platform
+              </div>
+              <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
+                DECK / divider is an advanced analytics and portfolio management tool designed specifically for the Pokémon TCG community. We aggregate live market data and provide institutional-grade tools to collectors and competitive players worldwide.
+              </p>
             </div>
           </div>
 
-          {/* Features Chart */}
-          <div className="md:col-span-8 lg:col-span-9">
+          <div className="md:col-span-4 lg:col-span-2">
             <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Features
+              Platform
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-y-3 gap-x-4">
-              <a 
-                href="/#collection" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('collection');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Raw & Slabs
-              </a>
-              <a 
-                href="/#metrics" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('collection');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Collection Value
-              </a>
-              <a 
-                href="/#decks" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('decks');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Deck Builder
-              </a>
-              <a 
-                href="/#master-sets" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('master-sets');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Master Sets
-              </a>
-              <a 
-                href="/#search" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('search');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Database Search
-              </a>
-              <a 
-                href="/#lists" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('lists');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Wishlists
-              </a>
-              <a 
-                href="/#sealed-vault" 
-                onClick={(e) => {
-                  if (window.location.pathname === '/') {
-                    e.preventDefault();
-                    onNavigateSection('sealed-vault');
-                  }
-                }} 
-                className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                Sealed Vault
-              </a>
+            <div className="flex flex-col gap-y-3">
+              <Link to="/about" className="hover:text-cyan-600 transition-colors font-medium">About Us</Link>
+              <Link to="/how-it-works" className="hover:text-cyan-600 transition-colors font-medium">How It Works</Link>
+              <Link to="/pricing" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('pricing'); } }} className="text-left hover:text-cyan-600 transition-colors font-medium">Pricing</Link>
+              <Link to="/features" className="hover:text-cyan-600 transition-colors font-medium">All Features</Link>
+              <Link to="/changelog" className="hover:text-cyan-600 transition-colors font-medium">Changelog</Link>
+            </div>
+          </div>
+
+          <div className="md:col-span-4 lg:col-span-3">
+            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+              Resources & Legal
+            </div>
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+              <Link to="/faq" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('faq-and-insights'); } }} className="text-left hover:text-cyan-600 transition-colors font-medium">FAQ</Link>
+              <Link to="/support" className="hover:text-cyan-600 transition-colors font-medium">Support Center</Link>
+              <Link to="/contact" className="hover:text-cyan-600 transition-colors font-medium">Contact Us</Link>
+              <Link to="/media-kit" className="hover:text-cyan-600 transition-colors font-medium">Media Kit</Link>
+              <Link to="/privacy" className="hover:text-cyan-600 transition-colors font-medium">Privacy Policy</Link>
+              <Link to="/terms" className="hover:text-cyan-600 transition-colors font-medium">Terms of Service</Link>
+              <Link to="/cookie-policy" className="hover:text-cyan-600 transition-colors font-medium">Cookie Policy</Link>
+              <Link to="/security" className="hover:text-cyan-600 transition-colors font-medium">Security</Link>
+            </div>
+          </div>
+
+          <div className="md:col-span-4 lg:col-span-3">
+            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+              Core Engine
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
+              <a href="/#collection" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('collection'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Raw & Slabs</a>
+              <a href="/#decks" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('decks'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Deck Builder</a>
+              <a href="/#master-sets" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('master-sets'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Master Sets</a>
+              <a href="/#search" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('search'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Search</a>
+              <a href="/#lists" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('lists'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Wishlists</a>
+              <a href="/#sealed-vault" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('sealed-vault'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Sealed Vault</a>
             </div>
           </div>
         </div>

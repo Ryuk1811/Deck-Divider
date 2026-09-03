@@ -1,4 +1,4 @@
-import { getAdminDb } from '../firebaseAdmin.js';
+import { getAdminDb, hasAdminCredentials } from '../firebaseAdmin.js';
 
 export interface ServerGovernedSubscription {
   id: string;
@@ -158,6 +158,9 @@ export function evaluateServerSubscription(
  */
 export async function getGovernedUserSubscription(userId: string, isSuperUser = false): Promise<ServerGovernedSubscription> {
   try {
+    if (!hasAdminCredentials()) {
+      return evaluateServerSubscription(null, isSuperUser);
+    }
     const db = getAdminDb();
     const docSnap = await db.collection('subscriptions').doc(userId).get();
     if (!docSnap.exists) {
@@ -165,8 +168,8 @@ export async function getGovernedUserSubscription(userId: string, isSuperUser = 
     }
     const rawData = docSnap.data();
     return evaluateServerSubscription({ ...rawData, id: userId }, isSuperUser);
-  } catch (error) {
-    console.warn('[Governor] Firestore lookup fallback:', error);
+  } catch (error: any) {
+    console.warn('[Governor] Firestore lookup fallback:', error?.message || error);
     return evaluateServerSubscription(null, isSuperUser);
   }
 }

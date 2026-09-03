@@ -1,9 +1,11 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
+import { getAppCredentials } from './configManager.js';
 
-export function getRazorpayClient() {
-  const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_live_TX714Wy6Wko6ZX';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || 'jHvqKM1bZhq3IE2hvcaOg2J1';
+export async function getRazorpayClient() {
+  const creds = await getAppCredentials();
+  const key_id = creds.razorpay?.keyId || process.env.RAZORPAY_KEY_ID;
+  const key_secret = creds.razorpay?.keySecret || process.env.RAZORPAY_KEY_SECRET;
 
   if (!key_id || !key_secret) {
     throw new Error('Razorpay credentials not configured');
@@ -16,7 +18,7 @@ export function getRazorpayClient() {
 }
 
 export async function createRazorpayOrder(amountPaise: number, currency: string = 'INR', receipt: string) {
-  const rzp = getRazorpayClient();
+  const rzp = await getRazorpayClient();
   const options = {
     amount: amountPaise,
     currency,
@@ -28,8 +30,9 @@ export async function createRazorpayOrder(amountPaise: number, currency: string 
   return order;
 }
 
-export function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string): boolean {
-  const secret = process.env.RAZORPAY_KEY_SECRET || 'jHvqKM1bZhq3IE2hvcaOg2J1';
+export async function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string): Promise<boolean> {
+  const creds = await getAppCredentials();
+  const secret = creds.razorpay?.keySecret || process.env.RAZORPAY_KEY_SECRET;
   if (!secret) return false;
 
   const body = orderId + '|' + paymentId;
@@ -41,8 +44,9 @@ export function verifyRazorpaySignature(orderId: string, paymentId: string, sign
   return expectedSignature === signature;
 }
 
-export function verifyRazorpayWebhookSignature(body: string, signature: string): boolean {
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+export async function verifyRazorpayWebhookSignature(body: string, signature: string): Promise<boolean> {
+  const creds = await getAppCredentials();
+  const secret = creds.razorpay?.webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET || creds.razorpay?.keySecret || process.env.RAZORPAY_KEY_SECRET;
   if (!secret) return false;
 
   const expectedSignature = crypto
@@ -52,3 +56,4 @@ export function verifyRazorpayWebhookSignature(body: string, signature: string):
     
   return expectedSignature === signature;
 }
+

@@ -5,6 +5,16 @@ import fs from 'fs';
 import path from 'path';
 
 let adminApp: App | null = null;
+let isServiceAccountLoaded = false;
+
+export function hasAdminCredentials(): boolean {
+  if (isServiceAccountLoaded) return true;
+  const saPath = path.join(process.cwd(), 'firebase-service-account.json');
+  if (fs.existsSync(saPath)) return true;
+  if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) return true;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) return true;
+  return false;
+}
 
 export function getFirebaseAdmin(): App {
   if (!adminApp) {
@@ -25,6 +35,7 @@ export function getFirebaseAdmin(): App {
               clientEmail: saData.client_email,
               privateKey: saData.private_key.replace(/\\n/g, '\n'),
             };
+            isServiceAccountLoaded = true;
             console.log(`[FirebaseAdmin] Loaded credentials from firebase-service-account.json (${serviceAccount.clientEmail})`);
           }
         } catch (err) {
@@ -32,16 +43,32 @@ export function getFirebaseAdmin(): App {
         }
       }
 
-      // 2. Try environment variables
+      // 2. Try JSON env variable
+      if (!serviceAccount && process.env.FIREBASE_SERVICE_ACCOUNT) {
+        try {
+          const saData = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+          if (saData && saData.project_id && saData.private_key && saData.client_email) {
+            serviceAccount = {
+              projectId: saData.project_id,
+              clientEmail: saData.client_email,
+              privateKey: saData.private_key.replace(/\\n/g, '\n'),
+            };
+            isServiceAccountLoaded = true;
+          }
+        } catch (_) {}
+      }
+
+      // 3. Try individual environment variables
       if (!serviceAccount && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
         serviceAccount = {
           projectId: process.env.FIREBASE_PROJECT_ID || 'deckdivider1',
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
           privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
         };
+        isServiceAccountLoaded = true;
       }
 
-      // 3. Fallback: Initialize using Application Default Credentials or projectId
+      // 4. Fallback: Initialize using Application Default Credentials or projectId
       let projectId = process.env.FIREBASE_PROJECT_ID || 'deckdivider1';
       const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
       if (fs.existsSync(configPath)) {
@@ -56,11 +83,13 @@ export function getFirebaseAdmin(): App {
           credential: cert(serviceAccount),
           projectId: serviceAccount.projectId,
         });
+        isServiceAccountLoaded = true;
         console.log(`[FirebaseAdmin] Successfully initialized Firebase Admin SDK with service account for project '${serviceAccount.projectId}' (${serviceAccount.clientEmail})`);
       } else {
         adminApp = initializeApp({
           projectId: projectId,
         });
+        isServiceAccountLoaded = false;
         console.log(`[FirebaseAdmin] Initialized Firebase Admin SDK for project '${projectId}' using default credentials`);
       }
     }

@@ -55,6 +55,15 @@ import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { PricingPageView } from './views/PricingPageView';
 import { FaqPageView } from './views/FaqPageView';
 import { NotFoundView } from './views/NotFoundView';
+import { 
+  FeaturesPageView, 
+  ChangelogPageView, 
+  SupportPageView, 
+  ContactPageView, 
+  CookiePolicyView, 
+  SecurityPageView, 
+  MediaKitPageView 
+} from './views/AdditionalPages';
 import { AnalyticsFunnelModal } from './components/AnalyticsFunnelModal';
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
 import { SealedPortfolioManager } from './components/SealedPortfolioManager';
@@ -1102,6 +1111,10 @@ export default function App() {
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
     if (!user) return;
+    if (isPublic && !TIER_LIMITS[currentTier].canSharePublicLinks) {
+      setLimitModalConfig({ isOpen: true, action: 'SHARE_PUBLIC_LINK' });
+      return;
+    }
     try {
       // First force a cloud snapshot to ensure it's written properly 
       // when AuthContext refreshes the profile
@@ -1207,6 +1220,9 @@ export default function App() {
               currency={displayCurrency}
               customLists={customLists}
               userEmail={user?.email || undefined}
+              userId={user?.uid}
+              isPublicProfile={profile?.isPublicProfile}
+              onTogglePublicProfile={handleTogglePublicProfile}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
                 setQuickLookCard(card);
@@ -1451,6 +1467,14 @@ export default function App() {
           }
         />
 
+        <Route path="/features" element={<FeaturesPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/support" element={<SupportPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/contact" element={<ContactPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/cookie-policy" element={<CookiePolicyView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/security" element={<SecurityPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/media-kit" element={<MediaKitPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+
         <Route
           path="/pricing"
           element={
@@ -1553,12 +1577,10 @@ export default function App() {
         onClose={() => setPaypalModalTier(null)}
         tierName={paypalModalTier || 'Bunch'}
         planId={
-          (paypalModalTier && paypalConfig?.planIds?.[paypalModalTier]) ||
-          'P-86F48638UK390893LNJY5FHQ'
+          (paypalModalTier && paypalConfig?.planIds?.[paypalModalTier]) || ''
         }
         clientId={
-          paypalConfig?.clientId ||
-          'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ'
+          paypalConfig?.clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || ''
         }
         onApproveSubscription={handleApproveSubscription}
         getUserToken={async () => auth.currentUser?.getIdToken()}

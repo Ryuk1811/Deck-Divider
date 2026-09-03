@@ -91,7 +91,7 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
   const paypalButtonInstanceRef = useRef<any>(null);
 
   const effectiveClientId =
-    clientId || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ';
+    clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || '';
 
   const handleClose = () => {
     setErrorMessage(null);

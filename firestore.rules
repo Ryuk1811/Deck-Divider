@@ -14,14 +14,28 @@ service cloud.firestore {
 
     // Check if user is Super User / Admin
     function isSuperUser() {
-      return isAuthenticated() && (
-        request.auth.token.email.lower() == 'gurutvamurdia@gmail.com'
-      );
+      return isAuthenticated() && 
+        ('email' in request.auth.token) &&
+        request.auth.token.email.lower() == 'gurutvamurdia@gmail.com';
     }
 
     // Catch-all default deny
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // Connection health check route
+    match /test/{document=**} {
+      allow read: if true;
+    }
+
+    // Encrypted System Vault (Restricted to Super User & Firebase Admin SDK)
+    match /system_vault/{document=**} {
+      allow read, write: if isSuperUser();
+    }
+
+    match /system/{document=**} {
+      allow read, write: if isSuperUser();
     }
 
     match /tcg_expansions/{setId} {
@@ -47,14 +61,32 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
       allow create: if isAuthenticated() && isOwner(userId) && 
-        (request.resource.data.isSuperUser != true || isSuperUser());
-      allow update: if isAuthenticated() && isOwner(userId) && 
-        (request.resource.data.isSuperUser != true || isSuperUser());
+        (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser());
+      allow update: if isAuthenticated() && (
+        isSuperUser() || 
+        (isOwner(userId) && (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser()))
+      );
       allow delete: if isSuperUser();
 
       match /snapshot/current {
-        allow read: if (isAuthenticated() && isOwner(userId)) || isSuperUser() || resource.data.isPublicProfile == true;
+        allow read: if (isAuthenticated() && isOwner(userId)) || isSuperUser() || resource == null || resource.data.isPublicProfile == true || resource.data.isPublic == true;
         allow write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
+      }
+
+      match /backups/{backupId} {
+        allow read, write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
+      }
+
+      match /decks/{deckId} {
+        allow read, write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
+      }
+
+      match /customLists/{listId} {
+        allow read, write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
+      }
+
+      match /sealedVault/{entryId} {
+        allow read, write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
       }
 
       match /{allSubcollections=**} {
@@ -66,16 +98,16 @@ service cloud.firestore {
     match /subscriptions/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
       allow create: if isAuthenticated() && isOwner(userId) && 
-        (request.resource.data.isSuperUser != true || isSuperUser());
+        (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser());
       allow update: if isAuthenticated() && (
         isSuperUser() || 
-        (isOwner(userId) && (request.resource.data.isSuperUser != true || isSuperUser()))
+        (isOwner(userId) && (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser()))
       );
       allow delete: if isSuperUser();
     }
     
     match /decks/{deckId} {
-      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || resource.data.isPublic == true || isSuperUser());
+      allow read: if (isAuthenticated() && (resource == null || resource.data.ownerId == request.auth.uid || isSuperUser())) || (resource != null && resource.data.isPublic == true);
       allow create: if isAuthenticated() && (request.resource.data.ownerId == request.auth.uid || isSuperUser());
       allow update, delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isSuperUser());
     }
@@ -91,8 +123,9 @@ service cloud.firestore {
     }
     
     match /customLists/{listId} {
-      allow read, update, delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isSuperUser());
+      allow read: if (isAuthenticated() && (resource == null || resource.data.ownerId == request.auth.uid || isSuperUser())) || (resource != null && resource.data.isPublic == true);
       allow create: if isAuthenticated() && (request.resource.data.ownerId == request.auth.uid || isSuperUser());
+      allow update, delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isSuperUser());
     }
   }
 }

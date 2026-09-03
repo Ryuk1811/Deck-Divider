@@ -102,9 +102,28 @@
         "isSold": { "type": "boolean" },
         "salePrice": { "type": "number" }
       }
+    },
+    "SystemVaultRecord": {
+      "title": "SystemVaultRecord",
+      "description": "AES-256-GCM encrypted server credentials and environment secrets vault",
+      "type": "object",
+      "properties": {
+        "iv": { "type": "string" },
+        "ciphertext": { "type": "string" },
+        "authTag": { "type": "string" },
+        "encryptedAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "version": { "type": "string" },
+        "storedKeys": { "type": "array" }
+      },
+      "required": ["iv", "ciphertext", "authTag"]
     }
   },
   "firestore": {
+    "/system_vault/{documentId}": {
+      "schema": { "$ref": "#/entities/SystemVaultRecord" },
+      "description": "AES-256-GCM encrypted system secrets and environment credentials"
+    },
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
       "description": "User profile documents"

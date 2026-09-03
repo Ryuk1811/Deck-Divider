@@ -19,6 +19,7 @@ import {
   Eye,
   Settings2,
   Trash2,
+  ExternalLink 
 } from 'lucide-react';
 import {
   Deck,
@@ -371,16 +372,20 @@ export const DecksView: React.FC<DecksViewProps> = ({
             </button>
 
             {currentDeck?.isPublic && (
-              <button
-                type="button"
-                onClick={handleCopyPublicLink}
-                className="h-9 px-4 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
-              >
-                <Copy className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">
-                  {copiedLink ? 'Copied Link!' : 'Copy Link'}
+              <div className="flex items-center gap-2 max-w-full overflow-hidden">
+                <a
+                  href={`${window.location.origin}/deck/${currentDeck.id}?d=${currentDeck.publicShareCode}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 px-4 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">Open Public Link</span>
+                </a>
+                <span className="font-mono text-[10px] text-slate-500 truncate hidden sm:inline-block">
+                  {`${window.location.origin}/deck/${currentDeck.id}?d=${currentDeck.publicShareCode}`}
                 </span>
-              </button>
+              </div>
             )}
           </div>
         </div>

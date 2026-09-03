@@ -38,6 +38,9 @@ interface CollectionViewProps {
   currency: DisplayCurrency;
   customLists: CustomList[];
   userEmail?: string;
+  userId?: string;
+  isPublicProfile?: boolean;
+  onTogglePublicProfile?: (isPublic: boolean) => void;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
   onSelectDeck: (deckId: string) => void;
@@ -72,6 +75,9 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   currency,
   customLists,
   userEmail,
+  userId,
+  isPublicProfile,
+  onTogglePublicProfile,
   onSelectCard,
   onQuickLookCard,
   onSelectDeck,
@@ -357,6 +363,27 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               >
                 <Plus className="w-4 h-4 flex-shrink-0" />
                 <span>Add Cards to Portfolio</span>
+              </button>
+            )}
+
+            {onTogglePublicProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isPublicProfile && userId) {
+                    window.open(`/portfolio/${userId}`, '_blank');
+                  } else {
+                    onTogglePublicProfile(true);
+                  }
+                }}
+                className={`h-9 px-4 font-mono text-xs font-bold flex items-center justify-center gap-1.5 rounded-lg transition-colors cursor-pointer shadow-xs whitespace-nowrap ${
+                  isPublicProfile
+                    ? 'bg-[#0F172A] hover:bg-[#1E293B] text-white'
+                    : 'bg-white hover:bg-slate-50 text-[#64748B] border border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C]'
+                }`}
+              >
+                <Eye className="w-4 h-4 flex-shrink-0" />
+                <span>{isPublicProfile ? 'Open Public Showcase' : 'Make Showcase Public'}</span>
               </button>
             )}
 

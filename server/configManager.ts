@@ -1,4 +1,4 @@
-import { getAdminDb } from './firebaseAdmin';
+import { getAdminDb } from './firebaseAdmin.js';
 
 export interface AppCredentials {
   paypal: {
@@ -13,6 +13,11 @@ export interface AppCredentials {
       Collection: string;
     };
   };
+  razorpay?: {
+    keyId: string;
+    keySecret: string;
+    webhookSecret?: string;
+  };
   tcgdex: {
     baseUrl: string;
     apiKey?: string;
@@ -24,61 +29,46 @@ export interface AppCredentials {
   updatedAt?: string;
 }
 
-const DEFAULT_CREDENTIALS: AppCredentials = {
-  paypal: {
-    mode: process.env.PAYPAL_MODE || 'live',
-    clientId: process.env.PAYPAL_CLIENT_ID || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ',
-    clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
-    planIds: {
-      Bunch: process.env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
-      Stack: process.env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',
-      Deck: process.env.PAYPAL_PLAN_DECK || 'P-8K993431SB9741949NJY5GVY',
-      Collection: process.env.PAYPAL_PLAN_COLLECTION || 'P-1EH4703021893203DNJY5HII',
-    },
-  },
-  tcgdex: {
-    baseUrl: process.env.TCGDEX_BASE_URL || 'https://api.tcgdex.net/v2/en',
-  },
-  firebase: {
-    projectId: 'deckdivider1',
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || 'firebase-adminsdk-fbsvc@deckdivider1.iam.gserviceaccount.com',
-  },
-};
-
-let cachedCredentials: AppCredentials | null = null;
-let lastFetchTime = 0;
-const CACHE_TTL_MS = 60 * 1000; // 1 minute TTL cache
-
+/**
+ * Resolves the active app credentials from server environment variables.
+ */
 export async function getAppCredentials(): Promise<AppCredentials> {
-  return DEFAULT_CREDENTIALS;
-}
-
-export async function updateAppCredentials(newCreds: Partial<AppCredentials>): Promise<AppCredentials> {
-  // In-memory update
-  cachedCredentials = {
-    ...DEFAULT_CREDENTIALS,
-    ...newCreds,
+  return {
     paypal: {
-      ...DEFAULT_CREDENTIALS.paypal,
-      ...(newCreds.paypal || {}),
+      mode: process.env.PAYPAL_MODE || 'live',
+      clientId: process.env.PAYPAL_CLIENT_ID || '',
+      clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
+      webhookId: process.env.PAYPAL_WEBHOOK_ID || '',
       planIds: {
-        ...DEFAULT_CREDENTIALS.paypal.planIds,
-        ...(newCreds.paypal?.planIds || {}),
+        Bunch: process.env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
+        Stack: process.env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',
+        Deck: process.env.PAYPAL_PLAN_DECK || 'P-8K993431SB9741949NJY5GVY',
+        Collection: process.env.PAYPAL_PLAN_COLLECTION || 'P-1EH4703021893203DNJY5HII',
       },
     },
+    razorpay: {
+      keyId: process.env.RAZORPAY_KEY_ID || '',
+      keySecret: process.env.RAZORPAY_KEY_SECRET || '',
+      webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
+    },
     tcgdex: {
-      ...DEFAULT_CREDENTIALS.tcgdex,
-      ...(newCreds.tcgdex || {}),
+      baseUrl: process.env.TCGDEX_BASE_URL || 'https://api.tcgdex.net/v2/en',
+      apiKey: process.env.TCGDEX_API_KEY || '',
     },
     firebase: {
-      ...DEFAULT_CREDENTIALS.firebase,
-      ...(newCreds.firebase || {}),
+      projectId: process.env.FIREBASE_PROJECT_ID || 'deckdivider1',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
     },
     updatedAt: new Date().toISOString(),
   };
-  
-  // Note: Changes won't persist across server restarts without a database backend
-  // In a production environment with proper service account credentials, 
-  // this would write to Firestore.
-  return cachedCredentials;
 }
+
+/**
+ * Update credentials is not supported in this environment as secrets are managed in the UI.
+ */
+export async function updateAppCredentials(newCreds: Partial<AppCredentials>): Promise<AppCredentials> {
+  console.warn("updateAppCredentials is not supported. Use the AI Studio Secrets UI.");
+  return getAppCredentials();
+}
+
+

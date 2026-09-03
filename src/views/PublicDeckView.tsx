@@ -233,13 +233,6 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
               <option value="CAD">CAD ($)</option>
               <option value="AUD">AUD ($)</option>
             </select>
-            <Link 
-              to="/auth"
-              onClick={() => onOpenFullApp && onOpenFullApp()}
-              className="bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer inline-flex items-center"
-            >
-              Create Your Own Deck
-            </Link>
           </div>
         </div>
       </div>

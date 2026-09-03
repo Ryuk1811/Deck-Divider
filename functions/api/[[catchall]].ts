@@ -463,8 +463,12 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
 
       const inrRate = (cachedExchangeRates?.rates?.['INR']) || 83.5;
       const amountPaise = Math.round(usdPrice * inrRate * 100);
-      const keyId = env.RAZORPAY_KEY_ID || 'rzp_live_TX714Wy6Wko6ZX';
-      const keySecret = env.RAZORPAY_KEY_SECRET || 'jHvqKM1bZhq3IE2hvcaOg2J1';
+      const keyId = env.RAZORPAY_KEY_ID || '';
+      const keySecret = env.RAZORPAY_KEY_SECRET || '';
+
+      if (!keyId || !keySecret) {
+        return jsonResponse({ error: 'Razorpay credentials not configured in edge environment' }, 500);
+      }
 
       try {
         // Direct Razorpay API call from Cloudflare Edge

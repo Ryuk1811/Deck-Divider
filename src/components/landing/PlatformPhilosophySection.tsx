@@ -20,8 +20,8 @@ export const PlatformPhilosophySection: React.FC = () => {
           </p>
         </div>
 
-        {/* 3 Columns: Usage, Intention, Aim */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-4 border-t border-slate-100">
+        {/* 4 Columns: Usage, Intention, Aim, Live Users */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-4 border-t border-slate-100">
           {/* Column 1: Who It's Built For */}
           <div className="space-y-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -60,8 +60,42 @@ export const PlatformPhilosophySection: React.FC = () => {
               To unite cataloging, live price discovery, and tournament deck validation into a unified, high-speed workstation backed by offline-first caching and instant sync.
             </p>
           </div>
+
+          {/* Column 4: Current Users */}
+          <UserCountColumn />
         </div>
       </div>
     </section>
+  );
+};
+
+const UserCountColumn: React.FC = () => {
+  const [count, setCount] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/stats/users')
+      .then(r => r.json())
+      .then(d => setCount(d.count))
+      .catch(console.error);
+  }, []);
+
+  return (
+    <div className="space-y-3">
+      <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+        <Database className="w-5 h-5" />
+      </div>
+      <h4 className="text-base sm:text-lg font-bold text-slate-900 font-heading">
+        Current Users
+      </h4>
+      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        {count !== null ? (
+          <>
+            Join <strong className="text-slate-900">{count.toLocaleString()}</strong> active collectors and players already tracking their portfolios and building meta-ready decks on the platform.
+          </>
+        ) : (
+          <span className="animate-pulse bg-slate-200 h-4 w-3/4 rounded block"></span>
+        )}
+      </p>
+    </div>
   );
 };

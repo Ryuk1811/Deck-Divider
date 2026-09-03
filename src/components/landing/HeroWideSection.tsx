@@ -50,7 +50,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
           className="text-xs sm:text-base md:text-lg lg:text-xl text-[#475569] max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto font-normal leading-relaxed text-balance px-2"
         >
-          Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL.
+          Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL. Connect with the global community of collectors and players, analyze meta trends in real-time, and manage your entire sealed portfolio securely in one unified platform designed for the ultimate Pokémon TCG enthusiast.
         </motion.p>
 
         {/* Quick Proof Chips */}
@@ -71,6 +71,10 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
           <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A] shrink-0" />
             <span className="whitespace-nowrap">Standard 60-Card Deck Legality</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A] shrink-0" />
+            <span className="whitespace-nowrap">Advanced Sealed Portfolio Tracking</span>
           </div>
         </motion.div>
 

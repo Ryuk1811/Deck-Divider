@@ -22,7 +22,7 @@ export const PublicPortfolioView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<UserCompressedSnapshotState | null>(null);
-  const [activeTab, setActiveTab] = useState<'collection' | 'decks' | 'sealed'>('collection');
+  const [activeTab, setActiveTab] = useState<'collection' | 'decks' | 'sealed' | 'lists'>('collection');
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -90,11 +90,6 @@ export const PublicPortfolioView: React.FC = () => {
             </Link>
             <DeckDividerBrand />
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/auth" className="px-4 py-2 bg-[#DC143C] text-white text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors shadow-sm">
-              Create Your Own
-            </Link>
-          </div>
         </div>
       </header>
 
@@ -142,6 +137,15 @@ export const PublicPortfolioView: React.FC = () => {
               <Layers className="w-4 h-4" />
               <span>Sealed Vault ({snapshot.sealedEntries.length})</span>
             </button>
+            <button
+              onClick={() => setActiveTab('lists')}
+              className={`flex items-center gap-2 px-4 py-4 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === 'lists' ? 'border-[#DC143C] text-[#DC143C]' : 'border-transparent text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              <span>Custom Lists ({snapshot.customLists.length})</span>
+            </button>
           </div>
 
           <div className="p-6 min-h-[400px]">
@@ -183,6 +187,16 @@ export const PublicPortfolioView: React.FC = () => {
                       <span className="text-slate-500">Qty: {entry.quantity}</span>
                       <span className="font-semibold text-slate-700">{entry.productType}</span>
                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {activeTab === 'lists' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {snapshot.customLists.map(list => (
+                  <div key={list.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                    <h3 className="font-bold text-slate-900 truncate">{list.name}</h3>
+                    <span className="text-xs text-slate-500">{list.cardIds.length} Items</span>
                   </div>
                 ))}
               </div>

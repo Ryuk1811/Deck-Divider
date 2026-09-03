@@ -60,8 +60,8 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your per-deck capacity to ${nextLimit.maxCardsPerDeck} cards per deck!`;
   } else if (attemptedAction === 'SHARE_PUBLIC_LINK') {
     title = 'Public Link Sharing Restricted';
-    description = `Sharing public deck links is available starting at the Stack tier ($22/mo) and above. ${currentTier} tier decks are kept private to your account.`;
-    unlockHighlight = 'Upgrade to Stack tier ($22/mo) to generate viewable public links for any deck!';
+    description = `Sharing public deck links, custom lists, and your portfolio showcase is available starting at the Stack tier ($22/mo) and above. Your ${currentTier} tier items are kept private to your account.`;
+    unlockHighlight = 'Upgrade to Stack tier ($22/mo) to generate viewable public links for your items!';
   } else if (attemptedAction === 'CREATE_LIST') {
     title = `Custom List Limit Hit (${currentLimit.maxLists} Lists)`;
     description = `You attempted to create list #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxLists} custom lists.`;

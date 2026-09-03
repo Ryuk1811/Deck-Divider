@@ -49,43 +49,37 @@ export const LandingNav: React.FC<LandingNavProps> = ({
 
         {/* Desktop Navigation Links */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-6 shrink-0">
-          <nav className="hidden md:flex items-center gap-1 sm:gap-2">
-            <Link
-              to="/about"
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
-            >
-              About
-            </Link>
-            <Link
-              to="/how-it-works"
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
-            >
-              How it works
-            </Link>
-            <Link
-              to="/pricing"
-              onClick={(e) => {
-                if (window.location.pathname === '/') {
-                  e.preventDefault();
-                  handleNav('pricing');
-                }
+          <nav className="hidden md:flex items-center gap-1 sm:gap-2 relative">
+            <button
+              onClick={() => {
+                const el = document.getElementById('desktop-pages-dropdown');
+                if (el) el.classList.toggle('hidden');
               }}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
-            >
-              Pricing
-            </Link>
-            <Link
-              to="/faq"
-              onClick={(e) => {
-                if (window.location.pathname === '/') {
-                  e.preventDefault();
-                  handleNav('faq-and-insights');
-                }
+              onBlur={(e) => {
+                // Delay hiding slightly to allow clicks to register
+                setTimeout(() => {
+                  const el = document.getElementById('desktop-pages-dropdown');
+                  if (el) el.classList.add('hidden');
+                }, 150);
               }}
-              className="px-3 py-1.5 text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors rounded-lg hover:bg-[#F1F5F9] whitespace-nowrap"
+              className="px-4 py-2 text-sm font-medium text-[#0F172A] bg-[#F1F5F9] rounded-full hover:bg-[#E2E8F0] transition-colors flex items-center gap-1 cursor-pointer"
             >
-              FAQ & Insights
-            </Link>
+              Pages
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div
+              id="desktop-pages-dropdown"
+              className="hidden absolute top-full mt-2 left-0 w-48 bg-white border border-[#E2E8F0] rounded-xl shadow-xl overflow-hidden py-2 animate-fade-in z-50 flex flex-col"
+            >
+              <Link to="/about" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">About</Link>
+              <Link to="/how-it-works" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">How it works</Link>
+              <Link to="/pricing" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); handleNav('pricing'); } }} className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">Pricing</Link>
+              <Link to="/faq" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); handleNav('faq-and-insights'); } }} className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">FAQ</Link>
+              <Link to="/privacy" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">Terms of Service</Link>
+              <Link to="/security" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">Security</Link>
+              <Link to="/contact" className="px-4 py-2 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors">Contact Us</Link>
+            </div>
           </nav>
 
           {/* Action Button: Sign In / Studio Launch with real anchor tag */}
@@ -141,10 +135,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
-                <Shield className="w-4 h-4 text-[#DC143C]" />
-                <span>About Platform</span>
+                <span>About</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
 
             <Link
@@ -153,10 +145,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
-                <Layers className="w-4 h-4 text-[#DC143C]" />
-                <span>How It Works (Workflow)</span>
+                <span>How It Works</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
 
             <Link
@@ -171,10 +161,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
-                <DollarSign className="w-4 h-4 text-[#DC143C]" />
-                <span>Pricing Tiers</span>
+                <span>Pricing</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
 
             <Link
@@ -189,10 +177,44 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
             >
               <div className="flex items-center gap-2.5">
-                <HelpCircle className="w-4 h-4 text-[#DC143C]" />
-                <span>FAQ & Knowledge</span>
+                <span>FAQ</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
+            </Link>
+            <Link
+              to="/privacy"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2.5">
+                <span>Privacy Policy</span>
+              </div>
+            </Link>
+            <Link
+              to="/terms"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2.5">
+                <span>Terms of Service</span>
+              </div>
+            </Link>
+            <Link
+              to="/security"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2.5">
+                <span>Security</span>
+              </div>
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2.5">
+                <span>Contact Us</span>
+              </div>
             </Link>
 
             <div className="pt-2 border-t border-slate-100">
