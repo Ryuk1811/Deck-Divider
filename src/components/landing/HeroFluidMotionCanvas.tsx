@@ -3,23 +3,23 @@ import { motion } from 'motion/react';
 import { Sparkles, Award, ShieldCheck, Crown } from 'lucide-react';
 
 export const HeroFluidMotionCanvas: React.FC = () => {
-  // Depth-heavy slab container classes
-  const slabOuterClasses = "w-full h-full bg-white/40 backdrop-blur-md rounded-2xl p-2 sm:p-3 shadow-[10px_20px_40px_rgba(0,0,0,0.25),inset_0_2px_4px_rgba(255,255,255,0.7),inset_0_-2px_4px_rgba(0,0,0,0.1)] border border-white/60 flex flex-col justify-between overflow-hidden relative";
+  // Depth-heavy slab container classes with GPU isolation
+  const slabOuterClasses = "w-full h-full bg-white/50 backdrop-blur-sm rounded-2xl p-2 sm:p-3 shadow-[0_12px_32px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.8),inset_0_-1px_2px_rgba(0,0,0,0.06)] border border-white/80 flex flex-col justify-between overflow-hidden relative transform-gpu backface-hidden";
   
-  // Slow moving automated glare instead of mouse-tracked
-  const glareClasses = "absolute inset-0 w-[200%] h-[200%] bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none z-20 mix-blend-overlay";
+  // Smooth GPU-driven glare
+  const glareClasses = "absolute -inset-full w-[300%] h-[300%] bg-gradient-to-tr from-transparent via-white/35 to-transparent pointer-events-none z-20 mix-blend-overlay transform-gpu will-change-transform";
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none [perspective:1000px]">
-      {/* 1. Fluid Ambient Studio Atmosphere */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none">
+      {/* 1. Fluid Ambient Studio Atmosphere - Lightweight GPU Blur */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
         <motion.div
           animate={{
-            scale: [1, 1.08, 0.96, 1],
-            opacity: [0.3, 0.45, 0.32, 0.3],
+            scale: [1, 1.05, 1],
+            opacity: [0.25, 0.35, 0.25],
           }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-[85vw] max-w-[950px] h-[40vh] max-h-[520px] rounded-full bg-gradient-to-r from-[#DC143C]/15 via-amber-500/10 to-indigo-500/15 blur-[80px] sm:blur-[120px] transform-gpu will-change-transform"
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-[80vw] max-w-[900px] h-[35vh] max-h-[480px] rounded-full bg-gradient-to-r from-[#DC143C]/12 via-amber-500/8 to-indigo-500/12 blur-[40px] sm:blur-[60px] transform-gpu will-change-transform"
         />
       </div>
 
@@ -32,24 +32,21 @@ export const HeroFluidMotionCanvas: React.FC = () => {
           {/* ========================================================================= */}
           <motion.div
             animate={{
-              y: [0, -16, 8, -4, 12, 0],
-              x: [0, 12, -8, 6, -10, 0],
-              rotateZ: [-10, -13, -7, -12, -8, -10],
-              rotateX: [5, 12, 2, 10, 4, 5],
-              rotateY: [-5, -12, -2, -10, -4, -5],
+              y: [0, -10, 0],
+              rotateZ: [-10, -8, -10],
             }}
-            transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute left-[-2%] sm:left-2 md:left-6 lg:left-8 top-[8%] sm:top-[10%] md:top-[12%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10"
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute left-[-2%] sm:left-2 md:left-6 lg:left-8 top-[8%] sm:top-[10%] md:top-[12%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 transform-gpu will-change-transform"
           >
             <div className={slabOuterClasses}>
               <motion.div 
-                animate={{ top: ['-50%', '0%', '-50%'], left: ['-50%', '0%', '-50%'] }}
-                transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ x: ['-15%', '15%', '-15%'], y: ['-15%', '15%', '-15%'] }}
+                transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
                 className={glareClasses} 
               />
               
               {/* PSA Header */}
-              <div className="relative z-10 bg-white border-2 border-slate-200 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-sm">
+              <div className="relative z-10 bg-white border-2 border-slate-200 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
                 <div className="h-1.5 sm:h-2 w-10 sm:w-16 bg-[#DC143C]/20 rounded-full" />
                 <div className="h-3 sm:h-4 px-1.5 bg-[#DC143C] rounded font-mono text-[8px] sm:text-[10px] font-bold text-white flex items-center justify-center shadow-inner">
                   10
@@ -60,10 +57,10 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               <div className="relative z-10 flex-1 my-1.5 sm:my-2.5 rounded-sm bg-slate-50 border border-slate-200 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
                 <motion.div
                   animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.2 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none"
+                  transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
+                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none transform-gpu will-change-transform"
                 />
-                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 mb-2 flex items-center justify-center shadow-sm border border-slate-300/50">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 mb-2 flex items-center justify-center shadow-xs border border-slate-300/50">
                   <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-slate-400" />
                 </div>
                 <div className="w-16 sm:w-24 h-1.5 sm:h-2 bg-slate-200/80 rounded-full mb-1 z-10" />
@@ -71,7 +68,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               </div>
 
               {/* Bottom Footer */}
-              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-2 py-1 flex items-center justify-between shadow-sm">
+              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-2 py-1 flex items-center justify-between shadow-xs">
                 <div className="h-1 sm:h-1.5 w-8 sm:w-14 bg-slate-300 rounded-full" />
                 <div className="h-2 sm:h-2.5 px-1 bg-emerald-50 rounded text-emerald-700 font-mono text-[7px] sm:text-[8px] font-bold">
                   $***.**
@@ -85,24 +82,21 @@ export const HeroFluidMotionCanvas: React.FC = () => {
           {/* ========================================================================= */}
           <motion.div
             animate={{
-              y: [0, 12, -10, 6, -14, 0],
-              x: [0, -10, 8, -12, 6, 0],
-              rotateZ: [0, -4, 3, -2, 4, 0],
-              rotateX: [0, 8, -5, 10, -2, 0],
-              rotateY: [0, -8, 5, -10, 2, 0],
+              y: [0, 8, 0],
+              rotateZ: [0, 2, 0],
             }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-[2%] sm:top-[4%] md:top-[6%] w-[32vw] min-w-[120px] max-w-[210px] h-[48vw] min-h-[175px] max-h-[310px] z-0"
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-[2%] sm:top-[4%] md:top-[6%] w-[32vw] min-w-[120px] max-w-[210px] h-[48vw] min-h-[175px] max-h-[310px] z-0 transform-gpu will-change-transform"
           >
             <div className={slabOuterClasses}>
               <motion.div 
-                animate={{ top: ['-20%', '-60%', '-20%'], left: ['-20%', '-60%', '-20%'] }}
-                transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ x: ['-10%', '10%', '-10%'], y: ['-10%', '10%', '-10%'] }}
+                transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
                 className={glareClasses} 
               />
 
               {/* CGC Header */}
-              <div className="relative z-10 bg-slate-950 border border-amber-400/40 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-sm">
+              <div className="relative z-10 bg-slate-950 border border-amber-400/40 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
                 <div className="flex items-center gap-1 sm:gap-1.5">
                   <Crown className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
                   <div className="h-1.5 sm:h-2 w-8 sm:w-14 bg-amber-400/30 rounded-full" />
@@ -116,10 +110,10 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               <div className="relative z-10 flex-1 my-1.5 sm:my-2 rounded-sm bg-gradient-to-b from-slate-50 to-slate-100 border border-slate-200/80 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
                 <motion.div
                   animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 3 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-amber-100/40 to-transparent skew-x-12 pointer-events-none"
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.5 }}
+                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-amber-100/40 to-transparent skew-x-12 pointer-events-none transform-gpu will-change-transform"
                 />
-                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-slate-200/80 border border-slate-300/50 mb-2 flex items-center justify-center shadow-sm">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-slate-200/80 border border-slate-300/50 mb-2 flex items-center justify-center shadow-xs">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-slate-500" />
                 </div>
                 <div className="w-14 sm:w-20 h-1.5 sm:h-2 bg-slate-200/80 rounded-full mb-1 z-10" />
@@ -127,7 +121,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               </div>
 
               {/* Bottom Footer */}
-              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-2 py-1 flex items-center justify-between shadow-sm">
+              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-2 py-1 flex items-center justify-between shadow-xs">
                 <div className="h-1 sm:h-1.5 w-6 sm:w-12 bg-slate-300 rounded-full" />
                 <div className="h-2 sm:h-2.5 px-1 bg-amber-50 rounded text-amber-700 font-mono text-[7px] sm:text-[8px] font-bold">
                   POP 1
@@ -141,26 +135,23 @@ export const HeroFluidMotionCanvas: React.FC = () => {
           {/* ========================================================================= */}
           <motion.div
             animate={{
-              y: [0, -12, 10, -6, 14, 0],
-              x: [0, -8, 12, -10, 8, 0],
-              rotateZ: [10, 14, 8, 13, 9, 10],
-              rotateX: [5, 10, 2, 12, 4, 5],
-              rotateY: [5, 12, 2, 10, 4, 5],
+              y: [0, -8, 0],
+              rotateZ: [10, 12, 10],
             }}
-            transition={{ duration: 19, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute right-[-2%] sm:right-2 md:right-6 lg:right-8 top-[10%] sm:top-[12%] md:top-[14%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10"
+            transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute right-[-2%] sm:right-2 md:right-6 lg:right-8 top-[10%] sm:top-[12%] md:top-[14%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 transform-gpu will-change-transform"
           >
             <div className={slabOuterClasses}>
               <motion.div 
-                animate={{ top: ['-40%', '-10%', '-40%'], left: ['-40%', '-10%', '-40%'] }}
-                transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ x: ['-12%', '12%', '-12%'], y: ['-12%', '12%', '-12%'] }}
+                transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
                 className={glareClasses} 
               />
 
               {/* BGS Header */}
-              <div className="relative z-10 bg-amber-500/10 border border-amber-500/20 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-sm">
+              <div className="relative z-10 bg-amber-500/10 border border-amber-500/20 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
                 <div className="flex items-center gap-1 sm:gap-1.5">
-                  <div className="w-1.5 sm:w-2.5 h-1.5 sm:h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                  <div className="w-1.5 sm:w-2.5 h-1.5 sm:h-2.5 rounded-full bg-amber-500" />
                   <div className="h-1.5 sm:h-2 w-10 sm:w-16 bg-amber-500/25 rounded-full" />
                 </div>
                 <div className="h-3.5 sm:h-4 px-1 bg-amber-500/20 rounded font-mono text-[8px] sm:text-[10px] font-black text-amber-700 flex items-center justify-center">
@@ -172,10 +163,10 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               <div className="relative z-10 flex-1 my-1.5 sm:my-2.5 rounded-sm bg-slate-50 border border-slate-200/80 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
                 <motion.div
                   animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.6 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none"
+                  transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.2 }}
+                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none transform-gpu will-change-transform"
                 />
-                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 border border-slate-300/50 mb-2 flex items-center justify-center shadow-sm">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 border border-slate-300/50 mb-2 flex items-center justify-center shadow-xs">
                   <Award className="w-4 h-4 sm:w-6 sm:h-6 text-slate-400" />
                 </div>
                 <div className="w-16 sm:w-24 h-1.5 sm:h-2 bg-slate-200/80 rounded-full mb-1 z-10" />
@@ -183,7 +174,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
               </div>
 
               {/* Bottom Footer */}
-              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-1.5 py-1 flex items-center justify-between text-[6px] sm:text-[7px] font-mono text-slate-700 shadow-sm">
+              <div className="relative z-10 bg-white/90 border border-slate-200/60 rounded-md px-1.5 py-1 flex items-center justify-between text-[6px] sm:text-[7px] font-mono text-slate-700 shadow-xs">
                 <span>C:9.5</span>
                 <span>S:10</span>
                 <span>E:9.5</span>

@@ -136,8 +136,20 @@
     }
     </script>
   </head>
-  <body class="bg-[#FFFFFF] text-[#111111] antialiased selection:bg-[#FFF0F3] selection:text-[#DC143C]">
-    <div id="root"></div>
+  <body class="bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-[#FFF0F3] selection:text-[#DC143C]">
+    <div id="root">
+      <div id="app-initial-shell" style="min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:#F8FAFC;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0.95;">
+          <div style="font-weight:800;font-size:20px;letter-spacing:-0.5px;color:#0F172A;">
+            DECK <span style="color:#DC143C;">/</span> divider
+          </div>
+          <div style="width:22px;height:22px;border:2.5px solid #E2E8F0;border-top-color:#DC143C;border-radius:50%;animation:dd-spin 0.8s linear infinite;"></div>
+        </div>
+      </div>
+      <style>
+        @keyframes dd-spin { to { transform: rotate(360deg); } }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

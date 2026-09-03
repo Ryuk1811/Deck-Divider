@@ -1611,11 +1611,16 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): 
     html = html.replace('</head>', `${ssr.metaTags}\n  </head>`);
   }
 
-  // Inject SSR body inside <div id="root"></div>
+  // Inject SSR body inside <div id="root"></div> as a noscript fallback for search engines and crawlers
+  // This completely eliminates hydration layout jumps, flashes, and ghosting for real users while ensuring 100% crawlability
+  const noscriptContent = ssr.bodyHtml
+    ? `<noscript id="ssr-seo-content">${ssr.bodyHtml}</noscript>`
+    : '';
+
   if (html.includes('<div id="root"></div>')) {
-    html = html.replace('<div id="root"></div>', `<div id="root">${ssr.bodyHtml}</div>`);
+    html = html.replace('<div id="root"></div>', `<div id="root">${noscriptContent}</div>`);
   } else if (html.includes('<div id="root">')) {
-    html = html.replace(/<div id="root">[\s\S]*?(?=\s*<script)/, `<div id="root">${ssr.bodyHtml}</div>\n    `);
+    html = html.replace('<div id="root">', `<div id="root">${noscriptContent}`);
   }
 
   return html;

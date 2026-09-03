@@ -1139,7 +1139,13 @@ Sitemap: https://deckdivider.app/sitemap.xml
   
   // --- End TCGdex Proxy ---
   // --- SSR & Marketing Route Delivery Engine ---
-  if (process.env.NODE_ENV !== 'production') {
+  const isProduction =
+    process.env.NODE_ENV === 'production' ||
+    !fs.existsSync(path.resolve(process.cwd(), 'src', 'main.tsx')) ||
+    (typeof __filename !== 'undefined' && __filename.endsWith('.cjs')) ||
+    process.argv.includes('--production');
+
+  if (!isProduction) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'custom',
@@ -1148,7 +1154,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
 
     app.get('*', async (req, res, next) => {
       // Don't intercept API routes or asset files with extensions
-      if (req.path.startsWith('/api/') || req.path.includes('.')) {
+      if (req.path.startsWith('/api/') || req.path.startsWith('/assets/') || req.path.includes('.')) {
         return next();
       }
 
@@ -1168,11 +1174,28 @@ Sitemap: https://deckdivider.app/sitemap.xml
       }
     });
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath, { index: false }));
+    const distPath = fs.existsSync(path.join(process.cwd(), 'dist'))
+      ? path.join(process.cwd(), 'dist')
+      : path.resolve(__dirname, '..', 'dist');
 
+    // 1. Immutable caching for Vite-hashed assets
+    app.use('/assets', express.static(path.join(distPath, 'assets'), {
+      maxAge: '1y',
+      immutable: true,
+      fallthrough: true,
+    }));
+
+    // 2. Static files (favicons, manifests, images, etc.)
+    app.use(express.static(distPath, {
+      index: false,
+      maxAge: '1h',
+      fallthrough: true,
+    }));
+
+    // 3. Fallback / SPA / Dynamic SSR route handler
     app.get('*', async (req, res, next) => {
-      if (req.path.startsWith('/api/')) {
+      // Never return HTML for API requests or static assets with file extensions
+      if (req.path.startsWith('/api/') || req.path.startsWith('/assets/') || req.path.includes('.')) {
         return next();
       }
 
@@ -1180,13 +1203,41 @@ Sitemap: https://deckdivider.app/sitemap.xml
         if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
           res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
-        const rawTemplate = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
+
+        // Check if a pre-rendered static HTML file exists for this route
+        const cleanRoute = req.path.split('?')[0].replace(/\/$/, '') || '/';
+        const candidateStaticHtml = cleanRoute === '/'
+          ? path.join(distPath, 'index.html')
+          : path.join(distPath, cleanRoute.replace(/^\//, ''), 'index.html');
+
+        if (cleanRoute !== '/' && fs.existsSync(candidateStaticHtml)) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.sendFile(candidateStaticHtml);
+        }
+
+        const templatePath = path.join(distPath, 'index.html');
+        if (!fs.existsSync(templatePath)) {
+          return res.status(404).send('Not Found');
+        }
+
+        const rawTemplate = fs.readFileSync(templatePath, 'utf-8');
         const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'deckdivider.app');
         const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr);
 
-        res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(populatedHtml);
+        res.status(200).set({
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache',
+        }).send(populatedHtml);
       } catch (err) {
-        res.sendFile(path.join(distPath, 'index.html'));
+        const fallbackPath = path.join(distPath, 'index.html');
+        if (fs.existsSync(fallbackPath)) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.sendFile(fallbackPath);
+        } else {
+          next(err);
+        }
       }
     });
   }

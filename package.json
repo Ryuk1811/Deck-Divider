@@ -10,7 +10,7 @@
     "build:worker": "vite build",
     "deploy:pages": "vite build && wrangler pages deploy dist --project-name=deck-divider",
     "deploy:worker": "vite build && wrangler deploy",
-    "start": "node dist/server.cjs",
+    "start": "NODE_ENV=production node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js dist/server.cjs",
     "lint": "tsc --noEmit"
