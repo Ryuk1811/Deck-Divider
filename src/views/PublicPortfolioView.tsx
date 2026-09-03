@@ -182,10 +182,14 @@ export const PublicPortfolioView: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {snapshot.sealedEntries.map(entry => (
                   <div key={entry.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                    <h3 className="font-bold text-slate-900 truncate">{entry.name}</h3>
+                    <h3 className="font-bold text-slate-900 truncate">
+                      {entry.product?.name || (entry as unknown as { name?: string }).name || 'Sealed Item'}
+                    </h3>
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-slate-500">Qty: {entry.quantity}</span>
-                      <span className="font-semibold text-slate-700">{entry.productType}</span>
+                      <span className="font-semibold text-slate-700">
+                        {entry.product?.type || (entry as unknown as { productType?: string }).productType || 'Sealed'}
+                      </span>
                     </div>
                   </div>
                 ))}

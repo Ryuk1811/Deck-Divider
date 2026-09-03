@@ -137,7 +137,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
   displayCurrency,
   user,
 }) => {
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedFaq, setExpandedFaq] = useState<string | null>('faq-1');

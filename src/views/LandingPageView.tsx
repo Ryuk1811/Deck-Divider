@@ -30,6 +30,7 @@ interface LandingPageViewProps {
   currentTier?: AccountTier;
   onSelectTier: (tier: AccountTier) => void;
   displayCurrency: DisplayCurrency;
+  onSelectCurrency?: (currency: DisplayCurrency) => void;
   user?: any;
   onImportCustomCards?: (entries: any[]) => void;
   onSelectCard?: (card: any) => void;
@@ -113,6 +114,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div id="about" className="scroll-mt-16">
           <HeroWideSection
             onEnterApp={onEnterApp}
+            onOpenAuth={onOpenAuth}
+            user={user}
             displayCurrency={displayCurrency}
             onImportCustomCards={onImportCustomCards}
             onSelectCard={onSelectCard}

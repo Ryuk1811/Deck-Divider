@@ -24,7 +24,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   displayCurrency,
   user,
 }) => {
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   const tiers: {
     tier: AccountTier;

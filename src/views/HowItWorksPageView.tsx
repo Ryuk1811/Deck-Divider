@@ -23,7 +23,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
 }) => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   const steps = [
     {

@@ -22,7 +22,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
   displayCurrency,
 }) => {
   const [activePillar, setActivePillar] = useState<number>(0);
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   const pillars = [
     {

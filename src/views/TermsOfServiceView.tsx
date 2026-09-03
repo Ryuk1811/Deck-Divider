@@ -16,7 +16,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
   onNavigateHome,
   onNavigateHowItWorks,
 }) => {
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">

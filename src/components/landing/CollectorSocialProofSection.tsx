@@ -24,7 +24,7 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
   onOpenAuth,
   onEnterApp,
 }) => {
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   const primaryMetrics = [
     {

@@ -18,7 +18,7 @@ export const GlassSlabFrame: React.FC<GlassSlabFrameProps> = ({
 }) => {
   return (
     <div
-      className={`relative inline-flex flex-col items-center justify-center bg-gradient-to-b from-white/95 via-white/85 to-white/90 backdrop-blur-md border border-white/80 ring-1 ring-[#0F172A]/10 rounded-2xl p-2.5 sm:p-3 shadow-[0_10px_30px_-6px_rgba(15,23,42,0.12),0_4px_10px_-2px_rgba(15,23,42,0.06),inset_0_1.5px_1px_rgba(255,255,255,0.9)] transition-all duration-300 hover:shadow-[0_16px_40px_-8px_rgba(220,20,60,0.15),0_6px_16px_-4px_rgba(15,23,42,0.1),inset_0_1.5px_1px_rgba(255,255,255,1)] ${className}`}
+      className={`relative inline-flex flex-col items-center justify-center bg-white border border-slate-200/90 ring-1 ring-[#0F172A]/5 rounded-2xl p-2.5 sm:p-3 shadow-[0_4px_16px_-4px_rgba(15,23,42,0.08),inset_0_1px_1px_rgba(255,255,255,1)] transition-all duration-200 hover:shadow-[0_12px_28px_-6px_rgba(220,20,60,0.12),inset_0_1px_1px_rgba(255,255,255,1)] ${className}`}
     >
       {/* Top Glass Reflection Edge */}
       <div className="absolute top-0 left-3 right-3 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 pointer-events-none z-10" />

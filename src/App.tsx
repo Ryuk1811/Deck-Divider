@@ -1091,7 +1091,7 @@ export default function App() {
           id: `act-${Date.now()}`,
           type: 'SOLD',
           title: `Sold ${(updatedItem as PortfolioSealedEntry).product.name}`,
-          subtitle: `Realized Sale @ $${salePrice.toLocaleString()}`,
+          subtitle: `Realized Sale @ $${(salePrice ?? 0).toLocaleString()}`,
           timestamp: new Date().toISOString(),
           amount: salePrice,
           currency: (updatedItem as PortfolioSealedEntry).purchaseCurrency,

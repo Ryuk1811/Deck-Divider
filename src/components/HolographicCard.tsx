@@ -71,7 +71,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
         transition: 'var(--card-transition, transform 180ms ease-out)',
         willChange: 'transform',
       }}
-      className={`group relative bg-gradient-to-b from-white/95 via-white/85 to-white/90 backdrop-blur-md px-3 pt-3 pb-3.5 border border-white/80 ring-1 ring-[#0F172A]/10 shadow-[0_6px_20px_-4px_rgba(15,23,42,0.1),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_12px_32px_-6px_rgba(220,20,60,0.16),inset_0_1.5px_1px_rgba(255,255,255,1)] cursor-pointer select-none overflow-hidden rounded-2xl ${
+      className={`group relative bg-white px-3 pt-3 pb-3.5 border border-slate-200/90 ring-1 ring-[#0F172A]/5 shadow-[0_4px_16px_-4px_rgba(15,23,42,0.08),inset_0_1px_1px_rgba(255,255,255,1)] hover:shadow-[0_12px_28px_-6px_rgba(220,20,60,0.14),inset_0_1px_1px_rgba(255,255,255,1)] cursor-pointer select-none overflow-hidden rounded-2xl ${
         isFocused ? 'ring-2 ring-[#DC143C] ring-offset-2' : ''
       } ${className}`}
     >

@@ -38,9 +38,10 @@ export function formatCurrency(
   amountInUSD: number,
   targetCurrency: DisplayCurrency = 'USD'
 ): string {
+  const safeAmount = typeof amountInUSD === 'number' && !isNaN(amountInUSD) ? amountInUSD : 0;
   const code = (targetCurrency || 'USD').toUpperCase();
   const rate = CURRENCY_RATES[code] ?? 1.0;
-  const converted = amountInUSD * rate;
+  const converted = safeAmount * rate;
   const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
 
   if (code === 'JPY' || code === 'KRW') {

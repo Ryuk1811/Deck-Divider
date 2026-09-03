@@ -29,7 +29,7 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
   onCtaClick,
 }) => {
   // Kinetic Staging Constants using Apple/Linear easeOutQuint [0.16, 1, 0.3, 1]
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   return (
     <section

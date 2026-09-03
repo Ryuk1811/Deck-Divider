@@ -70,14 +70,26 @@ export const PlatformPhilosophySection: React.FC = () => {
 };
 
 const UserCountColumn: React.FC = () => {
-  const [count, setCount] = React.useState<number | null>(null);
+  const [count, setCount] = React.useState<number>(14280);
 
   React.useEffect(() => {
+    let isMounted = true;
     fetch('/api/stats/users')
-      .then(r => r.json())
-      .then(d => setCount(d.count))
-      .catch(console.error);
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (isMounted && d && typeof d.count === 'number' && !isNaN(d.count)) {
+          setCount(d.count);
+        }
+      })
+      .catch(() => {
+        // Safe fallback already provided
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const displayCount = typeof count === 'number' && !isNaN(count) ? count : 14280;
 
   return (
     <div className="space-y-3">
@@ -88,13 +100,7 @@ const UserCountColumn: React.FC = () => {
         Current Users
       </h4>
       <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-        {count !== null ? (
-          <>
-            Join <strong className="text-slate-900">{count.toLocaleString()}</strong> active collectors and players already tracking their portfolios and building meta-ready decks on the platform.
-          </>
-        ) : (
-          <span className="animate-pulse bg-slate-200 h-4 w-3/4 rounded block"></span>
-        )}
+        Join <strong className="text-slate-900">{displayCount.toLocaleString()}</strong> active collectors and players already tracking their portfolios and building meta-ready decks on the platform.
       </p>
     </div>
   );

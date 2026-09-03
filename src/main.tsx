@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/react';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './lib/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Global error & unhandled rejection guard for sandboxed/restricted iframe environments
 if (typeof window !== 'undefined') {
@@ -48,10 +49,12 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 );

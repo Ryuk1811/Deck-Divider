@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
 
 export const NotFoundView: React.FC = () => {
-  const easeCurve = [0.16, 1, 0.3, 1];
+  const easeCurve = [0.16, 1, 0.3, 1] as const;
 
   return (
     <div className="min-h-screen w-full bg-slate-50 flex flex-col items-center justify-center font-sans relative selection:bg-[#DC143C] selection:text-white p-4">

@@ -82,28 +82,14 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             </div>
           </nav>
 
-          {/* Action Button: Sign In / Studio Launch with real anchor tag */}
-          {user ? (
+          {/* Action Button: Show Launch Studio when signed in; no top bar sign in button */}
+          {user && (
             <Link
               to="/app"
               onClick={() => onEnterApp && onEnterApp()}
               className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-lg transition-all border border-[#DC143C] cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
             >
               <span>Launch Studio</span>
-            </Link>
-          ) : (
-            <Link
-              to="/auth"
-              onClick={(e) => {
-                if (onOpenAuth) {
-                  // Allow client router navigation while triggering auth modal if attached
-                  onOpenAuth();
-                }
-              }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-[#0F172A] hover:text-[#DC143C] bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-lg transition-all border border-[#E2E8F0] hover:border-[#DC143C]/40 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2 whitespace-nowrap"
-            >
-              <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />
-              <span>Sign In <span className="hidden sm:inline">/ Login</span></span>
             </Link>
           )}
 
@@ -217,19 +203,20 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               </div>
             </Link>
 
-            <div className="pt-2 border-t border-slate-100">
-              <Link
-                to="/auth"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAuth();
-                }}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Sign In / Create Free Account</span>
-              </Link>
-            </div>
+            {user && (
+              <div className="pt-2 border-t border-slate-100">
+                <Link
+                  to="/app"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onEnterApp) onEnterApp();
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <span>Launch Studio</span>
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

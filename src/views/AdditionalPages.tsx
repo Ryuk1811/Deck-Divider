@@ -5,7 +5,7 @@ import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../components/landing/LandingMotionDirectorate';
 
-const easeCurve = [0.16, 1, 0.3, 1];
+const easeCurve = [0.16, 1, 0.3, 1] as const;
 
 const PageTemplate = ({ 
   title, 
