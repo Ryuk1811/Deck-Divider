@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft,
   PieChart as PieIcon,
@@ -8,30 +8,51 @@ import {
   Grid,
   Zap,
   Activity,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { unpackUserSnapshot } from '../lib/snapshotEngine';
-import { UserCompressedSnapshotState, CompressedSnapshotDoc } from '../lib/snapshotEngine';
+import { SharedPortfolioSnapshot, PortfolioCardEntry } from '../types';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 import { formatCurrency } from '../utils/formatters';
+import { decodeUrlParamToPortfolio } from '../utils/portfolioUrlEncoder';
+import { CardImage } from '../components/CardImage';
 
 export const PublicPortfolioView: React.FC = () => {
   const { shareId } = useParams<{ shareId: string }>();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [snapshot, setSnapshot] = useState<UserCompressedSnapshotState | null>(null);
+  const [snapshot, setSnapshot] = useState<SharedPortfolioSnapshot | null>(null);
   const [activeTab, setActiveTab] = useState<'collection' | 'decks' | 'sealed' | 'lists'>('collection');
 
   useEffect(() => {
     const fetchPortfolio = async () => {
-      if (!shareId) return;
+      // 1. Check URL-encoded snapshot param first for instant, zero-latency loading
+      const urlParam = searchParams.get('d') || searchParams.get('data');
+      if (urlParam) {
+        const decoded = decodeUrlParamToPortfolio(urlParam);
+        if (decoded) {
+          setSnapshot(decoded);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (!shareId) {
+        setError('No portfolio identifier provided.');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
 
-        // 1. Try fetching the compressed cloud snapshot
+        // 2. Try fetching the compressed cloud snapshot from Firestore
         let docSnap = null;
         try {
           const docRef = doc(db, 'users', shareId, 'snapshot', 'current');
@@ -41,7 +62,7 @@ export const PublicPortfolioView: React.FC = () => {
         }
 
         if (docSnap && docSnap.exists()) {
-          const data = docSnap.data() as CompressedSnapshotDoc;
+          const data = docSnap.data();
           const isExplicitlyPublic = Boolean(
             data.isPublicProfile ||
             (data as any).isPublic ||
@@ -73,17 +94,16 @@ export const PublicPortfolioView: React.FC = () => {
             console.warn('User doc check notice:', userErr);
           }
 
-          setError('This portfolio is not public.');
+          setError('This portfolio is set to private.');
           setLoading(false);
           return;
         }
 
-        // 2. Check user document directly
+        // 3. Check user document directly
         try {
           const userRef = doc(db, 'users', shareId);
           const userSnap = await getDoc(userRef);
           if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
-            // Profile is public but snapshot hasn't been generated yet
             const userData = userSnap.data();
             setSnapshot({
               version: 2,
@@ -109,7 +129,7 @@ export const PublicPortfolioView: React.FC = () => {
           console.warn('Direct user doc fetch notice:', userErr);
         }
 
-        // 3. Fallback for guest mode or local browser testing
+        // 4. Fallback for guest mode or local browser testing
         if (shareId === 'guest' || shareId === 'guest_user' || localStorage.getItem('dd_guest_is_public') === 'true') {
           const isGuestPublic = localStorage.getItem('dd_guest_is_public') === 'true' || shareId === 'guest';
           if (isGuestPublic) {
@@ -155,7 +175,41 @@ export const PublicPortfolioView: React.FC = () => {
     };
 
     fetchPortfolio();
-  }, [shareId]);
+  }, [shareId, searchParams]);
+
+  const currency = (snapshot?.profile?.currency as any) || 'USD';
+
+  // Aggregate all unique cards across all decks
+  const allCardsList = useMemo(() => {
+    if (!snapshot) return [];
+    const map = new Map<string, PortfolioCardEntry>();
+    snapshot.decks.forEach((deck) => {
+      deck.entries.forEach((entry) => {
+        const cardId = entry.card?.id || entry.id;
+        if (!map.has(cardId)) {
+          map.set(cardId, { ...entry });
+        } else {
+          const existing = map.get(cardId)!;
+          map.set(cardId, { ...existing, quantity: existing.quantity + entry.quantity });
+        }
+      });
+    });
+    return Array.from(map.values());
+  }, [snapshot]);
+
+  // Calculate total market valuation
+  const totalValuation = useMemo(() => {
+    if (!snapshot) return 0;
+    const cardsVal = allCardsList.reduce((sum, item) => {
+      const price = item.purchasePrice || item.card?.prices?.raw || 0;
+      return sum + price * item.quantity;
+    }, 0);
+    const sealedVal = snapshot.sealedEntries.reduce((sum, s) => {
+      const price = s.product?.marketPrice || s.purchasePrice || 0;
+      return sum + price * s.quantity;
+    }, 0);
+    return cardsVal + sealedVal;
+  }, [snapshot, allCardsList]);
 
   if (loading) {
     return (
@@ -179,8 +233,6 @@ export const PublicPortfolioView: React.FC = () => {
     );
   }
 
-  const allCards = snapshot.decks.flatMap(d => d.entries); // In a real app we'd combine properly, but this gives a taste
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
@@ -190,7 +242,11 @@ export const PublicPortfolioView: React.FC = () => {
             <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <DeckDividerBrand />
+            <DeckDividerBrand size="sm" showLogo={true} />
+          </div>
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#16A34A] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse"></span>
+            <span>PUBLIC SHOWCASE</span>
           </div>
         </div>
       </header>
@@ -198,11 +254,15 @@ export const PublicPortfolioView: React.FC = () => {
       {/* Hero Banner */}
       <div className="bg-slate-900 pt-12 pb-16 px-4">
         <div className="max-w-5xl mx-auto text-center space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-mono">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#DC143C]" />
+            <span>Verified Collector Showcase</span>
+          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white font-heading tracking-tight">
             {snapshot.profile?.displayName || 'Collector'}'s Portfolio
           </h1>
           <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Viewing a public read-only collection tracking {snapshot.decks.length} decks, {snapshot.sealedEntries.length} sealed items, and custom want-lists.
+            Viewing a public read-only collection tracking {snapshot.decks.length} decks, {allCardsList.length} distinct cards, and sealed vault assets.
           </p>
         </div>
       </div>
@@ -219,7 +279,7 @@ export const PublicPortfolioView: React.FC = () => {
               }`}
             >
               <Grid className="w-4 h-4" />
-              <span>Overview</span>
+              <span>Cards Gallery ({allCardsList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('decks')}
@@ -251,20 +311,91 @@ export const PublicPortfolioView: React.FC = () => {
           </div>
 
           <div className="p-6 min-h-[400px]">
+            {/* Overview Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Valuation</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                  {formatCurrency(totalValuation, currency)}
+                </span>
+              </div>
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Total Cards</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                  {allCardsList.reduce((acc, c) => acc + c.quantity, 0)}
+                </span>
+              </div>
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Active Decks</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{snapshot.decks.length}</span>
+              </div>
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Sealed Vault</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{snapshot.sealedEntries.length}</span>
+              </div>
+            </div>
+
             {activeTab === 'collection' && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                  <span className="text-xs font-bold text-slate-500 uppercase">Total Decks</span>
-                  <span className="text-3xl font-black text-slate-900 font-heading">{snapshot.decks.length}</span>
-                </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                  <span className="text-xs font-bold text-slate-500 uppercase">Sealed Assets</span>
-                  <span className="text-3xl font-black text-slate-900 font-heading">{snapshot.sealedEntries.length}</span>
-                </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                  <span className="text-xs font-bold text-slate-500 uppercase">Custom Lists</span>
-                  <span className="text-3xl font-black text-slate-900 font-heading">{snapshot.customLists.length}</span>
-                </div>
+              <div>
+                {allCardsList.length === 0 ? (
+                  <div className="py-16 text-center text-slate-400">
+                    <Grid className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm font-medium">No cards currently in this collection showcase.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+                    {allCardsList.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="group bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-[#DC143C]/50 hover:shadow-md transition-all flex flex-col"
+                      >
+                        <div className="relative aspect-[63/88] w-full bg-slate-100 overflow-hidden flex items-center justify-center p-2">
+                          {entry.card ? (
+                            <CardImage
+                              src={entry.card.images?.small || entry.card.images?.large}
+                              alt={entry.card.name}
+                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="text-xs font-mono text-slate-400">Card {entry.id}</div>
+                          )}
+                          {entry.quantity > 1 && (
+                            <div className="absolute top-2 right-2 bg-slate-900/90 text-white text-[11px] font-black px-2 py-0.5 rounded-md font-mono shadow-xs">
+                              x{entry.quantity}
+                            </div>
+                          )}
+                          {entry.notes?.includes('Foil') && (
+                            <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-xs">
+                              <Sparkles className="w-2.5 h-2.5" /> Foil
+                            </div>
+                          )}
+                          {entry.gradingInfo && (
+                            <div className="absolute bottom-2 left-2 bg-[#DC143C] text-white text-[10px] font-black px-1.5 py-0.5 rounded-md font-mono shadow-xs">
+                              {entry.gradingInfo.company} {entry.gradingInfo.grade}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-2.5 flex flex-col justify-between flex-1 border-t border-slate-100 bg-white">
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 truncate" title={entry.card?.name}>
+                              {entry.card?.name || 'Pokemon Card'}
+                            </div>
+                            <div className="text-[11px] text-slate-500 truncate font-mono">
+                              {entry.card?.set?.name || 'Set'} · {entry.card?.number || ''}
+                            </div>
+                          </div>
+                          <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span className="text-slate-400 font-mono text-[10px]">Market</span>
+                            <span className="font-bold text-slate-900 font-mono">
+                              {formatCurrency(entry.purchasePrice || entry.card?.prices?.raw || 0, currency)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {activeTab === 'decks' && (
@@ -275,7 +406,12 @@ export const PublicPortfolioView: React.FC = () => {
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: deck.colorHex || '#DC143C' }}></div>
                       <h3 className="font-bold text-slate-900 truncate">{deck.name}</h3>
                     </div>
-                    <span className="text-xs text-slate-500">{deck.entries.reduce((a, b) => a + b.quantity, 0)} Cards</span>
+                    <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 font-mono">
+                      <span>{deck.entries.reduce((a, b) => a + b.quantity, 0)} Cards</span>
+                      <Link to={`/deck/${deck.id}`} className="text-[#DC143C] font-semibold hover:underline">
+                        View Deck →
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>

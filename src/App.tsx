@@ -104,7 +104,7 @@ const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayC
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, subscription, loading: authLoading, refreshSubscription, updateUserProfile } = useAuth();
+  const { user, profile, subscription, loading: authLoading, refreshSubscription, updateUserProfile, signOutUser } = useAuth();
   const [guestPublicProfile, setGuestPublicProfile] = useState<boolean>(() => {
     try {
       return localStorage.getItem('dd_guest_is_public') === 'true';
@@ -115,6 +115,28 @@ export default function App() {
   const effectiveIsPublicProfile = Boolean(profile?.isPublicProfile ?? guestPublicProfile);
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
+
+  const handleSignOut = async () => {
+    try {
+      if (signOutUser) {
+        await signOutUser();
+      } else {
+        await auth.signOut();
+      }
+    } catch (e) {
+      console.warn('Sign out warning:', e);
+    }
+    handleSetGuestMode(false);
+    try {
+      localStorage.removeItem('dd_guest_mode');
+      localStorage.removeItem('dd_guest_is_public');
+    } catch (e) {}
+    setDecks([]);
+    setCustomLists([]);
+    setSealedEntries([]);
+    setSoldEntries([]);
+    navigate('/?landing=true');
+  };
 
   // Dynamically manage robots meta tag on route transitions
   React.useEffect(() => {
@@ -1191,6 +1213,8 @@ export default function App() {
         setIsCollapsed={setIsSidebarCollapsed}
         isMobileOpen={isMobileSidebarOpen}
         setIsMobileOpen={setIsMobileSidebarOpen}
+        onSignOut={handleSignOut}
+        onOpenAuth={() => navigate('/auth')}
       />
 
       {/* Main Panel Area */}
@@ -1397,6 +1421,8 @@ export default function App() {
               isPublicProfile={effectiveIsPublicProfile}
               onTogglePublicProfile={handleTogglePublicProfile}
               onOpenBackupModal={() => setIsBackupModalOpen(true)}
+              onSignOut={handleSignOut}
+              onOpenAuth={() => navigate('/auth')}
             />
           )}
 

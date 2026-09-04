@@ -88,6 +88,9 @@ export function AuthView({
         }
         trackSignupSuccess('email');
       }
+      try {
+        localStorage.removeItem('dd_guest_mode');
+      } catch (e) {}
       navigate('/app');
     } catch (err: any) {
       console.error('[Firebase Auth Error]', err);
@@ -148,6 +151,9 @@ export function AuthView({
         await signInWithPopup(auth, provider);
       }
       trackSignupSuccess('google');
+      try {
+        localStorage.removeItem('dd_guest_mode');
+      } catch (e) {}
       navigate('/app');
     } catch (err: any) {
       console.warn('[Google Auth Error]', err);
@@ -292,7 +298,7 @@ export function AuthView({
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex flex-col items-center gap-3 text-center">
           <button
             type="button"
             onClick={() => {
@@ -303,6 +309,25 @@ export function AuthView({
           >
             {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
+
+          <div className="w-full pt-3 border-t border-slate-100 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                if (onGuestAccess) {
+                  onGuestAccess();
+                } else {
+                  try {
+                    localStorage.setItem('dd_guest_mode', 'true');
+                  } catch (e) {}
+                  navigate('/app');
+                }
+              }}
+              className="text-xs font-mono text-slate-500 hover:text-[#DC143C] transition-colors cursor-pointer"
+            >
+              Or continue in Guest / Demo Mode →
+            </button>
+          </div>
         </div>
       </div>
     </div>

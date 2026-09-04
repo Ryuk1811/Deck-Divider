@@ -69,7 +69,11 @@ service cloud.firestore {
       allow delete: if isSuperUser();
 
       match /snapshot/current {
-        allow read: if (isAuthenticated() && isOwner(userId)) || isSuperUser() || resource == null || resource.data.isPublicProfile == true || resource.data.isPublic == true;
+        allow read: if (isAuthenticated() && isOwner(userId)) || isSuperUser() || 
+          (resource != null && (resource.data.isPublicProfile == true || resource.data.isPublic == true)) ||
+          (exists(/databases/$(database)/documents/users/$(userId)) && 
+           (get(/databases/$(database)/documents/users/$(userId)).data.isPublicProfile == true || 
+            get(/databases/$(database)/documents/users/$(userId)).data.isPublic == true));
         allow write: if (isAuthenticated() && isOwner(userId)) || isSuperUser();
       }
 

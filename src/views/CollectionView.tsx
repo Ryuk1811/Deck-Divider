@@ -32,6 +32,7 @@ import { CardImage } from '../components/CardImage';
 import { DropdownMenu } from '../components/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
 import { PublicShareLinkBox } from '../components/PublicShareLinkBox';
+import { encodePortfolioToUrl } from '../utils/portfolioUrlEncoder';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -392,7 +393,16 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             {isPublicProfile && (
               <PublicShareLinkBox
                 isPublic={Boolean(isPublicProfile)}
-                url={`${window.location.origin}/portfolio/${userId || 'guest'}`}
+                url={(() => {
+                  const base = `${window.location.origin}/portfolio/${userId || 'guest'}`;
+                  const encoded = encodePortfolioToUrl({
+                    decks,
+                    customLists,
+                    displayName: userEmail?.split('@')[0] || 'Collector',
+                    currency,
+                  });
+                  return encoded ? `${base}?d=${encoded}` : base;
+                })()}
               />
             )}
 

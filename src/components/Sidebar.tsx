@@ -9,12 +9,14 @@ import {
   Settings as SettingsIcon,
   Command,
   LogOut,
+  LogIn,
   TrendingUp,
   Package,
   ChevronRight,
   X,
   ShieldCheck,
   Globe,
+  UserCheck,
 } from 'lucide-react';
 import { AccountTier } from '../types';
 import { useAuth } from '../lib/AuthContext';
@@ -42,6 +44,8 @@ interface SidebarProps {
   setIsCollapsed?: (collapsed: boolean) => void;
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
+  onSignOut?: () => void;
+  onOpenAuth?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -54,9 +58,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setIsCollapsed: propSetIsCollapsed,
   isMobileOpen: propIsMobileOpen,
   setIsMobileOpen: propSetIsMobileOpen,
+  onSignOut,
+  onOpenAuth,
 }) => {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, signOutUser } = useAuth();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [internalMobileOpen, setInternalMobileOpen] = useState(false);
 
@@ -92,8 +98,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const handleSignOut = async () => {
-    await auth.signOut();
-    navigate('/');
+    if (onSignOut) {
+      onSignOut();
+      return;
+    }
+    try {
+      if (signOutUser) {
+        await signOutUser();
+      } else {
+        await auth.signOut();
+      }
+    } catch (e) {
+      console.warn('Sign out warning:', e);
+    }
+    try {
+      localStorage.removeItem('dd_guest_mode');
+      localStorage.removeItem('dd_guest_is_public');
+    } catch (e) {}
+    navigate('/?landing=true');
   };
 
   const [imgError, setImgError] = useState(false);
@@ -129,12 +151,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className={`h-16 flex items-center justify-center border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {!isCollapsed ? (
             <div className="w-full flex items-center justify-center">
-              {/* Full-width Wordmark spanning entire header with nothing beside it */}
+              {/* Wordmark with Favicon Logo */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
-                showLogo={false}
-                fullWidth={true}
+                showLogo={true}
+                fullWidth={false}
+                onLogoClick={() => {
+                  navigate('/');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 onClick={() => {
                   if (window.innerWidth < 768) {
                     setIsMobileOpen(false);
@@ -142,16 +168,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     setIsCollapsed(true);
                   }
                 }}
-                className="w-full cursor-pointer"
+                className="cursor-pointer"
               />
             </div>
           ) : (
             <div className="w-full flex items-center justify-center">
-              {/* Collapsed square wordmark displays "D / d" and expands sidebar on click */}
+              {/* Collapsed view displays the clean favicon / logo icon */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={true}
-                showLogo={false}
+                showLogo={true}
                 onClick={() => setIsCollapsed(false)}
                 className="cursor-pointer flex items-center justify-center"
               />
@@ -263,59 +289,91 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>System Settings</span>
               </button>
 
-              <div className="flex items-center justify-between p-2 bg-[#F8FAFC] border border-[#E2E8F0] chamfer-corner-sm">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="relative flex-shrink-0">
-                    {avatarUrl && !imgError ? (
-                      <img
-                        src={avatarUrl}
-                        alt={displayName}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-7 h-7 rounded-full object-cover border border-[#CBD5E1]"
-                        referrerPolicy="no-referrer"
-                        onError={() => setImgError(true)}
-                      />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
-                        {initials}
-                      </div>
-                    )}
-                    <div
-                      title={isSyncing ? 'Background server sync in progress' : 'Synced'}
-                      className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${
-                        isSyncing ? 'bg-[#DC143C] animate-sync-pulse' : 'bg-[#16A34A]'
-                      }`}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading font-semibold text-xs text-[#0F172A] truncate">
-                      {displayName}
-                    </div>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {isSuperUser ? (
-                        <span className="inline-block rounded-md px-1.5 py-0.2 text-[8px] font-mono font-bold bg-[#FFD700] text-[#0F172A] border border-[#B8860B] shadow-xs">
-                          SUPER USER (UNLIMITED)
-                        </span>
+              {user ? (
+                <div className="flex items-center justify-between p-2 bg-[#F8FAFC] border border-[#E2E8F0] chamfer-corner-sm">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="relative flex-shrink-0">
+                      {avatarUrl && !imgError ? (
+                        <img
+                          src={avatarUrl}
+                          alt={displayName}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-7 h-7 rounded-full object-cover border border-[#CBD5E1]"
+                          referrerPolicy="no-referrer"
+                          onError={() => setImgError(true)}
+                        />
                       ) : (
-                        <>
-                          <span className="inline-block rounded-md px-1.5 py-0.2 text-[9px] font-mono font-bold bg-[#0F172A] text-white">
-                            {currentTier}
-                          </span>
-                          <span className="font-mono text-[9px] text-[#64748B]">Tier</span>
-                        </>
+                        <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs">
+                          {initials}
+                        </div>
                       )}
+                      <div
+                        title={isSyncing ? 'Background server sync in progress' : 'Synced'}
+                        className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${
+                          isSyncing ? 'bg-[#DC143C] animate-sync-pulse' : 'bg-[#16A34A]'
+                        }`}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading font-semibold text-xs text-[#0F172A] truncate">
+                        {displayName}
+                      </div>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {isSuperUser ? (
+                          <span className="inline-block rounded-md px-1.5 py-0.2 text-[8px] font-mono font-bold bg-[#FFD700] text-[#0F172A] border border-[#B8860B] shadow-xs">
+                            SUPER USER (UNLIMITED)
+                          </span>
+                        ) : (
+                          <>
+                            <span className="inline-block rounded-md px-1.5 py-0.2 text-[9px] font-mono font-bold bg-[#0F172A] text-white">
+                              {currentTier}
+                            </span>
+                            <span className="font-mono text-[9px] text-[#64748B]">Tier</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="p-1.5 text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] rounded-md transition-colors cursor-pointer"
+                    title="Sign Out"
+                    aria-label="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="p-1.5 text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] rounded-md transition-colors cursor-pointer"
-                  title="Sign Out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
+              ) : (
+                <div className="flex flex-col gap-2 p-2.5 bg-[#FFF0F3]/60 border border-[#DC143C]/20 chamfer-corner-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                      <span className="font-heading font-bold text-xs text-[#0F172A]">Guest Session</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="text-[10px] font-mono font-semibold text-slate-500 hover:text-[#DC143C] transition-colors cursor-pointer"
+                      title="Exit Demo"
+                    >
+                      Exit Demo
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onOpenAuth) onOpenAuth();
+                      else navigate('/auth');
+                    }}
+                    className="w-full py-1.5 px-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold rounded flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In / Save Data</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="w-full flex flex-col items-center space-y-2.5">
@@ -332,41 +390,72 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <SettingsIcon className="w-4.5 h-4.5" />
               </button>
 
-              <div
-                className="w-10 h-10 flex items-center justify-center relative cursor-pointer group shrink-0"
-                onClick={() => handleNavClick('settings')}
-                title={`${displayName} (${isSuperUser ? 'Super User - Unlimited' : currentTier + ' Tier'})`}
-              >
-                {avatarUrl && !imgError ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1] group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all"
-                    referrerPolicy="no-referrer"
-                    onError={() => setImgError(true)}
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all">
-                    {initials}
+              {user ? (
+                <>
+                  <div
+                    className="w-10 h-10 flex items-center justify-center relative cursor-pointer group shrink-0"
+                    onClick={() => handleNavClick('settings')}
+                    title={`${displayName} (${isSuperUser ? 'Super User - Unlimited' : currentTier + ' Tier'})`}
+                  >
+                    {avatarUrl && !imgError ? (
+                      <img
+                        src={avatarUrl}
+                        alt={displayName}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-8 h-8 rounded-full object-cover border border-[#CBD5E1] group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all"
+                        referrerPolicy="no-referrer"
+                        onError={() => setImgError(true)}
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-heading font-bold text-xs group-hover:ring-2 group-hover:ring-[#DC143C]/40 transition-all">
+                        {initials}
+                      </div>
+                    )}
+                    <div
+                      title={isSyncing ? 'Syncing...' : 'Synced'}
+                      className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
+                        isSyncing ? 'bg-[#DC143C] animate-sync-pulse' : 'bg-[#16A34A]'
+                      }`}
+                    />
                   </div>
-                )}
-                <div
-                  title={isSyncing ? 'Syncing...' : 'Synced'}
-                  className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
-                    isSyncing ? 'bg-[#DC143C] animate-sync-pulse' : 'bg-[#16A34A]'
-                  }`}
-                />
-              </div>
 
-              <button
-                onClick={handleSignOut}
-                className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C]/20 rounded-lg transition-all shrink-0 cursor-pointer"
-                title="Sign Out"
-              >
-                <LogOut className="w-4.5 h-4.5" />
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C]/20 rounded-lg transition-all shrink-0 cursor-pointer"
+                    title="Sign Out"
+                    aria-label="Sign Out"
+                  >
+                    <LogOut className="w-4.5 h-4.5" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onOpenAuth) onOpenAuth();
+                      else navigate('/auth');
+                    }}
+                    className="w-10 h-10 flex items-center justify-center text-white bg-[#DC143C] hover:bg-[#B01030] rounded-lg transition-all shrink-0 shadow-xs cursor-pointer"
+                    title="Sign In / Register"
+                    aria-label="Sign In"
+                  >
+                    <LogIn className="w-4.5 h-4.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C]/20 rounded-lg transition-all shrink-0 cursor-pointer"
+                    title="Exit Demo Session"
+                    aria-label="Exit Demo"
+                  >
+                    <LogOut className="w-4.5 h-4.5" />
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -82,8 +82,8 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             </div>
           </nav>
 
-          {/* Action Button: Show Launch Studio when signed in; no top bar sign in button */}
-          {user && (
+          {/* Action Button: Show Launch Studio when signed in; Sign In and Launch App when not signed in */}
+          {user ? (
             <Link
               to="/app"
               onClick={() => onEnterApp && onEnterApp()}
@@ -91,6 +91,24 @@ export const LandingNav: React.FC<LandingNavProps> = ({
             >
               <span>Launch Studio</span>
             </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/auth"
+                onClick={() => onOpenAuth && onOpenAuth()}
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:text-[#DC143C] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                to="/app"
+                onClick={() => onEnterApp && onEnterApp()}
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-lg transition-all border border-[#DC143C] cursor-pointer shadow-xs whitespace-nowrap"
+              >
+                <span>Launch App</span>
+              </Link>
+            </div>
           )}
 
           {/* Mobile Hamburger Button */}
@@ -203,7 +221,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               </div>
             </Link>
 
-            {user && (
+            {user ? (
               <div className="pt-2 border-t border-slate-100">
                 <Link
                   to="/app"
@@ -214,6 +232,30 @@ export const LandingNav: React.FC<LandingNavProps> = ({
                   className="w-full py-2.5 px-4 rounded-xl bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>Launch Studio</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                <Link
+                  to="/auth"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onOpenAuth) onOpenAuth();
+                  }}
+                  className="w-full py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0F172A] font-semibold text-sm flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In</span>
+                </Link>
+                <Link
+                  to="/app"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onEnterApp) onEnterApp();
+                  }}
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#DC143C] hover:bg-[#B01030] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <span>Launch App</span>
                 </Link>
               </div>
             )}

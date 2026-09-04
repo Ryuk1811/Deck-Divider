@@ -162,7 +162,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOutUser = async () => {
-    await firebaseSignOut(auth);
+    try {
+      await firebaseSignOut(auth);
+    } catch (e) {
+      console.warn('Firebase signOut warning:', e);
+    }
     setUser(null);
     setProfile(null);
     setSubscription(null);

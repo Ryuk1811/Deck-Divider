@@ -330,6 +330,25 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export interface SharedPortfolioSnapshot {
+  version: number;
+  userId: string;
+  updatedAt: string;
+  profile: {
+    displayName?: string;
+    email?: string;
+    tier: AccountTier;
+    currency: DisplayCurrency;
+    isPublicProfile?: boolean;
+    publicProfileShareCode?: string;
+  };
+  decks: Deck[];
+  customLists: CustomList[];
+  sealedEntries: PortfolioSealedEntry[];
+  soldEntries: PortfolioCardEntry[];
+  recentActivities: RecentActivityItem[];
+}
+
 export interface SubscriptionRecord {
   id: string; // auth.uid
   tierName: AccountTier;

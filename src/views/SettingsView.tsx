@@ -15,6 +15,9 @@ import {
   Sliders,
   Cloud,
   ExternalLink,
+  LogOut,
+  LogIn,
+  UserCheck,
 } from 'lucide-react';
 import {
   DisplayCurrency,
@@ -48,6 +51,8 @@ interface SettingsViewProps {
   onResetShowcaseData?: () => void;
   onOpenFunnelMetrics?: () => void;
   onOpenBackupModal?: () => void;
+  onSignOut?: () => void;
+  onOpenAuth?: () => void;
 }
 
 const SUPPORTED_CURRENCIES = [
@@ -90,8 +95,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   isPublicProfile,
   onTogglePublicProfile,
   onOpenBackupModal,
+  onSignOut,
+  onOpenAuth,
 }) => {
-  const { subscription } = useAuth();
+  const { user, profile, subscription } = useAuth();
   const [isSnapshotting, setIsSnapshotting] = useState(false);
   const [snapshotSuccess, setSnapshotSuccess] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -491,6 +498,58 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <Download className="w-3.5 h-3.5 text-[#DC143C]" />
                   <span>Download Backup JSON</span>
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION E: ACCOUNT & SESSION MANAGEMENT */}
+          <div className="p-5 sm:p-6 bg-slate-50/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5 max-w-xl">
+                <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shrink-0 mt-0.5">
+                  <UserCheck className="w-4 h-4 text-amber-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-heading font-bold text-sm sm:text-base text-[#0F172A]">
+                      Account & Active Session
+                    </h3>
+                    <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
+                      user 
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
+                        : 'bg-amber-50 border-amber-200 text-amber-700'
+                    }`}>
+                      {user ? 'AUTHENTICATED' : 'GUEST / DEMO'}
+                    </span>
+                  </div>
+                  <p className="font-mono text-xs text-[#64748B] mt-1 leading-relaxed">
+                    {user
+                      ? `Signed in as ${user.email || profile?.displayName || 'Collector'} (${user.providerData?.[0]?.providerId === 'google.com' ? 'Google Account' : 'Email/Password'})`
+                      : 'Running in temporary local browser storage. Sign in or register to sync your slabs and decks across all devices.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+                {user ? (
+                  <button
+                    type="button"
+                    onClick={onSignOut}
+                    className="h-10 px-4 bg-white hover:bg-[#FFF0F3] border border-[#CBD5E1] hover:border-[#DC143C] text-[#DC143C] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-lg whitespace-nowrap cursor-pointer shadow-xs transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={onOpenAuth}
+                    className="h-10 px-4 bg-[#DC143C] hover:bg-[#B01030] text-white text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-lg whitespace-nowrap cursor-pointer shadow-xs transition-colors"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In / Create Account</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
