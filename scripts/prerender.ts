@@ -22,6 +22,18 @@ async function prerenderAllRoutes() {
     { route: '/privacy', outputPath: path.join(distDir, 'privacy', 'index.html') },
     { route: '/terms', outputPath: path.join(distDir, 'terms', 'index.html') },
     { route: '/auth', outputPath: path.join(distDir, 'auth', 'index.html') },
+    // Programmatic Set Checklists
+    { route: '/set/sv8', outputPath: path.join(distDir, 'set', 'sv8', 'index.html') },
+    { route: '/set/sv6', outputPath: path.join(distDir, 'set', 'sv6', 'index.html') },
+    { route: '/set/sv3pt5', outputPath: path.join(distDir, 'set', 'sv3pt5', 'index.html') },
+    { route: '/set/swsh7', outputPath: path.join(distDir, 'set', 'swsh7', 'index.html') },
+    { route: '/set/base1', outputPath: path.join(distDir, 'set', 'base1', 'index.html') },
+    // Programmatic Tournament Deck Archetypes
+    { route: '/decks/gardevoir-ex', outputPath: path.join(distDir, 'decks', 'gardevoir-ex', 'index.html') },
+    { route: '/decks/charizard-ex', outputPath: path.join(distDir, 'decks', 'charizard-ex', 'index.html') },
+    { route: '/decks/regidrago-vstar', outputPath: path.join(distDir, 'decks', 'regidrago-vstar', 'index.html') },
+    { route: '/decks/dragapult-ex', outputPath: path.join(distDir, 'decks', 'dragapult-ex', 'index.html') },
+    { route: '/decks/miraidon-ex', outputPath: path.join(distDir, 'decks', 'miraidon-ex', 'index.html') },
   ];
 
   console.log('[Prerender] Generating static HTML for public routes...');

@@ -1,0 +1,28 @@
+# DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder
+
+> DECK / divider (https://deckdivider.app) is an independent, high-performance web platform and digital portfolio operating system built specifically for Pokémon Trading Card Game (TCG) collectors, competitive tournament players, and investors.
+
+## Platform Capabilities & Features
+
+- **Portfolio & Binder Management**: Catalog raw Pokémon cards across 148+ expansions (Base Set 1999 to Scarlet & Violet). Track acquisition costs, market values, and condition grades.
+- **Graded Slab Registry**: Full certification tracking for PSA, BGS, CGC, and ACE grading houses. Includes cert number verification, subgrades (Centering, Surface, Corners, Edges), and population pricing.
+- **Sealed Vault Ledger**: Log sealed booster boxes, Elite Trainer Boxes (ETBs), booster bundles, and promo tins with original purchase cost basis and real-time portfolio market value.
+- **60-Card Tournament Deckbuilder**: Construct standard tournament-legal rosters with automated Play! Pokémon regulation checks (F, G, H, I regulation marks), energy curve analytics, copy limits (4-card rule, ACE SPEC, Radiant), and 1-click PTCGL / tournament PDF export.
+- **Real-Time TCGplayer & eBay Pricing**: Automated pricing engine drawing from TCGplayer market prices and completed eBay sold listings across 15+ global currencies (USD, EUR, GBP, JPY, CAD, AUD, and more).
+- **Master Set Checklists**: Visual completion matrices with separate tracking for regular non-holos, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs).
+
+## Key Public URLs & Pages
+
+- [Homepage & Live App](https://deckdivider.app/): Main application interface and feature showcase.
+- [About Us & Architecture](https://deckdivider.app/about): Mission, collector principles, data provenance, and technical architecture.
+- [How It Works](https://deckdivider.app/how-it-works): 4-step pipeline guide from raw card binder to institutional asset ledger.
+- [Pricing Tiers](https://deckdivider.app/pricing): Subscription plans (Starter Free, Bunch $4.99/mo, Binder $9.99/mo, Vault $19.99/mo).
+- [Frequently Asked Questions](https://deckdivider.app/faq): Detailed answers on pricing data, format legality, and security.
+- [Full LLM Knowledge Base](https://deckdivider.app/llms-full.txt): Extended raw context and dataset documentation for AI search engines.
+
+## Technical Specifications & Compliance
+
+- **Supported Card Sets**: 148+ official Pokémon TCG expansions spanning English and Japanese releases.
+- **Regulation Format Rules**: Standard Format (F, G, H, I regulation marks), Expanded Format.
+- **Data Export Formats**: CSV collection backups, official Play! Pokémon PDF deck rosters, PTCGL text format.
+- **Security & Privacy**: Client-side offline-first storage backed by encrypted cloud backup option. Zero third-party ad networks or data monetization.

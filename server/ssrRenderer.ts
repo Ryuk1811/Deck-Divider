@@ -279,6 +279,186 @@ export async function renderSsrRoute(
     return { title: pageTitle, metaTags, bodyHtml };
   }
 
+  // PROGRAMMATIC SEO: SET CHECKLIST ROUTE: /set/:setId
+  if (cleanPath.startsWith('/set/')) {
+    const setId = cleanPath.replace('/set/', '').toLowerCase();
+
+    const setDatabase: Record<string, { name: string; series: string; totalCards: number; releaseYear: number; icon: string }> = {
+      'sv8': { name: 'Stellar Crown', series: 'Scarlet & Violet', totalCards: 175, releaseYear: 2024, icon: '👑' },
+      'sv6': { name: 'Twilight Masquerade', series: 'Scarlet & Violet', totalCards: 226, releaseYear: 2024, icon: '🎭' },
+      'sv3pt5': { name: '151', series: 'Scarlet & Violet', totalCards: 207, releaseYear: 2023, icon: '🌟' },
+      'swsh7': { name: 'Evolving Skies', series: 'Sword & Shield', totalCards: 237, releaseYear: 2021, icon: '🐉' },
+      'base1': { name: 'Base Set (1999)', series: 'Vintage Original', totalCards: 102, releaseYear: 1999, icon: '⚡' },
+    };
+
+    const setData = setDatabase[setId] || {
+      name: `${setId.toUpperCase()} Expansion`,
+      series: 'Pokémon TCG',
+      totalCards: 150,
+      releaseYear: 2024,
+      icon: '🎴',
+    };
+
+    const pageTitle = `${setData.name} (${setId.toUpperCase()}) Set Checklist & Card Prices | DECK / divider`;
+    const pageDesc = `Complete ${setData.name} (${setData.series}) card checklist, live TCGplayer market prices, Secret Illustration Rare odds, and reverse holo binder tracker.`;
+    const canonicalUrl = `${canonicalOrigin}/set/${setId}`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+            { '@type': 'ListItem', position: 2, name: 'Set Checklists', item: `${canonicalOrigin}/set` },
+            { '@type': 'ListItem', position: 3, name: setData.name, item: canonicalUrl },
+          ]
+        },
+        {
+          '@type': 'CollectionPage',
+          '@id': `${canonicalUrl}#webpage`,
+          url: canonicalUrl,
+          name: pageTitle,
+          description: pageDesc,
+          about: {
+            '@type': 'Thing',
+            name: `${setData.name} Pokémon TCG Expansion`,
+          }
+        }
+      ]
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/" style="color:#FFFFFF;text-decoration:none;font-weight:800;font-size:18px;">
+        DECK <span style="color:#DC143C;">/</span> divider
+      </a>
+      <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Track In Binder</a>
+    </header>
+    <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:28px;margin-bottom:24px;">
+        <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">${escapeHtml(setData.series)} • ${setData.releaseYear}</span>
+        <h1 style="font-size:32px;font-weight:900;margin:8px 0;">${setData.icon} ${escapeHtml(setData.name)} Master Set Checklist</h1>
+        <p style="color:#64748B;font-size:15px;margin:0;">Track all ${setData.totalCards} cards, reverse holos, secret rares, and market prices in real-time.</p>
+      </div>
+      <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+        <h2 style="font-size:20px;font-weight:700;margin-top:0;">Expansion Overview & Checklist Features</h2>
+        <p style="color:#475569;line-height:1.6;">Our interactive checklist allows Pokémon collectors to toggle between regular non-holo copies, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs). All market values update dynamically from TCGplayer verified comps.</p>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <a href="/auth" style="background:#0F172A;color:#FFFFFF;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Log My ${escapeHtml(setData.name)} Cards</a>
+        </div>
+      </section>
+    </main>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
+  // PROGRAMMATIC SEO: TOURNAMENT DECK ARCHETYPE ROUTE: /decks/:archetype
+  if (cleanPath.startsWith('/decks/')) {
+    const archetype = cleanPath.replace('/decks/', '').toLowerCase();
+
+    const archetypeDatabase: Record<string, { name: string; keyPokemon: string; format: string; cardCount: number; estPrice: number }> = {
+      'gardevoir-ex': { name: 'Gardevoir ex', keyPokemon: 'Gardevoir ex, Scream Tail, Drifloon', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 85.50 },
+      'charizard-ex': { name: 'Charizard ex', keyPokemon: 'Charizard ex, Pidgeot ex, Dusknoir', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 110.00 },
+      'regidrago-vstar': { name: 'Regidrago VSTAR', keyPokemon: 'Regidrago VSTAR, Teal Mask Ogerpon ex, Dragapult ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 145.00 },
+      'dragapult-ex': { name: 'Dragapult ex', keyPokemon: 'Dragapult ex, Xatu, Pidgeot ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 95.00 },
+      'miraidon-ex': { name: 'Miraidon ex', keyPokemon: 'Miraidon ex, Raikou V, Iron Hands ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 75.00 },
+    };
+
+    const deckData = archetypeDatabase[archetype] || {
+      name: archetype.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      keyPokemon: 'Core Attacker & Support Engine',
+      format: 'Standard Format Legal',
+      cardCount: 60,
+      estPrice: 90.00,
+    };
+
+    const pageTitle = `${deckData.name} Tournament Decklist & Guide (Standard) | DECK / divider`;
+    const pageDesc = `60-card tournament roster for ${deckData.name} in Pokémon TCG. View full card list, market value ($${deckData.estPrice.toFixed(2)}), energy curve, and 1-click PTCGL export.`;
+    const canonicalUrl = `${canonicalOrigin}/decks/${archetype}`;
+    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+            { '@type': 'ListItem', position: 2, name: 'Tournament Decks', item: `${canonicalOrigin}/decks` },
+            { '@type': 'ListItem', position: 3, name: deckData.name, item: canonicalUrl },
+          ]
+        },
+        {
+          '@type': 'ItemPage',
+          '@id': `${canonicalUrl}#webpage`,
+          url: canonicalUrl,
+          name: pageTitle,
+          description: pageDesc,
+        }
+      ]
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/" style="color:#FFFFFF;text-decoration:none;font-weight:800;font-size:18px;">
+        DECK <span style="color:#DC143C;">/</span> divider
+      </a>
+      <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Import Deck</a>
+    </header>
+    <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:28px;margin-bottom:24px;">
+        <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">CHAMPIONSHIP DECK ARCHETYPE</span>
+        <h1 style="font-size:32px;font-weight:900;margin:8px 0;">${escapeHtml(deckData.name)} Deck Roster</h1>
+        <p style="color:#64748B;font-size:15px;margin:0;">Format: ${escapeHtml(deckData.format)} • Est. Cost: $${deckData.estPrice.toFixed(2)}</p>
+      </div>
+      <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+        <h2 style="font-size:20px;font-weight:700;margin-top:0;">Core Engine & Key Cards</h2>
+        <p style="color:#475569;line-height:1.6;">Key Pokémon: <strong>${escapeHtml(deckData.keyPokemon)}</strong></p>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Build in Studio</a>
+        </div>
+      </section>
+    </main>
+    `;
+
+    return { title: pageTitle, metaTags, bodyHtml };
+  }
+
   // 2. ABOUT PAGE ROUTE: /about
   if (cleanPath === '/about') {
     const pageTitle = 'About Us & Mission — DECK / divider Pokémon TCG';
@@ -1611,16 +1791,14 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): 
     html = html.replace('</head>', `${ssr.metaTags}\n  </head>`);
   }
 
-  // Inject SSR body inside <div id="root"></div> as a noscript fallback for search engines and crawlers
-  // This completely eliminates hydration layout jumps, flashes, and ghosting for real users while ensuring 100% crawlability
-  const noscriptContent = ssr.bodyHtml
-    ? `<noscript id="ssr-seo-content">${ssr.bodyHtml}</noscript>`
-    : '';
+  // Inject SSR body inside <div id="root"></div> directly as un-obscured static DOM
+  // This provides 100% crawlable, instant static HTML for search engines, LLMs, and social scrapers
+  const rootContent = ssr.bodyHtml || '';
 
   if (html.includes('<div id="root"></div>')) {
-    html = html.replace('<div id="root"></div>', `<div id="root">${noscriptContent}</div>`);
+    html = html.replace('<div id="root"></div>', `<div id="root">${rootContent}</div>`);
   } else if (html.includes('<div id="root">')) {
-    html = html.replace('<div id="root">', `<div id="root">${noscriptContent}`);
+    html = html.replace('<div id="root">', `<div id="root">${rootContent}`);
   }
 
   return html;

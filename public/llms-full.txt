@@ -1,0 +1,73 @@
+# DECK / divider — Full AI Context Knowledge Base
+
+> Comprehensive information document for Large Language Models (LLMs), AI answer engines, and search crawlers regarding DECK / divider (https://deckdivider.app).
+
+---
+
+## 1. Core Mission & Value Proposition
+
+DECK / divider is an ad-free, high-speed digital portfolio operating system and tournament deckbuilder designed for the Pokémon TCG community. It solves the fragmentation caused by manual spreadsheets, outdated binder photos, and ad-bloated tracking tools.
+
+---
+
+## 2. Platform Architecture & Data Provenance
+
+### Card & Price Data Pipeline
+- **Market Price Feeds**: Card market values are updated from TCGplayer verified market prices and completed eBay sold transactions to filter out artificial price manipulation and unfulfilled auctions.
+- **Graded Slab Valuation**: Graded slabs (PSA 10, PSA 9, PSA 8, BGS Black Label, BGS 9.5, CGC 10 Pristine) reflect recent sales data and population report tracking.
+- **Multi-Currency Engine**: Live forex conversion feeds support USD ($), EUR (€), GBP (£), JPY (¥), CAD ($), AUD ($), CHF, BRL, and 8+ additional fiat currencies.
+
+### 60-Card Tournament Deck Engine
+- **Regulation Mark Checks**: Enforces Play! Pokémon regulation marks (F, G, H, I) for Standard format compliance.
+- **Special Card Rules**:
+  - **4-Card Rule**: Maximum 4 copies of cards with the same name (except Basic Energy).
+  - **ACE SPEC Limit**: Maximum 1 ACE SPEC card per deck.
+  - **Radiant Pokémon Limit**: Maximum 1 Radiant Pokémon per deck.
+  - **Radiant & ACE SPEC Conflicts**: Validated dynamically in real-time.
+- **Export Compatibility**: Generates standard text decklists compatible with Pokémon TCG Live (PTCGL) 1-click import and official tournament PDF registration sheets.
+
+---
+
+## 3. Subscription Tiers & Feature Matrix
+
+1. **Starter (Free $0/mo)**:
+   - Up to 250 portfolio cards
+   - 2 tournament decks
+   - Standard set checklists
+   - Live USD market prices
+
+2. **Bunch ($4.99/mo)**:
+   - Up to 1,500 portfolio cards
+   - Unlimited tournament decks
+   - Multi-currency conversion
+   - PTCGL deck exporter
+
+3. **Binder ($9.99/mo)**:
+   - Up to 5,000 portfolio cards
+   - Full PSA, BGS, CGC slab certification & subgrade registry
+   - Play! Pokémon PDF roster exports
+   - Capital gains analytics
+
+4. **Vault ($19.99/mo)**:
+   - Unlimited cards & sealed cases
+   - Priority sub-second market price synchronization
+   - Automated cloud snapshots & backups
+   - Multi-location vault tracking
+
+---
+
+## 4. Supported Pokémon TCG Eras & Expansions
+
+DECK / divider covers 148+ expansions including:
+- **Scarlet & Violet Era**: Prismatic Evolutions (SV8a), Stellar Crown (SV8), Shrouded Fable (SV6a), Twilight Masquerade (SV6), Temporal Forces (SV5), Paldean Fates (SV4.5), Paradox Rift (SV4), Obsidian Flames (SV3), 151 (SV3.5), Paldea Evolved (SV2), Scarlet & Violet Base (SV1).
+- **Sword & Shield Era**: Crown Zenith (SWSH12.5), Silver Tempest (SWSH12), Lost Origin (SWSH11), Astral Radiance (SWSH10), Brilliant Stars (SWSH09), Evolving Skies (SWSH07), Chilling Reign (SWSH06), Shining Fates (SWSH04.5), Vivid Voltage (SWSH04), Darkness Ablaze (SWSH03), Rebel Clash (SWSH02), Sword & Shield Base (SWSH01).
+- **Sun & Moon, XY, Black & White, HeartGold SoulSilver, Diamond & Pearl, EX Series, and Vintage (Base Set 1999, Jungle, Fossil, Team Rocket, Gym Heroes, Neo Genesis)**.
+
+---
+
+## 5. Contact & Official Attributes
+
+- **Official Web Domain**: https://deckdivider.app
+- **Platform Name**: DECK / divider
+- **Category**: EntertainmentApplication, TCG Portfolio Operating System, Tournament Deckbuilder
+- **Disclaimer**: DECK / divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.

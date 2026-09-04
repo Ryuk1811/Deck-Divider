@@ -5,5 +5,20 @@ Disallow: /app/*
 Disallow: /api
 Disallow: /api/*
 
-Sitemap: https://deckdivider.app/sitemap.xml
+User-agent: PerplexityBot
+Allow: /
 
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+Sitemap: https://deckdivider.app/sitemap.xml
+LLMstxt: https://deckdivider.app/llms.txt
