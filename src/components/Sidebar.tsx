@@ -119,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Main Sidebar Component */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-[70] flex flex-col h-screen bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out ${
+        className={`fixed md:static inset-y-0 left-0 z-[70] flex flex-col h-[100dvh] bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-16' : 'w-56 max-w-[85vw]'
         } ${
           isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'

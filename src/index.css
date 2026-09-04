@@ -86,11 +86,7 @@
   }
 
   /* Mobile Touch Hit Target Enforcements */
-  @media (max-width: 768px) {
-    button, input, select, [role="button"] {
-      min-height: 38px;
-    }
-  }
+  /* Handled via utility classes in components to avoid breaking tailored UI elements */
 
   /* Ensure all inputs and text controls always support selection and keyboard entry */
   input, textarea, select {

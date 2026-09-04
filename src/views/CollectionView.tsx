@@ -333,7 +333,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   return (
     <div className="app-view-container space-y-6">
       {/* 1. TOP GLOBAL COLLECTION METRICS & CONTROL BAR */}
-      <div className="p-5 glass-slab shadow-md space-y-4">
+      <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 flex items-center justify-center text-[#DC143C]">
@@ -367,24 +367,43 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             )}
 
             {onTogglePublicProfile && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (isPublicProfile && userId) {
-                    window.open(`/portfolio/${userId}`, '_blank');
-                  } else {
-                    onTogglePublicProfile(true);
-                  }
-                }}
-                className={`h-9 px-4 font-mono text-xs font-bold flex items-center justify-center gap-1.5 rounded-lg transition-colors cursor-pointer shadow-xs whitespace-nowrap ${
-                  isPublicProfile
-                    ? 'bg-[#0F172A] hover:bg-[#1E293B] text-white'
-                    : 'bg-white hover:bg-slate-50 text-[#64748B] border border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C]'
-                }`}
-              >
-                <Eye className="w-4 h-4 flex-shrink-0" />
-                <span>{isPublicProfile ? 'Open Public Showcase' : 'Make Showcase Public'}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] sm:text-xs font-bold text-[#64748B]">
+                  {isPublicProfile ? 'Showcase Public' : 'Make Public'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onTogglePublicProfile(!isPublicProfile)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC143C]/20 ${
+                    isPublicProfile ? 'bg-[#16A34A]' : 'bg-slate-300'
+                  }`}
+                  aria-label="Toggle Public Showcase"
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      isPublicProfile ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
+
+            {isPublicProfile && userId && (
+              <div className="flex items-center gap-2 max-w-[200px] sm:max-w-xs overflow-hidden">
+                <a
+                  href={`/portfolio/${userId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 px-3 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
+                  title="Open public link"
+                >
+                  <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate hidden sm:inline">Open</span>
+                </a>
+                <div className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center font-mono text-[10px] text-slate-700 truncate select-all w-full" title={`${window.location.origin}/portfolio/${userId}`}>
+                  {`${window.location.origin}/portfolio/${userId}`}
+                </div>
+              </div>
             )}
 
             {/* Bubble Menus */}
@@ -453,7 +472,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
       {/* 2. EXPANDABLE SEGREGATION & FILTER PANEL */}
       {isFilterPanelOpen && (
-        <div className="p-5 glass-slab shadow-md space-y-4">
+        <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[#DC143C]" />

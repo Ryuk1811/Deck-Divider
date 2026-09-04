@@ -294,7 +294,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
   return (
     <div className="app-view-container space-y-6 animate-fade-in">
       {/* 1. TOP HEADED DECK FUNCTION PANEL */}
-      <div className="p-5 glass-slab shadow-md space-y-5">
+      <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-5">
         {/* Header Row: Title & Function Buttons */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
           <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -352,39 +352,41 @@ export const DecksView: React.FC<DecksViewProps> = ({
             )}
 
             {/* Public Share Controls */}
-            <button
-              type="button"
-              onClick={handleTogglePublic}
-              className={`h-9 px-4 text-xs font-mono font-bold border transition-all rounded-lg flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer ${
-                currentDeck?.isPublic
-                  ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]'
-                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#DC143C] hover:text-[#DC143C]'
-              }`}
-            >
-              {currentDeck?.isPublic ? (
-                <Share2 className="w-3.5 h-3.5 flex-shrink-0" />
-              ) : (
-                <Lock className="w-3.5 h-3.5 flex-shrink-0" />
-              )}
-              <span className="truncate">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] sm:text-xs font-bold text-[#64748B]">
                 {currentDeck?.isPublic ? 'Public Active' : 'Make Public'}
               </span>
-            </button>
+              <button
+                type="button"
+                onClick={handleTogglePublic}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC143C]/20 ${
+                  currentDeck?.isPublic ? 'bg-[#16A34A]' : 'bg-slate-300'
+                }`}
+                aria-label="Toggle Public Deck"
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    currentDeck?.isPublic ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
 
             {currentDeck?.isPublic && (
-              <div className="flex items-center gap-2 max-w-full overflow-hidden">
+              <div className="flex items-center gap-2 max-w-[200px] sm:max-w-xs overflow-hidden">
                 <a
                   href={`${window.location.origin}/deck/${currentDeck.id}?d=${currentDeck.publicShareCode}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-9 px-4 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
+                  className="h-9 px-3 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
+                  title="Open public link"
                 >
                   <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate">Open Public Link</span>
+                  <span className="truncate hidden sm:inline">Open</span>
                 </a>
-                <span className="font-mono text-[10px] text-slate-500 truncate hidden sm:inline-block">
+                <div className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center font-mono text-[10px] text-slate-700 truncate select-all w-full" title={`${window.location.origin}/deck/${currentDeck.id}?d=${currentDeck.publicShareCode}`}>
                   {`${window.location.origin}/deck/${currentDeck.id}?d=${currentDeck.publicShareCode}`}
-                </span>
+                </div>
               </div>
             )}
           </div>
@@ -687,7 +689,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
           {/* VIEW MODE 4: SOLD CARDS LOG */}
           {viewMode === 'sold' && (
-            <div className="p-5 glass-slab shadow-md space-y-4">
+            <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
               <h3 className="font-heading font-bold text-base text-[#0F172A]">
                 Marked Sold Cards
               </h3>

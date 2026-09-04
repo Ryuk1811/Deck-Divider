@@ -239,7 +239,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
 
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 pb-24 space-y-6">
         {/* Deck Header Info */}
-        <div className="p-5 glass-slab shadow-md space-y-5">
+        <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-5">
           {/* Header Row: Title & Function Buttons */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
             <div className="flex items-start gap-3 min-w-0 flex-1">

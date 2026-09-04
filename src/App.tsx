@@ -1146,7 +1146,7 @@ export default function App() {
     }
 
     return (
-      <div className="flex h-screen w-screen overflow-hidden bg-dot-grid text-[#0F172A]">
+      <div className="flex h-[100dvh] w-[100vw] overflow-hidden bg-dot-grid text-[#0F172A]">
       {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
@@ -1161,7 +1161,7 @@ export default function App() {
       />
 
       {/* Main Panel Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line h-16) */}
         <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2 sm:gap-4">
           {/* Left: Mobile/Tablet Drawer Trigger + Section Header Tag & Title */}
