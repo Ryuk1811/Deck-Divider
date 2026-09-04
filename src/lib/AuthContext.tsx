@@ -209,27 +209,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
+      setLoading(false);
+
       if (firebaseUser) {
-        // Backend admin synchronization
-        try {
-          const token = await firebaseUser.getIdToken();
-          await fetch('/api/auth/init', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-        } catch (e) {
-          console.error("Backend auth init error:", e);
-        }
-        await fetchProfileAndSubscription(firebaseUser);
+        // Fast background profile & backend sync without blocking route transitions
+        (async () => {
+          try {
+            const token = await firebaseUser.getIdToken();
+            fetch('/api/auth/init', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }).catch(e => console.warn('Auth init non-fatal notice:', e));
+          } catch (e) {
+            console.warn("Backend auth token error:", e);
+          }
+          await fetchProfileAndSubscription(firebaseUser);
+        })();
       } else {
         setProfile(null);
         setSubscription(null);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

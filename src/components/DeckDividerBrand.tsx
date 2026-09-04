@@ -49,9 +49,9 @@ export const DeckDividersIcon: React.FC<DeckDividersIconProps> = ({
       title={title}
     >
       <img
-        src="/logo.png"
-        alt={title || "Deck Divider Stack Logo"}
-        className="w-full h-full object-contain scale-[2.2] drop-shadow-sm pointer-events-none"
+        src="/logo.png?v=6"
+        alt={title || "DECK / divider"}
+        className="w-full h-full object-contain pointer-events-none"
       />
     </div>
   );
@@ -115,11 +115,11 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
   }[size];
 
   const iconSizes = {
-    xs: 'w-5 h-5',
-    sm: 'w-6 h-6',
-    md: 'w-7 h-7',
-    lg: 'w-9 h-9',
-    xl: 'w-11 h-11',
+    xs: 'w-7 h-7',
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
+    lg: 'w-12 h-12',
+    xl: 'w-14 h-14',
   }[size];
 
   // Helper render for Logo Fallback Button
@@ -127,11 +127,11 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
     <button
       type="button"
       onClick={handleLogoClick}
-      className="flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg hover:bg-slate-100/80 active:scale-95 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C]"
+      className="flex-shrink-0 flex items-center justify-center cursor-pointer group focus-visible:outline-none transition-transform duration-200 active:scale-95"
       title="DECK / divider — Return to main page"
       aria-label="Deck Divider Home (Return to main page)"
     >
-      <DeckDividersIcon className={`${iconClass} transition-transform duration-300 group-hover:scale-105`} />
+      <DeckDividersIcon className={`${iconClass} transition-transform duration-200 group-hover:scale-105`} />
     </button>
   );
 

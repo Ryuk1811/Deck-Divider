@@ -134,7 +134,7 @@ export async function packageUserSnapshot(state: UserCompressedSnapshotState): P
     byteSize,
     rawSize,
     compressionRatio: ratio,
-    isPublicProfile: state.profile.isPublicProfile,
+    isPublicProfile: Boolean(state.profile.isPublicProfile),
     publicProfileShareCode: state.profile.publicProfileShareCode,
     summary: {
       deckCount: state.decks.length,

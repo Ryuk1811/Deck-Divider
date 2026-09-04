@@ -16,12 +16,13 @@ import { DeckDividerBrand } from '../components/DeckDividerBrand';
 
 export function AuthView({ 
   onBack,
+  onGuestAccess,
 }: { 
   onBack?: () => void;
   onGuestAccess?: () => void;
 }) {
   const navigate = useNavigate();
-  const { user, signInWithGoogle } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,6 +42,17 @@ export function AuthView({
       navigate('/app', { replace: true });
     }
   }, [user, navigate]);
+
+  if (authLoading || user) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-dot-grid bg-[#F8FAFC]">
+        <div className="flex flex-col items-center gap-3">
+          <DeckDividerBrand size="md" showLogo={true} />
+          <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

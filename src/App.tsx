@@ -159,7 +159,24 @@ export default function App() {
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('collection');
   const [authViewRequested, setAuthViewRequested] = useState(false);
-  const [guestMode, setGuestMode] = useState(false);
+  const [guestMode, setGuestMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('dd_guest_mode') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const handleSetGuestMode = (val: boolean) => {
+    setGuestMode(val);
+    try {
+      if (val) {
+        localStorage.setItem('dd_guest_mode', 'true');
+      } else {
+        localStorage.removeItem('dd_guest_mode');
+      }
+    } catch (e) {}
+  };
 
   // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
@@ -368,10 +385,15 @@ export default function App() {
     decks?: Deck[];
     customLists?: CustomList[];
     sealedEntries?: PortfolioSealedEntry[];
+    isPublicProfile?: boolean;
   }) => {
     const curUser = stateRef.current.user;
     if (!curUser) return;
     try {
+      const isPublicProfile = overrideState?.isPublicProfile !== undefined
+        ? overrideState.isPublicProfile
+        : Boolean(stateRef.current.profile?.isPublicProfile ?? localStorage.getItem('dd_guest_is_public') === 'true');
+
       const stateToCompress = {
         version: 2,
         userId: curUser.uid,
@@ -381,7 +403,7 @@ export default function App() {
           email: curUser.email || '',
           tier: stateRef.current.currentTier,
           currency: stateRef.current.displayCurrency,
-          isPublicProfile: stateRef.current.profile?.isPublicProfile,
+          isPublicProfile: isPublicProfile,
           publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode,
         },
         decks: overrideState?.decks ?? stateRef.current.decks,
@@ -392,6 +414,7 @@ export default function App() {
       };
 
       const packed = await packageUserSnapshot(stateToCompress);
+      packed.isPublicProfile = isPublicProfile;
       const snapRef = doc(db, 'users', curUser.uid, 'snapshot', 'current');
       
       // Strict overwrite (merge: false) to prevent historical document bloat
@@ -1129,7 +1152,13 @@ export default function App() {
         await updateUserProfile({ isPublicProfile: isPublic });
       }
       if (user) {
-        await saveCompressedCloudSnapshot();
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          await setDoc(userRef, { isPublicProfile: isPublic }, { merge: true });
+        } catch (e) {
+          console.warn('Firestore user doc public flag update:', e);
+        }
+        await saveCompressedCloudSnapshot({ isPublicProfile: isPublic });
       }
     } catch (err) {
       console.warn('Profile sync notice:', err);
@@ -1396,32 +1425,44 @@ export default function App() {
         <Route
           path="/"
           element={
-            <LandingPageView
-              onEnterApp={() => {
-                if (user || guestMode) {
-                  navigate('/app');
-                } else {
-                  navigate('/auth');
-                }
-              }}
-              onOpenAuth={() => navigate('/auth')}
-              onNavigateAbout={() => navigate('/about')}
-              onNavigateHowItWorks={() => navigate('/how-it-works')}
-              onSelectTier={(tier) => {
-                if (user) {
-                  if (tier !== 'Starter') {
-                    setPaypalModalTier(tier);
+            authLoading ? (
+              <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
+                <div className="flex flex-col items-center gap-3">
+                  <DeckDividerBrand size="md" showLogo={true} />
+                  <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+                </div>
+              </div>
+            ) : (user || guestMode) && !location.search.includes('landing=true') ? (
+              <Navigate to="/app" replace />
+            ) : (
+              <LandingPageView
+                onEnterApp={() => {
+                  if (user || guestMode) {
+                    navigate('/app');
+                  } else {
+                    handleSetGuestMode(true);
+                    navigate('/app');
                   }
-                  navigate('/app');
-                } else {
-                  navigate('/auth');
-                }
-              }}
-              currentTier={currentTier}
-              displayCurrency={displayCurrency}
-              onSelectCurrency={setDisplayCurrency}
-              user={user}
-            />
+                }}
+                onOpenAuth={() => navigate('/auth')}
+                onNavigateAbout={() => navigate('/about')}
+                onNavigateHowItWorks={() => navigate('/how-it-works')}
+                onSelectTier={(tier) => {
+                  if (user) {
+                    if (tier !== 'Starter') {
+                      setPaypalModalTier(tier);
+                    }
+                    navigate('/app');
+                  } else {
+                    navigate('/auth');
+                  }
+                }}
+                currentTier={currentTier}
+                displayCurrency={displayCurrency}
+                onSelectCurrency={setDisplayCurrency}
+                user={user}
+              />
+            )
           }
         />
 
@@ -1516,6 +1557,10 @@ export default function App() {
           element={
             <AuthView
               onBack={() => navigate('/')}
+              onGuestAccess={() => {
+                handleSetGuestMode(true);
+                navigate('/app');
+              }}
             />
           }
         />

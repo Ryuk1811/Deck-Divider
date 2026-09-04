@@ -29,21 +29,123 @@ export const PublicPortfolioView: React.FC = () => {
       if (!shareId) return;
       try {
         setLoading(true);
-        // In this implementation, shareId is simply the userId.
-        const docRef = doc(db, 'users', shareId, 'snapshot', 'current');
-        const docSnap = await getDoc(docRef);
+        setError(null);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data() as CompressedSnapshotDoc;
-          if (data.isPublicProfile) {
-            const unpacked = await unpackUserSnapshot(data);
-            setSnapshot(unpacked);
-          } else {
-            setError('This portfolio is not public.');
-          }
-        } else {
-          setError('Portfolio not found.');
+        // 1. Try fetching the compressed cloud snapshot
+        let docSnap = null;
+        try {
+          const docRef = doc(db, 'users', shareId, 'snapshot', 'current');
+          docSnap = await getDoc(docRef);
+        } catch (readErr) {
+          console.warn('Snapshot fetch notice:', readErr);
         }
+
+        if (docSnap && docSnap.exists()) {
+          const data = docSnap.data() as CompressedSnapshotDoc;
+          const isExplicitlyPublic = Boolean(
+            data.isPublicProfile ||
+            (data as any).isPublic ||
+            (data as any).profile?.isPublicProfile
+          );
+
+          if (isExplicitlyPublic) {
+            const unpacked = await unpackUserSnapshot(data);
+            if (unpacked) {
+              setSnapshot(unpacked);
+              setLoading(false);
+              return;
+            }
+          }
+
+          // If snapshot doc is present but isPublicProfile is not set directly, check user doc
+          try {
+            const userRef = doc(db, 'users', shareId);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
+              const unpacked = await unpackUserSnapshot(data);
+              if (unpacked) {
+                setSnapshot(unpacked);
+                setLoading(false);
+                return;
+              }
+            }
+          } catch (userErr) {
+            console.warn('User doc check notice:', userErr);
+          }
+
+          setError('This portfolio is not public.');
+          setLoading(false);
+          return;
+        }
+
+        // 2. Check user document directly
+        try {
+          const userRef = doc(db, 'users', shareId);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
+            // Profile is public but snapshot hasn't been generated yet
+            const userData = userSnap.data();
+            setSnapshot({
+              version: 2,
+              userId: shareId,
+              updatedAt: new Date().toISOString(),
+              profile: {
+                displayName: userData.displayName || 'Collector',
+                email: userData.email,
+                tier: userData.tier || 'Starter',
+                currency: userData.currency || 'USD',
+                isPublicProfile: true,
+              },
+              decks: [],
+              customLists: [],
+              sealedEntries: [],
+              soldEntries: [],
+              recentActivities: [],
+            });
+            setLoading(false);
+            return;
+          }
+        } catch (userErr) {
+          console.warn('Direct user doc fetch notice:', userErr);
+        }
+
+        // 3. Fallback for guest mode or local browser testing
+        if (shareId === 'guest' || shareId === 'guest_user' || localStorage.getItem('dd_guest_is_public') === 'true') {
+          const isGuestPublic = localStorage.getItem('dd_guest_is_public') === 'true' || shareId === 'guest';
+          if (isGuestPublic) {
+            try {
+              const { idbGetUserDecks, idbGetCustomLists, idbGetSealedVault } = await import('../lib/indexedDB');
+              const localDecks = await idbGetUserDecks(shareId);
+              const localLists = await idbGetCustomLists(shareId);
+              const localSealed = await idbGetSealedVault(shareId);
+
+              if (localDecks.length > 0 || localLists.length > 0 || localSealed.length > 0) {
+                setSnapshot({
+                  version: 2,
+                  userId: shareId,
+                  updatedAt: new Date().toISOString(),
+                  profile: {
+                    displayName: 'Guest Collector',
+                    tier: 'Starter',
+                    currency: 'USD',
+                    isPublicProfile: true,
+                  },
+                  decks: localDecks,
+                  customLists: localLists,
+                  sealedEntries: localSealed,
+                  soldEntries: [],
+                  recentActivities: [],
+                });
+                setLoading(false);
+                return;
+              }
+            } catch (localErr) {
+              console.warn('Local guest fallback notice:', localErr);
+            }
+          }
+        }
+
+        setError('Portfolio not found or is set to private.');
       } catch (err) {
         console.error('Error fetching portfolio:', err);
         setError('Could not load portfolio.');

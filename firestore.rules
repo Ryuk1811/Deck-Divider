@@ -59,7 +59,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
+      allow read: if (isAuthenticated() && (isOwner(userId) || isSuperUser())) || (resource != null && (resource.data.isPublicProfile == true || resource.data.isPublic == true));
       allow create: if isAuthenticated() && isOwner(userId) && 
         (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser());
       allow update: if isAuthenticated() && (
