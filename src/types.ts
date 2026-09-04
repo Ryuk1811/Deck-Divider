@@ -24,7 +24,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxCardsPerDeck: 25,
     maxLists: 3,
     maxItemsPerList: 20,
-    canSharePublicLinks: false,
+    canSharePublicLinks: true,
     tagline: 'Entry point for casual collectors',
   },
   Bunch: {
@@ -34,7 +34,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxCardsPerDeck: 40,
     maxLists: 8,
     maxItemsPerList: 50,
-    canSharePublicLinks: false,
+    canSharePublicLinks: true,
     tagline: 'For your first graded slabs',
   },
   Stack: {

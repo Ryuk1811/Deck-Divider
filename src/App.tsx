@@ -104,7 +104,15 @@ const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayC
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, subscription, loading: authLoading, refreshSubscription } = useAuth();
+  const { user, profile, subscription, loading: authLoading, refreshSubscription, updateUserProfile } = useAuth();
+  const [guestPublicProfile, setGuestPublicProfile] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('dd_guest_is_public') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+  const effectiveIsPublicProfile = Boolean(profile?.isPublicProfile ?? guestPublicProfile);
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
 
@@ -1110,25 +1118,21 @@ export default function App() {
   }, [decks, soldEntries]);
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
-    if (!user) return;
-    if (isPublic && !TIER_LIMITS[currentTier].canSharePublicLinks) {
-      setLimitModalConfig({ isOpen: true, action: 'SHARE_PUBLIC_LINK' });
-      return;
-    }
+    triggerSyncPulse();
+    setGuestPublicProfile(isPublic);
     try {
-      // First force a cloud snapshot to ensure it's written properly 
-      // when AuthContext refreshes the profile
-      await saveCompressedCloudSnapshot();
-      
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        isPublicProfile: isPublic
-      });
-      // The AuthContext listens to this doc and will update 'profile' state automatically.
-      alert(`Public profile has been ${isPublic ? 'enabled' : 'disabled'}.`);
+      localStorage.setItem('dd_guest_is_public', isPublic ? 'true' : 'false');
+    } catch (e) {}
+
+    try {
+      if (updateUserProfile) {
+        await updateUserProfile({ isPublicProfile: isPublic });
+      }
+      if (user) {
+        await saveCompressedCloudSnapshot();
+      }
     } catch (err) {
-      console.error('Failed to toggle public profile', err);
-      alert('Failed to update public profile settings.');
+      console.warn('Profile sync notice:', err);
     }
   };
 
@@ -1221,7 +1225,7 @@ export default function App() {
               customLists={customLists}
               userEmail={user?.email || undefined}
               userId={user?.uid}
-              isPublicProfile={profile?.isPublicProfile}
+              isPublicProfile={effectiveIsPublicProfile}
               onTogglePublicProfile={handleTogglePublicProfile}
               onSelectCard={(card) => setSelectedDetailCard(card)}
               onQuickLookCard={(card) => {
@@ -1361,7 +1365,7 @@ export default function App() {
               snapshotMetrics={snapshotMetrics}
               userEmail={user?.email}
               userId={user?.uid}
-              isPublicProfile={profile?.isPublicProfile}
+              isPublicProfile={effectiveIsPublicProfile}
               onTogglePublicProfile={handleTogglePublicProfile}
               onOpenBackupModal={() => setIsBackupModalOpen(true)}
             />

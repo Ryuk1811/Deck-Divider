@@ -27,6 +27,7 @@ import {
 } from '../types';
 import { setLiveExchangeRates } from '../utils/formatters';
 import { useAuth } from '../lib/AuthContext';
+import { PublicShareLinkBox } from '../components/PublicShareLinkBox';
 
 interface SettingsViewProps {
   currency: DisplayCurrency;
@@ -449,37 +450,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
 
-            {isPublicProfile && userId && (
-              <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
-                <div className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-lg h-10 px-3.5 font-mono text-xs text-slate-700 select-all flex items-center justify-between overflow-hidden">
-                  <span className="truncate">{window.location.origin}/portfolio/{userId}</span>
-                  <a
-                    href={`/portfolio/${userId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-slate-400 hover:text-slate-700 ml-2 shrink-0 p-1"
-                    title="Open public link in new tab"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCopyPublicLink}
-                  className="w-full sm:w-auto h-10 px-4 neo-btn-secondary text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-lg cursor-pointer whitespace-nowrap shadow-xs"
-                >
-                  {copiedLink ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-emerald-700 font-bold">Link Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-[#2563EB]" />
-                      <span>Copy Link</span>
-                    </>
-                  )}
-                </button>
+            {isPublicProfile && (
+              <div className="pt-2">
+                <PublicShareLinkBox
+                  isPublic={Boolean(isPublicProfile)}
+                  url={`${window.location.origin}/portfolio/${userId || 'guest'}`}
+                />
               </div>
             )}
           </div>

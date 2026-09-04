@@ -19,6 +19,7 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<void>;
   signOutUser: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
+  updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextValue>({
   signInWithGoogle: async () => {},
   signOutUser: async () => {},
   refreshSubscription: async () => {},
+  updateUserProfile: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -180,6 +182,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUserProfile = async (data: Partial<UserProfile>) => {
+    setProfile((prev) => {
+      if (!prev && user) {
+        return {
+          id: user.uid,
+          displayName: user.displayName || 'Collector',
+          email: user.email || '',
+          avatar: user.photoURL || '',
+          displayCurrency: 'USD',
+          createdAt: new Date().toISOString(),
+          ...data,
+        };
+      }
+      return prev ? { ...prev, ...data } : null;
+    });
+
+    if (user) {
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        await setDoc(userRef, data, { merge: true });
+      } catch (err) {
+        console.warn('Failed to update user profile in Firestore:', err);
+      }
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
@@ -215,7 +243,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading, 
       signInWithGoogle, 
       signOutUser, 
-      refreshSubscription 
+      refreshSubscription,
+      updateUserProfile
     }}>
       {children}
     </AuthContext.Provider>

@@ -31,6 +31,7 @@ import { HolographicCard } from '../components/HolographicCard';
 import { CardImage } from '../components/CardImage';
 import { DropdownMenu } from '../components/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../utils/progressiveImageLoader';
+import { PublicShareLinkBox } from '../components/PublicShareLinkBox';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -388,22 +389,11 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               </div>
             )}
 
-            {isPublicProfile && userId && (
-              <div className="flex items-center gap-2 max-w-[200px] sm:max-w-xs overflow-hidden">
-                <a
-                  href={`/portfolio/${userId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-9 px-3 bg-[#0F172A] text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#1E293B] rounded-lg transition-colors shadow-xs whitespace-nowrap cursor-pointer"
-                  title="Open public link"
-                >
-                  <Eye className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate hidden sm:inline">Open</span>
-                </a>
-                <div className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center font-mono text-[10px] text-slate-700 truncate select-all w-full" title={`${window.location.origin}/portfolio/${userId}`}>
-                  {`${window.location.origin}/portfolio/${userId}`}
-                </div>
-              </div>
+            {isPublicProfile && (
+              <PublicShareLinkBox
+                isPublic={Boolean(isPublicProfile)}
+                url={`${window.location.origin}/portfolio/${userId || 'guest'}`}
+              />
             )}
 
             {/* Bubble Menus */}
