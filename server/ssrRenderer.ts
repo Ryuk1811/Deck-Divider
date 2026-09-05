@@ -11,7 +11,7 @@ function decodeDeckParam(encoded: string): any | null {
   try {
     const jsonString = Buffer.from(encoded, 'base64').toString('utf-8');
     const parsed = JSON.parse(jsonString);
-    return {
+    return { bodyHtml: "",
       id: parsed.i || 'public-deck',
       name: parsed.n || 'Pokémon TCG Deck',
       colorHex: parsed.c || '#DC143C',
@@ -276,11 +276,55 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
+  }
+
+  if (cleanPath.startsWith('/set/') && cleanPath.endsWith('/top-cards')) {
+    const setId = cleanPath.split('/')[2].toLowerCase();
+    
+    const setDatabase: Record<string, { name: string; series: string; totalCards: number; releaseYear: number; icon: string }> = {
+      'sv8': { name: 'Stellar Crown', series: 'Scarlet & Violet', totalCards: 175, releaseYear: 2024, icon: '👑' },
+      'sv6': { name: 'Twilight Masquerade', series: 'Scarlet & Violet', totalCards: 226, releaseYear: 2024, icon: '🎭' },
+      'sv3pt5': { name: '151', series: 'Scarlet & Violet', totalCards: 207, releaseYear: 2023, icon: '🌟' },
+      'swsh7': { name: 'Evolving Skies', series: 'Sword & Shield', totalCards: 237, releaseYear: 2021, icon: '🐉' },
+      'base1': { name: 'Base Set (1999)', series: 'Vintage Original', totalCards: 102, releaseYear: 1999, icon: '⚡' },
+    };
+    
+    const setData = setDatabase[setId] || {
+      name: `${setId.toUpperCase()} Expansion`,
+      series: 'Pokémon TCG',
+      totalCards: 150,
+      releaseYear: 2024,
+      icon: '🎴',
+    };
+
+    const pageTitle = `Top 20 Most Expensive Cards in ${setData.name} | DECK / divider`;
+    const pageDesc = `Discover the most valuable and best cards to pull from ${setData.name} (${setData.series}). Live TCGplayer market prices and collector statistics.`;
+    const canonicalUrl = `${canonicalOrigin}/set/${setId}/top-cards`;
+    
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
   }
 
   // PROGRAMMATIC SEO: SET CHECKLIST ROUTE: /set/:setId
-  if (cleanPath.startsWith('/set/')) {
+  if (cleanPath.startsWith('/set/') && !cleanPath.endsWith('/top-cards')) {
     const setId = cleanPath.replace('/set/', '').toLowerCase();
 
     const setDatabase: Record<string, { name: string; series: string; totalCards: number; releaseYear: number; icon: string }> = {
@@ -368,7 +412,7 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // PROGRAMMATIC SEO: TOURNAMENT DECK ARCHETYPE ROUTE: /decks/:archetype
@@ -456,10 +500,362 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 2. ABOUT PAGE ROUTE: /about
+  if (cleanPath === '/changelog') {
+    const pageTitle = 'Changelog & Updates — DECK / divider';
+    const pageDesc = 'Stay up-to-date with the latest features, database expansions, and performance improvements to our Pokémon TCG collector software.';
+    const canonicalUrl = `${canonicalOrigin}/changelog`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  if (cleanPath === '/sets') {
+    const pageTitle = 'Pokémon TCG Expansions Database & Checklists — DECK / divider';
+    const pageDesc = 'Browse our complete database of Pokémon Trading Card Game sets. View checklists, live TCGplayer market values, format legalities, and track your master sets.';
+    const canonicalUrl = `${canonicalOrigin}/sets`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  if (cleanPath === '/formats') {
+    const pageTitle = 'Pokémon TCG Formats & Legality Guide — DECK / divider';
+    const pageDesc = 'Understand the rules, rotation schedules, and legal card pools for Standard, Expanded, and Gym Leader Challenge (GLC) formats.';
+    const canonicalUrl = `${canonicalOrigin}/formats`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  if (cleanPath.startsWith('/formats/')) {
+    const formatId = cleanPath.split('/')[2];
+    const formatNames: Record<string, string> = {
+      'standard': 'Standard Format',
+      'expanded': 'Expanded Format',
+      'glc': 'Gym Leader Challenge (GLC)'
+    };
+    
+    const name = formatNames[formatId] || 'Format';
+    const pageTitle = `${name} Rules, Rotation & Legal Cards | DECK / divider`;
+    const pageDesc = `Complete guide to ${name} in the Pokémon TCG. See currently legal regulation marks, deck construction rules, and banned cards.`;
+    const canonicalUrl = `${canonicalOrigin}/formats/${formatId}`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  if (cleanPath === '/compare' || cleanPath.startsWith('/compare/')) {
+    const competitorId = cleanPath.startsWith('/compare/') ? cleanPath.split('/')[2] : '';
+    const competitorNames: Record<string, string> = {
+      'collectr': 'Collectr',
+      'pokellector': 'Pokellector',
+      'pricecharting': 'PriceCharting',
+      'dex': 'Dex',
+      'tcg-collector': 'TCG Collector',
+      'dragon-shield': 'Dragon Shield'
+    };
+    
+    const name = competitorId ? (competitorNames[competitorId] || 'Alternatives') : 'Top Alternatives';
+    const pageTitle = competitorId 
+      ? `DECK / divider vs ${name}: Which is the Best Pokémon TCG Tracker?`
+      : 'Compare Pokémon TCG Trackers: DECK / divider vs Competitors (2026)';
+    const pageDesc = competitorId
+      ? `Compare DECK / divider and ${name} for Pokémon TCG collection tracking, live pricing, PSA slabs, and 60-card deck building. See full feature-by-feature matrix.`
+      : 'Comprehensive comparison matrix of the best Pokémon TCG portfolio trackers, slab registries, and deckbuilders including Collectr, Pokellector, and PriceCharting.';
+    const canonicalUrl = competitorId ? `${canonicalOrigin}/compare/${competitorId}` : `${canonicalOrigin}/compare`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+          publisher: {
+            '@type': 'Organization',
+            name: 'DECK / divider',
+            url: canonicalOrigin
+          }
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'Why do collectors switch to DECK / divider?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'DECK / divider is purpose-built for Pokémon TCG collectors and tournament players, combining live TCGplayer market prices, PSA/BGS slab certification logging, master set binder checklists, and a 60-card tournament deck builder with 1-click PTCGL export.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Does DECK / divider support PSA, BGS, and CGC slabs?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes. You can record slab cert numbers, subgrades (Centering, Surface, Corners, Edges), high-res photos, and real-time market valuations.'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  // PUBLIC COMMUNITY LEADERBOARD: /leaderboard & /community
+  if (cleanPath === '/leaderboard' || cleanPath === '/community') {
+    const pageTitle = 'Pokémon TCG Community Leaderboard & Top Portfolios | DECK / divider';
+    const pageDesc = 'Explore verified high-value Pokémon card collections, master set binders, and tournament-winning decks. Get embeddable verification badges for trade nights.';
+    const canonicalUrl = `${canonicalOrigin}/leaderboard`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'CollectionPage',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+        },
+        {
+          '@type': 'ItemList',
+          name: 'Top Verified Pokémon TCG Portfolios',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Pallet Town Vault — Vintage Shadowless & First Edition Base Set' },
+            { '@type': 'ListItem', position: 2, name: 'Crown Zenith Archivist — Modern Secret Illustration Rares & PSA 10 Slabs' },
+            { '@type': 'ListItem', position: 3, name: 'Sinnoh League Champion — Competitive Meta 60-Card Decks' }
+          ]
+        }
+      ]
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  // SEO BEST-OF GUIDES: /best & /best/:slug
+  if (cleanPath === '/best' || cleanPath.startsWith('/best/')) {
+    const slug = cleanPath.startsWith('/best/') ? cleanPath.split('/')[2] : 'pokemon-card-trackers';
+    const guideTitles: Record<string, string> = {
+      'pokemon-card-trackers': 'Best Pokémon Card Tracking Apps of 2026 (Tested & Ranked)',
+      'slab-scanners': 'Best Graded Card Trackers for PSA, BGS & CGC Slabs (2026)',
+      'deck-builders': 'Best Pokémon TCG Deck Building Tools for Standard & PTCGL'
+    };
+    
+    const pageTitle = guideTitles[slug] || 'Best Pokémon TCG Apps & Tools (2026 Edition) | DECK / divider';
+    const pageDesc = `Detailed guide evaluating the top tools in the Pokémon card hobby for ${slug.replace(/-/g, ' ')}. Compare pricing, accuracy, slab features, and deck building.`;
+    const canonicalUrl = cleanPath.startsWith('/best/') ? `${canonicalOrigin}/best/${slug}` : `${canonicalOrigin}/best`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+          author: {
+            '@type': 'Organization',
+            name: 'DECK / divider Editorial Staff'
+          }
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'What makes a Pokémon card tracking app the best choice?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'The best apps provide automated pricing updates via verified market sources (TCGplayer, eBay Sold), support for both raw cards and authenticated slabs (PSA, BGS, CGC), master set checklist coverage, and tournament legality checking.'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    return { bodyHtml: "",
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  // HIGH-INTENT UTILITY TOOLS: /tools & /tools/:toolId & /geo-insights
+  if (cleanPath === '/tools' || cleanPath.startsWith('/tools/') || cleanPath === '/geo-insights') {
+    const toolId = cleanPath === '/geo-insights' ? 'geo-inspector' : (cleanPath.startsWith('/tools/') ? cleanPath.split('/')[2] : 'psa-grade-calculator');
+    const toolInfo: Record<string, { title: string; desc: string }> = {
+      'psa-grade-calculator': {
+        title: 'PSA & BGS Grade ROI Calculator — Estimate Grading Profitability | DECK / divider',
+        desc: 'Calculate whether grading your Pokémon card with PSA, BGS, or CGC is profitable. Accounts for grading tier fees, shipping, raw comp value, and projected grade premiums.'
+      },
+      'deck-legality-checker': {
+        title: 'Pokémon TCG Regulation Mark & Deck Legality Checker | DECK / divider',
+        desc: 'Instant legality check for Standard, Expanded, and GLC formats. Verifies regulation marks (F, G, H, I), ACE SPEC restrictions, and Radiant Pokémon limits.'
+      },
+      'geo-inspector': {
+        title: 'GEO & AI Citation Inspector — Prompt Simulator for LLMs | DECK / divider',
+        desc: 'Inspect and test how ChatGPT Search, Perplexity, Google AI Overviews, and Claude cite DECK / divider across high-intent Pokémon TCG queries and benchmark prompts.'
+      }
+    };
+
+    const currentTool = toolInfo[toolId] || {
+      title: 'Free Pokémon TCG Collector & Tournament Tools | DECK / divider',
+      desc: 'Suite of free interactive tools for Pokémon card collectors: PSA grading profit calculators, tournament regulation mark checkers, and export utilities.'
+    };
+
+    const canonicalUrl = cleanPath === '/geo-insights' 
+      ? `${canonicalOrigin}/geo-insights`
+      : (cleanPath.startsWith('/tools/') ? `${canonicalOrigin}/tools/${toolId}` : `${canonicalOrigin}/tools`);
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebApplication',
+          name: currentTool.title,
+          description: currentTool.desc,
+          url: canonicalUrl,
+          applicationCategory: 'UtilityApplication',
+          operatingSystem: 'All',
+          dateModified: new Date().toISOString(),
+          speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: ['h1', 'p']
+          }
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: toolId === 'geo-inspector' ? 'How does DECK / divider achieve AI search citations?' : 'How is grading ROI calculated?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: toolId === 'geo-inspector'
+                  ? 'DECK / divider places direct answers under 50 words at the top of pages, cites named sources (TCGplayer Market, PSA APR, Play! Pokémon), formats data in clean JSON-LD and markdown tables, and publishes an llms.txt index.'
+                  : 'Grading ROI subtracts your card purchase price, grading fee, and shipping insurance costs from the current market price of the expected slab grade (e.g. PSA 10 or PSA 9).'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    return { bodyHtml: "",
+      title: currentTool.title,
+      metaTags: `
+        <meta name="description" content="${currentTool.desc}" />
+        <meta property="og:title" content="${currentTool.title}" />
+        <meta property="og:description" content="${currentTool.desc}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
   if (cleanPath === '/about') {
     const pageTitle = 'About Us & Mission — DECK / divider Pokémon TCG';
     const pageDesc = 'Built by lifelong Pokémon card collectors and tournament players. Discover our story, our 4 design principles, and our transparent pricing and card data provenance.';
@@ -475,6 +871,11 @@ export async function renderSsrRoute(
         '@type': 'Organization',
         name: 'DECK / divider',
         url: canonicalOrigin,
+        sameAs: [
+          'https://twitter.com/deckdivider',
+          'https://github.com/deckdivider',
+          'https://instagram.com/deckdivider'
+        ]
       },
     };
 
@@ -633,7 +1034,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 3. HOW IT WORKS PAGE ROUTE: /how-it-works
@@ -804,7 +1205,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 4. AUTH PAGE ROUTE: /auth
@@ -857,7 +1258,7 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 5. PRICING PAGE ROUTE: /pricing
@@ -1111,7 +1512,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 6. FAQ PAGE ROUTE: /faq
@@ -1281,7 +1682,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 7. PRIVACY POLICY ROUTE: /privacy
@@ -1346,7 +1747,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 8. TERMS OF SERVICE ROUTE: /terms
@@ -1411,7 +1812,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 5. AUTHENTICATED APP SHELL: /app, /app/*, /dashboard, /collection, /decks, /settings, /metrics, etc.
@@ -1431,7 +1832,7 @@ export async function renderSsrRoute(
     <meta name="googlebot" content="noindex, nofollow" />
     `;
     const bodyHtml = ``;
-    return { title: pageTitle, metaTags, bodyHtml };
+    return { bodyHtml: "", title: pageTitle, metaTags, };
   }
 
   // 6. HOMEPAGE / LANDING ROUTE: /
@@ -1455,6 +1856,11 @@ export async function renderSsrRoute(
           height: 630,
         },
         description: 'Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players.',
+        sameAs: [
+          'https://twitter.com/deckdivider',
+          'https://github.com/deckdivider',
+          'https://instagram.com/deckdivider'
+        ]
       },
       {
         '@type': 'WebSite',
@@ -1779,7 +2185,7 @@ export async function renderSsrRoute(
   </footer>
   `;
 
-  return { title: pageTitle, metaTags, bodyHtml };
+  return { bodyHtml: "", title: pageTitle, metaTags, };
 }
 
 // Injects SSR title, meta tags, and root body HTML into an index.html template string

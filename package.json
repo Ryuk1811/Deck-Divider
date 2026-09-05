@@ -35,7 +35,7 @@
     "dotenv": "^17.2.3",
     "esbuild": "^0.25.0",
     "express": "^4.21.2",
-    "firebase": "^12.17.0",
+    "firebase": "12.18.0",
     "firebase-admin": "^14.2.0",
     "got-scraping": "^4.2.1",
     "idb": "^8.0.3",

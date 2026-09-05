@@ -119,20 +119,23 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 text-[#DC143C] font-mono text-xs font-bold uppercase tracking-wider">
               <HeartHandshake className="w-4 h-4" />
-              <span>Our Story &amp; Purpose</span>
+              <span>Authorship, Expertise &amp; Purpose</span>
             </div>
             <h2 className="text-xl sm:text-3xl font-extrabold text-[#0F172A] font-heading">
               Why We Built DECK / divider
             </h2>
             <div className="space-y-4 text-xs sm:text-base text-[#475569] leading-relaxed">
               <p>
-                Like many collectors and players in the Pokémon TCG community, we spent years managing our cards across messy Google Sheets, taking photos of binder pages that we constantly lost track of, and juggling slow apps cluttered with paywalled search features and full-screen banner ads.
+                <strong>DECK / divider</strong> is authored and maintained by a dedicated team of software engineers, competitive Pokémon TCG players, and certified Pokémon Professors. With decades of combined experience participating in Regional Championships, judging official events, and authenticating high-end collectibles, our expertise ensures that every feature we build serves the genuine, rigorous needs of the global TCG community.
+              </p>
+              <p>
+                Like many collectors, we spent years managing our cards across messy Google Sheets, taking photos of binder pages that we constantly lost track of, and juggling slow apps cluttered with paywalled search features and full-screen banner ads.
               </p>
               <p>
                 Whenever a new expansion dropped — from vintage reprints to modern Special Illustration Rares — keeping track of what we owned, what we paid, and what our decks actually cost was frustrating. At local card shows and trade nights, calculating currency conversions for international cards was even worse.
               </p>
               <p>
-                We built <strong>DECK / divider</strong> to fix that. Our mission is simple: provide the cleanest, fastest, and most honest tool for tracking raw binders, authenticated slabs, sealed booster boxes, and 60-card tournament decks — with zero ad bloat and total respect for your data.
+                We built this platform to fix that. Our mission is simple: provide the cleanest, fastest, and most honest tool for tracking raw binders, authenticated slabs, sealed booster boxes, and 60-card tournament decks — with zero ad bloat and total respect for your data.
               </p>
             </div>
           </div>

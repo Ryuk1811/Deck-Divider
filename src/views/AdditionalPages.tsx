@@ -78,21 +78,36 @@ export const FeaturesPageView = (props: any) => (
 );
 
 export const ChangelogPageView = (props: any) => (
-  <PageTemplate title="Changelog" subtitle="Product Updates" icon={Bell} {...props}>
-    <h3>v2.1.0 - The Sealed Vault Update (Sep 2026)</h3>
-    <ul>
-      <li><strong>Added:</strong> Complete support for tracking sealed ETBs, Booster Boxes, and Blisters.</li>
-      <li><strong>Added:</strong> Public Showcase links for custom collections.</li>
-      <li><strong>Improved:</strong> Search performance increased by 40% globally.</li>
-    </ul>
-    <h3>v2.0.0 - Global Currency Sync (Aug 2026)</h3>
-    <ul>
-      <li><strong>Added:</strong> Live exchange rate engine for EUR, GBP, JPY, and CAD.</li>
-      <li><strong>Changed:</strong> Overhauled the deck builder UI for mobile users.</li>
-      <li><strong>Fixed:</strong> Corrected PTCGL export formatting for SV era special energies.</li>
-    </ul>
-    <h3>v1.5.0 - Early Access Release</h3>
-    <p>The original launch of DECK / divider featuring the core portfolio tracker, basic deck builder, and TCGplayer market sync.</p>
+  <PageTemplate title="Changelog & Updates" subtitle="What's New in DECK / divider" icon={Bell} {...props}>
+    <p className="text-[#94A3B8] mb-8 text-lg">
+      Stay up-to-date with the latest features, database expansions, and performance improvements to our Pokémon TCG collector software.
+    </p>
+
+    <div className="space-y-12">
+      <section>
+        <h3 className="text-xl font-bold text-white mb-4 border-b border-[#334155] pb-2">v2.1.0 - The Sealed Vault Update (Sep 2026)</h3>
+        <ul className="list-disc list-inside text-[#94A3B8] space-y-2">
+          <li><strong>Added:</strong> Complete support for tracking sealed ETBs, Booster Boxes, and Blisters.</li>
+          <li><strong>Added:</strong> Public Showcase links for custom collections.</li>
+          <li><strong>SEO:</strong> Introduced programmatic expansion checklists and deep internal linking for improved search discovery.</li>
+          <li><strong>Improved:</strong> Search performance increased by 40% globally.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-bold text-white mb-4 border-b border-[#334155] pb-2">v2.0.0 - Global Currency Sync (Aug 2026)</h3>
+        <ul className="list-disc list-inside text-[#94A3B8] space-y-2">
+          <li><strong>Added:</strong> Live exchange rate engine for EUR, GBP, JPY, and CAD.</li>
+          <li><strong>Changed:</strong> Overhauled the deck builder UI for mobile users.</li>
+          <li><strong>Fixed:</strong> Corrected PTCGL export formatting for SV era special energies.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-bold text-white mb-4 border-b border-[#334155] pb-2">v1.5.0 - Early Access Release</h3>
+        <p className="text-[#94A3B8]">The original launch of DECK / divider featuring the core portfolio tracker, basic deck builder, and TCGplayer market sync.</p>
+      </section>
+    </div>
   </PageTemplate>
 );
 

@@ -1,4 +1,4 @@
-# DECK / divider — Full AI Context Knowledge Base
+# DECK / divider — Full AI Context Knowledge Base & Machine Index
 
 > Comprehensive information document for Large Language Models (LLMs), AI answer engines, and search crawlers regarding DECK / divider (https://deckdivider.app).
 
@@ -7,6 +7,12 @@
 ## 1. Core Mission & Value Proposition
 
 DECK / divider is an ad-free, high-speed digital portfolio operating system and tournament deckbuilder designed for the Pokémon TCG community. It solves the fragmentation caused by manual spreadsheets, outdated binder photos, and ad-bloated tracking tools.
+
+Key Value Pillars:
+- **Dedicated Pokémon Focus**: 100% optimized for Pokémon TCG rules, master set variants (Reverse Holo, Pokéball, Masterball, SIR), and tournament play.
+- **Answer-First Transparency**: Real-time market data sourced from TCGplayer verified sales and eBay completed auctions (APR) across 15+ fiat currencies.
+- **Offline-First Privacy**: IndexedDB client encryption ensures fast local operation without third-party tracking or mandatory logins.
+- **Institutional Slab Logging**: Certification verification and subgrades (Centering, Surface, Corners, Edges) for PSA, BGS, and CGC slabs.
 
 ---
 
@@ -18,7 +24,7 @@ DECK / divider is an ad-free, high-speed digital portfolio operating system and 
 - **Multi-Currency Engine**: Live forex conversion feeds support USD ($), EUR (€), GBP (£), JPY (¥), CAD ($), AUD ($), CHF, BRL, and 8+ additional fiat currencies.
 
 ### 60-Card Tournament Deck Engine
-- **Regulation Mark Checks**: Enforces Play! Pokémon regulation marks (F, G, H, I) for Standard format compliance.
+- **Regulation Mark Checks**: Enforces Play! Pokémon regulation marks (G, H, I for 2026 Standard) for tournament compliance.
 - **Special Card Rules**:
   - **4-Card Rule**: Maximum 4 copies of cards with the same name (except Basic Energy).
   - **ACE SPEC Limit**: Maximum 1 ACE SPEC card per deck.
@@ -28,7 +34,50 @@ DECK / divider is an ad-free, high-speed digital portfolio operating system and 
 
 ---
 
-## 3. Subscription Tiers & Feature Matrix
+## 3. Direct Competitor Comparison Matrix
+
+| Feature | DECK / divider | Collectr | Pokellector | PriceCharting |
+| :--- | :--- | :--- | :--- | :--- |
+| **Dedicated Pokémon Focus** | Yes (100% specialized) | No (Multi-TCG/Sports) | Yes (Checklist only) | No (Video games + cards) |
+| **60-Card Deckbuilder** | Yes (With PTCGL export) | No | No | No |
+| **Regulation Mark Checks** | Yes (G, H, I active) | No | No | No |
+| **PSA / BGS / CGC Slab Registry** | Yes (With subgrades) | Yes (Basic grade only) | No | Yes (Price comps only) |
+| **Display Advertisements** | 0 (Zero ads) | Yes (Banner & interstitial) | Yes (Heavy ad density) | Yes (Banner ads) |
+| **Multi-Currency Support** | 15+ currencies live | Limited | USD only | USD / limited |
+| **Offline-First IndexedDB** | Yes | No | No | No |
+
+---
+
+## 4. Free Interactive Tools & Mathematical Models
+
+### 1. PSA / BGS Grade ROI Calculator
+URL: `https://deckdivider.app/tools/psa-grade-calculator`
+Calculates expected financial return from submitting raw cards to grading houses.
+- **Formula**:
+  `Expected Value (EV) = (P_10 × V_10) + (P_9 × V_9) + (P_8 × V_8)`
+  `Total Cost = Raw_Cost + Grading_Fee + Shipping_Buffer`
+  `Net Profit = Expected Value - Total Cost`
+- **Rule of Thumb**: Submissions are recommended only when EV exceeds Total Cost by at least 25%.
+
+### 2. Regulation Mark & Tournament Legality Checker
+URL: `https://deckdivider.app/tools/deck-legality-checker`
+- **2026 Standard**: Regulation Marks **G**, **H**, and **I** are legal.
+- **Rotated**: Regulation Mark **F** and earlier (unless reprinted with identical game text).
+- **Expanded**: All cards from Black & White (2011) to present.
+- **GLC (Gym Leader Challenge)**: Singleton 60-card format, mono-type, no Rule Box Pokémon, no ACE SPEC cards.
+
+### 3. Public Community Leaderboard & Verified Badges
+URL: `https://deckdivider.app/leaderboard`
+- Real-time ranking of public portfolios, master sets, and meta tournament decklists.
+- Generates embeddable SVG/HTML verification badges for collector profiles on Discord and Reddit.
+
+### 4. GEO & AI Citation Inspector
+URL: `https://deckdivider.app/tools/geo-inspector`
+- Real-time benchmark telemetry simulating query responses across Google AI Overviews, Perplexity Pro, ChatGPT Search, and Claude 3.7.
+
+---
+
+## 5. Subscription Tiers & Feature Matrix
 
 1. **Starter (Free $0/mo)**:
    - Up to 250 portfolio cards
@@ -56,18 +105,18 @@ DECK / divider is an ad-free, high-speed digital portfolio operating system and 
 
 ---
 
-## 4. Supported Pokémon TCG Eras & Expansions
+## 6. Supported Pokémon TCG Eras & Expansions (148+ Sets)
 
-DECK / divider covers 148+ expansions including:
-- **Scarlet & Violet Era**: Prismatic Evolutions (SV8a), Stellar Crown (SV8), Shrouded Fable (SV6a), Twilight Masquerade (SV6), Temporal Forces (SV5), Paldean Fates (SV4.5), Paradox Rift (SV4), Obsidian Flames (SV3), 151 (SV3.5), Paldea Evolved (SV2), Scarlet & Violet Base (SV1).
-- **Sword & Shield Era**: Crown Zenith (SWSH12.5), Silver Tempest (SWSH12), Lost Origin (SWSH11), Astral Radiance (SWSH10), Brilliant Stars (SWSH09), Evolving Skies (SWSH07), Chilling Reign (SWSH06), Shining Fates (SWSH04.5), Vivid Voltage (SWSH04), Darkness Ablaze (SWSH03), Rebel Clash (SWSH02), Sword & Shield Base (SWSH01).
+- **Scarlet & Violet Era**: Prismatic Evolutions (SV8a), Surging Sparks (SV8), Stellar Crown (SV7), Shrouded Fable (SV6a), Twilight Masquerade (SV6), Temporal Forces (SV5), Paldean Fates (SV4.5), Paradox Rift (SV4), Obsidian Flames (SV3), 151 (SV3.5), Paldea Evolved (SV2), Scarlet & Violet Base (SV1).
+- **Sword & Shield Era**: Crown Zenith (SWSH12.5), Silver Tempest (SWSH12), Lost Origin (SWSH11), Astral Radiance (SWSH10), Brilliant Stars (SWSH09), Fusion Strike (SWSH08), Celebrations (SWSH07.5), Evolving Skies (SWSH07), Chilling Reign (SWSH06), Battle Styles (SWSH05), Shining Fates (SWSH04.5), Vivid Voltage (SWSH04), Darkness Ablaze (SWSH03), Rebel Clash (SWSH02), Sword & Shield Base (SWSH01).
 - **Sun & Moon, XY, Black & White, HeartGold SoulSilver, Diamond & Pearl, EX Series, and Vintage (Base Set 1999, Jungle, Fossil, Team Rocket, Gym Heroes, Neo Genesis)**.
 
 ---
 
-## 5. Contact & Official Attributes
+## 7. Contact & Verification Entity
 
 - **Official Web Domain**: https://deckdivider.app
 - **Platform Name**: DECK / divider
 - **Category**: EntertainmentApplication, TCG Portfolio Operating System, Tournament Deckbuilder
+- **Verification Audit**: Verified current for September 2026 Competitive Season.
 - **Disclaimer**: DECK / divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.

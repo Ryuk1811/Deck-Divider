@@ -38,12 +38,23 @@ import { LimitReachedModal } from './components/LimitReachedModal';
 import { PayPalSubscriptionModal } from './components/PayPalSubscriptionModal';
 import { PayPalSuccessModal } from './components/PayPalSuccessModal';
 import { PayPalCancelModal } from './components/PayPalCancelModal';
+import { PagesDropdown } from './components/PagesDropdown';
 
 import { CollectionView } from './views/CollectionView';
 import { MetricsView } from './views/MetricsView';
 import { DecksView } from './views/DecksView';
 import { SearchView } from './views/SearchView';
 import { SetsView } from './views/SetsView';
+import { PublicSetsDirectoryView } from './views/PublicSetsDirectoryView';
+import { PublicSetView } from './views/PublicSetView';
+import { PublicSetTopCardsView } from './views/PublicSetTopCardsView';
+import { FormatLegalityDirectoryView } from './views/FormatLegalityDirectoryView';
+import { FormatLegalityView } from './views/FormatLegalityView';
+import { CompetitorComparisonView } from './views/CompetitorComparisonView';
+import { CommunityLeaderboardView } from './views/CommunityLeaderboardView';
+import { BestOfGuidesView } from './views/BestOfGuidesView';
+import { HighIntentToolsView } from './views/HighIntentToolsView';
+import { GeoAiInspectorView } from './views/GeoAiInspectorView';
 import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
@@ -1246,9 +1257,9 @@ export default function App() {
             </h1>
           </div>
 
-          {/* Right: Dynamic Metric Badge */}
+          {/* Right: Dynamic Metric Badge & Pages Dropdown */}
           <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
-            <div className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold rounded-md shadow-xs max-w-[170px] sm:max-w-none truncate">
+            <div className="hidden sm:flex h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold rounded-md shadow-xs max-w-[150px] md:max-w-[220px] truncate">
               {activeTab === 'collection' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
               {activeTab === 'decks' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
               {activeTab === 'sets' && <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
@@ -1269,6 +1280,14 @@ export default function App() {
                 {activeTab === 'settings' && 'System Config'}
               </span>
             </div>
+
+            {/* Single Dropdown housing all pages */}
+            <PagesDropdown
+              activeTab={activeTab}
+              onSelectTab={(tab) => setActiveTab(tab)}
+              align="right"
+              variant="header"
+            />
           </div>
         </header>
 
@@ -1611,6 +1630,21 @@ export default function App() {
           }
         />
 
+        <Route path="/sets" element={<PublicSetsDirectoryView />} />
+        <Route path="/set/:setId" element={<PublicSetView />} />
+        <Route path="/set/:setId/top-cards" element={<PublicSetTopCardsView />} />
+        <Route path="/formats" element={<FormatLegalityDirectoryView />} />
+        <Route path="/formats/:formatId" element={<FormatLegalityView />} />
+        <Route path="/compare" element={<CompetitorComparisonView />} />
+        <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
+        <Route path="/leaderboard" element={<CommunityLeaderboardView />} />
+        <Route path="/community" element={<CommunityLeaderboardView />} />
+        <Route path="/best" element={<BestOfGuidesView />} />
+        <Route path="/best/:slug" element={<BestOfGuidesView />} />
+        <Route path="/tools" element={<HighIntentToolsView />} />
+        <Route path="/tools/geo-inspector" element={<GeoAiInspectorView />} />
+        <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
+        <Route path="/geo-insights" element={<GeoAiInspectorView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/app/*" element={renderDashboard()} />

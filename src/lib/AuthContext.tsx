@@ -136,28 +136,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      provider.addScope('profile');
-      provider.addScope('email');
-      provider.setCustomParameters({
-        prompt: 'select_account',
-      });
-      const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        await fetchProfileAndSubscription(result.user);
-      }
-    } catch (err: any) {
-      if (
-        err.code === 'auth/popup-closed-by-user' || 
-        err.code === 'auth/cancelled-popup-request' ||
-        err.message?.includes('closed-by-user')
-      ) {
-        // Benign user popup dismissal
+    let attempts = 0;
+    while (attempts < 3) {
+      try {
+        const provider = new GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        provider.setCustomParameters({
+          prompt: 'select_account',
+        });
+        const result = await signInWithPopup(auth, provider);
+        if (result.user) {
+          await fetchProfileAndSubscription(result.user);
+        }
         return;
+      } catch (err: any) {
+        if (
+          err.code === 'auth/popup-closed-by-user' || 
+          err.code === 'auth/cancelled-popup-request' ||
+          err.message?.includes('closed-by-user')
+        ) {
+          // Benign user popup dismissal
+          return;
+        }
+
+        // Retry if tab backgrounding caused temporary database closure
+        if (err.message?.includes('Database is closing/hidden') || err.message?.includes('closing')) {
+          attempts++;
+          await new Promise((res) => setTimeout(res, 400));
+          continue;
+        }
+
+        console.warn('[AuthContext] Google Sign In error:', err);
+        throw err;
       }
-      console.warn('[AuthContext] Google Sign In error:', err);
-      throw err;
     }
   };
 
@@ -228,10 +240,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 'Authorization': `Bearer ${token}`
               }
             }).catch(e => console.warn('Auth init non-fatal notice:', e));
-          } catch (e) {
-            console.warn("Backend auth token error:", e);
+          } catch (e: any) {
+            if (!e?.message?.includes('closing') && !e?.message?.includes('hidden')) {
+              console.warn("Backend auth token error:", e);
+            }
           }
-          await fetchProfileAndSubscription(firebaseUser);
+          try {
+            await fetchProfileAndSubscription(firebaseUser);
+          } catch (e: any) {
+            console.warn("Profile sync error notice:", e);
+          }
         })();
       } else {
         setProfile(null);

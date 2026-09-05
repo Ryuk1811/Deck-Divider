@@ -9,26 +9,32 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Global error & unhandled rejection guard for sandboxed/restricted iframe environments
 if (typeof window !== 'undefined') {
+  const isIgnorableLifecycleError = (err: any): boolean => {
+    const str = String(err?.message || err?.reason || err || '');
+    const name = String(err?.name || '');
+    return (
+      name === 'SecurityError' ||
+      name === 'DatabaseClosedError' ||
+      name === 'InvalidStateError' ||
+      str.includes('Database is closing/hidden') ||
+      str.includes('The database connection is closing') ||
+      str.includes('Database is closing') ||
+      str.includes('closing/hidden') ||
+      str.includes('insecure') ||
+      str.includes('SecurityError')
+    );
+  };
+
   window.addEventListener('unhandledrejection', (event) => {
-    const reasonStr = String(event.reason || '');
-    const reasonMsg = event.reason?.message || '';
-    const reasonName = event.reason?.name || '';
-    
-    if (
-      reasonName === 'SecurityError' ||
-      reasonMsg.includes('insecure') ||
-      reasonStr.includes('insecure') ||
-      reasonStr.includes('SecurityError')
-    ) {
-      console.warn('Caught and prevented unhandled SecurityError / iframe restriction:', event.reason);
+    if (isIgnorableLifecycleError(event.reason)) {
+      console.warn('Caught and prevented unhandled database lifecycle/iframe restriction:', event.reason);
       event.preventDefault();
     }
   });
 
   window.addEventListener('error', (event) => {
-    const msg = String(event.message || '');
-    if (msg.includes('insecure') || msg.includes('SecurityError')) {
-      console.warn('Caught and prevented global SecurityError:', event.message);
+    if (isIgnorableLifecycleError(event.error || event.message)) {
+      console.warn('Caught and prevented window error / database lifecycle notice:', event.message);
       event.preventDefault();
     }
   });

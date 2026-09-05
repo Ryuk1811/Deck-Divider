@@ -49,14 +49,14 @@ export function encodePortfolioToUrl(portfolio: {
   try {
     const compact: CompactPortfolioPayload = {
       u: portfolio.displayName || 'Collector',
-      t: portfolio.tier || 'Starter',
+      t: portfolio.tier || 'Stack',
       c: portfolio.currency || 'USD',
       d: (portfolio.decks || []).map((deck) => ({
         i: deck.id,
         n: deck.name,
         c: deck.colorHex,
         p: (deck.entries || []).map((e) => ({
-          i: e.card?.id || '',
+          i: e.card?.id || (e as any).cardId || e.id || '',
           q: e.quantity || 1,
           ...(e.notes?.includes('Foil') ? { f: 1 } : {}),
           ...(e.gradingInfo ? { g: { c: e.gradingInfo.company, g: e.gradingInfo.grade } } : {}),
@@ -100,13 +100,18 @@ export function encodePortfolioToUrl(portfolio: {
  */
 export function decodeUrlParamToPortfolio(encodedStr: string): SharedPortfolioSnapshot | null {
   try {
-    const decodedUrl = decodeURIComponent(encodedStr);
-    const binary = atob(decodedUrl);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
+    let jsonStr: string;
+    try {
+      const decodedUrl = decodeURIComponent(encodedStr);
+      const binary = atob(decodedUrl);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      jsonStr = new TextDecoder().decode(bytes);
+    } catch {
+      jsonStr = atob(encodedStr);
     }
-    const jsonStr = new TextDecoder().decode(bytes);
     const parsed = JSON.parse(jsonStr) as CompactPortfolioPayload;
 
     const decks: Deck[] = (parsed.d || []).map((d) => ({
@@ -118,18 +123,24 @@ export function decodeUrlParamToPortfolio(encodedStr: string): SharedPortfolioSn
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       entries: (d.p || []).map((p) => {
-        const fullCard = getCardById(p.i);
+        const fullCard = p.i ? getCardById(p.i) : null;
+        const setCode = p.i && p.i.includes('-') ? p.i.split('-')[0] : 'base1';
+        const cardNum = p.i && p.i.includes('-') ? p.i.split('-')[1] : (p.i || '1');
+
         const cardObj = fullCard ? mapToPokemonCard(fullCard) : ({
-          id: p.i,
-          name: 'Card ' + p.i,
-          number: '',
-          rarity: '',
+          id: p.i || `card-${Math.random()}`,
+          name: 'Card ' + (p.i || ''),
+          number: cardNum,
+          rarity: 'Common',
           supertype: 'Pokémon',
           subtypes: [],
-          set: { id: 'p', name: 'Pokémon TCG', series: 'Pokémon', printedTotal: 1, total: 1, releaseDate: '2024' },
-          artist: '',
-          prices: { raw: p.v || 0, psa10Estimate: 0, psa9Estimate: 0, priceHistory: [] },
-          images: { small: 'https://images.pokemontcg.io/cardback.png', large: 'https://images.pokemontcg.io/cardback.png' },
+          set: { id: setCode, name: 'Pokémon TCG', series: 'Pokémon', printedTotal: 1, total: 1, releaseDate: '2024' },
+          artist: 'Unknown',
+          prices: { raw: p.v || 1.5, psa10Estimate: 4.8, psa9Estimate: 2.4, priceHistory: [] },
+          images: {
+            small: `https://assets.tcgdex.net/en/${setCode}/${cardNum}/low.webp`,
+            large: `https://assets.tcgdex.net/en/${setCode}/${cardNum}/high.webp`,
+          },
         } as any);
 
         return {
@@ -185,7 +196,7 @@ export function decodeUrlParamToPortfolio(encodedStr: string): SharedPortfolioSn
       updatedAt: new Date().toISOString(),
       profile: {
         displayName: parsed.u || 'Collector',
-        tier: (parsed.t as any) || 'Starter',
+        tier: (parsed.t as any) || 'Stack',
         currency: (parsed.c as any) || 'USD',
         isPublicProfile: true,
       },

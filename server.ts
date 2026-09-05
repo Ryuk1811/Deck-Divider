@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
+import { pingIndexNow } from './server/indexNow.js';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
@@ -55,11 +56,11 @@ async function startServer() {
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com https://*.clarity.ms https://www.clarity.ms; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paypal.com https://*.paypalobjects.com https://accounts.google.com; " +
-      "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com; " +
+      "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com https://*.clarity.ms https://c.clarity.ms; " +
       "font-src 'self' data: https://fonts.gstatic.com https://*.paypalobjects.com; " +
-      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com; " +
+      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.clarity.ms https://c.clarity.ms; " +
       "frame-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com; " +
       "child-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com;"
     );
@@ -174,7 +175,19 @@ async function startServer() {
     });
   });
 
+  // IndexNow Key Generation
+  const INDEXNOW_KEY = 'deckdivider-indexnow-key-7392abcd';
+  app.get(`/${INDEXNOW_KEY}.txt`, (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(INDEXNOW_KEY);
+  });
+
   // SEO Static Deliverables
+  app.get('/7392abcd.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send('7392abcd');
+  });
+
   app.get('/robots.txt', (req, res) => {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.send(`User-agent: *
@@ -191,6 +204,22 @@ Sitemap: https://deckdivider.app/sitemap.xml
   app.get('/sitemap.xml', (req, res) => {
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-main.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-sets.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-portfolios.xml</loc>
+  </sitemap>
+</sitemapindex>`);
+  });
+
+  app.get('/sitemap-main.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://deckdivider.app/</loc>
@@ -199,6 +228,36 @@ Sitemap: https://deckdivider.app/sitemap.xml
   </url>
   <url>
     <loc>https://deckdivider.app/about</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/sets</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/changelog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/formats</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/compare/collectr</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/compare/pokellector</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/compare/pricecharting</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -223,6 +282,42 @@ Sitemap: https://deckdivider.app/sitemap.xml
     <priority>0.6</priority>
   </url>
 </urlset>`);
+  });
+
+  app.get('/sitemap-sets.xml', async (req, res) => {
+    try {
+      const sets = await getExpansions();
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+      if (Array.isArray(sets)) {
+        sets.forEach((set: any) => {
+          xml += `  <url>\n    <loc>https://deckdivider.app/set/${set.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>https://deckdivider.app/set/${set.id}/top-cards</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+        });
+      }
+      xml += `</urlset>`;
+      res.send(xml);
+    } catch (e) {
+      console.error('Error generating sets sitemap', e);
+      res.status(500).send('Error generating sets sitemap');
+    }
+  });
+
+  app.get('/sitemap-portfolios.xml', async (req, res) => {
+    try {
+      const db = getAdminDb();
+      const usersSnap = await db.collection('users').where('isPublicProfile', '==', true).get();
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+      usersSnap.forEach((doc: any) => {
+        xml += `  <url>\n    <loc>https://deckdivider.app/portfolio/${doc.id}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      });
+      xml += `</urlset>`;
+      res.send(xml);
+    } catch (e) {
+      console.error('Error generating portfolios sitemap', e);
+      res.status(500).send('Error generating portfolios sitemap');
+    }
   });
 
   // TCG Companion Proxy Routes
@@ -986,6 +1081,21 @@ Sitemap: https://deckdivider.app/sitemap.xml
   });
 
   // --- Exchange Rate API Endpoint ---
+  app.post('/api/seo/ping-indexnow', async (req, res) => {
+    try {
+      const { urls } = req.body;
+      if (!urls || !Array.isArray(urls)) {
+        return res.status(400).json({ error: 'Missing or invalid urls array.' });
+      }
+      
+      const result = await pingIndexNow(urls);
+      res.json(result);
+    } catch (err: any) {
+      console.error('[API IndexNow] Error:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   app.get('/api/exchange-rates', async (req, res) => {
     try {
       const data = await getExchangeRates(req.query.force === 'true');

@@ -172,6 +172,8 @@ export function AuthView({
         msg = 'Sign-in popup was blocked by the browser. Please allow popups for this site.';
       } else if (err.code === 'auth/unauthorized-domain') {
         msg = 'This domain is not authorized in Firebase Auth settings.';
+      } else if (err.message?.includes('Database is closing/hidden') || err.message?.includes('closing')) {
+        msg = 'Connection momentarily paused while backgrounded. Please try signing in again.';
       } else if (err.message) {
         msg = err.message.replace(/^Firebase:\s*Error\s*\((auth\/[^)]+)\)\.?/i, '').trim() || err.message;
       }

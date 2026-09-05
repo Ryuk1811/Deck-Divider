@@ -16,8 +16,9 @@ import {
   Table,
 } from 'lucide-react';
 import { Deck, PortfolioCardEntry, PokemonCard } from '../types';
-import { decodeUrlParamToDeck } from '../utils/deckUrlEncoder';
+import { decodeUrlParamToDeck, encodeDeckToUrlParam } from '../utils/deckUrlEncoder';
 import { getCardById, mapToPokemonCard } from '../lib/searchEngine';
+import { idbGetUserDecks } from '../lib/indexedDB';
 import { HolographicCard } from '../components/HolographicCard';
 import { CardImage } from '../components/CardImage';
 import { QuickLookModal } from '../components/QuickLookModal';
@@ -38,9 +39,10 @@ function formatPTCGL(entries: PortfolioCardEntry[]): string {
   const trainers: string[] = [];
   const energy: string[] = [];
 
-  entries.forEach(entry => {
+  (entries || []).forEach(entry => {
+    if (!entry || !entry.card) return;
     const sup = (entry.card.supertype || '').toLowerCase();
-    const line = `${entry.quantity} ${entry.card.name} ${entry.card.set?.name || ''} ${entry.card.number || ''}`;
+    const line = `${entry.quantity || 1} ${entry.card.name || 'Card'} ${entry.card.set?.name || ''} ${entry.card.number || ''}`.trim();
     
     if (sup.includes('pokémon') || sup.includes('pokemon')) {
       pokemon.push(line);
@@ -61,7 +63,7 @@ function formatPTCGL(entries: PortfolioCardEntry[]): string {
     `Energy: ${energy.length}`,
     ...energy,
     '',
-    `Total Cards: ${entries.reduce((acc, c) => acc + c.quantity, 0)}`
+    `Total Cards: ${(entries || []).reduce((acc, c) => acc + (c.quantity || 1), 0)}`
   ].join('\n');
 }
 
@@ -82,10 +84,10 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   
   // Hydrate card data with search engine
   const hydrateDeck = (partialDeck: Partial<Deck>) => {
-    if (!partialDeck.entries) return partialDeck as Deck;
+    if (!partialDeck || !partialDeck.entries) return (partialDeck || {}) as Deck;
     
     const hydratedCards: PortfolioCardEntry[] = partialDeck.entries.map(entry => {
-      const tcgdexId = entry.card.id;
+      const tcgdexId = entry?.card?.id || (entry as any)?.cardId;
       const fullCardData = tcgdexId ? getCardById(tcgdexId) : null;
       
       if (fullCardData) {
@@ -111,6 +113,16 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
       
       if (encodedData) {
         loadedDeck = decodeUrlParamToDeck(encodedData);
+      } else if (deckId) {
+        try {
+          const localDecks = await idbGetUserDecks();
+          const match = localDecks.find(d => d.id === deckId);
+          if (match) {
+            loadedDeck = match;
+          }
+        } catch (e) {
+          console.warn('Could not query local decks for deckId:', deckId, e);
+        }
       }
       
       if (!isMounted) return;
@@ -133,22 +145,24 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   }, [deckId, encodedData]);
 
   // Statistics
-  const totalCardsCount = useMemo(() => deck?.entries.reduce((acc, c) => acc + c.quantity, 0) || 0, [deck]);
+  const totalCardsCount = useMemo(() => deck?.entries?.reduce((acc, c) => acc + (c.quantity || 1), 0) || 0, [deck]);
   
   const stats = useMemo(() => {
-    if (!deck) return { pokemon: 0, trainer: 0, energy: 0, totalValue: 0 };
+    if (!deck || !deck.entries) return { pokemon: 0, trainer: 0, energy: 0, totalValue: 0 };
     let pokemon = 0;
     let trainer = 0;
     let energy = 0;
     let totalValue = 0;
     
     deck.entries.forEach(entry => {
+      if (!entry || !entry.card) return;
       const sup = (entry.card.supertype || '').toLowerCase();
-      if (sup.includes('pokémon') || sup.includes('pokemon')) pokemon += entry.quantity;
-      else if (sup.includes('energy')) energy += entry.quantity;
-      else trainer += entry.quantity;
+      const qty = entry.quantity || 1;
+      if (sup.includes('pokémon') || sup.includes('pokemon')) pokemon += qty;
+      else if (sup.includes('energy')) energy += qty;
+      else trainer += qty;
       
-      const price = (entry.card.prices?.raw || 1.5) * entry.quantity;
+      const price = (entry.card.prices?.raw || 1.5) * qty;
       totalValue += price;
     });
     
@@ -159,7 +173,10 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const shareUrl = deck ? `${window.location.origin}/deck/${deck.id}?d=${encodeDeckToUrlParam(deck)}` : window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch (e) {
@@ -168,9 +185,11 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   };
 
   const handleCopyPtcgl = async () => {
-    if (!deck) return;
+    if (!deck || !deck.entries) return;
     try {
-      await navigator.clipboard.writeText(formatPTCGL(deck.entries));
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(formatPTCGL(deck.entries));
+      }
       setCopiedPtcgl(true);
       setTimeout(() => setCopiedPtcgl(false), 2000);
     } catch (e) {
@@ -341,17 +360,19 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-5 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
-                {deck.entries.map((entry) => (
-                  <div key={entry.card.id} className="relative group cursor-pointer">
-                    <HolographicCard
-                      card={entry.card}
-                      currency={activeCurrency as any}
-                      quantity={entry.quantity}
-                      deckName={deck.name}
-                      deckColor={deck.colorHex}
-                      onClick={() => setQuickLookCard(entry.card)}
-                      onQuickLook={() => setQuickLookCard(entry.card)}
-                    />
+                {(deck.entries || []).map((entry, idx) => (
+                  <div key={entry?.card?.id || entry?.id || `entry-${idx}`} className="relative group cursor-pointer">
+                    {entry?.card && (
+                      <HolographicCard
+                        card={entry.card}
+                        currency={activeCurrency as any}
+                        quantity={entry.quantity || 1}
+                        deckName={deck.name}
+                        deckColor={deck.colorHex}
+                        onClick={() => setQuickLookCard(entry.card)}
+                        onQuickLook={() => setQuickLookCard(entry.card)}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -372,20 +393,23 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0]">
-                {deck.entries.map((entry) => {
-                  const price = entry.card.prices?.raw || 1.5;
+                {(deck.entries || []).map((entry, idx) => {
+                  const card = entry?.card;
+                  if (!card) return null;
+                  const price = card.prices?.raw || 1.5;
+                  const qty = entry.quantity || 1;
                   return (
-                    <tr key={entry.card.id} className="hover:bg-[#F8FAFC] transition-colors cursor-pointer" onClick={() => setQuickLookCard(entry.card)}>
+                    <tr key={card.id || `row-${idx}`} className="hover:bg-[#F8FAFC] transition-colors cursor-pointer" onClick={() => setQuickLookCard(card)}>
                       <td className="p-3 font-heading font-semibold text-[#0F172A]">
-                        {entry.card.name}
+                        {card.name || 'Card'}
                       </td>
-                      <td className="p-3 text-[#64748B]">{entry.card.set?.name}</td>
-                      <td className="p-3 font-num font-bold">{entry.quantity}</td>
+                      <td className="p-3 text-[#64748B]">{card.set?.name || 'Standard'}</td>
+                      <td className="p-3 font-num font-bold">{qty}</td>
                       <td className="p-3 font-num">
                         {formatCurrency(price, activeCurrency as any)}
                       </td>
                       <td className="p-3 font-num font-bold text-[#DC143C]">
-                        {formatCurrency((price * entry.quantity), activeCurrency as any)}
+                        {formatCurrency((price * qty), activeCurrency as any)}
                       </td>
                     </tr>
                   );
@@ -399,7 +423,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
       {quickLookCard && (
         <QuickLookModal
           card={quickLookCard}
-          cardList={deck.entries.map(e => e.card)}
+          cardList={(deck.entries || []).map(e => e?.card).filter((c): c is PokemonCard => Boolean(c))}
           onClose={() => setQuickLookCard(null)}
           onNavigateCard={setQuickLookCard}
           currency={activeCurrency as any}

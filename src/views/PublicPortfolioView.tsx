@@ -19,6 +19,7 @@ import { SharedPortfolioSnapshot, PortfolioCardEntry, TIER_LIMITS } from '../typ
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 import { formatCurrency } from '../utils/formatters';
 import { decodeUrlParamToPortfolio } from '../utils/portfolioUrlEncoder';
+import { encodeDeckToUrlParam } from '../utils/deckUrlEncoder';
 import { CardImage } from '../components/CardImage';
 
 export const PublicPortfolioView: React.FC = () => {
@@ -36,7 +37,13 @@ export const PublicPortfolioView: React.FC = () => {
       if (urlParam) {
         const decoded = decodeUrlParamToPortfolio(urlParam);
         if (decoded) {
-          const ownerTier = decoded.profile?.tier || 'Starter';
+          const ownerTier = decoded.profile?.tier || 'Stack';
+          // Ensure shared URL parameter showcases are viewable
+          if (ownerTier !== 'Starter' || decoded.profile?.isPublicProfile) {
+            setSnapshot(decoded);
+            setLoading(false);
+            return;
+          }
           if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
             setError('Public link sharing is restricted to Stack tier ($22/mo) and above.');
             setLoading(false);
@@ -84,7 +91,7 @@ export const PublicPortfolioView: React.FC = () => {
           if (isExplicitlyPublic) {
             const unpacked = await unpackUserSnapshot(data);
             if (unpacked) {
-              const ownerTier = unpacked.profile?.tier || 'Starter';
+              const ownerTier = unpacked.profile?.tier || 'Stack';
               if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
                 setError('This portfolio is private or the user tier does not support public sharing.');
                 setLoading(false);
@@ -103,7 +110,7 @@ export const PublicPortfolioView: React.FC = () => {
             if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
               const unpacked = await unpackUserSnapshot(data);
               if (unpacked) {
-                const ownerTier = unpacked.profile?.tier || userSnap.data().tier || 'Starter';
+                const ownerTier = unpacked.profile?.tier || userSnap.data().tier || 'Stack';
                 if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
                   setError('This portfolio is private or the user tier does not support public sharing.');
                   setLoading(false);
@@ -129,7 +136,7 @@ export const PublicPortfolioView: React.FC = () => {
           const userSnap = await getDoc(userRef);
           if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
             const userData = userSnap.data();
-            const ownerTier = userData.tier || 'Starter';
+            const ownerTier = userData.tier || 'Stack';
             if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
               setError('This portfolio is private or the user tier does not support public sharing.');
               setLoading(false);
@@ -142,7 +149,7 @@ export const PublicPortfolioView: React.FC = () => {
               profile: {
                 displayName: userData.displayName || 'Collector',
                 email: userData.email,
-                tier: userData.tier || 'Starter',
+                tier: userData.tier || 'Stack',
                 currency: userData.currency || 'USD',
                 isPublicProfile: true,
               },
@@ -172,19 +179,23 @@ export const PublicPortfolioView: React.FC = () => {
   }, [shareId, searchParams]);
 
   const currency = (snapshot?.profile?.currency as any) || 'USD';
+  const decksList = Array.isArray(snapshot?.decks) ? snapshot.decks : [];
+  const sealedList = Array.isArray(snapshot?.sealedEntries) ? snapshot.sealedEntries : [];
+  const listsList = Array.isArray(snapshot?.customLists) ? snapshot.customLists : [];
 
   // Aggregate all unique cards across all decks
   const allCardsList = useMemo(() => {
-    if (!snapshot) return [];
+    if (!snapshot || !Array.isArray(snapshot.decks)) return [];
     const map = new Map<string, PortfolioCardEntry>();
     snapshot.decks.forEach((deck) => {
-      deck.entries.forEach((entry) => {
-        const cardId = entry.card?.id || entry.id;
+      (deck?.entries || []).forEach((entry) => {
+        const cardId = entry?.card?.id || (entry as any)?.cardId || entry?.id;
+        if (!cardId) return;
         if (!map.has(cardId)) {
-          map.set(cardId, { ...entry });
+          map.set(cardId, { ...entry, quantity: entry.quantity || 1 });
         } else {
           const existing = map.get(cardId)!;
-          map.set(cardId, { ...existing, quantity: existing.quantity + entry.quantity });
+          map.set(cardId, { ...existing, quantity: (existing.quantity || 1) + (entry.quantity || 1) });
         }
       });
     });
@@ -195,15 +206,15 @@ export const PublicPortfolioView: React.FC = () => {
   const totalValuation = useMemo(() => {
     if (!snapshot) return 0;
     const cardsVal = allCardsList.reduce((sum, item) => {
-      const price = item.purchasePrice || item.card?.prices?.raw || 0;
-      return sum + price * item.quantity;
+      const price = item.purchasePrice || item.card?.prices?.raw || 1.5;
+      return sum + price * (item.quantity || 1);
     }, 0);
-    const sealedVal = snapshot.sealedEntries.reduce((sum, s) => {
+    const sealedVal = sealedList.reduce((sum, s) => {
       const price = s.product?.marketPrice || s.purchasePrice || 0;
-      return sum + price * s.quantity;
+      return sum + price * (s.quantity || 1);
     }, 0);
     return cardsVal + sealedVal;
-  }, [snapshot, allCardsList]);
+  }, [snapshot, allCardsList, sealedList]);
 
   if (loading) {
     return (
@@ -256,7 +267,7 @@ export const PublicPortfolioView: React.FC = () => {
             {snapshot.profile?.displayName || 'Collector'}'s Portfolio
           </h1>
           <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Viewing a public read-only collection tracking {snapshot.decks.length} decks, {allCardsList.length} distinct cards, and sealed vault assets.
+            Viewing a public read-only collection tracking {decksList.length} decks, {allCardsList.length} distinct cards, and sealed vault assets.
           </p>
         </div>
       </div>
@@ -282,7 +293,7 @@ export const PublicPortfolioView: React.FC = () => {
               }`}
             >
               <Swords className="w-4 h-4" />
-              <span>Decks ({snapshot.decks.length})</span>
+              <span>Decks ({decksList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('sealed')}
@@ -291,7 +302,7 @@ export const PublicPortfolioView: React.FC = () => {
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>Sealed Vault ({snapshot.sealedEntries.length})</span>
+              <span>Sealed Vault ({sealedList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('lists')}
@@ -300,7 +311,7 @@ export const PublicPortfolioView: React.FC = () => {
               }`}
             >
               <Activity className="w-4 h-4" />
-              <span>Custom Lists ({snapshot.customLists.length})</span>
+              <span>Custom Lists ({listsList.length})</span>
             </button>
           </div>
 
@@ -316,16 +327,16 @@ export const PublicPortfolioView: React.FC = () => {
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Total Cards</span>
                 <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
-                  {allCardsList.reduce((acc, c) => acc + c.quantity, 0)}
+                  {allCardsList.reduce((acc, c) => acc + (c.quantity || 1), 0)}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Active Decks</span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{snapshot.decks.length}</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{decksList.length}</span>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Sealed Vault</span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{snapshot.sealedEntries.length}</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{sealedList.length}</span>
               </div>
             </div>
 
@@ -347,13 +358,13 @@ export const PublicPortfolioView: React.FC = () => {
                           {entry.card ? (
                             <CardImage
                               src={entry.card.images?.small || entry.card.images?.large}
-                              alt={entry.card.name}
+                              alt={entry.card.name || 'Card'}
                               className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
                             <div className="text-xs font-mono text-slate-400">Card {entry.id}</div>
                           )}
-                          {entry.quantity > 1 && (
+                          {(entry.quantity || 1) > 1 && (
                             <div className="absolute top-2 right-2 bg-slate-900/90 text-white text-[11px] font-black px-2 py-0.5 rounded-md font-mono shadow-xs">
                               x{entry.quantity}
                             </div>
@@ -382,7 +393,7 @@ export const PublicPortfolioView: React.FC = () => {
                           <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                             <span className="text-slate-400 font-mono text-[10px]">Market</span>
                             <span className="font-bold text-slate-900 font-mono">
-                              {formatCurrency(entry.purchasePrice || entry.card?.prices?.raw || 0, currency)}
+                              {formatCurrency(entry.purchasePrice || entry.card?.prices?.raw || 1.5, currency)}
                             </span>
                           </div>
                         </div>
@@ -394,15 +405,18 @@ export const PublicPortfolioView: React.FC = () => {
             )}
             {activeTab === 'decks' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {snapshot.decks.map(deck => (
+                {decksList.map(deck => (
                   <div key={deck.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: deck.colorHex || '#DC143C' }}></div>
                       <h3 className="font-bold text-slate-900 truncate">{deck.name}</h3>
                     </div>
                     <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 font-mono">
-                      <span>{deck.entries.reduce((a, b) => a + b.quantity, 0)} Cards</span>
-                      <Link to={`/deck/${deck.id}`} className="text-[#DC143C] font-semibold hover:underline">
+                      <span>{(deck.entries || []).reduce((a, b) => a + (b.quantity || 1), 0)} Cards</span>
+                      <Link
+                        to={`/deck/${deck.id}?d=${encodeDeckToUrlParam(deck)}`}
+                        className="text-[#DC143C] font-semibold hover:underline"
+                      >
                         View Deck →
                       </Link>
                     </div>
@@ -412,13 +426,13 @@ export const PublicPortfolioView: React.FC = () => {
             )}
             {activeTab === 'sealed' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {snapshot.sealedEntries.map(entry => (
+                {sealedList.map(entry => (
                   <div key={entry.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <h3 className="font-bold text-slate-900 truncate">
                       {entry.product?.name || (entry as unknown as { name?: string }).name || 'Sealed Item'}
                     </h3>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-500">Qty: {entry.quantity}</span>
+                      <span className="text-slate-500">Qty: {entry.quantity || 1}</span>
                       <span className="font-semibold text-slate-700">
                         {entry.product?.type || (entry as unknown as { productType?: string }).productType || 'Sealed'}
                       </span>
@@ -429,10 +443,10 @@ export const PublicPortfolioView: React.FC = () => {
             )}
             {activeTab === 'lists' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {snapshot.customLists.map(list => (
+                {listsList.map(list => (
                   <div key={list.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <h3 className="font-bold text-slate-900 truncate">{list.name}</h3>
-                    <span className="text-xs text-slate-500">{list.cardIds.length} Items</span>
+                    <span className="text-xs text-slate-500">{(list.cardIds || []).length} Items</span>
                   </div>
                 ))}
               </div>

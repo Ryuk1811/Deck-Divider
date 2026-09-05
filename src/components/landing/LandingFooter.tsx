@@ -79,6 +79,23 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
 
           <div className="md:col-span-4 lg:col-span-3">
             <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
+              Community &amp; Data
+            </div>
+            <div className="grid grid-cols-2 gap-y-2.5 gap-x-4 text-xs">
+              <Link to="/leaderboard" className="hover:text-cyan-600 transition-colors font-medium">Leaderboard</Link>
+              <Link to="/sets" className="hover:text-cyan-600 transition-colors font-medium">Expansions</Link>
+              <Link to="/formats" className="hover:text-cyan-600 transition-colors font-medium">Format Legality</Link>
+              <Link to="/compare" className="hover:text-cyan-600 transition-colors font-medium">App Comparisons</Link>
+              <Link to="/best/pokemon-card-trackers" className="hover:text-cyan-600 transition-colors font-medium">Best Trackers</Link>
+              <Link to="/best/slab-scanners" className="hover:text-cyan-600 transition-colors font-medium">Slab Trackers</Link>
+              <Link to="/tools/psa-grade-calculator" className="hover:text-cyan-600 transition-colors font-medium">PSA Calculator</Link>
+              <Link to="/tools/deck-legality-checker" className="hover:text-cyan-600 transition-colors font-medium">Legality Tool</Link>
+              <Link to="/tools/geo-inspector" className="hover:text-cyan-600 transition-colors font-medium">AI Citation Hub</Link>
+            </div>
+          </div>
+
+          <div className="md:col-span-4 lg:col-span-3">
+            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
               Core Engine
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">

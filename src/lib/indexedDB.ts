@@ -153,8 +153,19 @@ async function execDB<T>(
     const db = await getIndexedDB();
     return await action(db);
   } catch (err: any) {
+    const isClosing = 
+      err?.message?.includes('closing') || 
+      err?.message?.includes('hidden') || 
+      err?.name === 'DatabaseClosedError' ||
+      err?.name === 'InvalidStateError';
+
     // Reset connection cached promise
     dbPromise = null;
+
+    if (isClosing) {
+      await new Promise((res) => setTimeout(res, 150));
+    }
+
     try {
       const freshDb = await getIndexedDB();
       return await action(freshDb);

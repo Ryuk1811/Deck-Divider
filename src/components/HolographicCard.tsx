@@ -50,7 +50,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
     card.rarity === 'Special Illustration Rare';
 
   const isGlitter = card.rarity === 'Ultra Rare' || card.rarity === 'Secret Rare' || card.rarity === 'Special Illustration Rare';
-  const rarityBadge = RARITY_BADGE_STYLE[card.rarity] || RARITY_BADGE_STYLE['Common'];
+  const rarityBadge = (card.rarity && RARITY_BADGE_STYLE[card.rarity]) || RARITY_BADGE_STYLE['Common'];
 
   return (
     <div
@@ -81,7 +81,7 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
       {/* Card Header Info */}
       <div className="flex items-center justify-between gap-1 mb-2">
         <span className="font-heading font-semibold text-xs text-[#0F172A] truncate max-w-[120px]">
-          {card.name}
+          {card.name || 'Card'}
         </span>
         {card.hp && (
           <span className="font-num font-bold text-xs text-[#DC143C] flex-shrink-0">
@@ -93,8 +93,8 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
       {/* Card Image Container with Holographic Shimmer and Glare */}
       <div className="relative aspect-[0.718] w-full overflow-hidden rounded-xl bg-[#F8FAFC] border border-[#CBD5E1]/60 shadow-inner">
         <CardImage
-          src={card.images.small || card.images.large}
-          alt={card.name}
+          src={card.images?.small || card.images?.large}
+          alt={card.name || 'Card'}
           cardName={card.name}
           cardNumber={card.number}
           setName={card.set?.name}

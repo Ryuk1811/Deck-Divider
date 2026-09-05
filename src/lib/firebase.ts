@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { 
+  getAuth, 
+  initializeAuth, 
+  browserLocalPersistence, 
+  indexedDBLocalPersistence, 
+  inMemoryPersistence 
+} from "firebase/auth";
 import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
 import firebaseConfigJson from "../../firebase-applet-config.json";
 
@@ -16,7 +22,22 @@ const firebaseConfig = {
 
 // Initialize Firebase Client
 export const firebaseApp = initializeApp(firebaseConfig);
-export const auth = getAuth(firebaseApp);
+
+// Initialize Firebase Auth with browserLocalPersistence and indexedDB fallbacks
+// browserLocalPersistence (localStorage) prevents "Database is closing/hidden" errors in backgrounded tabs or iframe contexts
+export const auth = (() => {
+  if (typeof window !== 'undefined') {
+    try {
+      return initializeAuth(firebaseApp, {
+        persistence: [browserLocalPersistence, indexedDBLocalPersistence, inMemoryPersistence]
+      });
+    } catch {
+      return getAuth(firebaseApp);
+    }
+  }
+  return getAuth(firebaseApp);
+})();
+
 export const db = getFirestore(
   firebaseApp,
   firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== "(default)"
