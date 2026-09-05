@@ -58,11 +58,12 @@ function mapTCGdexSet(set: any): CardSet {
 
 // Map TCGdex Card detail schema to app PokemonCard schema
 export function mapTCGdexCard(card: any): PokemonCard {
-  // Normalize types: Lightning -> Electric, Metal -> Steel
+  // Normalize types: Lightning -> Electric, Metal -> Steel, Darkness -> Dark
   const rawTypes = card.types || [];
   const normalizedTypes = rawTypes.map((t: string) => {
     if (t === 'Lightning') return 'Electric';
     if (t === 'Metal') return 'Steel';
+    if (t === 'Darkness') return 'Dark';
     return t;
   }) as EnergyType[];
 
@@ -85,20 +86,36 @@ export function mapTCGdexCard(card: any): PokemonCard {
     attacks: card.attacks
       ? card.attacks.map((a: any) => ({
           name: a.name,
-          cost: (a.cost || []).map((c: string) => (c === 'Lightning' ? 'Electric' : c === 'Metal' ? 'Steel' : c)),
+          cost: (a.cost || []).map((c: string) =>
+            c === 'Lightning' ? 'Electric' : c === 'Metal' ? 'Steel' : c === 'Darkness' ? 'Dark' : c
+          ),
           damage: a.damage ? String(a.damage) : '',
           text: a.effect || a.text || '',
         }))
       : undefined,
     weaknesses: card.weaknesses
       ? card.weaknesses.map((w: any) => ({
-          type: w.type === 'Lightning' ? 'Electric' : w.type === 'Metal' ? 'Steel' : w.type,
+          type:
+            w.type === 'Lightning'
+              ? 'Electric'
+              : w.type === 'Metal'
+              ? 'Steel'
+              : w.type === 'Darkness'
+              ? 'Dark'
+              : w.type,
           value: w.value || '×2',
         }))
       : undefined,
     resistances: card.resistances
       ? card.resistances.map((r: any) => ({
-          type: r.type === 'Lightning' ? 'Electric' : r.type === 'Metal' ? 'Steel' : r.type,
+          type:
+            r.type === 'Lightning'
+              ? 'Electric'
+              : r.type === 'Metal'
+              ? 'Steel'
+              : r.type === 'Darkness'
+              ? 'Dark'
+              : r.type,
           value: r.value || '-30',
         }))
       : undefined,

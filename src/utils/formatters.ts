@@ -66,6 +66,7 @@ export const ENERGY_COLORS: Record<EnergyType, { bg: string; text: string; borde
   Lightning: { bg: 'bg-[#FEFCE8]', text: 'text-[#D97706]', border: 'border-[#D97706]' },
   Psychic: { bg: 'bg-[#FAF5FF]', text: 'text-[#9333EA]', border: 'border-[#9333EA]' },
   Fighting: { bg: 'bg-[#FFF7ED]', text: 'text-[#C2410C]', border: 'border-[#C2410C]' },
+  Dark: { bg: 'bg-[#F3F4F6]', text: 'text-[#1F2937]', border: 'border-[#1F2937]' },
   Darkness: { bg: 'bg-[#F3F4F6]', text: 'text-[#1F2937]', border: 'border-[#1F2937]' },
   Steel: { bg: 'bg-[#F8FAFC]', text: 'text-[#475569]', border: 'border-[#475569]' },
   Metal: { bg: 'bg-[#F8FAFC]', text: 'text-[#475569]', border: 'border-[#475569]' },
@@ -73,6 +74,14 @@ export const ENERGY_COLORS: Record<EnergyType, { bg: string; text: string; borde
   Colorless: { bg: 'bg-[#F9F9F9]', text: 'text-[#4B5563]', border: 'border-[#9CA3AF]' },
   Fairy: { bg: 'bg-[#FDF2F8]', text: 'text-[#DB2777]', border: 'border-[#DB2777]' },
 };
+
+export function formatEnergyType(type?: string): string {
+  if (!type) return '';
+  if (type === 'Darkness') return 'Dark';
+  if (type === 'Lightning') return 'Electric';
+  if (type === 'Metal') return 'Steel';
+  return type;
+}
 
 export const RARITY_BADGE_STYLE: Record<CardRarity, { label: string; style: string }> = {
   Common: { label: '● Common', style: 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0]' },

@@ -87,7 +87,15 @@ import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
 import { BackupRecoveryModal } from './components/BackupRecoveryModal';
-import { generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
+import {
+  generateShowcaseDecks,
+  generateShowcaseSealed,
+  generateShowcaseCustomLists,
+  isMockDeck,
+  isMockCardEntry,
+  isMockCustomList,
+  isMockSealedEntry,
+} from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { signOut } from 'firebase/auth';
@@ -429,6 +437,21 @@ export default function App() {
         ? overrideState.isPublicProfile
         : Boolean(stateRef.current.profile?.isPublicProfile ?? localStorage.getItem('dd_guest_is_public') === 'true');
 
+      const rawDecks = overrideState?.decks ?? stateRef.current.decks;
+      const rawLists = overrideState?.customLists ?? stateRef.current.customLists;
+      const rawSealed = overrideState?.sealedEntries ?? stateRef.current.sealedEntries;
+
+      const sanitizedDecks = curUser
+        ? rawDecks
+            .filter((d) => !isMockDeck(d))
+            .map((deck) => ({
+              ...deck,
+              entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
+            }))
+        : rawDecks;
+      const sanitizedLists = curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
+      const sanitizedSealed = curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
+
       const stateToCompress = {
         version: 2,
         userId: curUser.uid,
@@ -441,9 +464,9 @@ export default function App() {
           isPublicProfile: isPublicProfile,
           publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode,
         },
-        decks: overrideState?.decks ?? stateRef.current.decks,
-        customLists: overrideState?.customLists ?? stateRef.current.customLists,
-        sealedEntries: overrideState?.sealedEntries ?? stateRef.current.sealedEntries,
+        decks: sanitizedDecks,
+        customLists: sanitizedLists,
+        sealedEntries: sanitizedSealed,
         soldEntries: stateRef.current.soldEntries,
         recentActivities: stateRef.current.recentActivities,
       };
@@ -474,10 +497,21 @@ export default function App() {
   // Restore state from a point-in-time cloud or local backup
   const handleRestoreState = React.useCallback(async (restoredState: UserCompressedSnapshotState) => {
     const targetUid = user?.uid || 'guest_user';
-    const newDecks = restoredState.decks || [];
-    const newLists = restoredState.customLists || [];
-    const newSealed = restoredState.sealedEntries || [];
+    const rawDecks = restoredState.decks || [];
+    const rawLists = restoredState.customLists || [];
+    const rawSealed = restoredState.sealedEntries || [];
     const newSold = restoredState.soldEntries || [];
+
+    const newDecks = user
+      ? rawDecks
+          .filter((d) => !isMockDeck(d))
+          .map((deck) => ({
+            ...deck,
+            entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
+          }))
+      : rawDecks;
+    const newLists = user ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
+    const newSealed = user ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
 
     setDecks(newDecks);
     setCustomLists(newLists);
@@ -499,9 +533,11 @@ export default function App() {
     }
   }, [user, saveCompressedCloudSnapshot]);
 
-  // Helper to load complete Showcase / Starter Sample Suite (Moonbreon, Grey Felt Hat Pikachu, 151 SIRs, Sealed Vault, Decks)
+  // Helper to load complete Showcase / Starter Sample Suite (Guest / Demo Mode ONLY)
   const handleLoadShowcaseData = React.useCallback(async () => {
-    const targetUid = user?.uid || 'guest_user';
+    // Strictly tied to demo mode only - prohibited on authenticated user accounts
+    if (user) return;
+    const targetUid = 'guest_user';
     const sampleDecks = generateShowcaseDecks(targetUid);
     const sampleLists = generateShowcaseCustomLists(targetUid);
     const sampleSealed = generateShowcaseSealed(targetUid);
@@ -510,24 +546,18 @@ export default function App() {
     setCustomLists(sampleLists);
     setSealedEntries(sampleSealed);
 
-    await idbSaveUserDecks(sampleDecks, targetUid);
-    await idbSaveCustomLists(sampleLists, targetUid);
-    await idbSaveSealedVault(sampleSealed, targetUid);
+    await Promise.all([
+      idbSaveUserDecks(sampleDecks, targetUid),
+      idbSaveCustomLists(sampleLists, targetUid),
+      idbSaveSealedVault(sampleSealed, targetUid),
+    ]);
+  }, [user]);
 
-    if (user) {
-      setTimeout(() => {
-        saveCompressedCloudSnapshot({
-          decks: sampleDecks,
-          customLists: sampleLists,
-          sealedEntries: sampleSealed,
-        });
-      }, 300);
-    }
-  }, [user, saveCompressedCloudSnapshot]);
-
-  // Helper to load standard competitive sample deck
+  // Helper to load standard competitive sample deck (Guest / Demo Mode ONLY)
   const handleLoadSampleDeck = React.useCallback(async () => {
-    const targetUid = user?.uid || 'guest_user';
+    // Strictly tied to demo mode only - prohibited on authenticated user accounts
+    if (user) return;
+    const targetUid = 'guest_user';
     const sampleDecks = generateShowcaseDecks(targetUid).slice(0, 1); // Charizard Championship 60
     
     setDecks((prev) => {
@@ -535,15 +565,9 @@ export default function App() {
       idbSaveUserDecks(merged, targetUid);
       return merged;
     });
+  }, [user]);
 
-    if (user) {
-      setTimeout(() => {
-        saveCompressedCloudSnapshot();
-      }, 300);
-    }
-  }, [user, saveCompressedCloudSnapshot]);
-
-  // Load from Local Encrypted Storage on initial mount & Seed Sample data for new users/guests if empty
+  // Load from Local Encrypted Storage on initial mount & Seed Sample data for demo guests if empty
   React.useEffect(() => {
     if (authLoading) return;
     const activeUid = user?.uid || 'guest_user';
@@ -566,7 +590,7 @@ export default function App() {
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
 
-        // If authenticated, check Firestore snapshot
+        // If authenticated, check Firestore snapshot and purge any mock data
         if (user) {
           try {
             const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
@@ -584,15 +608,12 @@ export default function App() {
               if (unpacked) {
                 if (unpacked.decks && unpacked.decks.length > 0) {
                   currentDecks = unpacked.decks;
-                  await idbSaveUserDecks(unpacked.decks, user.uid);
                 }
                 if (unpacked.customLists && unpacked.customLists.length > 0) {
                   currentLists = unpacked.customLists;
-                  await idbSaveCustomLists(unpacked.customLists, user.uid);
                 }
                 if (unpacked.sealedEntries && unpacked.sealedEntries.length > 0) {
                   currentSealed = unpacked.sealedEntries;
-                  await idbSaveSealedVault(unpacked.sealedEntries, user.uid);
                 }
                 if (unpacked.soldEntries && unpacked.soldEntries.length > 0) {
                   setSoldEntries(unpacked.soldEntries);
@@ -602,17 +623,55 @@ export default function App() {
           } catch (cloudErr) {
             console.warn('Snapshot cloud fetch warning:', cloudErr);
           }
-        }
 
-        // Automatic seeding ONLY for guest mode if collection is empty
-        if (!user && currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
-          currentDecks = generateShowcaseDecks(activeUid);
-          currentLists = generateShowcaseCustomLists(activeUid);
-          currentSealed = generateShowcaseSealed(activeUid);
+          // Strict user account purification: eliminate all mock/showcase/sample data from user accounts
+          const cleanedDecks = currentDecks
+            .filter((d) => !isMockDeck(d))
+            .map((deck) => ({
+              ...deck,
+              entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
+            }));
+          const cleanedLists = currentLists.filter((l) => !isMockCustomList(l));
+          const cleanedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
 
-          await idbSaveUserDecks(currentDecks, activeUid);
-          await idbSaveCustomLists(currentLists, activeUid);
-          await idbSaveSealedVault(currentSealed, activeUid);
+          const hadMockData =
+            cleanedDecks.length !== currentDecks.length ||
+            cleanedLists.length !== currentLists.length ||
+            cleanedSealed.length !== currentSealed.length ||
+            cleanedDecks.some((d, idx) => (d.entries?.length || 0) !== (currentDecks[idx]?.entries?.length || 0));
+
+          currentDecks = cleanedDecks;
+          currentLists = cleanedLists;
+          currentSealed = cleanedSealed;
+
+          // Save sanitized collection to local user storage
+          await Promise.all([
+            idbSaveUserDecks(currentDecks, user.uid),
+            idbSaveCustomLists(currentLists, user.uid),
+            idbSaveSealedVault(currentSealed, user.uid),
+          ]);
+
+          // If mock data was detected, overwrite the cloud snapshot immediately with clean user data
+          if (hadMockData) {
+            await saveCompressedCloudSnapshot({
+              decks: currentDecks,
+              customLists: currentLists,
+              sealedEntries: currentSealed,
+            });
+          }
+        } else {
+          // Automatic showcase seeding ONLY for Guest / Demo mode when collection is empty
+          if (currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
+            currentDecks = generateShowcaseDecks(activeUid);
+            currentLists = generateShowcaseCustomLists(activeUid);
+            currentSealed = generateShowcaseSealed(activeUid);
+
+            await Promise.all([
+              idbSaveUserDecks(currentDecks, activeUid),
+              idbSaveCustomLists(currentLists, activeUid),
+              idbSaveSealedVault(currentSealed, activeUid),
+            ]);
+          }
         }
 
         setDecks(currentDecks);

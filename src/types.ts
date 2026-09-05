@@ -77,6 +77,7 @@ export type EnergyType =
   | 'Lightning'
   | 'Psychic'
   | 'Fighting'
+  | 'Dark'
   | 'Darkness'
   | 'Steel'
   | 'Metal'

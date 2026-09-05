@@ -99,7 +99,13 @@ import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 
 export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
   const normalizedTypes = card.types
-    ? (Array.from(new Set(card.types.map((t) => (t === 'Lightning' ? 'Electric' : t === 'Metal' ? 'Steel' : t)))) as EnergyType[])
+    ? (Array.from(
+        new Set(
+          card.types.map((t) =>
+            t === 'Lightning' ? 'Electric' : t === 'Metal' ? 'Steel' : t === 'Darkness' ? 'Dark' : t
+          )
+        )
+      ) as EnergyType[])
     : undefined;
 
   return {
@@ -337,6 +343,7 @@ export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
       const expandedFilterTypes = filters.types.flatMap((t) => {
         if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
         if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
+        if (t === 'Dark' || t === 'Darkness') return ['Dark', 'Darkness'];
         return [t];
       });
       const hasMatchingType = expandedFilterTypes.some((reqType) =>

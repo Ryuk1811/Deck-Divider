@@ -68,7 +68,7 @@ const ALL_TYPES: EnergyType[] = [
   'Electric',
   'Psychic',
   'Fighting',
-  'Darkness',
+  'Dark',
   'Steel',
   'Dragon',
   'Colorless',
@@ -188,6 +188,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
         const expandedSelectedTypes = selectedTypes.flatMap(t => {
           if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
           if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
+          if (t === 'Dark' || t === 'Darkness') return ['Dark', 'Darkness'];
           return [t];
         });
         const hasMatchingType = card.types?.some((t) => expandedSelectedTypes.includes(t as any));
@@ -795,7 +796,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     </td>
                     <td className="p-3">
                       <span className="text-[#DC143C] font-bold">
-                        {card.types?.join(', ') || 'N/A'}
+                        {card.types?.map((t) => (t === 'Darkness' ? 'Dark' : t)).join(', ') || 'N/A'}
                       </span>
                     </td>
                     <td className="p-3">

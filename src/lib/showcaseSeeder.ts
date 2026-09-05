@@ -1,13 +1,71 @@
 import { PokemonCard, Deck, CustomList, PortfolioSealedEntry, PortfolioCardEntry } from '../types';
 
-export const SHOWCASE_EMAIL = 'gurutvamurdia@gmail.com';
-
-export function isShowcaseAccount(email?: string | null): boolean {
-  if (!email) return false;
-  return email.trim().toLowerCase() === SHOWCASE_EMAIL;
+/**
+ * Mock data detection helpers
+ * Strictly used to purge any mock / sample / demo data from authenticated user accounts.
+ * Mock data must remain strictly isolated to demo mode only.
+ */
+export function isMockDeck(deck?: { id?: string; name?: string } | null): boolean {
+  if (!deck) return false;
+  const id = (deck.id || '').toLowerCase();
+  const name = (deck.name || '').toLowerCase();
+  return (
+    id.startsWith('showcase-') ||
+    id.startsWith('starter-') ||
+    id.startsWith('sample-') ||
+    id.startsWith('demo-') ||
+    name === 'charizard ex 151 master deck' ||
+    name === 'gardevoir ex championship 60' ||
+    name === 'lugia vstar archeops turbo' ||
+    name === 'starter sample binder' ||
+    name === 'charizard ex / pidgeot ex championship 60' ||
+    name === 'grail slabs & modern alternate arts vault' ||
+    name === '151 special illustration rare binder complete'
+  );
 }
 
-// 1. Showcase Grail Cards Master Definitions
+export function isMockCardEntry(entry?: { id?: string; card?: { id?: string } } | null): boolean {
+  if (!entry) return false;
+  const id = (entry.id || '').toLowerCase();
+  return (
+    id.startsWith('showcase-') ||
+    id.startsWith('starter-') ||
+    id.startsWith('sample-') ||
+    id.startsWith('demo-')
+  );
+}
+
+export function isMockCustomList(list?: { id?: string; name?: string } | null): boolean {
+  if (!list) return false;
+  const id = (list.id || '').toLowerCase();
+  const name = (list.name || '').toLowerCase();
+  return (
+    id.startsWith('showcase-') ||
+    id.startsWith('starter-') ||
+    id.startsWith('sample-') ||
+    id.startsWith('demo-') ||
+    name === 'psa 10 grails & 151 sirs' ||
+    name === 'top tier trades'
+  );
+}
+
+export function isMockSealedEntry(entry?: { id?: string } | null): boolean {
+  if (!entry) return false;
+  const id = (entry.id || '').toLowerCase();
+  return (
+    id.startsWith('showcase-') ||
+    id.startsWith('starter-') ||
+    id.startsWith('sample-') ||
+    id.startsWith('demo-')
+  );
+}
+
+export function isShowcaseAccount(_email?: string | null): boolean {
+  // User accounts never load showcase mock data - strictly demo mode only
+  return false;
+}
+
+// 1. Showcase Grail Cards Master Definitions (Used strictly in Demo Mode)
 const CHARIZARD_151_RAW: PokemonCard = {
   id: 'sv3pt5-199',
   name: 'Charizard ex',
@@ -16,7 +74,7 @@ const CHARIZARD_151_RAW: PokemonCard = {
   category: 'Pokémon',
   stage: 'Stage 2',
   hp: 330,
-  types: ['Darkness'],
+  types: ['Dark'],
   rarity: 'Special Illustration Rare',
   artist: 'AKIRA EGAWA',
   number: '199/165',
@@ -69,7 +127,7 @@ const MOONBREON_VMAX: PokemonCard = {
   category: 'Pokémon',
   stage: 'VMAX',
   hp: 310,
-  types: ['Darkness'],
+  types: ['Dark'],
   rarity: 'Secret Rare',
   artist: 'KEIICHIRO ITO',
   number: '215/203',
@@ -86,13 +144,13 @@ const MOONBREON_VMAX: PokemonCard = {
   attacks: [
     {
       name: 'Dark Signal',
-      cost: ['Darkness', 'Colorless', 'Colorless'],
+      cost: ['Dark', 'Colorless', 'Colorless'],
       damage: '160',
       text: 'Switch in 1 of your opponent\'s Benched Pokémon to the Active Spot.',
     },
     {
       name: 'Max Darkness',
-      cost: ['Darkness', 'Colorless', 'Colorless'],
+      cost: ['Dark', 'Colorless', 'Colorless'],
       damage: '160',
       text: '',
     },
@@ -122,7 +180,7 @@ const GENGAR_VMAX_ALT: PokemonCard = {
   category: 'Pokémon',
   stage: 'VMAX',
   hp: 320,
-  types: ['Darkness'],
+  types: ['Dark'],
   rarity: 'Secret Rare',
   artist: 'sowsow',
   number: '271/264',
@@ -139,13 +197,13 @@ const GENGAR_VMAX_ALT: PokemonCard = {
   attacks: [
     {
       name: 'Fear and Panic',
-      cost: ['Darkness', 'Darkness'],
+      cost: ['Dark', 'Dark'],
       damage: '60×',
       text: 'This attack does 60 damage for each of your opponent\'s Pokémon V and Pokémon-GX in play.',
     },
     {
       name: 'G-Max Swallow Up',
-      cost: ['Darkness', 'Darkness', 'Darkness'],
+      cost: ['Dark', 'Dark', 'Dark'],
       damage: '250',
       text: 'During your next turn, this Pokémon can\'t attack.',
     },
@@ -309,7 +367,7 @@ const BUBBLE_MEW_SIR: PokemonCard = {
       text: 'Choose 1 of your opponent\'s Active Pokémon\'s attacks and use it as this attack.',
     },
   ],
-  weaknesses: [{ type: 'Darkness', value: '×2' }],
+  weaknesses: [{ type: 'Dark', value: '×2' }],
   prices: {
     raw: 135.0,
     psa10Estimate: 310.0,
@@ -845,7 +903,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
       id: 'showcase-deck-1',
       ownerId: ownerUid,
       name: 'Charizard ex / Pidgeot ex Championship 60',
-      description: 'Standard format competitive powerhouse equipped with Max Rare SIR supporters, ACE SPEC Prime Catcher, and Turbo Darkness fire acceleration.',
+      description: 'Standard format competitive powerhouse equipped with Max Rare SIR supporters, ACE SPEC Prime Catcher, and Turbo Dark fire acceleration.',
       colorHex: '#DC143C',
       isPublic: true,
       publicShareCode: 'CHARIZARD-CHAMP-2026',

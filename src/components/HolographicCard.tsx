@@ -185,8 +185,8 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
           )}
 
           {card.types && card.types.length > 0 && card.types.map((type, idx) => {
-            const style = ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
-            const displayTypeName = type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type;
+            const displayTypeName = type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type === 'Darkness' ? 'Dark' : type;
+            const style = ENERGY_COLORS[displayTypeName] || ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
             return (
               <span
                 key={`${type}-${idx}`}

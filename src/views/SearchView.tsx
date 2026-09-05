@@ -35,7 +35,7 @@ const ALL_ENERGY_TYPES: EnergyType[] = [
   'Electric',
   'Psychic',
   'Fighting',
-  'Darkness',
+  'Dark',
   'Steel',
   'Dragon',
   'Colorless',
