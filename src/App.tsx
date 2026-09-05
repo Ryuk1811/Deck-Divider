@@ -155,7 +155,7 @@ export default function App() {
     setCustomLists([]);
     setSealedEntries([]);
     setSoldEntries([]);
-    navigate('/?landing=true');
+    navigate('/');
   };
 
   // Dynamically manage robots meta tag on route transitions
@@ -219,6 +219,11 @@ export default function App() {
       }
     } catch (e) {}
   };
+
+  const handleOpenAuth = React.useCallback(() => {
+    handleSetGuestMode(false);
+    navigate('/auth');
+  }, [navigate]);
 
   // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
@@ -1656,19 +1661,19 @@ export default function App() {
                   <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
                 </div>
               </div>
-            ) : (user || guestMode) && !location.search.includes('landing=true') ? (
+            ) : user && !location.search.includes('landing=true') ? (
               <Navigate to="/app" replace />
             ) : (
               <LandingPageView
                 onEnterApp={() => {
-                  if (user || guestMode) {
+                  if (user) {
                     navigate('/app');
                   } else {
                     handleSetGuestMode(true);
                     navigate('/app');
                   }
                 }}
-                onOpenAuth={() => navigate('/auth')}
+                onOpenAuth={handleOpenAuth}
                 onNavigateAbout={() => navigate('/about')}
                 onNavigateHowItWorks={() => navigate('/how-it-works')}
                 onSelectTier={(tier) => {
@@ -1678,7 +1683,7 @@ export default function App() {
                     }
                     navigate('/app');
                   } else {
-                    navigate('/auth');
+                    handleOpenAuth();
                   }
                 }}
                 currentTier={currentTier}
@@ -1694,7 +1699,7 @@ export default function App() {
           path="/about"
           element={
             <AboutPageView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onNavigateHome={() => navigate('/')}
               onNavigateHowItWorks={() => navigate('/how-it-works')}
               displayCurrency={displayCurrency}
@@ -1706,7 +1711,7 @@ export default function App() {
           path="/how-it-works"
           element={
             <HowItWorksPageView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onNavigateHome={() => navigate('/')}
               onNavigateAbout={() => navigate('/about')}
               displayCurrency={displayCurrency}
@@ -1718,7 +1723,7 @@ export default function App() {
           path="/privacy"
           element={
             <PrivacyPolicyView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onNavigateHome={() => navigate('/')}
               onNavigateHowItWorks={() => navigate('/how-it-works')}
             />
@@ -1729,31 +1734,31 @@ export default function App() {
           path="/terms"
           element={
             <TermsOfServiceView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onNavigateHome={() => navigate('/')}
               onNavigateHowItWorks={() => navigate('/how-it-works')}
             />
           }
         />
 
-        <Route path="/features" element={<FeaturesPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/support" element={<SupportPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/contact" element={<ContactPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/cookie-policy" element={<CookiePolicyView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/security" element={<SecurityPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/media-kit" element={<MediaKitPageView onOpenAuth={() => navigate('/auth')} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/features" element={<FeaturesPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/support" element={<SupportPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/contact" element={<ContactPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/cookie-policy" element={<CookiePolicyView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/security" element={<SecurityPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/media-kit" element={<MediaKitPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
 
         <Route
           path="/pricing"
           element={
             <PricingPageView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onEnterApp={() => navigate('/app')}
               currentTier={currentTier}
               onSelectTier={(tier) => {
                 if (!user) {
-                  navigate('/auth');
+                  handleOpenAuth();
                 } else {
                   handleChangeTier(tier);
                 }
@@ -1768,7 +1773,7 @@ export default function App() {
           path="/faq"
           element={
             <FaqPageView
-              onOpenAuth={() => navigate('/auth')}
+              onOpenAuth={handleOpenAuth}
               onEnterApp={() => navigate('/app')}
               displayCurrency={displayCurrency}
               user={user}
