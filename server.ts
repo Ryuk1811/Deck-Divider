@@ -18,8 +18,23 @@ if (process.env.SENTRY_DSN) {
   });
 }
 
-import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
-import { verifyPayPalWebhookSignature, handlePayPalWebhookEvent } from './server/paypalWebhook.js';
+import { 
+  createSubscription, 
+  reviseSubscription, 
+  getSubscription, 
+  getPayPalConfig, 
+  listPayPalWebhooks, 
+  registerPayPalWebhook, 
+  deletePayPalWebhook, 
+  PAYPAL_WEBHOOK_EVENT_TYPES 
+} from './server/paypal.js';
+import { 
+  verifyPayPalWebhookSignature, 
+  handlePayPalWebhookEvent, 
+  getRecentWebhookLogs, 
+  clearRecentWebhookLogs, 
+  createSimulatedWebhookEvent 
+} from './server/paypalWebhook.js';
 import { getExchangeRates } from './server/exchangeRates.js';
 import { getAppCredentials } from './server/configManager.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
@@ -449,7 +464,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
   });
 
   
-  // PayPal Webhook Route
+  // PayPal Webhook Route (Live Ingestion Endpoint)
   app.post('/api/v1/paypal/webhook', billingLimiter, async (req, res) => {
     try {
       const isValid = await verifyPayPalWebhookSignature(req.headers, req.body);
@@ -462,6 +477,122 @@ Sitemap: https://deckdivider.app/sitemap.xml
     } catch (err: any) {
       console.error('[PayPal Webhook Error]', err);
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  // =========================================================================
+  // PAYPAL WEBHOOK MANAGER API ENDPOINTS
+  // =========================================================================
+  
+  // 1. Webhook Manager Info & Binding URL
+  app.get('/api/v1/paypal/webhook-manager/info', async (req, res) => {
+    try {
+      const host = req.get('host') || 'localhost:3000';
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const webhookUrl = `${protocol}://${host}/api/v1/paypal/webhook`;
+      
+      const creds = await getAppCredentials();
+      const logs = getRecentWebhookLogs();
+
+      res.json({
+        webhookUrl,
+        webhookPath: '/api/v1/paypal/webhook',
+        hostname: host,
+        mode: creds.paypal.mode || 'live',
+        webhookId: creds.paypal.webhookId || null,
+        hasWebhookId: !!creds.paypal.webhookId && creds.paypal.webhookId !== 'MY_PAYPAL_WEBHOOK_ID',
+        supportedEvents: PAYPAL_WEBHOOK_EVENT_TYPES,
+        stats: {
+          totalEventsLogged: logs.length,
+          processedCount: logs.filter((l) => l.status === 'PROCESSED' || l.status === 'SIMULATED').length,
+          warningCount: logs.filter((l) => l.status === 'WARNING').length,
+          failedCount: logs.filter((l) => l.status === 'FAILED').length,
+          lastEventAt: logs[0]?.timestamp || null,
+        },
+        recentLogs: logs.slice(0, 15),
+      });
+    } catch (err: any) {
+      console.error('[PayPal Webhook Manager Info Error]', err);
+      res.status(500).json({ error: 'Failed to retrieve webhook manager info' });
+    }
+  });
+
+  // 2. Webhook Event Logs Feed
+  app.get('/api/v1/paypal/webhook-manager/logs', async (req, res) => {
+    try {
+      const logs = getRecentWebhookLogs();
+      res.json({ logs });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Failed to get logs' });
+    }
+  });
+
+  // 3. Clear Webhook Event Logs
+  app.post('/api/v1/paypal/webhook-manager/clear-logs', async (req, res) => {
+    try {
+      clearRecentWebhookLogs();
+      res.json({ success: true, message: 'Webhook event logs cleared' });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Failed to clear logs' });
+    }
+  });
+
+  // 4. Test Event Simulator (for validating webhook execution)
+  app.post('/api/v1/paypal/webhook-manager/test-event', async (req, res) => {
+    try {
+      const { eventType = 'BILLING.SUBSCRIPTION.ACTIVATED', targetUid, tier = 'Stack' } = req.body || {};
+      const simulatedPayload = createSimulatedWebhookEvent(eventType, targetUid, tier);
+      const result = await handlePayPalWebhookEvent(simulatedPayload, true);
+      res.json({
+        success: true,
+        message: `Successfully dispatched test event: ${eventType}`,
+        event: simulatedPayload,
+        result,
+      });
+    } catch (err: any) {
+      console.error('[PayPal Webhook Simulation Error]', err);
+      res.status(500).json({ error: err.message || 'Simulation failed' });
+    }
+  });
+
+  // 5. Query Registered Webhooks from Live PayPal Account
+  app.get('/api/v1/paypal/webhook-manager/paypal-registered', async (req, res) => {
+    try {
+      const registered = await listPayPalWebhooks();
+      res.json(registered);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to list PayPal webhooks from API' });
+    }
+  });
+
+  // 6. Auto-Register Webhook URL with PayPal API
+  app.post('/api/v1/paypal/webhook-manager/register-paypal-webhook', async (req, res) => {
+    try {
+      const host = req.get('host') || 'localhost:3000';
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const defaultUrl = `${protocol}://${host}/api/v1/paypal/webhook`;
+      const webhookUrl = req.body?.webhookUrl || defaultUrl;
+
+      const registered = await registerPayPalWebhook(webhookUrl);
+      res.json({
+        success: true,
+        message: 'PayPal Webhook successfully registered with PayPal account',
+        webhook: registered,
+      });
+    } catch (err: any) {
+      console.error('[PayPal Webhook Register Error]', err);
+      res.status(500).json({ error: err.message || 'Failed to register webhook with PayPal' });
+    }
+  });
+
+  // 7. Delete Registered Webhook from PayPal Account
+  app.delete('/api/v1/paypal/webhook-manager/delete-webhook/:webhookId', async (req, res) => {
+    try {
+      const { webhookId } = req.params;
+      const result = await deletePayPalWebhook(webhookId);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to delete webhook' });
     }
   });
 

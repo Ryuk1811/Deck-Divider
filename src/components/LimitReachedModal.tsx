@@ -73,7 +73,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xl transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-lg bg-white p-6 border border-[#E2E8F0] shadow-2xl rounded-2xl space-y-5 relative">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">

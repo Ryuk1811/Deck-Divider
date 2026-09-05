@@ -32,6 +32,7 @@ import {
 import { setLiveExchangeRates } from '../utils/formatters';
 import { useAuth } from '../lib/AuthContext';
 import { PublicShareLinkBox } from '../components/PublicShareLinkBox';
+import { PayPalWebhookManager } from '../components/PayPalWebhookManager';
 
 interface SettingsViewProps {
   currency: DisplayCurrency;
@@ -702,6 +703,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* PANEL 3: PAYPAL WEBHOOKS & AUTOMATION MANAGER */}
+      {/* ========================================================================= */}
+      <PayPalWebhookManager />
     </div>
   );
 };

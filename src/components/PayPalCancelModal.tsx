@@ -15,7 +15,7 @@ export const PayPalCancelModal: React.FC<PayPalCancelModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xl transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative text-center">
         {/* Warning Icon */}
         <div className="mx-auto w-14 h-14 flex items-center justify-center rounded-full bg-[#FFF0F3] border-2 border-[#DC143C] text-[#DC143C]">

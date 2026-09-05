@@ -33,7 +33,7 @@ export async function getAppCredentials(): Promise<AppCredentials> {
       mode: process.env.PAYPAL_MODE || 'live',
       clientId: process.env.PAYPAL_CLIENT_ID || '',
       clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
-      webhookId: process.env.PAYPAL_WEBHOOK_ID || '',
+      webhookId: process.env.PAYPAL_WEBHOOK_ID || '9LD1144121247983E',
       planIds: {
         Bunch: process.env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
         Stack: process.env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',

@@ -1276,8 +1276,12 @@ export default function App() {
       return <Navigate to="/auth" replace />;
     }
 
+    const isModalActiveWithBlur = !!paypalModalTier || limitModalConfig.isOpen || isCancelModalOpen || !!paypalSuccessData;
+
     return (
-      <div className="flex h-[100dvh] w-[100vw] overflow-hidden bg-dot-grid text-[#0F172A]">
+      <div className={`flex h-[100dvh] w-[100vw] overflow-hidden bg-dot-grid text-[#0F172A] transition-all duration-300 ${
+        isModalActiveWithBlur ? 'filter blur-[5px] brightness-95 pointer-events-none select-none' : ''
+      }`}>
       {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}

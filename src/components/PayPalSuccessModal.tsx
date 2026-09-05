@@ -20,7 +20,7 @@ export const PayPalSuccessModal: React.FC<PayPalSuccessModalProps> = ({
   const limits = TIER_LIMITS[tierName];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xl transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative text-center">
         {/* Animated Success Icon */}
         <div className="relative mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-[#F0FDF4] border-2 border-[#16A34A] text-[#16A34A] shadow-inner">

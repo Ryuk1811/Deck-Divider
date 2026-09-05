@@ -134,3 +134,75 @@ export async function getSubscription(subscriptionId: string) {
   if (!res.ok) throw new Error('Failed to fetch subscription');
   return await res.json();
 }
+
+export const PAYPAL_WEBHOOK_EVENT_TYPES = [
+  { name: 'BILLING.SUBSCRIPTION.ACTIVATED', description: 'A subscription is activated.' },
+  { name: 'BILLING.SUBSCRIPTION.CREATED', description: 'A subscription is created.' },
+  { name: 'BILLING.SUBSCRIPTION.CANCELLED', description: 'A subscription is cancelled.' },
+  { name: 'BILLING.SUBSCRIPTION.SUSPENDED', description: 'A subscription is suspended.' },
+  { name: 'BILLING.SUBSCRIPTION.EXPIRED', description: 'A subscription expires.' },
+  { name: 'BILLING.SUBSCRIPTION.UPDATED', description: 'A subscription is updated.' },
+  { name: 'BILLING.SUBSCRIPTION.RE-ACTIVATED', description: 'A subscription is re-activated.' },
+  { name: 'PAYMENT.SALE.COMPLETED', description: 'A sale payment is completed.' },
+  { name: 'PAYMENT.SALE.DENIED', description: 'A sale payment is denied.' },
+  { name: 'PAYMENT.SALE.REFUNDED', description: 'A sale payment is refunded.' },
+  { name: 'PAYMENT.SALE.REVERSED', description: 'A sale payment is reversed.' },
+];
+
+export async function listPayPalWebhooks() {
+  const token = await getPayPalAccessToken();
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const res = await fetch(`${apiBase}/v1/notifications/webhooks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error('Failed to list PayPal webhooks: ' + err);
+  }
+  return await res.json();
+}
+
+export async function registerPayPalWebhook(webhookUrl: string) {
+  const token = await getPayPalAccessToken();
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const eventTypes = PAYPAL_WEBHOOK_EVENT_TYPES.map((e) => ({ name: e.name }));
+
+  const res = await fetch(`${apiBase}/v1/notifications/webhooks`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      url: webhookUrl,
+      event_types: eventTypes,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error('Failed to register PayPal webhook: ' + err);
+  }
+  return await res.json();
+}
+
+export async function deletePayPalWebhook(webhookId: string) {
+  const token = await getPayPalAccessToken();
+  const creds = await getAppCredentials();
+  const apiBase = creds.paypal.mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  const res = await fetch(`${apiBase}/v1/notifications/webhooks/${webhookId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok && res.status !== 204) {
+    const err = await res.text();
+    throw new Error('Failed to delete PayPal webhook: ' + err);
+  }
+  return { success: true };
+}
+
