@@ -1344,14 +1344,6 @@ export default function App() {
                 {activeTab === 'settings' && 'System Config'}
               </span>
             </div>
-
-            {/* Single Dropdown housing all pages */}
-            <PagesDropdown
-              activeTab={activeTab}
-              onSelectTab={(tab) => setActiveTab(tab)}
-              align="right"
-              variant="header"
-            />
           </div>
         </header>
 
