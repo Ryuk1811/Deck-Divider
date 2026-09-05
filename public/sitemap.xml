@@ -49,7 +49,22 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://deckdivider.app/set/sv7</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://deckdivider.app/set/sv6</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv5</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv4</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -57,6 +72,36 @@
     <loc>https://deckdivider.app/set/sv3pt5</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv3</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv2</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv1</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12pt5</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh11</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh7</loc>
@@ -92,6 +137,36 @@
   </url>
   <url>
     <loc>https://deckdivider.app/decks/miraidon-ex</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/lugia-vstar</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/lost-box-giratina</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/chien-pao-ex</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/raging-bolt-ex</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/gholdengo-ex</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/decks/future-box-iron-crown</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>

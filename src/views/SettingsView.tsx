@@ -18,6 +18,7 @@ import {
   LogOut,
   LogIn,
   UserCheck,
+  Lock,
 } from 'lucide-react';
 import {
   DisplayCurrency,
@@ -37,6 +38,7 @@ interface SettingsViewProps {
   onSelectCurrency: (c: DisplayCurrency) => void;
   currentTier: AccountTier;
   onChangeTier: (tier: AccountTier) => void;
+  onTriggerLimitModal?: (action: 'SHARE_PUBLIC_LINK') => void;
   decks: Deck[];
   soldEntries: PortfolioCardEntry[];
   exportDataSignal?: number;
@@ -94,6 +96,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   userId,
   isPublicProfile,
   onTogglePublicProfile,
+  onTriggerLimitModal,
   onOpenBackupModal,
   onSignOut,
   onOpenAuth,
@@ -429,6 +432,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     }`}>
                       {isPublicProfile ? 'PUBLIC' : 'PRIVATE'}
                     </span>
+                    {!TIER_LIMITS[currentTier]?.canSharePublicLinks && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <Lock className="w-3 h-3 text-amber-600" />
+                        Stack Tier Required
+                      </span>
+                    )}
                   </div>
                   <p className="font-mono text-xs text-[#64748B] mt-1 leading-relaxed">
                     Generate a read-only showcase link to share your graded slabs, binders, and collection statistics.
@@ -442,7 +451,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => onTogglePublicProfile?.(!isPublicProfile)}
+                  onClick={() => {
+                    if (!isPublicProfile && !TIER_LIMITS[currentTier]?.canSharePublicLinks) {
+                      if (onTriggerLimitModal) {
+                        onTriggerLimitModal('SHARE_PUBLIC_LINK');
+                      } else {
+                        onChangeTier('Stack');
+                      }
+                      return;
+                    }
+                    onTogglePublicProfile?.(!isPublicProfile);
+                  }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 ${
                     isPublicProfile ? 'bg-[#16A34A]' : 'bg-slate-300'
                   }`}
@@ -571,17 +590,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <h2 className="font-heading font-bold text-base sm:text-lg text-[#0F172A]">
                   Account Tier: {currentTier}
                 </h2>
-                {subscription?.provider === 'razorpay' && subscription?.daysRemaining !== undefined ? (
-                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
-                    subscription.isExpired 
-                      ? 'bg-amber-50 text-amber-800 border-amber-200' 
-                      : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  }`}>
-                    {subscription.isExpired 
-                      ? 'One-Time Pass Expired' 
-                      : `One-Time Pass: ${subscription.daysRemaining} Days Left`}
-                  </span>
-                ) : subscription?.isSuperUser ? (
+                {subscription?.isSuperUser ? (
                   <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                     Lifetime Collection Pass
                   </span>

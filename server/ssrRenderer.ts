@@ -887,7 +887,7 @@ export async function renderSsrRoute(
             '@type': 'AggregateOffer',
             priceCurrency: 'USD',
             lowPrice: '0',
-            highPrice: '19.99',
+            highPrice: '44',
             offerCount: 5,
             offers: [
               {
@@ -900,28 +900,28 @@ export async function renderSsrRoute(
               {
                 '@type': 'Offer',
                 name: 'Bunch',
-                price: '4.99',
+                price: '11',
                 priceCurrency: 'USD',
                 description: 'For active players building competitive decks and logging grades.',
               },
               {
                 '@type': 'Offer',
                 name: 'Stack',
-                price: '6.99',
+                price: '22',
                 priceCurrency: 'USD',
-                description: 'Expanded capacity for serious binder completists.',
+                description: 'Expanded capacity for serious binder completists and public sharing.',
               },
               {
                 '@type': 'Offer',
                 name: 'Deck',
-                price: '9.99',
+                price: '33',
                 priceCurrency: 'USD',
                 description: 'Championship 60-card tournament decks, sealed vault, and alert tools.',
               },
               {
                 '@type': 'Offer',
                 name: 'Collection',
-                price: '19.99',
+                price: '44',
                 priceCurrency: 'USD',
                 description: 'Institutional-grade high-net-worth portfolio vault with unlimited headroom.',
               },
@@ -1668,58 +1668,71 @@ export async function renderSsrRoute(
           <h2 style="font-size:36px;font-weight:800;letter-spacing:-0.5px;margin:8px 0;">Tiered for Collectors and Pro Competitors</h2>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;">
           <!-- Starter -->
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;">
-            <h3 style="font-size:20px;font-weight:800;margin:0 0 4px;">Starter</h3>
-            <div style="font-size:28px;font-weight:900;margin:12px 0;">Free <span style="font-size:14px;color:#64748B;font-weight:400;">/ forever</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Essential collection tracking and basic deckbuilder.</p>
-            <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-              <li>Up to 250 portfolio cards</li>
-              <li>2 custom decklists</li>
-              <li>USD market valuations</li>
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Starter</h3>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">Free <span style="font-size:13px;color:#64748B;font-weight:400;">/ forever</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Entry point for casual collectors.</p>
+            <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
+              <li>Up to 4 custom decks</li>
+              <li>25 cards per deck</li>
+              <li>3 binder lists</li>
             </ul>
-            <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Get Started Free</a>
+            <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Get Started Free</a>
           </div>
 
           <!-- Bunch -->
-          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;">
-            <h3 style="font-size:20px;font-weight:800;margin:0 0 4px;">Bunch</h3>
-            <div style="font-size:28px;font-weight:900;margin:12px 0;">$4.99 <span style="font-size:14px;color:#64748B;font-weight:400;">/ month</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:16px;">For active players building competitive decks.</p>
-            <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-              <li>Up to 1,500 portfolio cards</li>
-              <li>Unlimited tournament decks</li>
-              <li>Multi-currency conversion</li>
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Bunch</h3>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$11 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">For your first graded slabs.</p>
+            <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
+              <li>Up to 9 custom decks</li>
+              <li>40 cards per deck</li>
+              <li>8 binder lists</li>
             </ul>
-            <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Bunch</a>
+            <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Bunch</a>
           </div>
 
-          <!-- Binder -->
-          <div style="background:#FFFFFF;border:2px solid #DC143C;border-radius:16px;padding:24px;position:relative;">
-            <span style="position:absolute;top:-12px;right:16px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">POPULAR</span>
-            <h3 style="font-size:20px;font-weight:800;margin:0 0 4px;">Binder</h3>
-            <div style="font-size:28px;font-weight:900;margin:12px 0;">$9.99 <span style="font-size:14px;color:#64748B;font-weight:400;">/ month</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Complete slab certification &amp; advanced analytics.</p>
-            <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-              <li>Up to 5,000 portfolio cards</li>
-              <li>PSA, BGS &amp; CGC slab cert tracking</li>
-              <li>Play! Pokémon PDF roster exports</li>
+          <!-- Stack -->
+          <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Stack</h3>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$22 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Unlocks public deck and showcase share links.</p>
+            <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
+              <li>Up to 15 custom decks</li>
+              <li>50 cards per deck</li>
+              <li>Public share links</li>
             </ul>
-            <a href="/auth" style="display:block;text-align:center;background:#DC143C;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Binder</a>
+            <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Stack</a>
           </div>
 
-          <!-- Vault -->
-          <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:24px;">
-            <h3 style="font-size:20px;font-weight:800;margin:0 0 4px;color:#FFFFFF;">Vault</h3>
-            <div style="font-size:28px;font-weight:900;margin:12px 0;color:#FFFFFF;">$19.99 <span style="font-size:14px;color:#94A3B8;font-weight:400;">/ month</span></div>
-            <p style="color:#94A3B8;font-size:13px;margin-bottom:16px;">Institutional-grade high-net-worth portfolio vault.</p>
-            <ul style="color:#CBD5E1;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-              <li>Unlimited cards &amp; sealed cases</li>
-              <li>Priority sub-second market sync</li>
-              <li>Automated cloud snapshots &amp; backups</li>
+          <!-- Deck -->
+          <div style="background:#FFFFFF;border:2px solid #DC143C;border-radius:16px;padding:20px;position:relative;">
+            <span style="position:absolute;top:-10px;right:14px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">POPULAR</span>
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Deck</h3>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$33 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Full tournament specs for competitive players.</p>
+            <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
+              <li>Up to 18 tournament decks</li>
+              <li>Full 60 cards per deck</li>
+              <li>Public share links</li>
             </ul>
-            <a href="/auth" style="display:block;text-align:center;background:#FFFFFF;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Vault</a>
+            <a href="/auth" style="display:block;text-align:center;background:#DC143C;color:#FFFFFF;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Deck</a>
+          </div>
+
+          <!-- Collection -->
+          <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:20px;">
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;color:#FFFFFF;">Collection</h3>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;color:#FFFFFF;">$44 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
+            <p style="color:#94A3B8;font-size:13px;margin-bottom:14px;">Institutional-grade unlimited headroom.</p>
+            <ul style="color:#CBD5E1;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
+              <li>Unlimited decks &amp; 60+ cards</li>
+              <li>Unlimited binder lists</li>
+              <li>Public share links</li>
+            </ul>
+            <a href="/auth" style="display:block;text-align:center;background:#FFFFFF;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Collection</a>
           </div>
         </div>
       </div>
@@ -1791,14 +1804,19 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): 
     html = html.replace('</head>', `${ssr.metaTags}\n  </head>`);
   }
 
-  // Inject SSR body inside <div id="root"></div> directly as un-obscured static DOM
-  // This provides 100% crawlable, instant static HTML for search engines, LLMs, and social scrapers
-  const rootContent = ssr.bodyHtml || '';
+  // Preserve <div id="root"> intact with the clean app-initial-shell loading spinner.
+  // Never inject raw HTML into <div id="root"> because that causes a jarring "ghost UI"
+  // flash on reload before React mounts.
+  // For search engine bots and non-JS clients, place SSR body inside a <noscript> fallback.
+  const rootContent = (ssr.bodyHtml || '').trim();
 
-  if (html.includes('<div id="root"></div>')) {
-    html = html.replace('<div id="root"></div>', `<div id="root">${rootContent}</div>`);
-  } else if (html.includes('<div id="root">')) {
-    html = html.replace('<div id="root">', `<div id="root">${rootContent}`);
+  if (rootContent && !html.includes('id="ssr-crawler-fallback"')) {
+    const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
+    if (html.includes('</body>')) {
+      html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
+    } else {
+      html += noscriptBlock;
+    }
   }
 
   return html;

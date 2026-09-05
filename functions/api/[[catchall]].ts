@@ -7,9 +7,6 @@ interface Env {
   PAYPAL_PLAN_DECK?: string;
   PAYPAL_PLAN_COLLECTION?: string;
   EXCHANGE_RATE_API_KEY?: string;
-  RAZORPAY_KEY_ID?: string;
-  RAZORPAY_KEY_SECRET?: string;
-  RAZORPAY_WEBHOOK_SECRET?: string;
   GEMINI_API_KEY?: string;
   BACKEND_URL?: string;
   [key: string]: any;
@@ -443,76 +440,7 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
       return jsonResponse(defaultGovernorState);
     }
 
-    // 9. Razorpay Order Creation via Cloudflare Edge
-    if (pathname === '/api/v1/razorpay/create-order' && method === 'POST') {
-      const body: any = await request.json();
-      const { tier, userId } = body || {};
-
-      const pricesUSD: Record<string, number> = {
-        Starter: 0,
-        Bunch: 11,
-        Stack: 22,
-        Deck: 33,
-        Collection: 44,
-      };
-
-      const usdPrice = pricesUSD[tier];
-      if (usdPrice === undefined || usdPrice === 0) {
-        return jsonResponse({ error: 'Invalid tier for paid order' }, 400);
-      }
-
-      const inrRate = (cachedExchangeRates?.rates?.['INR']) || 83.5;
-      const amountPaise = Math.round(usdPrice * inrRate * 100);
-      const keyId = env.RAZORPAY_KEY_ID || '';
-      const keySecret = env.RAZORPAY_KEY_SECRET || '';
-
-      if (!keyId || !keySecret) {
-        return jsonResponse({ error: 'Razorpay credentials not configured in edge environment' }, 500);
-      }
-
-      try {
-        // Direct Razorpay API call from Cloudflare Edge
-        const basicAuth = btoa(`${keyId}:${keySecret}`);
-        const rzpResponse = await fetch('https://api.razorpay.com/v1/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Basic ${basicAuth}`,
-          },
-          body: JSON.stringify({
-            amount: amountPaise,
-            currency: 'INR',
-            receipt: `rcpt_${userId || 'user'}_${Date.now()}`,
-            payment_capture: 1,
-            notes: {
-              tier,
-              governorPeriodDays: '30',
-              paymentType: 'one_time',
-            },
-          }),
-        });
-
-        if (!rzpResponse.ok) {
-          const errData: any = await rzpResponse.json();
-          return jsonResponse({ error: errData.error?.description || 'Failed to create order on Razorpay' }, 500);
-        }
-
-        const orderData: any = await rzpResponse.json();
-        return jsonResponse({
-          success: true,
-          keyId,
-          orderId: orderData.id,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          tier,
-          governorPeriodDays: 30,
-        });
-      } catch (err: any) {
-        return jsonResponse({ error: 'Edge Razorpay order creation failed: ' + err.message }, 500);
-      }
-    }
-
-    // 10. Execute / Verify Governor Subscription
+    // 9. Execute / Verify Governor Subscription
     if (pathname === '/api/billing/execute' && method === 'POST') {
       const body: any = await request.json();
       const { subscriptionId, tier, provider } = body;
@@ -526,8 +454,8 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
         effectiveTier: tier,
         status: 'ACTIVE',
         billingStatus: 'active',
-        paymentType: provider === 'razorpay' ? 'one_time' : 'recurring',
-        provider: provider || 'razorpay',
+        paymentType: 'recurring',
+        provider: provider || 'paypal',
         currentPeriodStart: now.toISOString(),
         currentPeriodEnd: periodEnd.toISOString(),
         daysRemaining: 30,

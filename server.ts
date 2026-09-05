@@ -20,7 +20,6 @@ if (process.env.SENTRY_DSN) {
 import { createSubscription, reviseSubscription, getSubscription, getPayPalConfig } from './server/paypal.js';
 import { verifyPayPalWebhookSignature, handlePayPalWebhookEvent } from './server/paypalWebhook.js';
 import { getExchangeRates } from './server/exchangeRates.js';
-import { createRazorpayOrder, verifyRazorpayWebhookSignature } from './server/razorpay.js';
 import { getAppCredentials } from './server/configManager.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb, hasAdminCredentials } from './server/firebaseAdmin.js';
@@ -28,8 +27,6 @@ import { renderSsrRoute, injectSsrIntoTemplate } from './server/ssrRenderer.js';
 import { 
   evaluateServerSubscription, 
   getGovernedUserSubscription, 
-  calculateOneTimePeriod,
-  ONE_TIME_PASS_DURATION_DAYS
 } from './server/services/subscriptionGovernor.js';
 import {
   getExpansions,
@@ -58,13 +55,13 @@ async function startServer() {
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paypal.com https://*.paypalobjects.com https://accounts.google.com; " +
-      "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.razorpay.com https://checkout.razorpay.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com; " +
+      "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com; " +
       "font-src 'self' data: https://fonts.gstatic.com https://*.paypalobjects.com; " +
-      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://api.razorpay.com https://*.razorpay.com https://lumberjack.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com; " +
-      "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com; " +
-      "child-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com;"
+      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com; " +
+      "frame-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com; " +
+      "child-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com;"
     );
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -486,34 +483,22 @@ Sitemap: https://deckdivider.app/sitemap.xml
         effectiveTier: tier,
         billingStatus: subStatus,
         updatedAt: now.toISOString(),
-        provider: provider || 'paypal',
-        paymentType: provider === 'razorpay' ? 'one_time' : 'recurring'
+        provider: 'paypal',
+        paymentType: 'recurring',
+        paypalSubscriptionId: subscriptionId || 'LIVE_SUB_ACTIVATED',
       };
 
-      if (provider === 'razorpay') {
-        // One-time payment logic for Razorpay
-        // Calculate 30 days period through Governor
-        const period = calculateOneTimePeriod(ONE_TIME_PASS_DURATION_DAYS, now);
-        updateData.razorpayPaymentId = subscriptionId;
-        updateData.currentPeriodStart = period.currentPeriodStart;
-        updateData.currentPeriodEnd = period.currentPeriodEnd;
-        updateData.daysRemaining = ONE_TIME_PASS_DURATION_DAYS;
-        updateData.isExpired = false;
-        updateData.governorNote = `Active one-time ${tier} pass via Razorpay`;
-      } else {
-        // Default PayPal mandate logic
-        try {
-          if (subscriptionId) {
-            const subDetails = await getSubscription(subscriptionId);
-            if (subDetails && subDetails.status) {
-              subStatus = subDetails.status;
-              updateData.billingStatus = subStatus;
-            }
+      // Verify PayPal subscription details
+      try {
+        if (subscriptionId) {
+          const subDetails = await getSubscription(subscriptionId);
+          if (subDetails && subDetails.status) {
+            subStatus = subDetails.status;
+            updateData.billingStatus = subStatus;
           }
-        } catch (err: any) {
-          console.warn('PayPal live API subscription verification fallback:', err.message);
         }
-        updateData.paypalSubscriptionId = subscriptionId || 'LIVE_SUB_ACTIVATED';
+      } catch (err: any) {
+        console.warn('PayPal live API subscription verification fallback:', err.message);
       }
 
       await db.collection('subscriptions').doc((req as any).uid).set(updateData, { merge: true });
@@ -853,14 +838,14 @@ Sitemap: https://deckdivider.app/sitemap.xml
   app.get('/api/stats/users', async (req, res) => {
     try {
       if (!hasAdminCredentials()) {
-        return res.json({ count: 1842 });
+        return res.json({ count: 0 });
       }
       const db = getAdminDb();
       const snap = await db.collection('subscriptions').count().get();
-      res.json({ count: snap.data().count || 1842 });
+      res.json({ count: snap.data().count ?? 0 });
     } catch (error: any) {
-      console.warn('Non-fatal: Live user stats query fallback:', error?.message || error);
-      res.json({ count: 1842 }); // Fallback number
+      console.warn('Live user stats query error:', error?.message || error);
+      res.json({ count: 0 });
     }
   });
 
@@ -1017,85 +1002,6 @@ Sitemap: https://deckdivider.app/sitemap.xml
     }
   });
 
-  // --- Razorpay API Endpoints ---
-  app.post('/api/v1/razorpay/create-order', billingLimiter, async (req, res) => {
-    try {
-      const { tier, userId } = req.body;
-      if (!tier || !userId) {
-        return res.status(400).json({ error: 'Missing tier or userId' });
-      }
-
-      // Map tier to USD price
-      const pricesUSD: Record<string, number> = {
-        'Starter': 0,
-        'Bunch': 11,
-        'Stack': 22,
-        'Deck': 33,
-        'Collection': 44
-      };
-
-      const usdPrice = pricesUSD[tier];
-      if (usdPrice === undefined || usdPrice === 0) {
-        return res.status(400).json({ error: 'Invalid tier for paid order' });
-      }
-
-      // Calculate INR amount dynamically using real exchange rates
-      const exchangeData = await getExchangeRates();
-      const inrRate = exchangeData.rates['INR'] || 83.5;
-      
-      // Calculate amount in paise (1 INR = 100 Paise)
-      const amountPaise = Math.round(usdPrice * inrRate * 100);
-
-      const order = await createRazorpayOrder(amountPaise, 'INR', `rcpt_${userId}_${Date.now()}`);
-      const creds = await getAppCredentials();
-      const keyId = creds.razorpay?.keyId || process.env.RAZORPAY_KEY_ID || '';
-
-      res.json({
-        success: true,
-        keyId,
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        tier
-      });
-    } catch (error: any) {
-      console.error('Error creating Razorpay order:', error);
-      res.status(500).json({ error: error.message || 'Failed to create Razorpay order' });
-    }
-  });
-
-  app.post('/api/v1/razorpay/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    try {
-      const signature = req.headers['x-razorpay-signature'] as string;
-      if (!signature) {
-        return res.status(400).send('No signature');
-      }
-
-      const isValid = await verifyRazorpayWebhookSignature(req.body.toString(), signature);
-      if (!isValid) {
-        console.error('Invalid Razorpay signature');
-        return res.status(400).send('Invalid signature');
-      }
-
-      const event = JSON.parse(req.body.toString());
-
-      if (event.event === 'payment.captured' || event.event === 'order.paid') {
-        const payment = event.payload.payment.entity;
-        console.log('Razorpay payment captured for order:', payment.order_id);
-        
-        // Example: parse notes or receipt to get userId and tier, then grant subscription in DB
-        // const db = getAdminDb();
-        // Calculate subscription period start/end (30 days) for one-time payment simulation
-        // Write to user's subscription doc.
-      }
-
-      res.json({ status: 'ok' });
-    } catch (error: any) {
-      console.error('Razorpay Webhook Error:', error);
-      res.status(500).send(`Webhook Error: ${error.message}`);
-    }
-  });
-
   app.get('/api/tcgdex/illustrators', async (req, res) => {
     try {
       const response = await fetch('https://api.tcgdex.net/v2/en/illustrators');
@@ -1210,7 +1116,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
           ? path.join(distPath, 'index.html')
           : path.join(distPath, cleanRoute.replace(/^\//, ''), 'index.html');
 
-        if (cleanRoute !== '/' && fs.existsSync(candidateStaticHtml)) {
+        if (fs.existsSync(candidateStaticHtml)) {
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.setHeader('Cache-Control', 'no-cache');
           return res.sendFile(candidateStaticHtml);

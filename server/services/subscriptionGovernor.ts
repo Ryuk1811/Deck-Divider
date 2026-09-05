@@ -6,14 +6,12 @@ export interface ServerGovernedSubscription {
   effectiveTier: string;
   billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
   paymentType: 'one_time' | 'recurring';
-  provider: 'razorpay' | 'paypal' | 'system';
+  provider: 'paypal' | 'system';
   currentPeriodStart?: string;
   currentPeriodEnd?: string;
   daysRemaining: number;
   isExpired: boolean;
   isSuperUser: boolean;
-  razorpayPaymentId?: string;
-  razorpayOrderId?: string;
   paypalSubscriptionId?: string;
   updatedAt: string;
   governorNote?: string;
@@ -72,64 +70,8 @@ export function evaluateServerSubscription(
     };
   }
 
-  const provider = sub.provider || (sub.razorpayPaymentId ? 'razorpay' : 'paypal');
-  const paymentType = sub.paymentType || (provider === 'razorpay' ? 'one_time' : 'recurring');
-
-  // Razorpay one-time payment governor
-  if (paymentType === 'one_time' || provider === 'razorpay') {
-    let periodEndMs = 0;
-
-    if (sub.currentPeriodEnd) {
-      periodEndMs = new Date(sub.currentPeriodEnd).getTime();
-    } else if (sub.updatedAt) {
-      const updatedMs = new Date(sub.updatedAt).getTime();
-      periodEndMs = updatedMs + ONE_TIME_PASS_DURATION_DAYS * 24 * 60 * 60 * 1000;
-    } else {
-      periodEndMs = now;
-    }
-
-    const diffMs = periodEndMs - now;
-    const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-    const isExpired = diffMs <= 0;
-
-    if (isExpired) {
-      return {
-        id: subId,
-        tierName: rawTier,
-        effectiveTier: 'Starter',
-        billingStatus: 'expired',
-        paymentType: 'one_time',
-        provider: 'razorpay',
-        currentPeriodStart: sub.currentPeriodStart || sub.updatedAt,
-        currentPeriodEnd: sub.currentPeriodEnd || new Date(periodEndMs).toISOString(),
-        daysRemaining: 0,
-        isExpired: true,
-        isSuperUser: false,
-        razorpayPaymentId: sub.razorpayPaymentId,
-        razorpayOrderId: sub.razorpayOrderId,
-        updatedAt: sub.updatedAt || new Date().toISOString(),
-        governorNote: `One-time ${rawTier} pass expired on ${new Date(periodEndMs).toLocaleDateString()}. Effective tier is Starter.`,
-      };
-    }
-
-    return {
-      id: subId,
-      tierName: rawTier,
-      effectiveTier: rawTier,
-      billingStatus: 'active',
-      paymentType: 'one_time',
-      provider: 'razorpay',
-      currentPeriodStart: sub.currentPeriodStart || sub.updatedAt,
-      currentPeriodEnd: sub.currentPeriodEnd || new Date(periodEndMs).toISOString(),
-      daysRemaining,
-      isExpired: false,
-      isSuperUser: false,
-      razorpayPaymentId: sub.razorpayPaymentId,
-      razorpayOrderId: sub.razorpayOrderId,
-      updatedAt: sub.updatedAt || new Date().toISOString(),
-      governorNote: `Active one-time ${rawTier} pass (${daysRemaining} days remaining)`,
-    };
-  }
+  const provider = (sub.provider as 'paypal' | 'system') || 'paypal';
+  const paymentType = (sub.paymentType as 'one_time' | 'recurring') || 'recurring';
 
   // PayPal recurring
   const isCanceledOrPastDue = sub.billingStatus === 'canceled' || sub.billingStatus === 'past_due' || sub.billingStatus === 'unpaid';
@@ -140,13 +82,13 @@ export function evaluateServerSubscription(
     tierName: rawTier,
     effectiveTier,
     billingStatus: isCanceledOrPastDue ? sub.billingStatus : 'active',
-    paymentType: 'recurring',
+    paymentType,
     provider: 'paypal',
     paypalSubscriptionId: sub.paypalSubscriptionId,
     daysRemaining: Infinity,
     isExpired: isCanceledOrPastDue,
     isSuperUser: false,
-    updatedAt: sub.updatedAt || new Date().toISOString(),
+    updatedAt: sub?.updatedAt || new Date().toISOString(),
     governorNote: isCanceledOrPastDue
       ? `Recurring subscription ${sub.billingStatus}. Effective tier is Starter.`
       : `Active recurring PayPal subscription (${rawTier})`,

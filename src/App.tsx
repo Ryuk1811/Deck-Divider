@@ -112,7 +112,6 @@ export default function App() {
       return false;
     }
   });
-  const effectiveIsPublicProfile = Boolean(profile?.isPublicProfile ?? guestPublicProfile);
   const [engineReady, setEngineReady] = useState(false);
   const [liveSets, setLiveSets] = useState<CardSet[]>([]);
 
@@ -202,6 +201,8 @@ export default function App() {
 
   // Account State & Currency Configuration
   const currentTier = subscription?.tierName || 'Starter';
+  const canSharePublicLinks = TIER_LIMITS[currentTier]?.canSharePublicLinks ?? false;
+  const effectiveIsPublicProfile = canSharePublicLinks && Boolean(profile?.isPublicProfile ?? guestPublicProfile);
   const [selectedCurrency, setSelectedCurrency] = useState<DisplayCurrency>(() => {
     return (safeGetItem('displayCurrency') as DisplayCurrency) || profile?.displayCurrency || 'USD';
   });
@@ -244,7 +245,7 @@ export default function App() {
       .catch((err) => console.warn('Failed to load PayPal config:', err));
   }, []);
 
-  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier, provider: 'paypal' | 'razorpay' = 'paypal') => {
+  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier, provider: 'paypal' = 'paypal') => {
     const token = await auth.currentUser?.getIdToken();
     const res = await fetch('/api/billing/execute', {
       method: 'POST',
@@ -591,8 +592,8 @@ export default function App() {
           }
         }
 
-        // Automatic seeding for any brand-new user or guest if collection is empty
-        if (currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
+        // Automatic seeding ONLY for guest mode if collection is empty
+        if (!user && currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
           currentDecks = generateShowcaseDecks(activeUid);
           currentLists = generateShowcaseCustomLists(activeUid);
           currentSealed = generateShowcaseSealed(activeUid);
@@ -600,16 +601,6 @@ export default function App() {
           await idbSaveUserDecks(currentDecks, activeUid);
           await idbSaveCustomLists(currentLists, activeUid);
           await idbSaveSealedVault(currentSealed, activeUid);
-
-          if (user) {
-            setTimeout(() => {
-              saveCompressedCloudSnapshot({
-                decks: currentDecks,
-                customLists: currentLists,
-                sealedEntries: currentSealed,
-              });
-            }, 500);
-          }
         }
 
         setDecks(currentDecks);
@@ -617,12 +608,18 @@ export default function App() {
         setSealedEntries(currentSealed);
       } catch (err) {
         console.error('Data initialization error:', err);
-        const fallbackDecks = generateShowcaseDecks(activeUid);
-        const fallbackLists = generateShowcaseCustomLists(activeUid);
-        const fallbackSealed = generateShowcaseSealed(activeUid);
-        setDecks(fallbackDecks);
-        setCustomLists(fallbackLists);
-        setSealedEntries(fallbackSealed);
+        if (!user) {
+          const fallbackDecks = generateShowcaseDecks(activeUid);
+          const fallbackLists = generateShowcaseCustomLists(activeUid);
+          const fallbackSealed = generateShowcaseSealed(activeUid);
+          setDecks(fallbackDecks);
+          setCustomLists(fallbackLists);
+          setSealedEntries(fallbackSealed);
+        } else {
+          setDecks([]);
+          setCustomLists([]);
+          setSealedEntries([]);
+        }
       }
     };
 
@@ -1163,6 +1160,14 @@ export default function App() {
   }, [decks, soldEntries]);
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
+    if (isPublic && !canSharePublicLinks) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'SHARE_PUBLIC_LINK',
+        details: { currentCount: 0, limitCount: 0 },
+      });
+      return;
+    }
     triggerSyncPulse();
     setGuestPublicProfile(isPublic);
     try {
@@ -1278,6 +1283,14 @@ export default function App() {
               customLists={customLists}
               userEmail={user?.email || undefined}
               userId={user?.uid}
+              currentTier={currentTier}
+              onTriggerLimitModal={(action) => {
+                setLimitModalConfig({
+                  isOpen: true,
+                  action,
+                  details: { currentCount: 0, limitCount: 0 },
+                });
+              }}
               isPublicProfile={effectiveIsPublicProfile}
               onTogglePublicProfile={handleTogglePublicProfile}
               onSelectCard={(card) => setSelectedDetailCard(card)}
@@ -1291,8 +1304,8 @@ export default function App() {
               }}
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
-              onLoadShowcase={handleLoadShowcaseData}
-              onAddSampleDeck={handleLoadSampleDeck}
+              onLoadShowcase={!user ? handleLoadShowcaseData : undefined}
+              onAddSampleDeck={!user ? handleLoadSampleDeck : undefined}
             />
           )}
 
@@ -1336,8 +1349,8 @@ export default function App() {
               }
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
-              onLoadShowcase={handleLoadShowcaseData}
-              onAddSampleDeck={handleLoadSampleDeck}
+              onLoadShowcase={!user ? handleLoadShowcaseData : undefined}
+              onAddSampleDeck={!user ? handleLoadSampleDeck : undefined}
             />
           )}
 
@@ -1409,6 +1422,13 @@ export default function App() {
               onSelectCurrency={setDisplayCurrency}
               currentTier={currentTier}
               onChangeTier={handleChangeTier}
+              onTriggerLimitModal={(action) => {
+                setLimitModalConfig({
+                  isOpen: true,
+                  action,
+                  details: { currentCount: 0, limitCount: 0 },
+                });
+              }}
               decks={decks}
               soldEntries={allSoldEntries}
               customLists={customLists}

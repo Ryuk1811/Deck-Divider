@@ -13,11 +13,6 @@ export interface AppCredentials {
       Collection: string;
     };
   };
-  razorpay?: {
-    keyId: string;
-    keySecret: string;
-    webhookSecret?: string;
-  };
   tcgdex: {
     baseUrl: string;
     apiKey?: string;
@@ -45,11 +40,6 @@ export async function getAppCredentials(): Promise<AppCredentials> {
         Deck: process.env.PAYPAL_PLAN_DECK || 'P-8K993431SB9741949NJY5GVY',
         Collection: process.env.PAYPAL_PLAN_COLLECTION || 'P-1EH4703021893203DNJY5HII',
       },
-    },
-    razorpay: {
-      keyId: process.env.RAZORPAY_KEY_ID || '',
-      keySecret: process.env.RAZORPAY_KEY_SECRET || '',
-      webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
     },
     tcgdex: {
       baseUrl: process.env.TCGDEX_BASE_URL || 'https://api.tcgdex.net/v2/en',

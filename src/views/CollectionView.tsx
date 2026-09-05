@@ -17,6 +17,7 @@ import {
   Tag,
   ArrowUpDown,
   ChevronDown,
+  Lock,
 } from 'lucide-react';
 import {
   Deck,
@@ -25,6 +26,8 @@ import {
   PokemonCard,
   EnergyType,
   CustomList,
+  AccountTier,
+  TIER_LIMITS,
 } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { HolographicCard } from '../components/HolographicCard';
@@ -41,6 +44,8 @@ interface CollectionViewProps {
   customLists: CustomList[];
   userEmail?: string;
   userId?: string;
+  currentTier?: AccountTier;
+  onTriggerLimitModal?: (action: 'SHARE_PUBLIC_LINK') => void;
   isPublicProfile?: boolean;
   onTogglePublicProfile?: (isPublic: boolean) => void;
   onSelectCard: (card: PokemonCard) => void;
@@ -78,6 +83,8 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   customLists,
   userEmail,
   userId,
+  currentTier = 'Starter',
+  onTriggerLimitModal,
   isPublicProfile,
   onTogglePublicProfile,
   onSelectCard,
@@ -370,12 +377,28 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
 
             {onTogglePublicProfile && (
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] sm:text-xs font-bold text-[#64748B]">
-                  {isPublicProfile ? 'Showcase Public' : 'Make Public'}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-[10px] sm:text-xs font-bold text-[#64748B]">
+                    {isPublicProfile ? 'Showcase Public' : 'Make Public'}
+                  </span>
+                  {!TIER_LIMITS[currentTier]?.canSharePublicLinks && (
+                    <span 
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200"
+                      title="Public portfolio sharing is available on Stack Tier ($22/mo) and above"
+                    >
+                      <Lock className="w-2.5 h-2.5" /> Stack
+                    </span>
+                  )}
+                </div>
                 <button
                   type="button"
-                  onClick={() => onTogglePublicProfile(!isPublicProfile)}
+                  onClick={() => {
+                    if (!isPublicProfile && !TIER_LIMITS[currentTier]?.canSharePublicLinks) {
+                      onTriggerLimitModal?.('SHARE_PUBLIC_LINK');
+                      return;
+                    }
+                    onTogglePublicProfile(!isPublicProfile);
+                  }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC143C]/20 ${
                     isPublicProfile ? 'bg-[#16A34A]' : 'bg-slate-300'
                   }`}

@@ -24,7 +24,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxCardsPerDeck: 25,
     maxLists: 3,
     maxItemsPerList: 20,
-    canSharePublicLinks: true,
+    canSharePublicLinks: false,
     tagline: 'Entry point for casual collectors',
   },
   Bunch: {
@@ -34,7 +34,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxCardsPerDeck: 40,
     maxLists: 8,
     maxItemsPerList: 50,
-    canSharePublicLinks: true,
+    canSharePublicLinks: false,
     tagline: 'For your first graded slabs',
   },
   Stack: {
@@ -45,7 +45,7 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
     maxLists: 15,
     maxItemsPerList: 100,
     canSharePublicLinks: true,
-    tagline: 'Unlocks public deck share links',
+    tagline: 'Unlocks public deck and showcase share links',
   },
   Deck: {
     name: 'Deck',
@@ -355,13 +355,11 @@ export interface SubscriptionRecord {
   effectiveTier?: AccountTier;
   billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
   paymentType?: 'one_time' | 'recurring';
-  provider?: 'razorpay' | 'paypal' | 'system';
+  provider?: 'paypal' | 'system';
   currentPeriodStart?: string;
   currentPeriodEnd?: string;
   daysRemaining?: number;
   isExpired?: boolean;
-  razorpayPaymentId?: string;
-  razorpayOrderId?: string;
   paypalSubscriptionId?: string;
   isSuperUser?: boolean;
   updatedAt: string;

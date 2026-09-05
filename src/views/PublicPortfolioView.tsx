@@ -15,7 +15,7 @@ import {
 import { db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { unpackUserSnapshot } from '../lib/snapshotEngine';
-import { SharedPortfolioSnapshot, PortfolioCardEntry } from '../types';
+import { SharedPortfolioSnapshot, PortfolioCardEntry, TIER_LIMITS } from '../types';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 import { formatCurrency } from '../utils/formatters';
 import { decodeUrlParamToPortfolio } from '../utils/portfolioUrlEncoder';
@@ -36,6 +36,12 @@ export const PublicPortfolioView: React.FC = () => {
       if (urlParam) {
         const decoded = decodeUrlParamToPortfolio(urlParam);
         if (decoded) {
+          const ownerTier = decoded.profile?.tier || 'Starter';
+          if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
+            setError('Public link sharing is restricted to Stack tier ($22/mo) and above.');
+            setLoading(false);
+            return;
+          }
           setSnapshot(decoded);
           setLoading(false);
           return;
@@ -44,6 +50,12 @@ export const PublicPortfolioView: React.FC = () => {
 
       if (!shareId) {
         setError('No portfolio identifier provided.');
+        setLoading(false);
+        return;
+      }
+
+      if (shareId === 'guest' || shareId === 'guest_user') {
+        setError('Guest portfolios cannot be shared publicly. Upgrade to Stack tier to generate shareable links.');
         setLoading(false);
         return;
       }
@@ -72,6 +84,12 @@ export const PublicPortfolioView: React.FC = () => {
           if (isExplicitlyPublic) {
             const unpacked = await unpackUserSnapshot(data);
             if (unpacked) {
+              const ownerTier = unpacked.profile?.tier || 'Starter';
+              if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
+                setError('This portfolio is private or the user tier does not support public sharing.');
+                setLoading(false);
+                return;
+              }
               setSnapshot(unpacked);
               setLoading(false);
               return;
@@ -85,6 +103,12 @@ export const PublicPortfolioView: React.FC = () => {
             if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
               const unpacked = await unpackUserSnapshot(data);
               if (unpacked) {
+                const ownerTier = unpacked.profile?.tier || userSnap.data().tier || 'Starter';
+                if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
+                  setError('This portfolio is private or the user tier does not support public sharing.');
+                  setLoading(false);
+                  return;
+                }
                 setSnapshot(unpacked);
                 setLoading(false);
                 return;
@@ -105,6 +129,12 @@ export const PublicPortfolioView: React.FC = () => {
           const userSnap = await getDoc(userRef);
           if (userSnap.exists() && (userSnap.data().isPublicProfile || userSnap.data().isPublic)) {
             const userData = userSnap.data();
+            const ownerTier = userData.tier || 'Starter';
+            if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
+              setError('This portfolio is private or the user tier does not support public sharing.');
+              setLoading(false);
+              return;
+            }
             setSnapshot({
               version: 2,
               userId: shareId,
@@ -127,42 +157,6 @@ export const PublicPortfolioView: React.FC = () => {
           }
         } catch (userErr) {
           console.warn('Direct user doc fetch notice:', userErr);
-        }
-
-        // 4. Fallback for guest mode or local browser testing
-        if (shareId === 'guest' || shareId === 'guest_user' || localStorage.getItem('dd_guest_is_public') === 'true') {
-          const isGuestPublic = localStorage.getItem('dd_guest_is_public') === 'true' || shareId === 'guest';
-          if (isGuestPublic) {
-            try {
-              const { idbGetUserDecks, idbGetCustomLists, idbGetSealedVault } = await import('../lib/indexedDB');
-              const localDecks = await idbGetUserDecks(shareId);
-              const localLists = await idbGetCustomLists(shareId);
-              const localSealed = await idbGetSealedVault(shareId);
-
-              if (localDecks.length > 0 || localLists.length > 0 || localSealed.length > 0) {
-                setSnapshot({
-                  version: 2,
-                  userId: shareId,
-                  updatedAt: new Date().toISOString(),
-                  profile: {
-                    displayName: 'Guest Collector',
-                    tier: 'Starter',
-                    currency: 'USD',
-                    isPublicProfile: true,
-                  },
-                  decks: localDecks,
-                  customLists: localLists,
-                  sealedEntries: localSealed,
-                  soldEntries: [],
-                  recentActivities: [],
-                });
-                setLoading(false);
-                return;
-              }
-            } catch (localErr) {
-              console.warn('Local guest fallback notice:', localErr);
-            }
-          }
         }
 
         setError('Portfolio not found or is set to private.');
