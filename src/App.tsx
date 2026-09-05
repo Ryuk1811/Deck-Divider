@@ -90,6 +90,7 @@ import { BackupRecoveryModal } from './components/BackupRecoveryModal';
 import { generateShowcaseDecks, generateShowcaseSealed, generateShowcaseCustomLists } from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
+import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { PublicDeckView } from './views/PublicDeckView';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -131,7 +132,7 @@ export default function App() {
       if (signOutUser) {
         await signOutUser();
       } else {
-        await auth.signOut();
+        await signOut(auth);
       }
     } catch (e) {
       console.warn('Sign out warning:', e);

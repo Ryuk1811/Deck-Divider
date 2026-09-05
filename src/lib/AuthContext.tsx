@@ -4,7 +4,8 @@ import {
   User as FirebaseUser, 
   GoogleAuthProvider, 
   signInWithPopup, 
-  signOut as firebaseSignOut 
+  signOut as firebaseSignOut,
+  browserPopupRedirectResolver
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
@@ -145,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         provider.setCustomParameters({
           prompt: 'select_account',
         });
-        const result = await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider, browserPopupRedirectResolver);
         if (result.user) {
           await fetchProfileAndSubscription(result.user);
         }

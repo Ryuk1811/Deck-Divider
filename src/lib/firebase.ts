@@ -4,7 +4,8 @@ import {
   initializeAuth, 
   browserLocalPersistence, 
   indexedDBLocalPersistence, 
-  inMemoryPersistence 
+  inMemoryPersistence,
+  browserPopupRedirectResolver
 } from "firebase/auth";
 import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
 import firebaseConfigJson from "../../firebase-applet-config.json";
@@ -23,13 +24,14 @@ const firebaseConfig = {
 // Initialize Firebase Client
 export const firebaseApp = initializeApp(firebaseConfig);
 
-// Initialize Firebase Auth with browserLocalPersistence and indexedDB fallbacks
-// browserLocalPersistence (localStorage) prevents "Database is closing/hidden" errors in backgrounded tabs or iframe contexts
+// Initialize Firebase Auth with browserLocalPersistence and indexedDB fallbacks.
+// Critically include browserPopupRedirectResolver so signInWithPopup / signInWithRedirect never trigger auth/argument-error
 export const auth = (() => {
   if (typeof window !== 'undefined') {
     try {
       return initializeAuth(firebaseApp, {
-        persistence: [browserLocalPersistence, indexedDBLocalPersistence, inMemoryPersistence]
+        persistence: [browserLocalPersistence, indexedDBLocalPersistence, inMemoryPersistence],
+        popupRedirectResolver: browserPopupRedirectResolver
       });
     } catch {
       return getAuth(firebaseApp);

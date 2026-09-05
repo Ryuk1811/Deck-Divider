@@ -5,7 +5,8 @@ import {
   createUserWithEmailAndPassword, 
   updateProfile, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup,
+  browserPopupRedirectResolver
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
@@ -123,6 +124,8 @@ export function AuthView({
       } else if (errorCode === 'auth/unauthorized-domain') {
         const currentDomain = window.location.hostname;
         msg = `Domain "${currentDomain}" is not authorized. Add it in Firebase Console > Authentication > Settings > Authorized Domains.`;
+      } else if (errorCode === 'auth/argument-error') {
+        msg = 'Invalid authentication parameter. Please verify email and password and try again.';
       } else if (err.message) {
         // Strip raw "Firebase: Error (auth/...)" prefix if present for clean readability
         msg = err.message.replace(/^Firebase:\s*Error\s*\((auth\/[^)]+)\)\.?/i, '$1:').trim() || err.message;
@@ -148,7 +151,7 @@ export function AuthView({
         provider.setCustomParameters({
           prompt: 'select_account'
         });
-        await signInWithPopup(auth, provider);
+        await signInWithPopup(auth, provider, browserPopupRedirectResolver);
       }
       trackSignupSuccess('google');
       try {
@@ -172,6 +175,8 @@ export function AuthView({
         msg = 'Sign-in popup was blocked by the browser. Please allow popups for this site.';
       } else if (err.code === 'auth/unauthorized-domain') {
         msg = 'This domain is not authorized in Firebase Auth settings.';
+      } else if (err.code === 'auth/argument-error') {
+        msg = 'Authentication configuration error. Please refresh the page and try again.';
       } else if (err.message?.includes('Database is closing/hidden') || err.message?.includes('closing')) {
         msg = 'Connection momentarily paused while backgrounded. Please try signing in again.';
       } else if (err.message) {
