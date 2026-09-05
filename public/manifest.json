@@ -13,17 +13,17 @@
       "src": "/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "start_url": "/",
-  "background_color": "#0F172A",
+  "background_color": "#F8FAFC",
   "theme_color": "#0F172A",
   "display": "standalone",
   "orientation": "portrait"

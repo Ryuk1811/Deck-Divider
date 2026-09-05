@@ -184,17 +184,17 @@ export const DeckDividerBrand: React.FC<DeckDividerBrandProps> = ({
     return (
       <div 
         onClick={onClick} 
-        className={`${containerClasses} justify-center`} 
+        className={`${containerClasses} justify-center cursor-pointer`} 
         title={onClick ? 'Expand Sidebar' : 'DECK / divider'}
       >
-        {renderLogoButton(iconSizes)}
+        {showLogo ? renderLogoButton(iconSizes) : renderCollapsedWordmark()}
       </div>
     );
   }
 
   return (
     <div onClick={onClick} className={containerClasses} title={onClick ? 'Collapse Sidebar' : undefined}>
-      {renderLogoButton(iconSizes)}
+      {showLogo && renderLogoButton(iconSizes)}
       {renderExpandedWordmark()}
     </div>
   );

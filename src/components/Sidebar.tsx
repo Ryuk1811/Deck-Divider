@@ -13,6 +13,9 @@ import {
   TrendingUp,
   Package,
   ChevronRight,
+  ChevronLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   X,
   ShieldCheck,
   Globe,
@@ -124,6 +127,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const initials = displayName.substring(0, 2).toUpperCase();
   const isSuperUser = profile?.isSuperUser || user?.email?.toLowerCase() === 'gurutvamurdia@gmail.com';
 
+  useEffect(() => {
+    if (isMobileOpen && isCollapsed) {
+      setIsCollapsed(false);
+    }
+  }, [isMobileOpen, isCollapsed, setIsCollapsed]);
+
+  const handleToggleCollapse = () => {
+    if (window.innerWidth < 768) {
+      setIsMobileOpen(false);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
+
   const handleNavClick = (tab: ActiveTab) => {
     setActiveTab(tab);
     setIsMobileOpen(false);
@@ -151,35 +168,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className={`h-16 flex items-center justify-center border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {!isCollapsed ? (
             <div className="w-full flex items-center justify-center">
-              {/* Wordmark with Favicon Logo */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
-                showLogo={true}
-                fullWidth={false}
-                onLogoClick={() => {
-                  navigate('/');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                onClick={() => {
-                  if (window.innerWidth < 768) {
-                    setIsMobileOpen(false);
-                  } else {
-                    setIsCollapsed(true);
-                  }
-                }}
-                className="cursor-pointer"
+                showLogo={false}
+                fullWidth={true}
+                onClick={handleToggleCollapse}
+                className="cursor-pointer w-full"
               />
             </div>
           ) : (
             <div className="w-full flex items-center justify-center">
-              {/* Collapsed view displays the clean favicon / logo icon */}
               <DeckDividerBrand
                 size="sm"
                 collapsed={true}
-                showLogo={true}
+                showLogo={false}
+                fullWidth={true}
                 onClick={() => setIsCollapsed(false)}
-                className="cursor-pointer flex items-center justify-center"
+                className="cursor-pointer flex items-center justify-center w-full"
               />
             </div>
           )}

@@ -35,6 +35,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { CardDetailModal } from './components/CardDetailModal';
 import { QuickLookModal } from './components/QuickLookModal';
 import { LimitReachedModal } from './components/LimitReachedModal';
+import { GuestLimitModal } from './components/GuestLimitModal';
 import { PayPalSubscriptionModal } from './components/PayPalSubscriptionModal';
 import { PayPalSuccessModal } from './components/PayPalSuccessModal';
 import { PayPalCancelModal } from './components/PayPalCancelModal';
@@ -781,6 +782,23 @@ export default function App() {
     action: 'CREATE_DECK',
   });
 
+  // Guest Restriction Modal State
+  const [guestModalConfig, setGuestModalConfig] = useState<{
+    isOpen: boolean;
+    title?: string;
+    description?: string;
+  }>({
+    isOpen: false,
+  });
+
+  const triggerGuestRestriction = (title?: string, description?: string) => {
+    setGuestModalConfig({
+      isOpen: true,
+      title: title || 'Authentication Required',
+      description: description || 'Guest / Demo mode is read-only. Please create a free account or sign in to build tournament decks, add graded slabs, and customize lists.',
+    });
+  };
+
   const [verifiedCertsCount, setVerifiedCertsCount] = useState<number>(() => parseInt(safeGetItem('verifiedCertsCount') || '0', 10));
 
   React.useEffect(() => {
@@ -795,6 +813,14 @@ export default function App() {
 
   // Deck Management Handlers
   const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Deck Creation Restricted',
+        'Creating custom tournament decks and binders requires a free account so your decklists are safely stored in your personal vault.'
+      );
+      return;
+    }
+
     const maxDecks = TIER_LIMITS[currentTier].maxDecks;
     if (decks.length >= maxDecks) {
       setLimitModalConfig({
@@ -829,6 +855,13 @@ export default function App() {
   };
 
   const handleUpdateDeck = async (updatedDeck: Deck) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Deck Modification Restricted',
+        'Saving changes to deck settings or rosters requires signing in.'
+      );
+      return;
+    }
     triggerSyncPulse();
     const newDecks = decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d));
     setDecks(newDecks);
@@ -844,6 +877,10 @@ export default function App() {
   };
 
   const handleDeleteDeck = async (deckId: string) => {
+    if (!user) {
+      triggerGuestRestriction('Deck Deletion Restricted', 'Deleting decks requires signing into your account.');
+      return;
+    }
     triggerSyncPulse();
     const newDecks = decks.filter((d) => d.id !== deckId);
     setDecks(newDecks);
@@ -863,6 +900,10 @@ export default function App() {
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
+    if (!user) {
+      triggerGuestRestriction('Deck Splitting Restricted', 'Splitting decks and binder groups requires an active account.');
+      return;
+    }
     triggerSyncPulse();
     const sourceDeck = decks.find((d) => d.id === sourceDeckId);
     if (!sourceDeck) return;
@@ -908,6 +949,13 @@ export default function App() {
     entryData: Omit<PortfolioCardEntry, 'id' | 'isSold'>,
     mode: 'increment' | 'separate'
   ) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Card Addition Restricted',
+        'Adding cards and certified graded slabs to decks requires a free account.'
+      );
+      return;
+    }
     triggerSyncPulse();
     let targetDeck: Deck | undefined;
 
@@ -981,6 +1029,10 @@ export default function App() {
       salePlatform: string;
     }
   ) => {
+    if (!user) {
+      triggerGuestRestriction('Sales Logging Restricted', 'Logging realized sales and profit tracking requires an account.');
+      return;
+    }
     triggerSyncPulse();
     let soldItem: PortfolioCardEntry | null = null;
     let targetDeck: Deck | undefined;
@@ -1035,6 +1087,14 @@ export default function App() {
 
   // Custom List Handlers
   const handleCreateList = async (listData: Omit<CustomList, 'id' | 'createdAt'>) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Custom Lists Restricted',
+        'Creating wishlists, trade binders, and custom lists requires a free account.'
+      );
+      return;
+    }
+
     const maxLists = TIER_LIMITS[currentTier].maxLists;
     if (customLists.length >= maxLists) {
       setLimitModalConfig({
@@ -1067,6 +1127,10 @@ export default function App() {
   };
 
   const handleDeleteList = async (listId: string) => {
+    if (!user) {
+      triggerGuestRestriction('Custom Lists Restricted', 'Managing custom lists requires signing into your account.');
+      return;
+    }
     triggerSyncPulse();
     const newLists = customLists.filter((l) => l.id !== listId);
     setCustomLists(newLists);
@@ -1082,6 +1146,13 @@ export default function App() {
   };
 
   const handleAddCardToList = async (listId: string, cardId: string) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Card Addition Restricted',
+        'Adding cards to custom lists and wishlists requires signing into your account.'
+      );
+      return;
+    }
     const targetList = customLists.find((l) => l.id === listId);
     const maxItems = TIER_LIMITS[currentTier].maxItemsPerList;
     if (targetList && targetList.cardIds.length >= maxItems) {
@@ -1117,6 +1188,10 @@ export default function App() {
   };
 
   const handleRemoveCardFromList = async (listId: string, cardId: string) => {
+    if (!user) {
+      triggerGuestRestriction('List Modification Restricted', 'Modifying custom lists requires signing in.');
+      return;
+    }
     triggerSyncPulse();
     let updatedList: CustomList | undefined;
 
@@ -1142,6 +1217,13 @@ export default function App() {
 
   // Sealed Vault Handlers
   const handleAddSealedEntry = async (entry: PortfolioSealedEntry) => {
+    if (!user) {
+      triggerGuestRestriction(
+        'Sealed Vault Restricted',
+        'Adding booster boxes, ETBs, and sealed products to your vault requires an account.'
+      );
+      return;
+    }
     triggerSyncPulse();
     const newSealed = [entry, ...sealedEntries];
     setSealedEntries(newSealed);
@@ -1170,6 +1252,10 @@ export default function App() {
   };
 
   const handleDeleteSealedEntry = async (id: string) => {
+    if (!user) {
+      triggerGuestRestriction('Sealed Vault Restricted', 'Managing sealed vault inventory requires signing in.');
+      return;
+    }
     triggerSyncPulse();
     const newSealed = sealedEntries.filter((e) => e.id !== id);
     setSealedEntries(newSealed);
@@ -1185,6 +1271,10 @@ export default function App() {
   };
 
   const handleMarkSoldSealedEntry = async (id: string, salePrice: number) => {
+    if (!user) {
+      triggerGuestRestriction('Sealed Vault Restricted', 'Logging sealed sales requires an account.');
+      return;
+    }
     triggerSyncPulse();
     let updatedItem: PortfolioSealedEntry | null = null;
     const newSealed = sealedEntries.map((e) => {
@@ -1231,6 +1321,10 @@ export default function App() {
   }, [decks, soldEntries]);
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
+    if (!user) {
+      triggerGuestRestriction('Public Links Restricted', 'Public profile showcase links require an active account.');
+      return;
+    }
     if (isPublic && !canSharePublicLinks) {
       setLimitModalConfig({
         isOpen: true,
@@ -1515,7 +1609,16 @@ export default function App() {
               userId={user?.uid}
               isPublicProfile={effectiveIsPublicProfile}
               onTogglePublicProfile={handleTogglePublicProfile}
-              onOpenBackupModal={() => setIsBackupModalOpen(true)}
+              onOpenBackupModal={() => {
+                if (!user) {
+                  triggerGuestRestriction(
+                    'Backup & Cloud Restore Restricted',
+                    'Cloud snapshot backups, automated restore points, and local encryption keys require signing in.'
+                  );
+                  return;
+                }
+                setIsBackupModalOpen(true);
+              }}
               onSignOut={handleSignOut}
               onOpenAuth={() => navigate('/auth')}
             />
@@ -1755,6 +1858,17 @@ export default function App() {
           handleChangeTier(tier as AccountTier);
           triggerSyncPulse();
         }}
+      />
+
+      <GuestLimitModal
+        isOpen={guestModalConfig.isOpen}
+        onClose={() => setGuestModalConfig({ ...guestModalConfig, isOpen: false })}
+        onOpenAuth={() => {
+          setGuestModalConfig({ ...guestModalConfig, isOpen: false });
+          navigate('/auth');
+        }}
+        actionTitle={guestModalConfig.title}
+        actionDescription={guestModalConfig.description}
       />
 
       <PayPalSubscriptionModal
