@@ -99,9 +99,9 @@ import {
   isMockSealedEntry,
 } from './lib/showcaseSeeder';
 import { Loader2 } from 'lucide-react';
-import { db, auth } from './lib/firebase';
+import { db, auth, handleFirestoreError, OperationType } from './lib/firebase';
 import { signOut } from 'firebase/auth';
-import { doc, setDoc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { PublicDeckView } from './views/PublicDeckView';
 import { useParams, useSearchParams } from 'react-router-dom';
 
@@ -597,7 +597,7 @@ export default function App() {
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
 
-        // If authenticated, check Firestore snapshot and purge any mock data
+        // If authenticated, check Firestore snapshot AND query subcollections to guarantee cross-device persistence
         if (user) {
           try {
             const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
@@ -627,8 +627,59 @@ export default function App() {
                 }
               }
             }
+
+            // Subcollection multi-tier query fallback (guarantees items added on mobile/desktop exist across devices)
+            const [subDecksSnap, subListsSnap, subSealedSnap] = await Promise.all([
+              getDocs(collection(db, 'users', user.uid, 'decks')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/decks`);
+                return null;
+              }),
+              getDocs(collection(db, 'users', user.uid, 'customLists')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/customLists`);
+                return null;
+              }),
+              getDocs(collection(db, 'users', user.uid, 'sealedVault')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/sealedVault`);
+                return null;
+              }),
+            ]);
+
+            if (subDecksSnap && !subDecksSnap.empty) {
+              const subDecks = subDecksSnap.docs.map((d) => d.data() as Deck);
+              const deckMap = new Map<string, Deck>();
+              currentDecks.forEach((d) => deckMap.set(d.id, d));
+              subDecks.forEach((d) => {
+                if (d && d.id) {
+                  const existing = deckMap.get(d.id);
+                  if (!existing || (d.entries && d.entries.length >= (existing.entries?.length || 0))) {
+                    deckMap.set(d.id, d);
+                  }
+                }
+              });
+              currentDecks = Array.from(deckMap.values());
+            }
+
+            if (subListsSnap && !subListsSnap.empty) {
+              const subLists = subListsSnap.docs.map((d) => d.data() as CustomList);
+              const listMap = new Map<string, CustomList>();
+              currentLists.forEach((l) => listMap.set(l.id, l));
+              subLists.forEach((l) => {
+                if (l && l.id) listMap.set(l.id, l);
+              });
+              currentLists = Array.from(listMap.values());
+            }
+
+            if (subSealedSnap && !subSealedSnap.empty) {
+              const subSealed = subSealedSnap.docs.map((d) => d.data() as PortfolioSealedEntry);
+              const sealedMap = new Map<string, PortfolioSealedEntry>();
+              currentSealed.forEach((s) => sealedMap.set(s.id, s));
+              subSealed.forEach((s) => {
+                if (s && s.id) sealedMap.set(s.id, s);
+              });
+              currentSealed = Array.from(sealedMap.values());
+            }
           } catch (cloudErr) {
-            console.warn('Snapshot cloud fetch warning:', cloudErr);
+            console.warn('Snapshot/Subcollection cloud fetch warning:', cloudErr);
           }
 
           // Strict user account purification: eliminate all mock/showcase/sample data from user accounts
@@ -641,12 +692,6 @@ export default function App() {
           const cleanedLists = currentLists.filter((l) => !isMockCustomList(l));
           const cleanedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
 
-          const hadMockData =
-            cleanedDecks.length !== currentDecks.length ||
-            cleanedLists.length !== currentLists.length ||
-            cleanedSealed.length !== currentSealed.length ||
-            cleanedDecks.some((d, idx) => (d.entries?.length || 0) !== (currentDecks[idx]?.entries?.length || 0));
-
           currentDecks = cleanedDecks;
           currentLists = cleanedLists;
           currentSealed = cleanedSealed;
@@ -658,14 +703,12 @@ export default function App() {
             idbSaveSealedVault(currentSealed, user.uid),
           ]);
 
-          // If mock data was detected, overwrite the cloud snapshot immediately with clean user data
-          if (hadMockData) {
-            await saveCompressedCloudSnapshot({
-              decks: currentDecks,
-              customLists: currentLists,
-              sealedEntries: currentSealed,
-            });
-          }
+          // Immediately sync back unified consolidated snapshot to Cloud
+          await saveCompressedCloudSnapshot({
+            decks: currentDecks,
+            customLists: currentLists,
+            sealedEntries: currentSealed,
+          });
         } else {
           // Automatic showcase seeding ONLY for Guest / Demo mode when collection is empty
           if (currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
@@ -703,6 +746,78 @@ export default function App() {
 
     initializeAppState();
   }, [user?.uid, authLoading, saveCompressedCloudSnapshot]);
+
+  // Live Firestore Snapshot listener for real-time cross-device (mobile <-> desktop) sync
+  React.useEffect(() => {
+    if (!user) return;
+
+    const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
+    const unsubscribe = onSnapshot(
+      snapRef,
+      async (snapDoc) => {
+        if (!snapDoc.exists()) return;
+        const docData = snapDoc.data() as CompressedSnapshotDoc;
+        if (!docData || !docData.updatedAt) return;
+
+        // Skip if remote timestamp is not newer than our local lastSyncedTimestamp
+        if (lastSyncedTimestamp && docData.updatedAt <= lastSyncedTimestamp) return;
+
+        try {
+          const unpacked = await unpackUserSnapshot(docData);
+          if (unpacked) {
+            setLastSyncedTimestamp(docData.updatedAt);
+            setSnapshotMetrics({
+              rawSize: docData.rawSize,
+              byteSize: docData.byteSize,
+              compressionRatio: docData.compressionRatio,
+            });
+
+            if (unpacked.decks && Array.isArray(unpacked.decks)) {
+              const cleaned = unpacked.decks.filter((d) => !isMockDeck(d));
+              setDecks(cleaned);
+              idbSaveUserDecks(cleaned, user.uid);
+            }
+            if (unpacked.customLists && Array.isArray(unpacked.customLists)) {
+              const cleaned = unpacked.customLists.filter((l) => !isMockCustomList(l));
+              setCustomLists(cleaned);
+              idbSaveCustomLists(cleaned, user.uid);
+            }
+            if (unpacked.sealedEntries && Array.isArray(unpacked.sealedEntries)) {
+              const cleaned = unpacked.sealedEntries.filter((s) => !isMockSealedEntry(s));
+              setSealedEntries(cleaned);
+              idbSaveSealedVault(cleaned, user.uid);
+            }
+            if (unpacked.soldEntries && Array.isArray(unpacked.soldEntries)) {
+              setSoldEntries(unpacked.soldEntries);
+            }
+          }
+        } catch (e) {
+          console.warn('Realtime snapshot sync warning:', e);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, `users/${user.uid}/snapshot/current`);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user?.uid, lastSyncedTimestamp]);
+
+  // Debounced Auto-Save Cloud Sync whenever user collection state updates on authenticated accounts
+  const isInitialMount = React.useRef(true);
+  React.useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (!user) return;
+
+    const timer = setTimeout(() => {
+      saveCompressedCloudSnapshot();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [decks, customLists, sealedEntries, soldEntries, user, saveCompressedCloudSnapshot]);
 
   // 6-Hour Automated Snapshot Metronome
   React.useEffect(() => {
