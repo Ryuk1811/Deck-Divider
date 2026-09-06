@@ -72,7 +72,7 @@ async function prerenderAllRoutes() {
       }
 
       const ssrResult = await renderSsrRoute(route, {}, 'deckdivider.app');
-      const renderedHtml = injectSsrIntoTemplate(rawTemplate, ssrResult);
+      const renderedHtml = injectSsrIntoTemplate(rawTemplate, ssrResult, true);
 
       fs.writeFileSync(outputPath, renderedHtml, 'utf-8');
       console.log(`[Prerender] ✓ Successfully generated: ${route} -> ${path.relative(process.cwd(), outputPath)}`);

@@ -39,7 +39,7 @@ import { getExchangeRates } from './server/exchangeRates.js';
 import { getAppCredentials } from './server/configManager.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb, hasAdminCredentials } from './server/firebaseAdmin.js';
-import { renderSsrRoute, injectSsrIntoTemplate } from './server/ssrRenderer.js';
+import { renderSsrRoute, injectSsrIntoTemplate, isBot } from './server/ssrRenderer.js';
 import { 
   evaluateServerSubscription, 
   getGovernedUserSubscription, 
@@ -1379,9 +1379,11 @@ Sitemap: https://deckdivider.app/sitemap.xml
         if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
           res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
+        const userAgent = (req.headers['user-agent'] as string) || '';
+        const bot = isBot(userAgent);
         const rawTemplate = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
         const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'localhost:3000');
-        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr);
+        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
         const transformedHtml = await vite.transformIndexHtml(req.originalUrl, populatedHtml);
 
         res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(transformedHtml);
@@ -1421,16 +1423,18 @@ Sitemap: https://deckdivider.app/sitemap.xml
           res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
 
-        // Check if a pre-rendered static HTML file exists for this route
-        const cleanRoute = req.path.split('?')[0].replace(/\/$/, '') || '/';
-        const candidateStaticHtml = cleanRoute === '/'
-          ? path.join(distPath, 'index.html')
-          : path.join(distPath, cleanRoute.replace(/^\//, ''), 'index.html');
+        const userAgent = (req.headers['user-agent'] as string) || '';
+        const bot = isBot(userAgent);
 
-        if (fs.existsSync(candidateStaticHtml)) {
-          res.setHeader('Content-Type', 'text/html; charset=utf-8');
-          res.setHeader('Cache-Control', 'no-cache');
-          return res.sendFile(candidateStaticHtml);
+        // For non-bot human visitors, if a pre-rendered static HTML file exists for sub-routes, serve it
+        const cleanRoute = req.path.split('?')[0].replace(/\/$/, '') || '/';
+        if (!bot && cleanRoute !== '/') {
+          const candidateStaticHtml = path.join(distPath, cleanRoute.replace(/^\//, ''), 'index.html');
+          if (fs.existsSync(candidateStaticHtml)) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache');
+            return res.sendFile(candidateStaticHtml);
+          }
         }
 
         const templatePath = path.join(distPath, 'index.html');
@@ -1440,7 +1444,7 @@ Sitemap: https://deckdivider.app/sitemap.xml
 
         const rawTemplate = fs.readFileSync(templatePath, 'utf-8');
         const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'deckdivider.app');
-        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr);
+        const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
 
         res.status(200).set({
           'Content-Type': 'text/html; charset=utf-8',

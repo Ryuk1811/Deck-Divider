@@ -1,9 +1,109 @@
 import { getCardDetail } from './tcgCatalogManager.js';
 
-interface RenderResult {
+export interface RenderResult {
   title: string;
   metaTags: string;
   bodyHtml: string;
+}
+
+export function isBot(userAgent: string = ''): boolean {
+  const ua = userAgent.toLowerCase();
+  const botPatterns = [
+    'googlebot',
+    'googleother',
+    'google-inspectiontool',
+    'gemini',
+    'gemini-deep-research',
+    'google-agent',
+    'bingbot',
+    'bingpreview',
+    'yandex',
+    'baiduspider',
+    'slurp',
+    'duckduckbot',
+    'facebot',
+    'facebookexternalhit',
+    'twitterbot',
+    'linkedinbot',
+    'embedly',
+    'quora link preview',
+    'showyoubot',
+    'outbrain',
+    'pinterest',
+    'applebot',
+    'slackbot',
+    'vkshare',
+    'w3c_validator',
+    'whatsapp',
+    'flipboard',
+    'tumblr',
+    'bitlybot',
+    'skypeuripreview',
+    'nuzzel',
+    'discordbot',
+    'qwantify',
+    'pinterestbot',
+    'bitrix',
+    'xing-contenttabreceiver',
+    'chrome-lighthouse',
+    'telegrambot',
+    'gptbot',
+    'chatgpt-user',
+    'chatgpt',
+    'claudebot',
+    'claude-web',
+    'anthropic-ai',
+    'perplexitybot',
+    'bytespider',
+    'cohere-ai',
+    'ia_archiver'
+  ];
+  return botPatterns.some(bot => ua.includes(bot));
+}
+
+function createStandardPageHtml(title: string, subtitle: string, content: string, ctaHref: string = '/auth', ctaText: string = 'Open in App'): string {
+  return `
+  <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
+        DECK <span style="color:#DC143C;">/</span> divider
+      </a>
+    </div>
+    <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
+      <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
+      <a href="/about" style="color:#64748B;text-decoration:none;">About</a>
+      <a href="/pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
+      <a href="/faq" style="color:#64748B;text-decoration:none;">FAQ</a>
+      <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;">Sign In</a>
+    </nav>
+  </header>
+  <main style="max-width:1000px;margin:36px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
+    <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;margin-bottom:28px;">
+      <h1 style="font-size:32px;font-weight:900;margin:0 0 12px;letter-spacing:-0.5px;">${escapeHtml(title)}</h1>
+      <p style="font-size:16px;color:#64748B;margin:0;">${escapeHtml(subtitle)}</p>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;margin-bottom:28px;">
+      ${content}
+      <div style="margin-top:28px;display:flex;gap:12px;">
+        <a href="${ctaHref}" style="background:#DC143C;color:#FFFFFF;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">${ctaText}</a>
+        <a href="/" style="background:#F1F5F9;color:#0F172A;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Return Home</a>
+      </div>
+    </div>
+  </main>
+  <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+    <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Collection Tracker, Slab Registry &amp; Deckbuilder</p>
+    <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+      <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About</a>
+      <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+      <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a>
+      <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
+      <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
+      <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+    </div>
+    <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; 2026 DECK / divider. All rights reserved.</p>
+  </footer>
+  `;
 }
 
 // Decode base64 deck parameter
@@ -11,7 +111,7 @@ function decodeDeckParam(encoded: string): any | null {
   try {
     const jsonString = Buffer.from(encoded, 'base64').toString('utf-8');
     const parsed = JSON.parse(jsonString);
-    return { bodyHtml: "",
+    return {
       id: parsed.i || 'public-deck',
       name: parsed.n || 'Pokémon TCG Deck',
       colorHex: parsed.c || '#DC143C',
@@ -276,7 +376,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   if (cleanPath.startsWith('/set/') && cleanPath.endsWith('/top-cards')) {
@@ -310,7 +410,20 @@ export async function renderSsrRoute(
       url: canonicalUrl
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;font-size:15px;line-height:1.6;">Discover the top chase cards, Secret Illustration Rares, and high-value competitive staples from ${escapeHtml(setData.name)} (${escapeHtml(setData.series)}). Verified market prices from TCGplayer updated in real time.</p>
+      <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+        <a href="/set/${setId}" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">View Full ${escapeHtml(setData.name)} Checklist</a>
+        <a href="/sets" style="background:#F1F5F9;color:#0F172A;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">All Expansions</a>
+      </div>`,
+      `/set/${setId}`,
+      'View Set Checklist'
+    );
+
+    return {
+      bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -412,7 +525,7 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // PROGRAMMATIC SEO: TOURNAMENT DECK ARCHETYPE ROUTE: /decks/:archetype
@@ -500,7 +613,7 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 2. ABOUT PAGE ROUTE: /about
@@ -517,7 +630,25 @@ export async function renderSsrRoute(
       url: canonicalUrl
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="border-left:3px solid #DC143C;padding-left:16px;">
+          <strong style="color:#0F172A;display:block;font-size:15px;">Version 2.4 — Live Multi-Currency & Graded Slabs</strong>
+          <span style="color:#64748B;font-size:13px;">Added support for PSA, BGS, and CGC subgrades, live currency exchange in 15+ currencies, and automated CSV backups.</span>
+        </div>
+        <div style="border-left:3px solid #CBD5E1;padding-left:16px;">
+          <strong style="color:#0F172A;display:block;font-size:15px;">Version 2.3 — Scarlet & Violet SV8 Stellar Crown Update</strong>
+          <span style="color:#64748B;font-size:13px;">Complete master set checklists, reverse holo checkboxes, and Secret Illustration Rare odds tracking.</span>
+        </div>
+      </div>`,
+      '/auth',
+      'Open App'
+    );
+
+    return {
+      bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -543,7 +674,30 @@ export async function renderSsrRoute(
       url: canonicalUrl
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:20px;">Explore complete card checklists, reverse holo trackers, and live market prices across modern and vintage Pokémon TCG expansions.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:12px;">
+        <a href="/set/sv8" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">👑 Stellar Crown (SV8)</a>
+        <a href="/set/sv7" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">👑 Stellar Crown (SV7)</a>
+        <a href="/set/sv6" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🎭 Twilight Masquerade (SV6)</a>
+        <a href="/set/sv5" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">⚡ Temporal Forces (SV5)</a>
+        <a href="/set/sv4" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🌀 Paradox Rift (SV4)</a>
+        <a href="/set/sv3pt5" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🌟 Pokémon 151 (SV3.5)</a>
+        <a href="/set/sv3" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🔥 Obsidian Flames (SV3)</a>
+        <a href="/set/sv2" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🌿 Paldea Evolved (SV2)</a>
+        <a href="/set/sv1" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🟣 Scarlet &amp; Violet (SV1)</a>
+        <a href="/set/swsh12" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">❄️ Silver Tempest (SWSH12)</a>
+        <a href="/set/swsh11" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">👻 Lost Origin (SWSH11)</a>
+        <a href="/set/swsh7" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">🐉 Evolving Skies (SWSH7)</a>
+        <a href="/set/base1" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:12px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">⚡ Base Set (1999)</a>
+      </div>`,
+      '/auth',
+      'Start Tracking Cards'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -569,7 +723,29 @@ export async function renderSsrRoute(
       url: canonicalUrl
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:20px;">Detailed guidelines on regulation marks (F, G, H, I), tournament deck construction rules, and format card pools.</p>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <a href="/formats/standard" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;text-decoration:none;">
+          <strong style="color:#DC143C;display:block;font-size:16px;margin-bottom:4px;">Standard Format Guide &rarr;</strong>
+          <span style="color:#64748B;font-size:14px;">Current tournament format with Regulation Marks F, G, and H.</span>
+        </a>
+        <a href="/formats/expanded" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;text-decoration:none;">
+          <strong style="color:#0F172A;display:block;font-size:16px;margin-bottom:4px;">Expanded Format Guide &rarr;</strong>
+          <span style="color:#64748B;font-size:14px;">Black &amp; White onwards with custom banlists.</span>
+        </a>
+        <a href="/formats/glc" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;text-decoration:none;">
+          <strong style="color:#0F172A;display:block;font-size:16px;margin-bottom:4px;">Gym Leader Challenge (GLC) &rarr;</strong>
+          <span style="color:#64748B;font-size:14px;">Singleton single-type grass-roots format with no Rule Box Pokémon.</span>
+        </a>
+      </div>`,
+      '/formats/standard',
+      'Read Standard Format Rules'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -603,7 +779,19 @@ export async function renderSsrRoute(
       url: canonicalUrl
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:16px;">Comprehensive rules, valid regulation marks, rotation timelines, and tournament guidelines for ${escapeHtml(name)}.</p>
+      <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;">
+        <strong style="color:#0F172A;display:block;margin-bottom:8px;">Format Construction Rules</strong>
+        <p style="color:#64748B;font-size:14px;margin:0;">Standard 60-card deck limit, maximum 4 copies of cards with identical names (excluding Basic Energy), and 1 ACE SPEC card.</p>
+      </div>`,
+      '/formats',
+      'All Formats Guide'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -674,7 +862,19 @@ export async function renderSsrRoute(
       ]
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:16px;">Compare portfolio management, live TCGplayer market pricing, PSA slab subgrades, and tournament deckbuilding.</p>
+      <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;margin-bottom:16px;">
+        <strong style="color:#DC143C;display:block;margin-bottom:8px;">Why Collectors Choose DECK / divider</strong>
+        <p style="color:#64748B;font-size:14px;margin:0;">Real-time market values, subgrade certification tracking for PSA/BGS/CGC, reverse holo binder checklists, and 1-click PTCGL export without paywalled core features.</p>
+      </div>`,
+      '/auth',
+      'Try DECK / divider Free'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -714,7 +914,26 @@ export async function renderSsrRoute(
       ]
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:16px;">Explore top verified master sets, shadowless vintage collections, and competitive tournament deck rosters from our community.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;">
+          <strong style="color:#0F172A;">🥇 Pallet Town Vault</strong> — Vintage Shadowless & First Edition Base Set
+        </div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;">
+          <strong style="color:#0F172A;">🥈 Crown Zenith Archivist</strong> — Modern Secret Illustration Rares & PSA 10 Slabs
+        </div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;">
+          <strong style="color:#0F172A;">🥉 Sinnoh League Champion</strong> — Competitive Standard 60-Card Decks
+        </div>
+      </div>`,
+      '/auth',
+      'Submit Your Portfolio'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -769,7 +988,19 @@ export async function renderSsrRoute(
       ]
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      `<p style="color:#475569;margin-bottom:16px;">Independent rankings and technical comparisons of top Pokémon card applications, portfolio trackers, and slab scanners.</p>
+      <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;">
+        <strong style="color:#0F172A;display:block;margin-bottom:8px;">Evaluation Criteria</strong>
+        <p style="color:#64748B;font-size:14px;margin:0;">We rank tools based on pricing accuracy (TCGplayer / eBay Sold), slab grading support, master set coverage, and deck legality validation.</p>
+      </div>`,
+      '/auth',
+      'Open Tracker'
+    );
+
+    return { bodyHtml,
       title: pageTitle,
       metaTags: `
         <meta name="description" content="${pageDesc}" />
@@ -843,7 +1074,20 @@ export async function renderSsrRoute(
       ]
     };
 
-    return { bodyHtml: "",
+    const bodyHtml = createStandardPageHtml(
+      currentTool.title,
+      currentTool.desc,
+      `<p style="color:#475569;margin-bottom:16px;">Free interactive utility for Pokémon TCG collectors and competitive players.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;">
+        <a href="/tools/psa-grade-calculator" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">PSA Grade ROI Calculator &rarr;</a>
+        <a href="/tools/deck-legality-checker" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">Deck Legality Checker &rarr;</a>
+        <a href="/geo-insights" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">GEO & AI Citation Inspector &rarr;</a>
+      </div>`,
+      '/auth',
+      'Open Tools Suite'
+    );
+
+    return { bodyHtml,
       title: currentTool.title,
       metaTags: `
         <meta name="description" content="${currentTool.desc}" />
@@ -1034,7 +1278,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 3. HOW IT WORKS PAGE ROUTE: /how-it-works
@@ -1205,7 +1449,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 4. AUTH PAGE ROUTE: /auth
@@ -1258,7 +1502,7 @@ export async function renderSsrRoute(
     </main>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 5. PRICING PAGE ROUTE: /pricing
@@ -1512,7 +1756,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 6. FAQ PAGE ROUTE: /faq
@@ -1682,7 +1926,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 7. PRIVACY POLICY ROUTE: /privacy
@@ -1747,7 +1991,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 8. TERMS OF SERVICE ROUTE: /terms
@@ -1812,7 +2056,7 @@ export async function renderSsrRoute(
     </footer>
     `;
 
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 5. AUTHENTICATED APP SHELL: /app, /app/*, /dashboard, /collection, /decks, /settings, /metrics, etc.
@@ -1832,7 +2076,7 @@ export async function renderSsrRoute(
     <meta name="googlebot" content="noindex, nofollow" />
     `;
     const bodyHtml = ``;
-    return { bodyHtml: "", title: pageTitle, metaTags, };
+    return { bodyHtml, title: pageTitle, metaTags, };
   }
 
   // 6. HOMEPAGE / LANDING ROUTE: /
@@ -2170,7 +2414,53 @@ export async function renderSsrRoute(
     </section>
   </main>
 
-  <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:32px 20px;text-align:center;color:#64748B;font-size:14px;">
+      <section style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:48px 20px;margin-top:48px;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Browse Pokémon TCG Set Checklists</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;">
+          <a href="/set/sv8" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Stellar Crown (SV8)</a>
+          <a href="/set/sv7" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Stellar Crown (SV7)</a>
+          <a href="/set/sv6" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Twilight Masquerade (SV6)</a>
+          <a href="/set/sv5" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Temporal Forces (SV5)</a>
+          <a href="/set/sv4" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Paradox Rift (SV4)</a>
+          <a href="/set/sv3pt5" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Pokémon 151 (SV3.5)</a>
+          <a href="/set/sv3" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Obsidian Flames (SV3)</a>
+          <a href="/set/sv2" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Paldea Evolved (SV2)</a>
+          <a href="/set/sv1" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Scarlet &amp; Violet (SV1)</a>
+          <a href="/set/swsh12" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Silver Tempest (SWSH12)</a>
+          <a href="/set/swsh11" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Lost Origin (SWSH11)</a>
+          <a href="/set/swsh7" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Evolving Skies (SWSH7)</a>
+          <a href="/set/base1" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Base Set 1999 (Base1)</a>
+          <a href="/sets" style="background:#DC143C;color:#FFFFFF;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">All 148+ Expansions &rarr;</a>
+        </div>
+
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Tournament Deck Archetypes</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;">
+          <a href="/decks/charizard-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Charizard ex (Dark)</a>
+          <a href="/decks/gardevoir-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Gardevoir ex (Psychic)</a>
+          <a href="/decks/regidrago-vstar" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Regidrago VSTAR</a>
+          <a href="/decks/dragapult-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Dragapult ex</a>
+          <a href="/decks/miraidon-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Miraidon ex</a>
+          <a href="/decks/chien-pao-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Chien-Pao ex</a>
+          <a href="/decks/raging-bolt-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Raging Bolt ex</a>
+          <a href="/decks/gholdengo-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Gholdengo ex</a>
+        </div>
+
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Collector Tools &amp; Resources</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;color:#64748B;font-size:14px;">
+          <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing &amp; Pro Vault</a> •
+          <a href="/formats" style="color:#0F172A;text-decoration:none;font-weight:600;">Format Legality Guide</a> •
+          <a href="/tools/psa-grade-calculator" style="color:#0F172A;text-decoration:none;font-weight:600;">PSA Grade Calculator</a> •
+          <a href="/tools/deck-legality-checker" style="color:#0F172A;text-decoration:none;font-weight:600;">Deck Legality Checker</a> •
+          <a href="/compare" style="color:#0F172A;text-decoration:none;font-weight:600;">Platform Comparisons</a> •
+          <a href="/leaderboard" style="color:#0F172A;text-decoration:none;font-weight:600;">Collector Leaderboard</a> •
+          <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a> •
+          <a href="/changelog" style="color:#0F172A;text-decoration:none;font-weight:600;">Changelog</a>
+        </div>
+      </div>
+    </section>
+  
+<footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:32px 20px;text-align:center;color:#64748B;font-size:14px;">
     <p style="margin:0 0 12px;font-weight:600;color:#0F172A;">DECK / divider — Pokémon TCG Portfolio &amp; Deck Studio</p>
     <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
       <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -2185,11 +2475,11 @@ export async function renderSsrRoute(
   </footer>
   `;
 
-  return { bodyHtml: "", title: pageTitle, metaTags, };
+  return { bodyHtml, title: pageTitle, metaTags, };
 }
 
 // Injects SSR title, meta tags, and root body HTML into an index.html template string
-export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): string {
+export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult, isBotRequest: boolean = false): string {
   let html = templateHtml;
 
   // Replace <title>...</title> if present
@@ -2210,18 +2500,36 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult): 
     html = html.replace('</head>', `${ssr.metaTags}\n  </head>`);
   }
 
-  // Preserve <div id="root"> intact with the clean app-initial-shell loading spinner.
-  // Never inject raw HTML into <div id="root"> because that causes a jarring "ghost UI"
-  // flash on reload before React mounts.
-  // For search engine bots and non-JS clients, place SSR body inside a <noscript> fallback.
   const rootContent = (ssr.bodyHtml || '').trim();
 
-  if (rootContent && !html.includes('id="ssr-crawler-fallback"')) {
-    const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
-    if (html.includes('</body>')) {
-      html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
+  if (rootContent) {
+    if (isBotRequest) {
+      // For search bots (Googlebot, GoogleOther, Gemini, Bingbot, etc.), inject SSR HTML directly into <div id="root">
+      // so Google's Web Rendering Service and HTML parsers see all headings, paragraphs, and anchor links immediately.
+      const rootMarker = '<div id="root">';
+      const scriptMarker = '<script type="module"';
+      if (html.includes(rootMarker)) {
+        const rootStart = html.indexOf(rootMarker);
+        const scriptStart = html.indexOf(scriptMarker, rootStart);
+        if (scriptStart !== -1) {
+          const before = html.substring(0, rootStart);
+          const after = html.substring(scriptStart);
+          html = `${before}<div id="root">\n${rootContent}\n    </div>\n    ${after}`;
+        } else {
+          html = html.replace(/<div id="root">[\s\S]*?<\/body>/i, `<div id="root">\n${rootContent}\n    </div>\n  </body>`);
+        }
+      }
     } else {
-      html += noscriptBlock;
+      // For regular human browsers, preserve the sleek spinner inside <div id="root">
+      // and provide the semantic content inside <noscript> as an accessible fallback.
+      if (!html.includes('id="ssr-crawler-fallback"')) {
+        const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
+        if (html.includes('</body>')) {
+          html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
+        } else {
+          html += noscriptBlock;
+        }
+      }
     }
   }
 
