@@ -67,6 +67,7 @@ import { TermsOfServiceView } from './views/TermsOfServiceView';
 import { PricingPageView } from './views/PricingPageView';
 import { FaqPageView } from './views/FaqPageView';
 import { NotFoundView } from './views/NotFoundView';
+import { AdminDashboardView } from './views/AdminDashboardView';
 import { 
   FeaturesPageView, 
   ChangelogPageView, 
@@ -1811,6 +1812,8 @@ export default function App() {
         <Route path="/geo-insights" element={<GeoAiInspectorView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
+        <Route path="/admin" element={<AdminDashboardView />} />
+        <Route path="/admin/*" element={<AdminDashboardView />} />
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<NotFoundView />} />

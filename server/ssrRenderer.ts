@@ -2059,8 +2059,10 @@ export async function renderSsrRoute(
     return { bodyHtml, title: pageTitle, metaTags, };
   }
 
-  // 5. AUTHENTICATED APP SHELL: /app, /app/*, /dashboard, /collection, /decks, /settings, /metrics, etc.
+  // 5. AUTHENTICATED APP SHELL & ADMIN PORTAL: /app, /app/*, /admin, /admin/*, /dashboard, /collection, /decks, /settings, /metrics, etc.
   if (
+    cleanPath === '/admin' ||
+    cleanPath.startsWith('/admin/') ||
     cleanPath === '/app' ||
     cleanPath.startsWith('/app/') ||
     cleanPath === '/dashboard' ||
@@ -2070,7 +2072,7 @@ export async function renderSsrRoute(
     cleanPath === '/settings' ||
     cleanPath === '/metrics'
   ) {
-    const pageTitle = 'Dashboard & Collection Studio — DECK / divider';
+    const pageTitle = cleanPath.startsWith('/admin') ? 'Super Admin Portal — DECK / divider' : 'Dashboard & Collection Studio — DECK / divider';
     const metaTags = `
     <meta name="robots" content="noindex, nofollow" />
     <meta name="googlebot" content="noindex, nofollow" />

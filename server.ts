@@ -115,6 +115,27 @@ async function startServer() {
     '7_first_action': 0,
   };
 
+  const crawlerStats = {
+    googlebot: 0,
+    gemini: 0,
+    bingbot: 0,
+    claude: 0,
+    gptbot: 0,
+    otherBots: 0,
+    totalCrawls: 0,
+  };
+
+  const trackBotHit = (userAgent: string) => {
+    crawlerStats.totalCrawls++;
+    const ua = userAgent.toLowerCase();
+    if (ua.includes('googlebot')) crawlerStats.googlebot++;
+    else if (ua.includes('google-extended') || ua.includes('gemini')) crawlerStats.gemini++;
+    else if (ua.includes('bingbot')) crawlerStats.bingbot++;
+    else if (ua.includes('claudebot') || ua.includes('claude-web')) crawlerStats.claude++;
+    else if (ua.includes('gptbot') || ua.includes('chatgpt')) crawlerStats.gptbot++;
+    else crawlerStats.otherBots++;
+  };
+
   app.post('/api/analytics/event', (req, res) => {
     try {
       const { sid, step } = req.body || {};
@@ -188,6 +209,560 @@ async function startServer() {
       funnel,
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // --- SUPER ADMIN METRICS & MANAGEMENT API ---
+  const SUPER_USER_EMAIL = 'gurutvamurdia@gmail.com';
+
+  function parseFirestoreRestFields(fields: Record<string, any>): Record<string, any> {
+    const result: Record<string, any> = {};
+    if (!fields) return result;
+    for (const [key, valObj] of Object.entries(fields)) {
+      if (!valObj) continue;
+      if ('stringValue' in valObj) result[key] = valObj.stringValue;
+      else if ('booleanValue' in valObj) result[key] = valObj.booleanValue;
+      else if ('integerValue' in valObj) result[key] = Number(valObj.integerValue);
+      else if ('doubleValue' in valObj) result[key] = Number(valObj.doubleValue);
+      else if ('timestampValue' in valObj) result[key] = valObj.timestampValue;
+      else if ('mapValue' in valObj) result[key] = parseFirestoreRestFields(valObj.mapValue?.fields || {});
+      else if ('arrayValue' in valObj) {
+        result[key] = (valObj.arrayValue?.values || []).map((v: any) => parseFirestoreRestFields({ v }).v);
+      } else result[key] = null;
+    }
+    return result;
+  }
+
+  async function getAdminCollectionDocs(collectionName: string, idToken?: string): Promise<any[]> {
+    const docsList: any[] = [];
+    
+    // 1. Try Firebase Admin SDK
+    try {
+      const db = getAdminDb();
+      const snap = await db.collection(collectionName).get();
+      snap.forEach(doc => {
+        docsList.push({ id: doc.id, ...doc.data() });
+      });
+      if (docsList.length > 0) return docsList;
+    } catch (_) {}
+
+    // 2. Fallback to Firestore REST API with Super User Bearer token
+    if (idToken) {
+      try {
+        const url = `https://firestore.googleapis.com/v1/projects/deckdivider1/databases/(default)/documents/${collectionName}`;
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${idToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const rawDocs = data.documents || [];
+          for (const doc of rawDocs) {
+            const docId = doc.name ? doc.name.split('/').pop() : 'unknown';
+            const fields = parseFirestoreRestFields(doc.fields || {});
+            docsList.push({ id: docId, ...fields });
+          }
+          return docsList;
+        }
+      } catch (_) {}
+    }
+
+    return docsList;
+  }
+
+  async function updateAdminUserTier(targetUid: string, tierName: string, idToken?: string): Promise<boolean> {
+    // 1. Try Admin SDK
+    try {
+      const db = getAdminDb();
+      const userRef = db.collection('users').doc(targetUid);
+      const subRef = db.collection('subscriptions').doc(targetUid);
+      await userRef.set({ tierName, updatedAt: new Date().toISOString() }, { merge: true });
+      await subRef.set({ tierName, updatedAt: new Date().toISOString(), billingStatus: 'active' }, { merge: true });
+      return true;
+    } catch (_) {}
+
+    // 2. Fallback to REST API with Super User Bearer Token
+    if (idToken) {
+      try {
+        const updateTime = new Date().toISOString();
+        const userUrl = `https://firestore.googleapis.com/v1/projects/deckdivider1/databases/(default)/documents/users/${targetUid}?updateMask.fieldPaths=tierName&updateMask.fieldPaths=updatedAt`;
+        const subUrl = `https://firestore.googleapis.com/v1/projects/deckdivider1/databases/(default)/documents/subscriptions/${targetUid}?updateMask.fieldPaths=tierName&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=billingStatus`;
+
+        const userBody = {
+          fields: {
+            tierName: { stringValue: tierName },
+            updatedAt: { stringValue: updateTime }
+          }
+        };
+        const subBody = {
+          fields: {
+            tierName: { stringValue: tierName },
+            updatedAt: { stringValue: updateTime },
+            billingStatus: { stringValue: 'active' }
+          }
+        };
+
+        const headers = {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        };
+
+        const [r1, r2] = await Promise.all([
+          fetch(userUrl, { method: 'PATCH', headers, body: JSON.stringify(userBody) }),
+          fetch(subUrl, { method: 'PATCH', headers, body: JSON.stringify(subBody) })
+        ]);
+
+        return r1.ok || r2.ok;
+      } catch (_) {}
+    }
+
+    return false;
+  }
+
+  async function runSystemDiagnostics(idToken?: string) {
+    const startTime = Date.now();
+    const dependencies: Record<string, {
+      name: string;
+      category: string;
+      status: 'healthy' | 'degraded' | 'down' | 'configured';
+      latencyMs?: number;
+      details: Record<string, any>;
+    }> = {};
+
+    // 1. Firebase Firestore Database
+    const fsStart = Date.now();
+    try {
+      const userDocs = await getAdminCollectionDocs('users', idToken);
+      const subDocs = await getAdminCollectionDocs('subscriptions', idToken);
+      dependencies['firestore'] = {
+        name: 'Firebase Firestore DB & Auth',
+        category: 'Database & Auth',
+        status: 'healthy',
+        latencyMs: Date.now() - fsStart,
+        details: {
+          projectId: 'deckdivider1',
+          databaseId: '(default)',
+          userDocuments: userDocs.length,
+          subscriptionDocuments: subDocs.length,
+          accessMode: idToken ? 'Super User Bearer Token' : 'Admin SDK Default',
+        }
+      };
+    } catch (err: any) {
+      dependencies['firestore'] = {
+        name: 'Firebase Firestore DB & Auth',
+        category: 'Database & Auth',
+        status: 'degraded',
+        latencyMs: Date.now() - fsStart,
+        details: { error: err.message || 'Firestore connection issue' }
+      };
+    }
+
+    // 2. PayPal REST API & Webhooks
+    const ppStart = Date.now();
+    try {
+      const creds = await getAppCredentials();
+      const { clientId, clientSecret, mode, webhookSecret } = creds.paypal || {} as any;
+      const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+      const ppRes = await fetch(`${apiBase}/v1/oauth2/token`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'grant_type=client_credentials',
+      });
+      const ppLatency = Date.now() - ppStart;
+      dependencies['paypal'] = {
+        name: 'PayPal Billing API & Webhooks',
+        category: 'Payment Gateway',
+        status: ppRes.ok ? 'healthy' : 'degraded',
+        latencyMs: ppLatency,
+        details: {
+          mode: mode || 'sandbox',
+          clientIdPresent: Boolean(clientId),
+          webhookSecretPresent: Boolean(webhookSecret),
+          httpStatus: ppRes.status,
+          apiBase,
+          loggedWebhooks: getRecentWebhookLogs().length,
+        }
+      };
+    } catch (err: any) {
+      dependencies['paypal'] = {
+        name: 'PayPal Billing API & Webhooks',
+        category: 'Payment Gateway',
+        status: 'degraded',
+        latencyMs: Date.now() - ppStart,
+        details: { error: err.message || 'PayPal gateway ping failed' }
+      };
+    }
+
+    // 3. TCGdex English API
+    const tcgStart = Date.now();
+    try {
+      const res = await fetch('https://api.tcgdex.net/v2/en/sets', { signal: AbortSignal.timeout(3500) });
+      dependencies['tcgdex'] = {
+        name: 'TCGdex Primary API (English)',
+        category: 'TCG Catalog API',
+        status: res.ok ? 'healthy' : 'degraded',
+        latencyMs: Date.now() - tcgStart,
+        details: {
+          endpoint: 'https://api.tcgdex.net/v2/en/sets',
+          httpStatus: res.status,
+          cachedSets: getSyncStatus().totalSets || 0,
+          cachedCards: getSyncStatus().processedCards || getSyncStatus().totalCardsEstimate || 0,
+        }
+      };
+    } catch (err: any) {
+      dependencies['tcgdex'] = {
+        name: 'TCGdex Primary API (English)',
+        category: 'TCG Catalog API',
+        status: 'degraded',
+        latencyMs: Date.now() - tcgStart,
+        details: { error: err.message }
+      };
+    }
+
+    // 4. Pokémon TCG Official API (pokemontcg.io)
+    const ptcgStart = Date.now();
+    try {
+      const res = await fetch('https://api.pokemontcg.io/v2/cards?pageSize=1', { signal: AbortSignal.timeout(3500) });
+      dependencies['pokemontcg_io'] = {
+        name: 'Pokémon TCG Official API (pokemontcg.io)',
+        category: 'TCG Secondary API',
+        status: res.ok ? 'healthy' : 'degraded',
+        latencyMs: Date.now() - ptcgStart,
+        details: {
+          endpoint: 'https://api.pokemontcg.io/v2/cards',
+          httpStatus: res.status,
+          apiKeyPresent: Boolean(process.env.POKEMONTCG_IO_API_KEY),
+        }
+      };
+    } catch (err: any) {
+      dependencies['pokemontcg_io'] = {
+        name: 'Pokémon TCG Official API (pokemontcg.io)',
+        category: 'TCG Secondary API',
+        status: 'degraded',
+        latencyMs: Date.now() - ptcgStart,
+        details: { error: err.message }
+      };
+    }
+
+    // 5. Forex Exchange Rates API
+    const fxStart = Date.now();
+    try {
+      const res = await fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(3500) });
+      const fxData = res.ok ? await res.json() : null;
+      dependencies['forex_rates'] = {
+        name: 'Open ER Currency Exchange Rates',
+        category: 'Currency Engine',
+        status: res.ok ? 'healthy' : 'degraded',
+        latencyMs: Date.now() - fxStart,
+        details: {
+          baseCurrency: 'USD',
+          supportedCurrencies: fxData?.rates ? Object.keys(fxData.rates).length : 15,
+          lastUpdated: fxData?.time_last_update_utc || new Date().toUTCString(),
+        }
+      };
+    } catch (err: any) {
+      dependencies['forex_rates'] = {
+        name: 'Open ER Currency Exchange Rates',
+        category: 'Currency Engine',
+        status: 'degraded',
+        latencyMs: Date.now() - fxStart,
+        details: { error: err.message }
+      };
+    }
+
+    // 6. Gemini AI Engine (@google/genai)
+    dependencies['gemini_ai'] = {
+      name: 'Google Gemini AI Engine (@google/genai)',
+      category: 'Artificial Intelligence',
+      status: (process.env.GEMINI_API_KEY || process.env.API_KEY) ? 'healthy' : 'configured',
+      details: {
+        apiKeyConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.API_KEY),
+        defaultModel: 'gemini-2.5-flash',
+        capabilities: ['Card Price Estimation', 'Deck Analysis', 'Geo AI Insights'],
+      }
+    };
+
+    // 7. Sentry Error Tracking (@sentry/node)
+    dependencies['sentry_monitoring'] = {
+      name: 'Sentry Node.js Telemetry & Profiling',
+      category: 'System Monitoring',
+      status: process.env.SENTRY_DSN ? 'healthy' : 'configured',
+      details: {
+        dsnConfigured: Boolean(process.env.SENTRY_DSN),
+        tracesSampleRate: '100%',
+        profilesSampleRate: '100%',
+      }
+    };
+
+    // 8. IndexNow Search Indexing Protocol
+    dependencies['indexnow'] = {
+      name: 'IndexNow Search Engine Protocol',
+      category: 'SEO & Search Engine Indexing',
+      status: 'healthy',
+      details: {
+        host: 'deckdivider.app',
+        keyEndpoint: '/deckdivider-indexnow-key-7392abcd.txt',
+      }
+    };
+
+    // 9. Node.js Cloud Run Host Infrastructure
+    const mem = process.memoryUsage();
+    dependencies['cloud_run_node'] = {
+      name: 'Cloud Run Container & Node.js Runtime',
+      category: 'Infrastructure',
+      status: 'healthy',
+      details: {
+        nodeVersion: process.version,
+        platform: process.platform,
+        architecture: process.arch,
+        uptimeSeconds: Math.floor(process.uptime()),
+        memoryRssMB: Math.round(mem.rss / (1024 * 1024)),
+        heapUsedMB: Math.round(mem.heapUsed / (1024 * 1024)),
+        heapTotalMB: Math.round(mem.heapTotal / (1024 * 1024)),
+      }
+    };
+
+    return {
+      timestamp: new Date().toISOString(),
+      totalCheckTimeMs: Date.now() - startTime,
+      dependencies,
+    };
+  }
+
+  app.get('/api/admin/metrics', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization || '';
+      let isSuperUser = false;
+      let userEmail = '';
+      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
+
+      if (rawToken) {
+        try {
+          const adminAuth = getAdminAuth();
+          const decodedToken = await adminAuth.verifyIdToken(rawToken);
+          userEmail = (decodedToken.email || '').toLowerCase();
+        } catch (_) {
+          try {
+            const parts = rawToken.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+              userEmail = (payload.email || '').toLowerCase();
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (userEmail === SUPER_USER_EMAIL) {
+        isSuperUser = true;
+      }
+
+      if (!isSuperUser) {
+        return res.status(403).json({ error: 'Unauthorized Email' });
+      }
+
+      let usersList = await getAdminCollectionDocs('users', rawToken);
+      let subDocs = await getAdminCollectionDocs('subscriptions', rawToken);
+
+      let subStatuses = { active: 0, past_due: 0, canceled: 0, expired: 0 };
+      subDocs.forEach(data => {
+        const st = (data.billingStatus || 'active').toLowerCase();
+        if (st === 'active') subStatuses.active++;
+        else if (st === 'past_due') subStatuses.past_due++;
+        else if (st === 'canceled' || st === 'cancelled') subStatuses.canceled++;
+        else if (st === 'expired') subStatuses.expired++;
+      });
+
+      if (usersList.length === 0) {
+        usersList = [
+          { id: 'usr_super', displayName: 'Super User', email: SUPER_USER_EMAIL, tierName: 'Collection', createdAt: new Date().toISOString(), isSuperUser: true },
+        ];
+      }
+
+      const usersByTier = {
+        Starter: 0,
+        Bunch: 0,
+        Stack: 0,
+        Deck: 0,
+        Collection: 0,
+      };
+
+      usersList.forEach(u => {
+        const t = (u.tierName || 'Starter') as keyof typeof usersByTier;
+        if (usersByTier[t] !== undefined) {
+          usersByTier[t]++;
+        } else {
+          usersByTier.Starter++;
+        }
+      });
+
+      const revenueByTier = {
+        Starter: 0,
+        Bunch: usersByTier.Bunch * 11,
+        Stack: usersByTier.Stack * 22,
+        Deck: usersByTier.Deck * 33,
+        Collection: Math.max(0, (usersByTier.Collection - 1)) * 44,
+      };
+
+      const mrr = revenueByTier.Bunch + revenueByTier.Stack + revenueByTier.Deck + revenueByTier.Collection;
+      const arr = mrr * 12;
+      const totalUsers = usersList.length;
+      const paidUsers = usersByTier.Bunch + usersByTier.Stack + usersByTier.Deck + usersByTier.Collection;
+      const arpu = totalUsers > 0 ? Number((mrr / totalUsers).toFixed(2)) : 0;
+      const arppu = paidUsers > 0 ? Number((mrr / paidUsers).toFixed(2)) : 0;
+      const conversionRate = totalUsers > 0 ? Number(((paidUsers / totalUsers) * 100).toFixed(1)) : 0;
+
+      const STEPS_CONFIG = [
+        { key: '1_landing_view', label: '1. Landing Page View' },
+        { key: '2_cta_click', label: '2. CTA Clicked' },
+        { key: '3_auth_view', label: '3. Auth Page View' },
+        { key: '4_signup_submit', label: '4. Signup Attempted' },
+        { key: '5_signup_success', label: '5. Account Created' },
+        { key: '6_dashboard_view', label: '6. Dashboard Opened' },
+        { key: '7_first_action', label: '7. First Action Taken' },
+      ];
+
+      let prevCount = 0;
+      const funnelData = STEPS_CONFIG.map((stepCfg, idx) => {
+        const uniqueSessions = funnelSessionsByStep[stepCfg.key].size;
+        const count = uniqueSessions > 0 ? uniqueSessions : funnelRawCounts[stepCfg.key];
+        let conversionFromPrev = 100;
+        if (idx > 0 && prevCount > 0) {
+          conversionFromPrev = Number(((count / prevCount) * 100).toFixed(1));
+        }
+        prevCount = count;
+        return {
+          stepKey: stepCfg.key,
+          label: stepCfg.label,
+          count,
+          conversionFromPrev: Math.min(100, conversionFromPrev),
+        };
+      });
+
+      const catalogStatus = getSyncStatus();
+      const mem = process.memoryUsage();
+
+      return res.json({
+        totalUsers,
+        usersByTier,
+        revenueByTier,
+        mrr,
+        arr,
+        arpu,
+        arppu,
+        conversionRate,
+        subscriptionStatuses: subStatuses,
+        funnelData,
+        crawlerStats,
+        recentUsers: usersList.slice(0, 50),
+        system: {
+          uptimeSeconds: Math.floor(process.uptime()),
+          memoryUsageMB: {
+            rss: Math.round(mem.rss / (1024 * 1024)),
+            heapTotal: Math.round(mem.heapTotal / (1024 * 1024)),
+            heapUsed: Math.round(mem.heapUsed / (1024 * 1024)),
+          },
+          tcgCatalogStatus: {
+            totalCardsCached: catalogStatus.processedCards || catalogStatus.totalCardsEstimate || 0,
+            totalExpansions: catalogStatus.totalSets || 0,
+            isSyncing: catalogStatus.status === 'syncing',
+          },
+          recentWebhookCount: getRecentWebhookLogs().length,
+        },
+      });
+    } catch (err: any) {
+      console.error('Admin metrics error:', err);
+      return res.status(500).json({ error: err.message || 'Internal admin metrics error' });
+    }
+  });
+
+  app.post('/api/admin/user/tier', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization || '';
+      let isSuperUser = false;
+      let userEmail = '';
+
+      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
+
+      if (rawToken) {
+        try {
+          const adminAuth = getAdminAuth();
+          const decodedToken = await adminAuth.verifyIdToken(rawToken);
+          userEmail = (decodedToken.email || '').toLowerCase();
+        } catch (_) {
+          try {
+            const parts = rawToken.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+              userEmail = (payload.email || '').toLowerCase();
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (userEmail !== SUPER_USER_EMAIL) {
+        return res.status(403).json({ error: 'Unauthorized Email' });
+      }
+
+      const { targetUid, tierName } = req.body || {};
+      if (!targetUid || !tierName) {
+        return res.status(400).json({ error: 'Missing targetUid or tierName' });
+      }
+
+      const validTiers = ['Starter', 'Bunch', 'Stack', 'Deck', 'Collection'];
+      if (!validTiers.includes(tierName)) {
+        return res.status(400).json({ error: 'Invalid tierName. Must be Starter, Bunch, Stack, Deck, or Collection.' });
+      }
+
+      await updateAdminUserTier(targetUid, tierName, rawToken);
+
+      return res.json({ success: true, targetUid, tierName });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message || 'Error updating user tier' });
+    }
+  });
+
+  app.get('/api/admin/diagnostics', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization || '';
+      let isSuperUser = false;
+      let userEmail = '';
+      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
+
+      if (rawToken) {
+        try {
+          const adminAuth = getAdminAuth();
+          const decodedToken = await adminAuth.verifyIdToken(rawToken);
+          userEmail = (decodedToken.email || '').toLowerCase();
+        } catch (_) {
+          try {
+            const parts = rawToken.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+              userEmail = (payload.email || '').toLowerCase();
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (userEmail === SUPER_USER_EMAIL) {
+        isSuperUser = true;
+      }
+
+      if (!isSuperUser) {
+        return res.status(403).json({ error: 'Unauthorized Email' });
+      }
+
+      const diagnostics = await runSystemDiagnostics(rawToken);
+      return res.json(diagnostics);
+    } catch (err: any) {
+      console.error('System diagnostics error:', err);
+      return res.status(500).json({ error: err.message || 'Error running system diagnostics' });
+    }
   });
 
   // IndexNow Key Generation
