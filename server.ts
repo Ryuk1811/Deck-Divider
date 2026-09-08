@@ -54,6 +54,21 @@ import {
   getLazyChunk,
   searchCardsServer,
 } from './server/tcgCatalogManager.js';
+import {
+  BUILD_HASH,
+  generateSitemapIndexXml,
+  generateSitemapMainXml,
+  generateSitemapSetsXml,
+  generateSitemapTopCardsXml,
+  generateSitemapDecksXml,
+  generateSitemapCompareXml,
+  generateSitemapBestXml,
+  generateSitemapToolsXml,
+  generateRssFeedXml,
+  generateLlmsTxt,
+  generateLlmsFullTxt,
+  generateRobotsTxt
+} from './server/publicFootprintManager.js';
 
 async function startServer() {
   const app = express();
@@ -779,183 +794,45 @@ async function startServer() {
   });
 
   app.get('/robots.txt', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.send(`User-agent: *
-Allow: /
-Disallow: /app
-Disallow: /app/*
-Disallow: /api
-Disallow: /api/*
-
-Sitemap: https://deckdivider.app/sitemap.xml
-`);
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateRobotsTxt());
   });
 
+  // Dynamic Sitemap Index & Sub-Sitemaps
   app.get('/sitemap.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-main.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-sets.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-portfolios.xml</loc>
-  </sitemap>
-</sitemapindex>`);
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapIndexXml());
   });
 
   app.get('/sitemap-main.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://deckdivider.app/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/about</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/features</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/sets</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/formats</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/pricing</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/faq</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/how-it-works</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/leaderboard</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/community</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/best</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/tools</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/tools/geo-inspector</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/compare</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/compare/collectr</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/compare/pokellector</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/compare/pricecharting</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/changelog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/media-kit</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/support</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/privacy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/terms</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/cookie-policy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/security</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/auth</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-</urlset>`);
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapMainXml());
   });
 
   app.get('/sitemap-sets.xml', async (req, res) => {
     try {
-      const sets = await getExpansions();
-      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-      if (Array.isArray(sets)) {
-        sets.forEach((set: any) => {
-          xml += `  <url>\n    <loc>https://deckdivider.app/set/${set.id}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
-          xml += `  <url>\n    <loc>https://deckdivider.app/set/${set.id}/top-cards</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
-        });
+      if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+        return res.status(304).end();
       }
-      xml += `</urlset>`;
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+      res.setHeader('ETag', `"${BUILD_HASH}"`);
+      const xml = await generateSitemapSetsXml();
       res.send(xml);
     } catch (e) {
       console.error('Error generating sets sitemap', e);
@@ -963,11 +840,68 @@ Sitemap: https://deckdivider.app/sitemap.xml
     }
   });
 
+  app.get('/sitemap-topcards.xml', async (req, res) => {
+    try {
+      if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+        return res.status(304).end();
+      }
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+      res.setHeader('ETag', `"${BUILD_HASH}"`);
+      const xml = await generateSitemapTopCardsXml();
+      res.send(xml);
+    } catch (e) {
+      console.error('Error generating topcards sitemap', e);
+      res.status(500).send('Error generating topcards sitemap');
+    }
+  });
+
+  app.get('/sitemap-decks.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapDecksXml());
+  });
+
+  app.get('/sitemap-compare.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapCompareXml());
+  });
+
+  app.get('/sitemap-best.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapBestXml());
+  });
+
+  app.get('/sitemap-tools.xml', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSitemapToolsXml());
+  });
+
   app.get('/sitemap-portfolios.xml', async (req, res) => {
     try {
       const db = getAdminDb();
       const usersSnap = await db.collection('users').where('isPublicProfile', '==', true).get();
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       usersSnap.forEach((doc: any) => {
         xml += `  <url>\n    <loc>https://deckdivider.app/portfolio/${doc.id}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
@@ -977,6 +911,44 @@ Sitemap: https://deckdivider.app/sitemap.xml
     } catch (e) {
       console.error('Error generating portfolios sitemap', e);
       res.status(500).send('Error generating portfolios sitemap');
+    }
+  });
+
+  // Dynamic RSS & Atom Syndication Feed
+  app.get(['/feed.xml', '/rss.xml'], (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateRssFeedXml());
+  });
+
+  // AI Crawler Discovery: llms.txt & llms-full.txt
+  app.get('/llms.txt', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateLlmsTxt());
+  });
+
+  app.get('/llms-full.txt', async (req, res) => {
+    try {
+      if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+        return res.status(304).end();
+      }
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+      res.setHeader('ETag', `"${BUILD_HASH}"`);
+      const fullTxt = await generateLlmsFullTxt();
+      res.send(fullTxt);
+    } catch (err) {
+      console.error('Error generating llms-full.txt', err);
+      res.status(500).send('Error generating llms-full.txt');
     }
   });
 

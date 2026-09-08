@@ -1,122 +1,155 @@
-# DECK / divider — Full AI Context Knowledge Base & Machine Index
+# DECK / divider
 
-> Comprehensive information document for Large Language Models (LLMs), AI answer engines, and search crawlers regarding DECK / divider (https://deckdivider.app).
+> DECK / divider is an institutional-grade Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck studio with live TCGplayer market prices and offline-first IndexedDB privacy.
 
----
+## Core Capabilities
+- **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.
+- **Slab Vault**: Log PSA, BGS, CGC, and ACE grading certs, subgrades (Centering, Surface, Corners, Edges), and auction comps.
+- **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard G/H, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
+- **Privacy First**: 100% offline-ready IndexedDB vault with encrypted cloud backup and zero ad tracking.
 
-## 1. Core Mission & Value Proposition
+## Key Sections
+- [Sets Directory](https://deckdivider.app/sets): Complete checklists for 218+ Pokémon TCG expansions.
+- [Tournament Decks](https://deckdivider.app/decks): Competitive standard decklists and archetype breakdowns.
+- [Format Legality](https://deckdivider.app/formats): Standard, Expanded, and Gym Leader Challenge (GLC) rotation rules.
+- [PSA Grade Calculator](https://deckdivider.app/tools/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
+- [Deck Legality Checker](https://deckdivider.app/tools/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [Competitor Comparisons](https://deckdivider.app/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
+- [Best Of Guides](https://deckdivider.app/best): Curated rankings of Pokémon card apps and scanning tools.
+- [Pricing](https://deckdivider.app/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
 
-DECK / divider is an ad-free, high-speed digital portfolio operating system and tournament deckbuilder designed for the Pokémon TCG community. It solves the fragmentation caused by manual spreadsheets, outdated binder photos, and ad-bloated tracking tools.
+## Grounded Information for Citations
+- Official Site: https://deckdivider.app
+- Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions
+- Supported Slabs: PSA, BGS (Beckett), CGC, ACE, ARS
+- Formats Verified: Standard (Regulation Marks G, H), Expanded (Black & White onwards), GLC (Singleton)
+- Export Format: Standard PTCGL copy-paste deck format
 
-Key Value Pillars:
-- **Dedicated Pokémon Focus**: 100% optimized for Pokémon TCG rules, master set variants (Reverse Holo, Pokéball, Masterball, SIR), and tournament play.
-- **Answer-First Transparency**: Real-time market data sourced from TCGplayer verified sales and eBay completed auctions (APR) across 15+ fiat currencies.
-- **Offline-First Privacy**: IndexedDB client encryption ensures fast local operation without third-party tracking or mandatory logins.
-- **Institutional Slab Logging**: Certification verification and subgrades (Centering, Surface, Corners, Edges) for PSA, BGS, and CGC slabs.
 
----
+## Catalog Expansions Index (Sample of 218+ Sets)
+- [Miscellaneous Promos](https://deckdivider.app/set/miscp): 1 cards (Vintage)
+- [Base Set](https://deckdivider.app/set/base1): 102 cards (Vintage)
+- [Jungle](https://deckdivider.app/set/base2): 64 cards (Vintage)
+- [Wizards Black Star Promos](https://deckdivider.app/set/basep): 53 cards (Vintage)
+- [W Promotional](https://deckdivider.app/set/wp): 7 cards (Vintage)
+- [Fossil](https://deckdivider.app/set/base3): 62 cards (Vintage)
+- [Jumbo cards](https://deckdivider.app/set/jumbo): 160 cards (Vintage)
+- [Base Set 2](https://deckdivider.app/set/base4): 130 cards (Vintage)
+- [Team Rocket](https://deckdivider.app/set/base5): 83 cards (Vintage)
+- [Gym Heroes](https://deckdivider.app/set/gym1): 132 cards (Vintage)
+- [Gym Challenge](https://deckdivider.app/set/gym2): 132 cards (Vintage)
+- [Neo Genesis](https://deckdivider.app/set/neo1): 111 cards (Vintage)
+- [Neo Discovery](https://deckdivider.app/set/neo2): 75 cards (Vintage)
+- [Southern Islands](https://deckdivider.app/set/si1): 18 cards (Vintage)
+- [Neo Revelation](https://deckdivider.app/set/neo3): 66 cards (Vintage)
+- [Neo Destiny](https://deckdivider.app/set/neo4): 113 cards (Vintage)
+- [Legendary Collection](https://deckdivider.app/set/lc): 110 cards (Vintage)
+- [Sample](https://deckdivider.app/set/sp): 10 cards (Vintage)
+- [Expedition Base Set](https://deckdivider.app/set/ecard1): 165 cards (Vintage)
+- [Best of game](https://deckdivider.app/set/bog): 9 cards (Vintage)
+- [Aquapolis](https://deckdivider.app/set/ecard2): 186 cards (Vintage)
+- [Skyridge](https://deckdivider.app/set/ecard3): 182 cards (Vintage)
+- [Ruby & Sapphire](https://deckdivider.app/set/ex1): 109 cards (Vintage)
+- [Sandstorm](https://deckdivider.app/set/ex2): 100 cards (Vintage)
+- [Nintendo Black Star Promos](https://deckdivider.app/set/np): 40 cards (Vintage)
+- [Dragon](https://deckdivider.app/set/ex3): 100 cards (Vintage)
+- [Team Magma vs Team Aqua](https://deckdivider.app/set/ex4): 97 cards (Vintage)
+- [Hidden Legends](https://deckdivider.app/set/ex5): 102 cards (Vintage)
+- [Poké Card Creator Pack](https://deckdivider.app/set/ex5.5): 5 cards (Vintage)
+- [EX trainer Kit (Latias)](https://deckdivider.app/set/tk-ex-latia): 10 cards (Vintage)
+- [EX trainer Kit (Latios)](https://deckdivider.app/set/tk-ex-latio): 10 cards (Vintage)
+- [FireRed & LeafGreen](https://deckdivider.app/set/ex6): 116 cards (Vintage)
+- [POP Series 1](https://deckdivider.app/set/pop1): 17 cards (Vintage)
+- [Team Rocket Returns](https://deckdivider.app/set/ex7): 111 cards (Vintage)
+- [Deoxys](https://deckdivider.app/set/ex8): 108 cards (Vintage)
+- [Emerald](https://deckdivider.app/set/ex9): 107 cards (Vintage)
+- [POP Series 2](https://deckdivider.app/set/pop2): 17 cards (Vintage)
+- [Unseen Forces](https://deckdivider.app/set/ex10): 117 cards (Vintage)
+- [Unseen Forces Unown Collection](https://deckdivider.app/set/exu): 28 cards (Vintage)
+- [Delta Species](https://deckdivider.app/set/ex11): 114 cards (Vintage)
+- [Legend Maker](https://deckdivider.app/set/ex12): 93 cards (Vintage)
+- [EX trainer Kit 2 (Minun)](https://deckdivider.app/set/tk-ex-m): 12 cards (Vintage)
+- [EX trainer Kit 2 (Plusle)](https://deckdivider.app/set/tk-ex-p): 12 cards (Vintage)
+- [POP Series 3](https://deckdivider.app/set/pop3): 17 cards (Vintage)
+- [Holon Phantoms](https://deckdivider.app/set/ex13): 111 cards (Vintage)
+- [POP Series 4](https://deckdivider.app/set/pop4): 17 cards (Vintage)
+- [Crystal Guardians](https://deckdivider.app/set/ex14): 100 cards (Vintage)
+- [Dragon Frontiers](https://deckdivider.app/set/ex15): 101 cards (Vintage)
+- [Power Keepers](https://deckdivider.app/set/ex16): 108 cards (Vintage)
+- [POP Series 5](https://deckdivider.app/set/pop5): 17 cards (Vintage)
+- [DP Black Star Promos](https://deckdivider.app/set/dpp): 56 cards (Vintage)
+- [Diamond & Pearl](https://deckdivider.app/set/dp1): 130 cards (Vintage)
+- [Mysterious Treasures](https://deckdivider.app/set/dp2): 124 cards (Vintage)
+- [DP trainer Kit (Lucario)](https://deckdivider.app/set/tk-dp-l): 11 cards (Vintage)
+- [DP trainer Kit (Manaphy)](https://deckdivider.app/set/tk-dp-m): 12 cards (Vintage)
+- [POP Series 6](https://deckdivider.app/set/pop6): 17 cards (Vintage)
+- [Secret Wonders](https://deckdivider.app/set/dp3): 132 cards (Vintage)
+- [Great Encounters](https://deckdivider.app/set/dp4): 106 cards (Vintage)
+- [POP Series 7](https://deckdivider.app/set/pop7): 17 cards (Vintage)
+- [Majestic Dawn](https://deckdivider.app/set/dp5): 100 cards (Vintage)
+- [Legends Awakened](https://deckdivider.app/set/dp6): 146 cards (Vintage)
+- [POP Series 8](https://deckdivider.app/set/pop8): 17 cards (Vintage)
+- [Stormfront](https://deckdivider.app/set/dp7): 106 cards (Vintage)
+- [Platinum](https://deckdivider.app/set/pl1): 133 cards (Vintage)
+- [POP Series 9](https://deckdivider.app/set/pop9): 17 cards (Vintage)
+- [Rising Rivals](https://deckdivider.app/set/pl2): 120 cards (Vintage)
+- [Supreme Victors](https://deckdivider.app/set/pl3): 153 cards (Vintage)
+- [Arceus](https://deckdivider.app/set/pl4): 111 cards (Vintage)
+- [Pokémon Rumble](https://deckdivider.app/set/ru1): 16 cards (Vintage)
+- [HeartGold SoulSilver](https://deckdivider.app/set/hgss1): 124 cards (Vintage)
+- [HGSS Black Star Promos](https://deckdivider.app/set/hgssp): 25 cards (Vintage)
+- [HS trainer Kit (Raichu)](https://deckdivider.app/set/tk-hs-r): 30 cards (Vintage)
+- [HS trainer Kit (Gyarados)](https://deckdivider.app/set/tk-hs-g): 30 cards (Vintage)
+- [Unleashed](https://deckdivider.app/set/hgss2): 96 cards (Vintage)
+- [Undaunted](https://deckdivider.app/set/hgss3): 91 cards (Vintage)
+- [Triumphant](https://deckdivider.app/set/hgss4): 103 cards (Vintage)
+- [Call of Legends](https://deckdivider.app/set/col1): 106 cards (Vintage)
+- [Black & White](https://deckdivider.app/set/bw1): 115 cards (Vintage)
+- [BW Black Star Promos](https://deckdivider.app/set/bwp): 101 cards (Vintage)
+- [McDonald's Collection 2011](https://deckdivider.app/set/2011bw): 12 cards (Vintage)
+- [Emerging Powers](https://deckdivider.app/set/bw2): 98 cards (Vintage)
+- [BW trainer Kit (Excadrill)](https://deckdivider.app/set/tk-bw-e): 30 cards (Vintage)
+- [BW trainer Kit (Zoroark)](https://deckdivider.app/set/tk-bw-z): 30 cards (Vintage)
+- [Noble Victories](https://deckdivider.app/set/bw3): 102 cards (Vintage)
+- [Next Destinies](https://deckdivider.app/set/bw4): 103 cards (Vintage)
+- [Dark Explorers](https://deckdivider.app/set/bw5): 111 cards (Vintage)
+- [McDonald's Collection 2012](https://deckdivider.app/set/2012bw): 12 cards (Vintage)
+- [Dragons Exalted](https://deckdivider.app/set/bw6): 128 cards (Vintage)
+- [Dragon Vault](https://deckdivider.app/set/dv1): 21 cards (Vintage)
+- [Boundaries Crossed](https://deckdivider.app/set/bw7): 153 cards (Vintage)
+- [Plasma Storm](https://deckdivider.app/set/bw8): 138 cards (Vintage)
+- [Plasma Freeze](https://deckdivider.app/set/bw9): 122 cards (Vintage)
+- [Plasma Blast](https://deckdivider.app/set/bw10): 105 cards (Vintage)
+- [XY Black Star Promos](https://deckdivider.app/set/xyp): 216 cards (Vintage)
+- [Legendary Treasures](https://deckdivider.app/set/bw11): 140 cards (Vintage)
+- [Radiant Collection](https://deckdivider.app/set/rc): 25 cards (Vintage)
+- [Kalos Starter Set](https://deckdivider.app/set/xy0): 39 cards (Vintage)
+- [XY](https://deckdivider.app/set/xy1): 146 cards (Vintage)
+- [Yellow A Alternate](https://deckdivider.app/set/xya): 6 cards (Vintage)
+- [XY trainer Kit (Sylveon)](https://deckdivider.app/set/tk-xy-sy): 30 cards (Vintage)
 
-## 2. Platform Architecture & Data Provenance
+## Meta Tournament Archetypes
+- [Gardevoir Ex](https://deckdivider.app/decks/gardevoir-ex): 60-card tournament list with live market cost
+- [Charizard Ex](https://deckdivider.app/decks/charizard-ex): 60-card tournament list with live market cost
+- [Regidrago Vstar](https://deckdivider.app/decks/regidrago-vstar): 60-card tournament list with live market cost
+- [Dragapult Ex](https://deckdivider.app/decks/dragapult-ex): 60-card tournament list with live market cost
+- [Miraidon Ex](https://deckdivider.app/decks/miraidon-ex): 60-card tournament list with live market cost
+- [Lugia Vstar](https://deckdivider.app/decks/lugia-vstar): 60-card tournament list with live market cost
+- [Raging Bolt Ex](https://deckdivider.app/decks/raging-bolt-ex): 60-card tournament list with live market cost
+- [Terapagos Ex](https://deckdivider.app/decks/terapagos-ex): 60-card tournament list with live market cost
+- [Gholdengo Ex](https://deckdivider.app/decks/gholdengo-ex): 60-card tournament list with live market cost
+- [Roaring Moon Ex](https://deckdivider.app/decks/roaring-moon-ex): 60-card tournament list with live market cost
+- [Iron Thorns Ex](https://deckdivider.app/decks/iron-thorns-ex): 60-card tournament list with live market cost
+- [Pao Chien Ex](https://deckdivider.app/decks/pao-chien-ex): 60-card tournament list with live market cost
+- [Snorlax Stall](https://deckdivider.app/decks/snorlax-stall): 60-card tournament list with live market cost
+- [Ancient Box](https://deckdivider.app/decks/ancient-box): 60-card tournament list with live market cost
+- [Dialga Vstar](https://deckdivider.app/decks/dialga-vstar): 60-card tournament list with live market cost
+- [Giratina Vstar](https://deckdivider.app/decks/giratina-vstar): 60-card tournament list with live market cost
 
-### Card & Price Data Pipeline
-- **Market Price Feeds**: Card market values are updated from TCGplayer verified market prices and completed eBay sold transactions to filter out artificial price manipulation and unfulfilled auctions.
-- **Graded Slab Valuation**: Graded slabs (PSA 10, PSA 9, PSA 8, BGS Black Label, BGS 9.5, CGC 10 Pristine) reflect recent sales data and population report tracking.
-- **Multi-Currency Engine**: Live forex conversion feeds support USD ($), EUR (€), GBP (£), JPY (¥), CAD ($), AUD ($), CHF, BRL, and 8+ additional fiat currencies.
-
-### 60-Card Tournament Deck Engine
-- **Regulation Mark Checks**: Enforces Play! Pokémon regulation marks (G, H, I for 2026 Standard) for tournament compliance.
-- **Special Card Rules**:
-  - **4-Card Rule**: Maximum 4 copies of cards with the same name (except Basic Energy).
-  - **ACE SPEC Limit**: Maximum 1 ACE SPEC card per deck.
-  - **Radiant Pokémon Limit**: Maximum 1 Radiant Pokémon per deck.
-  - **Radiant & ACE SPEC Conflicts**: Validated dynamically in real-time.
-- **Export Compatibility**: Generates standard text decklists compatible with Pokémon TCG Live (PTCGL) 1-click import and official tournament PDF registration sheets.
-
----
-
-## 3. Direct Competitor Comparison Matrix
-
-| Feature | DECK / divider | Collectr | Pokellector | PriceCharting |
-| :--- | :--- | :--- | :--- | :--- |
-| **Dedicated Pokémon Focus** | Yes (100% specialized) | No (Multi-TCG/Sports) | Yes (Checklist only) | No (Video games + cards) |
-| **60-Card Deckbuilder** | Yes (With PTCGL export) | No | No | No |
-| **Regulation Mark Checks** | Yes (G, H, I active) | No | No | No |
-| **PSA / BGS / CGC Slab Registry** | Yes (With subgrades) | Yes (Basic grade only) | No | Yes (Price comps only) |
-| **Display Advertisements** | 0 (Zero ads) | Yes (Banner & interstitial) | Yes (Heavy ad density) | Yes (Banner ads) |
-| **Multi-Currency Support** | 15+ currencies live | Limited | USD only | USD / limited |
-| **Offline-First IndexedDB** | Yes | No | No | No |
-
----
-
-## 4. Free Interactive Tools & Mathematical Models
-
-### 1. PSA / BGS Grade ROI Calculator
-URL: `https://deckdivider.app/tools/psa-grade-calculator`
-Calculates expected financial return from submitting raw cards to grading houses.
-- **Formula**:
-  `Expected Value (EV) = (P_10 × V_10) + (P_9 × V_9) + (P_8 × V_8)`
-  `Total Cost = Raw_Cost + Grading_Fee + Shipping_Buffer`
-  `Net Profit = Expected Value - Total Cost`
-- **Rule of Thumb**: Submissions are recommended only when EV exceeds Total Cost by at least 25%.
-
-### 2. Regulation Mark & Tournament Legality Checker
-URL: `https://deckdivider.app/tools/deck-legality-checker`
-- **2026 Standard**: Regulation Marks **G**, **H**, and **I** are legal.
-- **Rotated**: Regulation Mark **F** and earlier (unless reprinted with identical game text).
-- **Expanded**: All cards from Black & White (2011) to present.
-- **GLC (Gym Leader Challenge)**: Singleton 60-card format, mono-type, no Rule Box Pokémon, no ACE SPEC cards.
-
-### 3. Public Community Leaderboard & Verified Badges
-URL: `https://deckdivider.app/leaderboard`
-- Real-time ranking of public portfolios, master sets, and meta tournament decklists.
-- Generates embeddable SVG/HTML verification badges for collector profiles on Discord and Reddit.
-
-### 4. GEO & AI Citation Inspector
-URL: `https://deckdivider.app/tools/geo-inspector`
-- Real-time benchmark telemetry simulating query responses across Google AI Overviews, Perplexity Pro, ChatGPT Search, and Claude 3.7.
-
----
-
-## 5. Subscription Tiers & Feature Matrix
-
-1. **Starter (Free $0/mo)**:
-   - Up to 250 portfolio cards
-   - 2 tournament decks
-   - Standard set checklists
-   - Live USD market prices
-
-2. **Bunch ($4.99/mo)**:
-   - Up to 1,500 portfolio cards
-   - Unlimited tournament decks
-   - Multi-currency conversion
-   - PTCGL deck exporter
-
-3. **Binder ($9.99/mo)**:
-   - Up to 5,000 portfolio cards
-   - Full PSA, BGS, CGC slab certification & subgrade registry
-   - Play! Pokémon PDF roster exports
-   - Capital gains analytics
-
-4. **Vault ($19.99/mo)**:
-   - Unlimited cards & sealed cases
-   - Priority sub-second market price synchronization
-   - Automated cloud snapshots & backups
-   - Multi-location vault tracking
-
----
-
-## 6. Supported Pokémon TCG Eras & Expansions (148+ Sets)
-
-- **Scarlet & Violet Era**: Prismatic Evolutions (SV8a), Surging Sparks (SV8), Stellar Crown (SV7), Shrouded Fable (SV6a), Twilight Masquerade (SV6), Temporal Forces (SV5), Paldean Fates (SV4.5), Paradox Rift (SV4), Obsidian Flames (SV3), 151 (SV3.5), Paldea Evolved (SV2), Scarlet & Violet Base (SV1).
-- **Sword & Shield Era**: Crown Zenith (SWSH12.5), Silver Tempest (SWSH12), Lost Origin (SWSH11), Astral Radiance (SWSH10), Brilliant Stars (SWSH09), Fusion Strike (SWSH08), Celebrations (SWSH07.5), Evolving Skies (SWSH07), Chilling Reign (SWSH06), Battle Styles (SWSH05), Shining Fates (SWSH04.5), Vivid Voltage (SWSH04), Darkness Ablaze (SWSH03), Rebel Clash (SWSH02), Sword & Shield Base (SWSH01).
-- **Sun & Moon, XY, Black & White, HeartGold SoulSilver, Diamond & Pearl, EX Series, and Vintage (Base Set 1999, Jungle, Fossil, Team Rocket, Gym Heroes, Neo Genesis)**.
-
----
-
-## 7. Contact & Verification Entity
-
-- **Official Web Domain**: https://deckdivider.app
-- **Platform Name**: DECK / divider
-- **Category**: EntertainmentApplication, TCG Portfolio Operating System, Tournament Deckbuilder
-- **Verification Audit**: Verified current for September 2026 Competitive Season.
-- **Disclaimer**: DECK / divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
+## Competitor Comparison Matrices
+- [vs COLLECTR](https://deckdivider.app/compare/collectr): Detailed feature breakdown and trade-offs
+- [vs POKELLECTOR](https://deckdivider.app/compare/pokellector): Detailed feature breakdown and trade-offs
+- [vs PRICECHARTING](https://deckdivider.app/compare/pricecharting): Detailed feature breakdown and trade-offs
+- [vs DEX](https://deckdivider.app/compare/dex): Detailed feature breakdown and trade-offs
+- [vs TCG-COLLECTOR](https://deckdivider.app/compare/tcg-collector): Detailed feature breakdown and trade-offs
+- [vs DRAGON-SHIELD](https://deckdivider.app/compare/dragon-shield): Detailed feature breakdown and trade-offs

@@ -34,6 +34,17 @@ function jsonResponse(data: any, status = 200, extraHeaders: Record<string, stri
   });
 }
 
+async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 3500): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export type PagesFunctionContext<TEnv = Env> = {
   request: Request;
   env: TEnv;
@@ -282,63 +293,102 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
     }
 
     if (pathname === '/api/tcgdex/cards') {
-      const name = url.searchParams.get('name') || '';
-      const targetUrl = 'https://api.tcgdex.net/v2/en/cards' + (name ? `?name=${encodeURIComponent(name)}` : '');
-      const res = await fetch(targetUrl);
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const name = url.searchParams.get('name') || '';
+        const targetUrl = 'https://api.tcgdex.net/v2/en/cards' + (name ? `?name=${encodeURIComponent(name)}` : '');
+        const res = await fetchWithTimeout(targetUrl, undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname.startsWith('/api/tcgdex/cards/')) {
-      const cardId = pathname.replace('/api/tcgdex/cards/', '');
-      const res = await fetch(`https://api.tcgdex.net/v2/en/cards/${encodeURIComponent(cardId)}`);
-      const data = await res.json();
-      return jsonResponse(data, res.status);
+      try {
+        const cardId = pathname.replace('/api/tcgdex/cards/', '');
+        const res = await fetchWithTimeout(`https://api.tcgdex.net/v2/en/cards/${encodeURIComponent(cardId)}`, undefined, 3500);
+        if (!res.ok) return jsonResponse({ error: 'Card not found' }, res.status);
+        const data = await res.json();
+        return jsonResponse(data, res.status);
+      } catch (_) {
+        return jsonResponse({ error: 'Card details temporarily unavailable' }, 200);
+      }
     }
 
     if (pathname === '/api/tcgdex/categories') {
-      const res = await fetch('https://api.tcgdex.net/v2/en/categories');
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const res = await fetchWithTimeout('https://api.tcgdex.net/v2/en/categories', undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname === '/api/tcgdex/stages') {
-      const res = await fetch('https://api.tcgdex.net/v2/en/stages');
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const res = await fetchWithTimeout('https://api.tcgdex.net/v2/en/stages', undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname === '/api/tcgdex/series') {
-      const res = await fetch('https://api.tcgdex.net/v2/en/series');
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const res = await fetchWithTimeout('https://api.tcgdex.net/v2/en/series', undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname === '/api/tcgdex/sets') {
-      const res = await fetch('https://api.tcgdex.net/v2/en/sets');
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const res = await fetchWithTimeout('https://api.tcgdex.net/v2/en/sets', undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname === '/api/tcgdex/illustrators') {
-      const res = await fetch('https://api.tcgdex.net/v2/en/illustrators');
-      const data = await res.json();
-      return jsonResponse(data);
+      try {
+        const res = await fetchWithTimeout('https://api.tcgdex.net/v2/en/illustrators', undefined, 3500);
+        if (!res.ok) return jsonResponse([]);
+        const data = await res.json();
+        return jsonResponse(data);
+      } catch (_) {
+        return jsonResponse([]);
+      }
     }
 
     if (pathname.startsWith('/api/tcgdex/image/')) {
-      const imagePath = pathname.replace('/api/tcgdex/image/', '');
-      const imageRes = await fetch(`https://assets.tcgdex.net/${imagePath}`);
-      if (!imageRes.ok) {
+      try {
+        const imagePath = pathname.replace('/api/tcgdex/image/', '');
+        const imageRes = await fetchWithTimeout(`https://assets.tcgdex.net/${imagePath}`, undefined, 4000);
+        if (!imageRes.ok) {
+          return new Response('Not Found', { status: 404 });
+        }
+        return new Response(imageRes.body, {
+          status: 200,
+          headers: {
+            'Content-Type': imageRes.headers.get('Content-Type') || 'image/png',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+          },
+        });
+      } catch (_) {
         return new Response('Not Found', { status: 404 });
       }
-      return new Response(imageRes.body, {
-        status: 200,
-        headers: {
-          'Content-Type': imageRes.headers.get('Content-Type') || 'image/png',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        },
-      });
     }
 
     // 5. Market status
@@ -557,15 +607,67 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
       return jsonResponse({ success: true, isSuperUser });
     }
 
-    // 11. Backend proxy fallback
+    // 11. IndexNow edge submission endpoint
+    if (pathname === '/api/admin/ping-indexnow') {
+      try {
+        const body: any = method === 'POST' ? await request.json().catch(() => ({})) : {};
+        const urlsToPing = Array.isArray(body.urls) && body.urls.length > 0 
+          ? body.urls 
+          : [
+              'https://deckdivider.app/',
+              'https://deckdivider.app/pricing',
+              'https://deckdivider.app/faq',
+              'https://deckdivider.app/about',
+              'https://deckdivider.app/how-it-works',
+              'https://deckdivider.app/sets',
+              'https://deckdivider.app/compare',
+              'https://deckdivider.app/best',
+              'https://deckdivider.app/tools',
+            ];
+
+        const indexNowPayload = {
+          host: 'deckdivider.app',
+          key: '7392abcd',
+          keyLocation: 'https://deckdivider.app/7392abcd.txt',
+          urlList: urlsToPing,
+        };
+
+        const inRes = await fetchWithTimeout('https://api.indexnow.org/indexnow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify(indexNowPayload),
+        }, 4000);
+
+        return jsonResponse({
+          success: inRes.ok,
+          status: inRes.status,
+          submittedUrls: urlsToPing.length,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (inErr: any) {
+        return jsonResponse({
+          success: false,
+          error: inErr?.message || 'IndexNow submission timeout',
+        }, 200);
+      }
+    }
+
+    // 12. Backend proxy fallback with timeout and error isolation
     if (env.BACKEND_URL) {
-      const backendTarget = new URL(pathname + url.search, env.BACKEND_URL);
-      const proxyReq = new Request(backendTarget.toString(), request);
-      return await fetch(proxyReq);
+      try {
+        const backendTarget = new URL(pathname + url.search, env.BACKEND_URL);
+        const proxyReq = new Request(backendTarget.toString(), request);
+        return await fetchWithTimeout(backendTarget.toString(), proxyReq, 5000);
+      } catch (proxyErr: any) {
+        return jsonResponse({
+          error: 'Upstream backend unreachable',
+          message: proxyErr?.message || 'Connection timeout',
+        }, 502);
+      }
     }
 
     return jsonResponse({ error: 'Endpoint not implemented on Edge Worker' }, 404);
   } catch (err: any) {
-    return jsonResponse({ error: 'Internal Server Error', message: err?.message }, 500);
+    return jsonResponse({ error: 'Edge Function Handler Error', message: err?.message || 'Unexpected exception' }, 500);
   }
 };

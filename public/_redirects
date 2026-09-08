@@ -1,2 +1,2 @@
-/api/*  /api/:splat  200
+# Cloudflare Pages SPA rewrite
 /*      /index.html   200

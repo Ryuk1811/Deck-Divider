@@ -24,6 +24,7 @@ import { CardImage } from '../components/CardImage';
 import { QuickLookModal } from '../components/QuickLookModal';
 import { DeckDividerBrand } from '../components/DeckDividerBrand';
 import { formatCurrency } from '../utils/formatters';
+import { updatePageSeo } from '../utils/seo';
 
 interface PublicDeckViewProps {
   deckId?: string;
@@ -143,6 +144,31 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
       isMounted = false;
     };
   }, [deckId, encodedData]);
+
+  useEffect(() => {
+    if (deck) {
+      const deckName = deck.name || 'Shared Pokémon TCG Deck';
+      const count = deck.entries?.reduce((acc, c) => acc + (c.quantity || 1), 0) || 60;
+      updatePageSeo({
+        title: `${deckName} — Pokémon TCG Deck Roster`,
+        description: `View ${deckName} (${count} cards) with real-time market pricing, full card breakdown, tournament legality checks, and PTCGL export.`,
+        canonicalPath: `/decks/${deck.id || deckId || 'deck'}`,
+        ogImage: 'https://deckdivider.app/og-image.png',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'ItemPage',
+          name: deckName,
+          description: `Pokémon TCG 60-card tournament deck roster for ${deckName}`,
+          url: `https://deckdivider.app/decks/${deck.id || deckId || 'deck'}`,
+          mainEntity: {
+            '@type': 'ItemList',
+            name: `${deckName} Card Roster`,
+            numberOfItems: count,
+          },
+        },
+      });
+    }
+  }, [deck, deckId]);
 
   // Statistics
   const totalCardsCount = useMemo(() => deck?.entries?.reduce((acc, c) => acc + (c.quantity || 1), 0) || 0, [deck]);

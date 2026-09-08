@@ -1,4 +1,7 @@
 import { getCardDetail } from './tcgCatalogManager.js';
+import { BUILD_HASH } from './publicFootprintManager.js';
+
+export const DEFAULT_OG_IMAGE = `https://deckdivider.app/og-image.png?v=${BUILD_HASH}`;
 
 export interface RenderResult {
   title: string;
@@ -147,9 +150,9 @@ export async function renderSsrRoute(
   const baseUrl = `${protocol}://${host}`;
   const cleanPath = urlPath.split('?')[0].replace(/\/$/, '') || '/';
 
-  // 1. PUBLIC DECK ROUTE: /deck/:deckId
-  if (cleanPath.startsWith('/deck/')) {
-    const deckId = cleanPath.replace('/deck/', '');
+  // 1. PUBLIC DECK ROUTE: /deck/:deckId or /decks/:deckId
+  if (cleanPath.startsWith('/deck/') || cleanPath.startsWith('/decks/')) {
+    const deckId = cleanPath.startsWith('/decks/') ? cleanPath.replace('/decks/', '') : cleanPath.replace('/deck/', '');
     let deckData = queryParams.d ? decodeDeckParam(queryParams.d) : null;
 
     if (!deckData) {
@@ -231,7 +234,7 @@ export async function renderSsrRoute(
         pageDesc = pageDesc.slice(0, 157) + '...';
       }
     }
-    const canonicalUrl = `${canonicalOrigin}/deck/${deckId}${queryParams.d ? `?d=${encodeURIComponent(queryParams.d)}` : ''}`;
+    const canonicalUrl = `${canonicalOrigin}/decks/${deckId}${queryParams.d ? `?d=${encodeURIComponent(queryParams.d)}` : ''}`;
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -2210,14 +2213,17 @@ export async function renderSsrRoute(
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder" />
+  <meta property="og:image:alt" content="DECK / divider — Grade it. Price it. Play it. Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DECK / divider" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@deckdivider" />
+  <meta name="twitter:creator" content="@deckdivider" />
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
   <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
   <meta name="twitter:image" content="${ogImageUrl}" />
+  <meta name="twitter:image:alt" content="DECK / divider — Grade it. Price it. Play it. Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder" />
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
   `;
 

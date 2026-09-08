@@ -6,6 +6,7 @@ import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
 import { HolographicCard } from '../components/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../lib/dataSyncEngine';
+import { updatePageSeo } from '../utils/seo';
 
 const PAGE_SIZE = 60;
 
@@ -64,12 +65,20 @@ export const PublicSetView: React.FC = () => {
 
   useEffect(() => {
     if (set && cards.length > 0) {
-      const canonicalUrl = `https://deckdivider.app/set/${set.id}`;
-      document.title = `${set.name} (${set.series}) Set Checklist | Page ${currentPage} | DECK / divider`;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', `Complete ${set.name} (${set.series}) card checklist, live TCGplayer market prices, and collector tracker. Page ${currentPage}.`);
-      }
+      updatePageSeo({
+        title: `${set.name} (${set.series}) Set Checklist | Page ${currentPage}`,
+        description: `Complete ${set.name} (${set.series}) card checklist, live TCGplayer market prices, and collector tracker. Page ${currentPage}.`,
+        canonicalPath: `/set/${set.id}`,
+        ogImage: set.logoUrl || set.symbolUrl || 'https://deckdivider.app/og-image.png',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: `${set.name} Card Checklist`,
+          description: `Full Pokémon card checklist for ${set.name} (${set.series})`,
+          numberOfItems: set.total || cards.length,
+          url: `https://deckdivider.app/set/${set.id}`,
+        },
+      });
     }
   }, [set, cards, currentPage]);
 

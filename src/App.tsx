@@ -1926,7 +1926,9 @@ export default function App() {
         <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
         <Route path="/geo-insights" element={<GeoAiInspectorView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+        <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
+        <Route path="/portfolios/:shareId" element={<PublicPortfolioView />} />
         <Route path="/admin" element={<AdminDashboardView />} />
         <Route path="/admin/*" element={<AdminDashboardView />} />
         <Route path="/app/*" element={renderDashboard()} />

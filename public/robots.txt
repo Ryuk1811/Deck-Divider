@@ -1,9 +1,37 @@
+# Titanium Search Engine & AI Crawler Policy
+# Domain: https://deckdivider.app
+# Generated: 2026-09-08T13:57:03.044Z
+
 User-agent: *
 Allow: /
-Disallow: /app
-Disallow: /app/*
-Disallow: /api
-Disallow: /api/*
+Allow: /set/
+Allow: /decks/
+Allow: /compare/
+Allow: /best/
+Allow: /tools/
+Allow: /formats/
+Allow: /pricing
+Allow: /features
+Allow: /about
+Allow: /faq
+Allow: /changelog
+Allow: /sitemap*.xml
+Allow: /feed.xml
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /og-*.png
+
+# Protect private authenticated state & internal APIs
+Disallow: /api/
+Disallow: /app/
+Disallow: /admin/
+
+# Explicitly whitelist modern AI search discovery agents
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 User-agent: PerplexityBot
 Allow: /
@@ -17,17 +45,17 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-User-agent: GoogleOther
-Allow: /
-
-User-agent: Gemini-Deep-Research
-Allow: /
-
-User-agent: Google-Agent
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
+# Sitemaps & Feeds
 Sitemap: https://deckdivider.app/sitemap.xml
-LLMstxt: https://deckdivider.app/llms.txt
+Sitemap: https://deckdivider.app/sitemap-main.xml
+Sitemap: https://deckdivider.app/sitemap-sets.xml
+Sitemap: https://deckdivider.app/sitemap-topcards.xml
+Sitemap: https://deckdivider.app/sitemap-decks.xml
+Sitemap: https://deckdivider.app/sitemap-compare.xml
+Sitemap: https://deckdivider.app/sitemap-best.xml
+Sitemap: https://deckdivider.app/sitemap-tools.xml
+Sitemap: https://deckdivider.app/sitemap-portfolios.xml
+
+# Syndication Feed
+# RSS: https://deckdivider.app/feed.xml
+# LLMs: https://deckdivider.app/llms.txt

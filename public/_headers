@@ -3,10 +3,73 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-# Caching for immutable static assets
+# Caching for immutable static assets (Vite hashed bundles, images, icons)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Ensure index.html is revalidated
+# Public pre-rendered landing & programmatic SEO pages
+/pricing
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/about
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/faq
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/how-it-works
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/set/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/decks/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/compare/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/best/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/tools/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+
+# Private app and API routes - prevent indexing and private response leakage
+/api/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate
+/app/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Ensure SPA entry points are always revalidated
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+/200.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Social Media Open Graph Image Previews
+/og-image.png
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/og-hero.png
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+
+# XML Sitemaps, Feeds, and AI Crawler Declarations
+/sitemap*.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/feed.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/7392abcd.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400, s-maxage=604800
+
