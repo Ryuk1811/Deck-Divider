@@ -56,14 +56,7 @@ import {
 } from './server/tcgCatalogManager.js';
 import {
   BUILD_HASH,
-  generateSitemapIndexXml,
-  generateSitemapMainXml,
-  generateSitemapSetsXml,
-  generateSitemapTopCardsXml,
-  generateSitemapDecksXml,
-  generateSitemapCompareXml,
-  generateSitemapBestXml,
-  generateSitemapToolsXml,
+  generateUnifiedSitemapXml,
   generateRssFeedXml,
   generateLlmsTxt,
   generateLlmsFullTxt,
@@ -803,28 +796,8 @@ async function startServer() {
     res.send(generateRobotsTxt());
   });
 
-  // Dynamic Sitemap Index & Sub-Sitemaps
-  app.get('/sitemap.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapIndexXml());
-  });
-
-  app.get('/sitemap-main.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapMainXml());
-  });
-
-  app.get('/sitemap-sets.xml', async (req, res) => {
+  // Unified Master XML Sitemap
+  app.get('/sitemap.xml', async (req, res) => {
     try {
       if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
         return res.status(304).end();
@@ -832,86 +805,26 @@ async function startServer() {
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
       res.setHeader('ETag', `"${BUILD_HASH}"`);
-      const xml = await generateSitemapSetsXml();
+      const xml = await generateUnifiedSitemapXml();
       res.send(xml);
     } catch (e) {
-      console.error('Error generating sets sitemap', e);
-      res.status(500).send('Error generating sets sitemap');
+      console.error('Error generating unified sitemap', e);
+      res.status(500).send('Error generating unified sitemap');
     }
   });
 
-  app.get('/sitemap-topcards.xml', async (req, res) => {
-    try {
-      if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-        return res.status(304).end();
-      }
-      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-      res.setHeader('ETag', `"${BUILD_HASH}"`);
-      const xml = await generateSitemapTopCardsXml();
-      res.send(xml);
-    } catch (e) {
-      console.error('Error generating topcards sitemap', e);
-      res.status(500).send('Error generating topcards sitemap');
-    }
-  });
-
-  app.get('/sitemap-decks.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapDecksXml());
-  });
-
-  app.get('/sitemap-compare.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapCompareXml());
-  });
-
-  app.get('/sitemap-best.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapBestXml());
-  });
-
-  app.get('/sitemap-tools.xml', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSitemapToolsXml());
-  });
-
-  app.get('/sitemap-portfolios.xml', async (req, res) => {
-    try {
-      const db = getAdminDb();
-      const usersSnap = await db.collection('users').where('isPublicProfile', '==', true).get();
-      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-      usersSnap.forEach((doc: any) => {
-        xml += `  <url>\n    <loc>https://deckdivider.app/portfolio/${doc.id}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-      });
-      xml += `</urlset>`;
-      res.send(xml);
-    } catch (e) {
-      console.error('Error generating portfolios sitemap', e);
-      res.status(500).send('Error generating portfolios sitemap');
-    }
+  // 301 Permanent Redirects from legacy split sub-sitemaps to the unified sitemap.xml
+  app.get([
+    '/sitemap-main.xml',
+    '/sitemap-sets.xml',
+    '/sitemap-topcards.xml',
+    '/sitemap-decks.xml',
+    '/sitemap-compare.xml',
+    '/sitemap-best.xml',
+    '/sitemap-tools.xml',
+    '/sitemap-portfolios.xml'
+  ], (req, res) => {
+    res.redirect(301, '/sitemap.xml');
   });
 
   // Dynamic RSS & Atom Syndication Feed

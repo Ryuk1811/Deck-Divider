@@ -55,7 +55,6 @@ import { CompetitorComparisonView } from './views/CompetitorComparisonView';
 import { CommunityLeaderboardView } from './views/CommunityLeaderboardView';
 import { BestOfGuidesView } from './views/BestOfGuidesView';
 import { HighIntentToolsView } from './views/HighIntentToolsView';
-import { GeoAiInspectorView } from './views/GeoAiInspectorView';
 import { ListsView } from './views/ListsView';
 import { SettingsView } from './views/SettingsView';
 import { AuthView } from './views/AuthView';
@@ -1922,10 +1921,8 @@ export default function App() {
         <Route path="/best" element={<BestOfGuidesView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
         <Route path="/tools" element={<HighIntentToolsView />} />
-        <Route path="/tools/geo-inspector" element={<GeoAiInspectorView />} />
-        <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
-        <Route path="/geo-insights" element={<GeoAiInspectorView />} />
-        <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+                <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
+                <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/portfolios/:shareId" element={<PublicPortfolioView />} />

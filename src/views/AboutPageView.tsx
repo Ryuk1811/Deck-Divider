@@ -100,7 +100,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
               transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
               className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-[#0F172A] tracking-tight leading-[1.08] font-heading text-balance px-1"
             >
-              Built by Collectors, Crafted for the <span className="text-[#DC143C]">Pokémon TCG</span> Community
+              Built with Passion for the <span className="text-[#DC143C]">Pokémon TCG</span> Community
             </motion.h1>
 
             <motion.p
@@ -109,7 +109,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
               transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
               className="text-xs sm:text-base md:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance px-2"
             >
-              DECK / divider is an independent fan project built by lifelong Pokémon card collectors and competitive tournament players. Here is why we built it, who is behind it, and where our data comes from.
+              DECK / divider is an independent solo passion project built by Gurutva Murdia. A lifelong fan of the Pokémon franchise and an avid TCG collector and deckbuilder, created to give the community the clean, powerful, and ad-free platform it deserves.
             </motion.p>
           </div>
         </section>
@@ -119,32 +119,32 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 text-[#DC143C] font-mono text-xs font-bold uppercase tracking-wider">
               <HeartHandshake className="w-4 h-4" />
-              <span>Authorship, Expertise &amp; Purpose</span>
+              <span>Solo Creator • Lifelong Fan &amp; Collector</span>
             </div>
             <h2 className="text-xl sm:text-3xl font-extrabold text-[#0F172A] font-heading">
-              Why We Built DECK / divider
+              A Solo Build Born from True Passion
             </h2>
             <div className="space-y-4 text-xs sm:text-base text-[#475569] leading-relaxed">
               <p>
-                <strong>DECK / divider</strong> is authored and maintained by a dedicated team of software engineers, competitive Pokémon TCG players, and certified Pokémon Professors. With decades of combined experience participating in Regional Championships, judging official events, and authenticating high-end collectibles, our expertise ensures that every feature we build serves the genuine, rigorous needs of the global TCG community.
+                <strong>DECK / divider</strong> is a solo build created and actively engineered by <strong>Gurutva Murdia</strong>. As a long-standing, dedicated fan of the Pokémon franchise across all of its derivatives — the mainline video games, the anime, spin-off titles, and especially the Trading Card Game — this platform is a true passion project built straight from the heart of the hobby.
               </p>
               <p>
-                Like many collectors, we spent years managing our cards across messy Google Sheets, taking photos of binder pages that we constantly lost track of, and juggling slow apps cluttered with paywalled search features and full-screen banner ads.
+                Like countless collectors and players, I spent years juggling messy spreadsheets, losing track of photos of binder pages, and struggling with sluggish collector apps filled with paywalled search features and full-screen ads.
               </p>
               <p>
-                Whenever a new expansion dropped — from vintage reprints to modern Special Illustration Rares — keeping track of what we owned, what we paid, and what our decks actually cost was frustrating. At local card shows and trade nights, calculating currency conversions for international cards was even worse.
+                Whenever a new expansion released — from classic vintage eras to modern Special Illustration Rares and ACE SPECs — keeping accurate track of what I owned, what I paid, slab population grades, and standard format tournament legality was far more difficult than it needed to be.
               </p>
               <p>
-                We built this platform to fix that. Our mission is simple: provide the cleanest, fastest, and most honest tool for tracking raw binders, authenticated slabs, sealed booster boxes, and 60-card tournament decks — with zero ad bloat and total respect for your data.
+                I built DECK / divider to solve these exact frustrations. My goal is simple: deliver the fastest, cleanest, and most honest tool for organizing raw binders, logging authenticated slabs (PSA, BGS, CGC), managing sealed vaults, and crafting 60-card tournament-legal decks — with zero ad clutter, instant speed, and absolute respect for your data.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[#F1F5F9]">
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] space-y-1">
-              <div className="text-xs font-mono font-bold text-[#DC143C] uppercase">01 • Independent &amp; Fan-Led</div>
-              <div className="text-sm font-bold text-[#0F172A]">Community First</div>
-              <div className="text-xs text-[#64748B]">Built by players who open packs, grade cards, and play at local leagues.</div>
+              <div className="text-xs font-mono font-bold text-[#DC143C] uppercase">01 • Solo Passion Project</div>
+              <div className="text-sm font-bold text-[#0F172A]">By Gurutva Murdia</div>
+              <div className="text-xs text-[#64748B]">Built with personal care by a lifelong Pokémon enthusiast and active TCG collector.</div>
             </div>
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] space-y-1">
               <div className="text-xs font-mono font-bold text-[#DC143C] uppercase">02 • Fast &amp; Ad-Free</div>

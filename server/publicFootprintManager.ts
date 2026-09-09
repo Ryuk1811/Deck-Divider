@@ -85,7 +85,6 @@ export const BEST_OF_SLUGS: string[] = [
 export const TOOL_SLUGS: string[] = [
   'psa-grade-calculator',
   'deck-legality-checker',
-  'geo-inspector',
 ];
 
 function escapeXml(unsafe: string): string {
@@ -117,32 +116,83 @@ ${urls}
 }
 
 /**
- * Master Sitemap Index (/sitemap.xml)
- * Points to specialized sub-sitemaps for maximum crawl efficiency
+ * Unified Master Sitemap (/sitemap.xml)
+ * Returns a single consolidated <urlset> with major conversion and core landing
+ * pages listed first, followed by interactive tools, rankings, decks, and sets.
  */
-export function generateSitemapIndexXml(): string {
-  const subSitemaps = [
-    { loc: `${CANONICAL_ORIGIN}/sitemap-main.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-sets.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-topcards.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-decks.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-compare.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-best.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-tools.xml`, lastmod: BUILD_DATE },
-    { loc: `${CANONICAL_ORIGIN}/sitemap-portfolios.xml`, lastmod: BUILD_DATE },
+export async function generateUnifiedSitemapXml(): Promise<string> {
+  const sets: TCGSet[] = await getExpansions();
+
+  // 1. Major Core Pages (Landing, Pricing, Features, Sets catalog, Decks catalog, etc.)
+  const coreEntries: RouteEntry[] = [...CORE_PAGES];
+
+  // 2. Interactive Tools & Calculators
+  const toolEntries: RouteEntry[] = TOOL_SLUGS.map(slug => ({
+    path: `/tools/${slug}`,
+    lastmod: BUILD_DATE,
+    priority: '0.85',
+    changefreq: 'monthly',
+  }));
+
+  // 3. Comparisons & Competitor Matrices
+  const compareEntries: RouteEntry[] = COMPETITOR_SLUGS.map(slug => ({
+    path: `/compare/${slug}`,
+    lastmod: BUILD_DATE,
+    priority: '0.8',
+    changefreq: 'weekly',
+  }));
+
+  // 4. Curated "Best-Of" Authority Guides
+  const bestEntries: RouteEntry[] = BEST_OF_SLUGS.map(slug => ({
+    path: `/best/${slug}`,
+    lastmod: BUILD_DATE,
+    priority: '0.8',
+    changefreq: 'weekly',
+  }));
+
+  // 5. Competitive Tournament Meta Decks
+  const deckEntries: RouteEntry[] = DECK_SLUGS.map(slug => ({
+    path: `/decks/${slug}`,
+    lastmod: BUILD_DATE,
+    priority: '0.75',
+    changefreq: 'weekly',
+  }));
+
+  // 6. Expansion Set Checklists (Modern sets prioritized over vintage)
+  const setEntries: RouteEntry[] = sets.map(s => ({
+    path: `/set/${s.id}`,
+    lastmod: BUILD_DATE,
+    priority: s.releaseDate && s.releaseDate.startsWith('202') ? '0.7' : '0.6',
+    changefreq: 'weekly',
+  }));
+
+  // 7. Expansion Set Top Chase Cards
+  const topCardEntries: RouteEntry[] = sets.map(s => ({
+    path: `/set/${s.id}/top-cards`,
+    lastmod: BUILD_DATE,
+    priority: '0.5',
+    changefreq: 'weekly',
+  }));
+
+  // Assemble in strict priority order
+  const unifiedEntries: RouteEntry[] = [
+    ...coreEntries,
+    ...toolEntries,
+    ...compareEntries,
+    ...bestEntries,
+    ...deckEntries,
+    ...setEntries,
+    ...topCardEntries,
   ];
 
-  const sitemapsXml = subSitemaps
-    .map(s => `  <sitemap>
-    <loc>${escapeXml(s.loc)}</loc>
-    <lastmod>${s.lastmod}</lastmod>
-  </sitemap>`)
-    .join('\n');
+  return buildUrlsetXml(unifiedEntries);
+}
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapsXml}
-</sitemapindex>`;
+/**
+ * Legacy Sitemap Index (/sitemap.xml fallback if ever needed)
+ */
+export function generateSitemapIndexXml(): string {
+  return buildUrlsetXml(CORE_PAGES);
 }
 
 /**
@@ -420,14 +470,6 @@ Allow: /
 
 # Sitemaps & Feeds
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-main.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-sets.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-topcards.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-decks.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-compare.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-best.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-tools.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-portfolios.xml
 
 # Syndication Feed
 # RSS: ${CANONICAL_ORIGIN}/feed.xml
@@ -443,28 +485,34 @@ export async function writeAllFootprintFiles(targetDir: string) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  const sitemapIndex = generateSitemapIndexXml();
-  const sitemapMain = generateSitemapMainXml();
-  const sitemapSets = await generateSitemapSetsXml();
-  const sitemapTopCards = await generateSitemapTopCardsXml();
-  const sitemapDecks = generateSitemapDecksXml();
-  const sitemapCompare = generateSitemapCompareXml();
-  const sitemapBest = generateSitemapBestXml();
-  const sitemapTools = generateSitemapToolsXml();
-
+  const unifiedSitemap = await generateUnifiedSitemapXml();
   const rssFeed = generateRssFeedXml();
   const llms = generateLlmsTxt();
   const llmsFull = await generateLlmsFullTxt();
   const robots = generateRobotsTxt();
 
-  fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), sitemapIndex, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-main.xml'), sitemapMain, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-sets.xml'), sitemapSets, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-topcards.xml'), sitemapTopCards, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-decks.xml'), sitemapDecks, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-compare.xml'), sitemapCompare, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-best.xml'), sitemapBest, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'sitemap-tools.xml'), sitemapTools, 'utf-8');
+  // Write the single authoritative unified sitemap.xml
+  fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), unifiedSitemap, 'utf-8');
+
+  // Remove legacy split sub-sitemap files if they exist to prevent crawler fragmentation
+  const legacySubSitemaps = [
+    'sitemap-main.xml',
+    'sitemap-sets.xml',
+    'sitemap-topcards.xml',
+    'sitemap-decks.xml',
+    'sitemap-compare.xml',
+    'sitemap-best.xml',
+    'sitemap-tools.xml',
+    'sitemap-portfolios.xml',
+  ];
+  for (const file of legacySubSitemaps) {
+    const fullPath = path.join(targetDir, file);
+    if (fs.existsSync(fullPath)) {
+      try {
+        fs.unlinkSync(fullPath);
+      } catch {}
+    }
+  }
 
   fs.writeFileSync(path.join(targetDir, 'feed.xml'), rssFeed, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'rss.xml'), rssFeed, 'utf-8');

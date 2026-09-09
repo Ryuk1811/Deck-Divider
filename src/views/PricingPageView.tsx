@@ -457,7 +457,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               onClick={() => onSelectTier('Deck')}
               className="px-6 py-3.5 rounded-xl bg-white text-[#0F172A] font-bold text-sm hover:bg-slate-100 transition-colors cursor-pointer"
             >
-              Explore Deck Plan ($9.99/mo)
+              Explore Deck Plan
             </button>
           </div>
         </section>

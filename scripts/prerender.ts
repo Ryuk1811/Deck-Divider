@@ -72,7 +72,6 @@ async function prerenderAllRoutes() {
     { route: '/tools', outputPath: path.join(distDir, 'tools', 'index.html') },
     { route: '/tools/psa-grade-calculator', outputPath: path.join(distDir, 'tools', 'psa-grade-calculator', 'index.html') },
     { route: '/tools/deck-legality-checker', outputPath: path.join(distDir, 'tools', 'deck-legality-checker', 'index.html') },
-    { route: '/tools/geo-inspector', outputPath: path.join(distDir, 'tools', 'geo-inspector', 'index.html') },
 
     // Programmatic Tournament Deck Archetypes (Plural & Singular Aliases)
     { route: '/decks/gardevoir-ex', outputPath: path.join(distDir, 'decks', 'gardevoir-ex', 'index.html') },

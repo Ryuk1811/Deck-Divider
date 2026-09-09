@@ -1018,7 +1018,7 @@ export async function renderSsrRoute(
 
   // HIGH-INTENT UTILITY TOOLS: /tools & /tools/:toolId & /geo-insights
   if (cleanPath === '/tools' || cleanPath.startsWith('/tools/') || cleanPath === '/geo-insights') {
-    const toolId = cleanPath === '/geo-insights' ? 'geo-inspector' : (cleanPath.startsWith('/tools/') ? cleanPath.split('/')[2] : 'psa-grade-calculator');
+    const toolId = cleanPath.startsWith('/tools/') ? cleanPath.split('/')[2] : 'psa-grade-calculator';
     const toolInfo: Record<string, { title: string; desc: string }> = {
       'psa-grade-calculator': {
         title: 'PSA & BGS Grade ROI Calculator — Estimate Grading Profitability | DECK / divider',
@@ -1039,9 +1039,7 @@ export async function renderSsrRoute(
       desc: 'Suite of free interactive tools for Pokémon card collectors: PSA grading profit calculators, tournament regulation mark checkers, and export utilities.'
     };
 
-    const canonicalUrl = cleanPath === '/geo-insights' 
-      ? `${canonicalOrigin}/geo-insights`
-      : (cleanPath.startsWith('/tools/') ? `${canonicalOrigin}/tools/${toolId}` : `${canonicalOrigin}/tools`);
+    const canonicalUrl = cleanPath.startsWith('/tools/') ? `${canonicalOrigin}/tools/${toolId}` : `${canonicalOrigin}/tools`;
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -1064,12 +1062,10 @@ export async function renderSsrRoute(
           mainEntity: [
             {
               '@type': 'Question',
-              name: toolId === 'geo-inspector' ? 'How does DECK / divider achieve AI search citations?' : 'How is grading ROI calculated?',
+              name: 'How is grading ROI calculated?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: toolId === 'geo-inspector'
-                  ? 'DECK / divider places direct answers under 50 words at the top of pages, cites named sources (TCGplayer Market, PSA APR, Play! Pokémon), formats data in clean JSON-LD and markdown tables, and publishes an llms.txt index.'
-                  : 'Grading ROI subtracts your card purchase price, grading fee, and shipping insurance costs from the current market price of the expected slab grade (e.g. PSA 10 or PSA 9).'
+                text: 'Grading ROI subtracts your card purchase price, grading fee, and shipping insurance costs from the current market price of the expected slab grade (e.g. PSA 10 or PSA 9).'
               }
             }
           ]
@@ -1084,7 +1080,7 @@ export async function renderSsrRoute(
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;">
         <a href="/tools/psa-grade-calculator" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">PSA Grade ROI Calculator &rarr;</a>
         <a href="/tools/deck-legality-checker" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">Deck Legality Checker &rarr;</a>
-        <a href="/geo-insights" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">GEO & AI Citation Inspector &rarr;</a>
+        
       </div>`,
       '/auth',
       'Open Tools Suite'
@@ -1105,7 +1101,7 @@ export async function renderSsrRoute(
 
   if (cleanPath === '/about') {
     const pageTitle = 'About Us & Mission — DECK / divider Pokémon TCG';
-    const pageDesc = 'Built by lifelong Pokémon card collectors and tournament players. Discover our story, our 4 design principles, and our transparent pricing and card data provenance.';
+    const pageDesc = 'A solo passion project built by Gurutva Murdia, a lifelong fan of the Pokémon franchise and TCG collector. Discover our story, 4 core principles, and transparent data provenance.';
     const canonicalUrl = `${canonicalOrigin}/about`;
 
     const jsonLd = {
@@ -1170,18 +1166,18 @@ export async function renderSsrRoute(
     <main style="max-width:1100px;margin:0 auto;padding:48px 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
       <section style="text-align:center;margin-bottom:56px;">
         <span style="display:inline-block;padding:4px 12px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">ABOUT DECK / DIVIDER</span>
-        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 20px;">Built by Collectors, Crafted for the Pokémon TCG Community</h1>
-        <p style="font-size:18px;color:#64748B;max-width:800px;margin:0 auto;">DECK / divider is an independent fan project created by lifelong card collectors and competitive players who wanted a fast, clean, ad-free way to track raw binders, slabs, and tournament decks.</p>
+        <h1 style="font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin:0 0 20px;">Built with Passion for the Pokémon TCG Community</h1>
+        <p style="font-size:18px;color:#64748B;max-width:800px;margin:0 auto;">DECK / divider is an independent solo passion project created by Gurutva Murdia, a lifelong fan of the Pokémon franchise and avid TCG collector and player.</p>
       </section>
 
       <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:36px;box-shadow:0 1px 3px rgba(0,0,0,0.03);margin-bottom:48px;">
-        <h2 style="font-size:24px;font-weight:800;margin:0 0 16px;">Why We Built DECK / divider</h2>
-        <p style="color:#475569;font-size:15px;margin-bottom:16px;">Like many in the community, we spent years managing our cards across messy spreadsheets, taking photos of binder pages that we constantly lost track of, and juggling slow apps full of paywalled card lookups and intrusive banner ads.</p>
-        <p style="color:#475569;font-size:15px;margin-bottom:16px;">We built DECK / divider to provide the cleanest, fastest, and most transparent tool for tracking raw binders, authenticated slabs (PSA, BGS, CGC), sealed booster boxes, and 60-card tournament decks — with zero ad bloat and full respect for your data.</p>
+        <h2 style="font-size:24px;font-weight:800;margin:0 0 16px;">A Solo Build Born from True Passion</h2>
+        <p style="color:#475569;font-size:15px;margin-bottom:16px;">DECK / divider is a solo build created and actively engineered by Gurutva Murdia. As a long-standing enthusiast of the Pokémon franchise across all of its derivatives — from mainline video games and anime to competitive VGC and the Trading Card Game — this platform is a true passion project built straight from the heart of the hobby.</p>
+        <p style="color:#475569;font-size:15px;margin-bottom:16px;">Like many collectors, I spent years navigating clumsy spreadsheets, lost binder photos, and sluggish apps bloated with paywalls and ads. I built DECK / divider to provide the cleanest, fastest, and most honest tool for tracking raw binders, authenticated slabs (PSA, BGS, CGC), sealed booster boxes, and 60-card tournament decks — with zero ad clutter and full respect for your data.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-top:24px;padding-top:24px;border-top:1px solid #F1F5F9;">
           <div style="background:#F8FAFC;padding:16px;border-radius:10px;border:1px solid #E2E8F0;">
-            <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">01 • Community First</strong>
-            <span style="font-size:13px;color:#64748B;">Built by players who open packs, grade cards, and play at local leagues.</span>
+            <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">01 • Solo Passion Project</strong>
+            <span style="font-size:13px;color:#64748B;">Built by Gurutva Murdia, lifelong fan and active Pokémon card collector.</span>
           </div>
           <div style="background:#F8FAFC;padding:16px;border-radius:10px;border:1px solid #E2E8F0;">
             <strong style="display:block;color:#DC143C;font-size:12px;text-transform:uppercase;margin-bottom:4px;">02 • Zero Ads</strong>

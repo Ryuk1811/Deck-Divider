@@ -90,7 +90,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <Link to="/best/slab-scanners" className="hover:text-cyan-600 transition-colors font-medium">Slab Trackers</Link>
               <Link to="/tools/psa-grade-calculator" className="hover:text-cyan-600 transition-colors font-medium">PSA Calculator</Link>
               <Link to="/tools/deck-legality-checker" className="hover:text-cyan-600 transition-colors font-medium">Legality Tool</Link>
-              <Link to="/tools/geo-inspector" className="hover:text-cyan-600 transition-colors font-medium">AI Citation Hub</Link>
+              
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 # Titanium Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
-# Generated: 2026-09-08T13:57:03.044Z
+# Generated: 2026-09-09T13:46:48.193Z
 
 User-agent: *
 Allow: /
@@ -47,14 +47,6 @@ Allow: /
 
 # Sitemaps & Feeds
 Sitemap: https://deckdivider.app/sitemap.xml
-Sitemap: https://deckdivider.app/sitemap-main.xml
-Sitemap: https://deckdivider.app/sitemap-sets.xml
-Sitemap: https://deckdivider.app/sitemap-topcards.xml
-Sitemap: https://deckdivider.app/sitemap-decks.xml
-Sitemap: https://deckdivider.app/sitemap-compare.xml
-Sitemap: https://deckdivider.app/sitemap-best.xml
-Sitemap: https://deckdivider.app/sitemap-tools.xml
-Sitemap: https://deckdivider.app/sitemap-portfolios.xml
 
 # Syndication Feed
 # RSS: https://deckdivider.app/feed.xml

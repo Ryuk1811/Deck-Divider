@@ -174,14 +174,7 @@ export const ALL_PAGES: PageItem[] = [
     icon: ShieldAlert,
     description: 'Validate 60-card rosters against G, H, I marks',
   },
-  {
-    name: 'AI Citation & GEO Inspector',
-    path: '/tools/geo-inspector',
-    category: 'Tools',
-    icon: Sparkles,
-    description: 'Prompt simulator across ChatGPT, Perplexity & Claude',
-    badge: 'New',
-  },
+  
 
   // Platform & Legal
   {
@@ -319,13 +312,7 @@ export const PagesDropdown: React.FC<PagesDropdownProps> = ({
     );
   });
 
-  const categories: Array<'Workspace' | 'Community' | 'Guides' | 'Tools' | 'Platform'> = [
-    'Workspace',
-    'Community',
-    'Guides',
-    'Tools',
-    'Platform',
-  ];
+  const categories: Array<'Platform' | 'Workspace' | 'Community' | 'Guides' | 'Tools'> = ['Platform', 'Workspace', 'Community', 'Guides', 'Tools'];
 
   const handlePageClick = (page: PageItem) => {
     setIsOpen(false);
@@ -492,14 +479,7 @@ export const PagesDropdown: React.FC<PagesDropdownProps> = ({
 
           {/* Quick Footer Links */}
           <div className="p-2 border-t border-slate-100 bg-slate-50/80 flex items-center justify-between text-[11px] text-slate-500 px-3">
-            <Link
-              to="/tools/geo-inspector"
-              onClick={() => setIsOpen(false)}
-              className="text-[#DC143C] hover:underline font-semibold flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3" />
-              GEO &amp; AI Citation Hub
-            </Link>
+            
             <span className="font-mono text-[10px] text-slate-400">DECK / divider</span>
           </div>
         </div>

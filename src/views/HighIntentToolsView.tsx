@@ -93,13 +93,7 @@ export const HighIntentToolsView: React.FC = () => {
               <ShieldAlert className="w-4 h-4" />
               Regulation Mark &amp; Legality Checker
             </Link>
-            <Link
-              to="/tools/geo-inspector"
-              className="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-[#111827] text-[#94A3B8] hover:text-white border border-[#1E293B]"
-            >
-              <Sparkles className="w-4 h-4 text-[#38BDF8]" />
-              AI Citation &amp; GEO Inspector
-            </Link>
+            
           </div>
 
           {/* TOOL 1: PSA Grade ROI Calculator */}
@@ -119,7 +113,7 @@ export const HighIntentToolsView: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#38BDF8] flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4" />
-                    Direct Answer: Is Grading Pokémon Cards Worth It?
+                    Is Grading Pokémon Cards Worth It?
                   </div>
                   <span className="text-[11px] font-mono text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded border border-[#10B981]/20">
                     Source: PSA APR &amp; TCGplayer Market Comps (September 2026)
@@ -358,7 +352,7 @@ export const HighIntentToolsView: React.FC = () => {
               <div className="bg-[#111827] border-l-4 border-[#10B981] rounded-xl p-6 mb-10 shadow-lg">
                 <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#10B981] mb-2 flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
-                  Direct Answer: Legal Regulation Marks in Standard 2025
+                  Legal Regulation Marks in Standard 2025
                 </div>
                 <p className="text-white text-sm sm:text-base leading-relaxed font-medium">
                   For the 2025 tournament cycle, cards with <strong>regulation marks "G" and "H" (and upcoming "I")</strong> are fully legal in official Pokémon TCG Standard format tournaments. Cards bearing regulation marks "E" and "F" have officially rotated out, unless a card has received an identical text reprint in a legal expansion.
