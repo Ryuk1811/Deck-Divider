@@ -607,7 +607,7 @@ export async function generateOgHeroImage() {
   });
 
   const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.setContent(htmlContent, { waitUntil: 'load', timeout: 15000 });
   await new Promise((r) => setTimeout(r, 600));
 
   const highResScreenshotBuffer = await page.screenshot({

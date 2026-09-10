@@ -336,6 +336,232 @@ export function normalizeSetName(set: any): string {
 }
 
 /**
+ * Known canonical release dates for major sets (used when API omits releaseDate)
+ */
+export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
+  // Scarlet & Violet
+  'sv01': '2023-03-31',
+  'sv02': '2023-06-09',
+  'sv03': '2023-08-11',
+  'sv03.5': '2023-09-22',
+  'sv3pt5': '2023-09-22',
+  'sv04': '2023-11-03',
+  'sv04.5': '2024-01-26',
+  'sv4pt5': '2024-01-26',
+  'sv05': '2024-03-22',
+  'sv06': '2024-05-24',
+  'sv06.5': '2024-08-02',
+  'sv6pt5': '2024-08-02',
+  'sv07': '2024-09-13',
+  'sv08': '2024-11-08',
+  'sv08.5': '2025-01-17',
+  'sv8pt5': '2025-01-17',
+  'sv09': '2025-03-28',
+  'sv10': '2025-05-23',
+  'sv10.5w': '2025-07-18',
+  'sv10.5b': '2025-07-18',
+  // Sword & Shield
+  'swsh1': '2020-02-07',
+  'swsh2': '2020-05-01',
+  'swsh3': '2020-08-14',
+  'swsh3.5': '2020-09-25',
+  'swsh3pt5': '2020-09-25',
+  'swsh4': '2020-11-13',
+  'swsh4.5': '2021-02-19',
+  'swsh4pt5': '2021-02-19',
+  'swsh5': '2021-03-19',
+  'swsh6': '2021-06-18',
+  'swsh7': '2021-08-27',
+  'cel25': '2021-10-08',
+  'swsh8': '2021-11-12',
+  'swsh9': '2022-02-25',
+  'swsh10': '2022-05-27',
+  'swsh10.5': '2022-07-01',
+  'swsh10pt5': '2022-07-01',
+  'swsh11': '2022-09-09',
+  'swsh12': '2022-11-11',
+  'swsh12.5': '2023-01-20',
+  'swsh12pt5': '2023-01-20',
+  // Sun & Moon
+  'sm1': '2017-02-03',
+  'sm2': '2017-05-05',
+  'sm3': '2017-08-04',
+  'sm3.5': '2017-10-06',
+  'sm3pt5': '2017-10-06',
+  'sm4': '2017-11-03',
+  'sm5': '2018-02-02',
+  'sm6': '2018-05-04',
+  'sm7': '2018-08-03',
+  'sm7.5': '2018-09-07',
+  'sm7pt5': '2018-09-07',
+  'sm8': '2018-11-02',
+  'sm9': '2019-02-01',
+  'det': '2019-03-29',
+  'sm10': '2019-05-03',
+  'sm11': '2019-08-02',
+  'sm11.5': '2019-08-23',
+  'sm11pt5': '2019-08-23',
+  'sm12': '2019-11-01',
+  // XY
+  'xy1': '2014-02-05',
+  'xy2': '2014-05-07',
+  'xy3': '2014-08-13',
+  'xy4': '2014-11-05',
+  'xy5': '2015-02-04',
+  'dc1': '2015-03-25',
+  'xy6': '2015-05-06',
+  'xy7': '2015-08-12',
+  'xy8': '2015-11-04',
+  'xy9': '2016-02-03',
+  'gen': '2016-02-22',
+  'g1': '2016-02-22',
+  'xy10': '2016-05-02',
+  'xy11': '2016-08-03',
+  'xy12': '2016-11-02',
+  // Black & White
+  'bw1': '2011-04-25',
+  'bw2': '2011-08-31',
+  'bw3': '2011-11-16',
+  'bw4': '2012-02-08',
+  'bw5': '2012-05-09',
+  'bw6': '2012-08-15',
+  'dv1': '2012-10-05',
+  'bw7': '2012-11-07',
+  'bw8': '2013-02-06',
+  'bw9': '2013-05-08',
+  'bw10': '2013-08-14',
+  'bw11': '2013-11-06',
+  // HeartGold & SoulSilver
+  'hgss1': '2010-02-10',
+  'hgss2': '2010-05-12',
+  'hgss3': '2010-08-18',
+  'hgss4': '2010-11-03',
+  'col1': '2011-02-09',
+  // Diamond & Pearl / Platinum
+  'dp1': '2007-05-23',
+  'dp2': '2007-08-22',
+  'dp3': '2007-11-07',
+  'dp4': '2008-02-13',
+  'dp5': '2008-05-21',
+  'dp6': '2008-08-20',
+  'dp7': '2008-11-05',
+  'pl1': '2009-02-11',
+  'pl2': '2009-05-16',
+  'pl3': '2009-08-19',
+  'pl4': '2009-11-04',
+  // EX Series
+  'ex1': '2003-06-18',
+  'ex2': '2003-09-18',
+  'ex3': '2003-11-24',
+  'ex4': '2004-03-15',
+  'ex5': '2004-06-14',
+  'ex6': '2004-08-30',
+  'ex7': '2004-11-01',
+  'ex8': '2005-02-14',
+  'ex9': '2005-05-09',
+  'ex10': '2005-08-22',
+  'ex11': '2005-10-31',
+  'ex12': '2006-02-13',
+  'ex13': '2006-05-03',
+  'ex14': '2006-08-30',
+  'ex15': '2006-11-08',
+  'ex16': '2007-02-14',
+  // Neo Series
+  'neo1': '2000-12-16',
+  'neo2': '2001-06-01',
+  'neo3': '2001-09-21',
+  'neo4': '2002-02-28',
+  // Base Series
+  'base1': '1999-01-09',
+  'base2': '1999-06-16',
+  'base3': '1999-10-10',
+  'base4': '2000-02-24',
+  'base5': '2000-04-24',
+  'gym1': '2000-08-14',
+  'gym2': '2000-10-16',
+};
+
+/**
+ * Calculates a precise introduction order weight within an expansion series.
+ * Lower weight = introduced earlier in the expansion (first set = 1).
+ */
+export function getSetOrderWeight(set: any): number {
+  const id = String(set.id || '').toLowerCase().trim();
+
+  // Known hardcoded sequence weights (ensures 1st set introduced in expansion is #1)
+  const knownSeq: Record<string, number> = {
+    // Base
+    'base1': 1, 'base2': 2, 'base3': 3, 'base4': 4, 'base5': 5, 'gym1': 6, 'gym2': 7, 'basep': 990,
+    // Neo
+    'neo1': 1, 'neo2': 2, 'neo3': 3, 'neo4': 4,
+    // Legendary Collection
+    'lc': 1,
+    // E-Card
+    'ecard1': 1, 'ecard2': 2, 'ecard3': 3,
+    // EX
+    'ex1': 1, 'ex2': 2, 'ex3': 3, 'ex4': 4, 'ex5': 5, 'ex6': 6, 'ex7': 7, 'ex8': 8,
+    'ex9': 9, 'ex10': 10, 'ex11': 11, 'ex12': 12, 'ex13': 13, 'ex14': 14, 'ex15': 15, 'ex16': 16,
+    // DP / Platinum
+    'dp1': 1, 'dp2': 2, 'dp3': 3, 'dp4': 4, 'dp5': 5, 'dp6': 6, 'dp7': 7,
+    'pl1': 8, 'pl2': 9, 'pl3': 10, 'pl4': 11,
+    // HGSS
+    'hgss1': 1, 'hgss2': 2, 'hgss3': 3, 'hgss4': 4, 'col1': 5,
+    // Black & White
+    'bw1': 1, 'bw2': 2, 'bw3': 3, 'bw4': 4, 'bw5': 5, 'bw6': 6, 'dv1': 6.5,
+    'bw7': 7, 'bw8': 8, 'bw9': 9, 'bw10': 10, 'bw11': 11,
+    // XY
+    'xy1': 1, 'xy2': 2, 'xy3': 3, 'xy4': 4, 'xy5': 5, 'dc1': 5.5,
+    'xy6': 6, 'xy7': 7, 'xy8': 8, 'xy9': 9, 'gen': 9.5, 'g1': 9.5,
+    'xy10': 10, 'xy11': 11, 'xy12': 12,
+    // Sun & Moon
+    'sm1': 1, 'sm2': 2, 'sm3': 3, 'sm3.5': 3.5, 'sm3pt5': 3.5,
+    'sm4': 4, 'sm5': 5, 'sm6': 6, 'sm7': 7, 'sm7.5': 7.5, 'sm7pt5': 7.5,
+    'sm8': 8, 'sm9': 9, 'det': 9.2, 'sm10': 10, 'sm11': 11, 'sm11.5': 11.5, 'sm11pt5': 11.5,
+    'sma': 11.6, 'sm12': 12,
+    // Sword & Shield
+    'swsh1': 1, 'swsh2': 2, 'swsh3': 3, 'swsh3.5': 3.5, 'swsh3pt5': 3.5,
+    'swsh4': 4, 'swsh4.5': 4.5, 'swsh4pt5': 4.5, 'swsh4.5sv': 4.6,
+    'swsh5': 5, 'swsh6': 6, 'swsh7': 7, 'cel25': 7.5, 'cel25cc': 7.6,
+    'swsh8': 8, 'swsh9': 9, 'swsh9tg': 9.1, 'swsh10': 10, 'swsh10tg': 10.1,
+    'swsh10.5': 10.5, 'swsh10pt5': 10.5, 'swsh11': 11, 'swsh11tg': 11.1,
+    'swsh12': 12, 'swsh12tg': 12.1, 'swsh12.5': 12.5, 'swsh12pt5': 12.5, 'swsh12.5gg': 12.6,
+    // Scarlet & Violet
+    'sv01': 1, 'sv1': 1, 'sv02': 2, 'sv2': 2, 'sv03': 3, 'sv3': 3,
+    'sv03.5': 3.5, 'sv3.5': 3.5, 'sv3pt5': 3.5,
+    'sv04': 4, 'sv4': 4, 'sv04.5': 4.5, 'sv4.5': 4.5, 'sv4pt5': 4.5,
+    'sv05': 5, 'sv5': 5, 'sv06': 6, 'sv6': 6,
+    'sv06.5': 6.5, 'sv6.5': 6.5, 'sv6pt5': 6.5,
+    'sv07': 7, 'sv7': 7, 'sv08': 8, 'sv8': 8,
+    'sv08.5': 8.5, 'sv8.5': 8.5, 'sv8pt5': 8.5,
+    'sv09': 9, 'sv9': 9, 'sv10': 10, 'sv10.5w': 10.5, 'sv10.5b': 10.6,
+  };
+
+  if (knownSeq[id] !== undefined) return knownSeq[id];
+
+  // Promos & special auxiliary sets go to the end
+  if (id.endsWith('p') || id.includes('promo') || id === 'sve' || id === 'mfb') {
+    return 900;
+  }
+
+  // Generic parser for standard numeric prefixes (e.g. sv08, swsh12, xy03, me01)
+  const match = id.match(/^[a-z]+0*(\d+)(?:\.(\d+))?/i);
+  if (match) {
+    const main = parseInt(match[1], 10);
+    const sub = match[2] ? parseFloat('0.' + match[2]) : 0;
+    return main + sub;
+  }
+
+  // Fallback to release date comparison if known
+  const relDate = KNOWN_SET_RELEASE_DATES[id] || set.releaseDate;
+  if (relDate) {
+    const ts = new Date(relDate).getTime();
+    if (!isNaN(ts)) return ts / 100000000;
+  }
+
+  return 100;
+}
+
+/**
  * Fully normalizes a set object to standard CardSet type with canonical series & name.
  */
 export function normalizeSet(set: any): CardSet {
@@ -345,15 +571,43 @@ export function normalizeSet(set: any): CardSet {
   const cardCountOfficial = set.cardCount?.official || set.printedTotal || set.total || 100;
   const cardCountTotal = set.cardCount?.total || set.total || cardCountOfficial;
 
-  let symbolUrl =
-    set.symbolUrl ||
-    (set.symbol ? (set.symbol.endsWith('.png') || set.symbol.endsWith('.webp') ? set.symbol : `${set.symbol}.png`) : '');
-  let logoUrl =
-    set.logoUrl ||
-    (set.logo ? (set.logo.endsWith('.png') || set.logo.endsWith('.webp') ? set.logo : `${set.logo}.png`) : '');
+  const idClean = String(set.id || 'unknown').toLowerCase();
 
-  if (!symbolUrl) symbolUrl = 'https://images.pokemontcg.io/symbol.png';
-  if (!logoUrl) logoUrl = symbolUrl;
+  // 1. Symbol URL - TCGdex provides png/webp, pokemontcg.io provides standard symbols
+  let symbolUrl = '';
+  if (set.symbolUrl) {
+    symbolUrl = set.symbolUrl;
+  } else if (set.symbol) {
+    const rawSym = String(set.symbol);
+    symbolUrl = rawSym.endsWith('.png') || rawSym.endsWith('.webp') ? rawSym : `${rawSym}.png`;
+  }
+  if (symbolUrl && symbolUrl.includes('/univ/')) {
+    symbolUrl = symbolUrl.replace('/univ/', '/en/');
+  }
+  if (!symbolUrl && set.id) {
+    symbolUrl = `https://images.pokemontcg.io/${idClean}/symbol.png`;
+  }
+
+  // 2. Logo URL - TCGdex reliably hosts webp for all expansion logos
+  let logoUrl = '';
+  if (set.logoUrl) {
+    logoUrl = set.logoUrl;
+  } else if (set.logo) {
+    const rawLogo = String(set.logo);
+    logoUrl = rawLogo.endsWith('.webp') || rawLogo.endsWith('.png') ? rawLogo : `${rawLogo}.webp`;
+  }
+  if (logoUrl && logoUrl.includes('/univ/')) {
+    logoUrl = logoUrl.replace('/univ/', '/en/');
+  }
+  if (!logoUrl && symbolUrl) {
+    logoUrl = symbolUrl;
+  }
+
+  // 3. Accurate Release Date lookup
+  let releaseDate = set.releaseDate;
+  if (!releaseDate || releaseDate === '2024-01-01') {
+    releaseDate = KNOWN_SET_RELEASE_DATES[idClean] || set.releaseDate || '2024-01-01';
+  }
 
   return {
     id: String(set.id || 'unknown'),
@@ -361,7 +615,7 @@ export function normalizeSet(set: any): CardSet {
     series,
     printedTotal: cardCountOfficial,
     total: cardCountTotal,
-    releaseDate: set.releaseDate || '2024-01-01',
+    releaseDate,
     symbolUrl,
     logoUrl,
   };
@@ -419,21 +673,28 @@ export function getDynamicSeriesCategories(expansions: CardSet[]): string[] {
 }
 
 /**
- * Sorts array of sets chronologically (Newest series & release dates first).
- * Completely future-proof for any new expansion block!
+ * Sorts array of sets chronologically.
+ * Primary: Newest series first (Scarlet & Violet, then Sword & Shield, etc.).
+ * Secondary: Within each expansion series, orders by which set was INTRODUCED FIRST (1st set introduced appears first).
  */
 export function sortSetsChronologically(sets: CardSet[]): CardSet[] {
   return [...sets].sort((a, b) => {
-    const weightA = getSeriesWeight(a.series, sets);
-    const weightB = getSeriesWeight(b.series, sets);
+    const seriesWeightA = getSeriesWeight(a.series, sets);
+    const seriesWeightB = getSeriesWeight(b.series, sets);
 
-    if (weightA !== weightB) {
-      return weightA - weightB;
+    if (seriesWeightA !== seriesWeightB) {
+      return seriesWeightA - seriesWeightB;
     }
 
-    // Secondary sort: release date descending (newest first)
+    // Secondary sort: order by introduction sequence within expansion (oldest/first introduced first)
+    const orderA = getSetOrderWeight(a);
+    const orderB = getSetOrderWeight(b);
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
     const dateA = a.releaseDate || '1990-01-01';
     const dateB = b.releaseDate || '1990-01-01';
-    return dateB.localeCompare(dateA);
+    return dateA.localeCompare(dateB);
   });
 }

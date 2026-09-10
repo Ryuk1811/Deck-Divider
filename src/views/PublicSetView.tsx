@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
 import { CardSet, PokemonCard } from '../types';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
@@ -88,7 +88,7 @@ export const PublicSetView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] flex flex-col font-sans text-white">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <LandingNav 
         onOpenAuth={() => navigate('/auth')} 
         onNavigateSection={(id) => {
@@ -97,53 +97,60 @@ export const PublicSetView: React.FC = () => {
         }} 
       />
 
-      <main className="flex-grow pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <main className="flex-grow pt-10 sm:pt-14 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="mb-6">
-            <Link to="/sets" className="inline-flex items-center text-sm text-[#94A3B8] hover:text-[#38BDF8] transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Link to="/sets" className="inline-flex items-center text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] transition-colors">
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
               Back to Expansions
             </Link>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#38BDF8]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#E2E8F0] border-t-[#DC143C]"></div>
             </div>
           ) : !set ? (
-            <div className="text-center py-20">
-              <h2 className="text-2xl font-bold text-white mb-4">Expansion Not Found</h2>
-              <p className="text-[#94A3B8]">The requested set could not be located in our database.</p>
+            <div className="text-center py-20 bg-white border border-[#E2E8F0] rounded-2xl p-8 max-w-md mx-auto shadow-xs">
+              <h2 className="text-2xl font-bold text-[#0F172A] font-heading mb-2">Expansion Not Found</h2>
+              <p className="text-[#64748B] text-sm">The requested set could not be located in our database.</p>
             </div>
           ) : (
             <>
               {/* Set Header */}
-              <div className="bg-[#111827] border border-[#1E293B] rounded-2xl p-6 md:p-8 mb-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+              <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 md:p-8 mb-8 shadow-xs flex flex-col md:flex-row gap-6 items-start md:items-center">
                 {set.logoUrl && (
-                  <div className="w-48 h-24 flex-shrink-0 bg-[#0B0F19] rounded-xl border border-[#334155] p-4 flex items-center justify-center">
+                  <div className="w-48 h-24 flex-shrink-0 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] p-4 flex items-center justify-center">
                     <img src={set.logoUrl} alt={`${set.name} logo`} className="max-w-full max-h-full object-contain" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl md:text-4xl font-bold text-white">{set.name}</h1>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] font-heading">{set.name}</h1>
                     {set.symbolUrl && (
-                      <img src={set.symbolUrl} alt="Symbol" className="w-8 h-8 object-contain" />
+                      <img src={set.symbolUrl} alt="Symbol" className="w-7 h-7 object-contain" />
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-4 text-sm text-[#94A3B8]">
-                    <span className="flex items-center gap-1.5 bg-[#1E293B] px-3 py-1 rounded-full text-[#E2E8F0]">
-                      <Layers className="w-4 h-4" />
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+                    <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A] font-semibold">
+                      <Layers className="w-3.5 h-3.5 text-[#DC143C]" />
                       {set.series} Series
                     </span>
-                    <span className="flex items-center gap-1.5 bg-[#1E293B] px-3 py-1 rounded-full text-[#E2E8F0]">
-                      <Calendar className="w-4 h-4" />
+                    <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
+                      <Calendar className="w-3.5 h-3.5 text-[#64748B]" />
                       {set.releaseDate}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-[#1E293B] px-3 py-1 rounded-full text-[#E2E8F0]">
+                    <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
                       {set.printedTotal} Cards (Total: {set.total})
                     </span>
+                    <Link
+                      to={`/set/${set.id}/top-cards`}
+                      className="inline-flex items-center gap-1.5 bg-[#DC143C]/10 hover:bg-[#DC143C]/20 border border-[#DC143C]/30 text-[#DC143C] px-3.5 py-1 rounded-full text-xs font-bold transition-colors shadow-2xs"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      Top 20 Chase Cards
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -151,7 +158,7 @@ export const PublicSetView: React.FC = () => {
               {/* Toolbar */}
               <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
                 <div className="relative w-full md:w-96">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] w-4 h-4" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -160,7 +167,7 @@ export const PublicSetView: React.FC = () => {
                       setCurrentPage(1);
                     }}
                     placeholder="Search cards in this expansion..."
-                    className="w-full bg-[#111827] border border-[#334155] rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-[#64748B] focus:outline-none focus:border-[#38BDF8] focus:ring-1 focus:ring-[#38BDF8] transition-colors"
+                    className="w-full bg-white border border-[#CBD5E1] rounded-xl py-2 pl-9 pr-4 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#DC143C] focus:ring-1 focus:ring-[#DC143C] transition-colors shadow-2xs"
                   />
                 </div>
 
@@ -169,21 +176,21 @@ export const PublicSetView: React.FC = () => {
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="p-2 rounded-lg border border-[#334155] bg-[#111827] text-[#94A3B8] disabled:opacity-50 hover:bg-[#1E293B] hover:text-white transition-colors"
+                      className="p-2 rounded-lg border border-[#E2E8F0] bg-white text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors shadow-2xs"
                       aria-label="Previous Page"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-sm text-[#94A3B8]">
+                    <span className="text-xs font-mono font-medium text-[#64748B]">
                       Page {currentPage} of {totalPages}
                     </span>
                     <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg border border-[#334155] bg-[#111827] text-[#94A3B8] disabled:opacity-50 hover:bg-[#1E293B] hover:text-white transition-colors"
+                      className="p-2 rounded-lg border border-[#E2E8F0] bg-white text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors shadow-2xs"
                       aria-label="Next Page"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 )}
@@ -191,28 +198,28 @@ export const PublicSetView: React.FC = () => {
 
               {/* Card Grid */}
               {paginatedCards.length === 0 ? (
-                <div className="text-center py-20 text-[#64748B]">
+                <div className="text-center py-20 text-[#64748B] bg-white border border-[#E2E8F0] rounded-2xl shadow-xs">
                   No cards match your search criteria.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                   {paginatedCards.map((card) => (
-                    <div key={card.id} className="flex flex-col group">
-                      <div className="relative aspect-[63/88] rounded-xl overflow-hidden bg-[#1E293B] border border-[#334155] group-hover:border-[#38BDF8] transition-colors shadow-sm shadow-black/20">
+                    <div key={card.id} className="flex flex-col group bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-3 transition-all hover:shadow-md hover:-translate-y-0.5">
+                      <div className="relative aspect-[63/88] rounded-xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-2xs">
                         <HolographicCard
                           card={card}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="mt-3 text-center">
-                        <div className="text-xs text-[#64748B] font-mono mb-1">
+                        <div className="text-[11px] text-[#64748B] font-mono mb-0.5">
                           {card.number} / {set.printedTotal}
                         </div>
-                        <h3 className="text-sm font-semibold text-white leading-tight line-clamp-1 group-hover:text-[#38BDF8] transition-colors" title={card.name}>
+                        <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight line-clamp-1 group-hover:text-[#DC143C] transition-colors" title={card.name}>
                           {card.name}
                         </h3>
                         {(card.tcgplayer?.price || card.tcgplayer?.trendPrice) ? (
-                          <div className="text-xs text-[#10B981] mt-1 font-medium">
+                          <div className="text-xs text-[#16A34A] mt-1 font-num font-bold">
                             ${(card.tcgplayer.price || card.tcgplayer.trendPrice || 0).toFixed(2)}
                           </div>
                         ) : null}
@@ -232,9 +239,9 @@ export const PublicSetView: React.FC = () => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={currentPage === 1}
-                      className="p-2 rounded-lg border border-[#334155] bg-[#111827] text-[#94A3B8] disabled:opacity-50 hover:bg-[#1E293B] hover:text-white transition-colors"
+                      className="p-2 rounded-lg border border-[#E2E8F0] bg-white text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors shadow-2xs"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: totalPages }).map((_, i) => (
@@ -244,10 +251,10 @@ export const PublicSetView: React.FC = () => {
                             setCurrentPage(i + 1);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-8 h-8 rounded-lg text-xs font-mono font-bold transition-colors ${
                             currentPage === i + 1
-                              ? 'bg-[#38BDF8] text-white border border-[#38BDF8]'
-                              : 'bg-[#111827] border border-[#334155] text-[#94A3B8] hover:bg-[#1E293B] hover:text-white'
+                              ? 'bg-[#DC143C] text-white border border-[#DC143C] shadow-2xs'
+                              : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
                           }`}
                         >
                           {i + 1}
@@ -260,9 +267,9 @@ export const PublicSetView: React.FC = () => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg border border-[#334155] bg-[#111827] text-[#94A3B8] disabled:opacity-50 hover:bg-[#1E293B] hover:text-white transition-colors"
+                      className="p-2 rounded-lg border border-[#E2E8F0] bg-white text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors shadow-2xs"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

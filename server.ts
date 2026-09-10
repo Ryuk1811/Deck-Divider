@@ -1788,7 +1788,27 @@ async function startServer() {
     try {
       const urlPath = req.params[0];
       const imageUrl = `https://assets.tcgdex.net/${urlPath}`;
-      const response = await fetch(imageUrl);
+      let response = await fetch(imageUrl);
+
+      // If png 404s, try webp
+      if (!response.ok && urlPath.endsWith('.png')) {
+        const webpUrl = `https://assets.tcgdex.net/${urlPath.replace(/\.png$/, '.webp')}`;
+        const webpRes = await fetch(webpUrl);
+        if (webpRes.ok) response = webpRes;
+      }
+      // If webp 404s, try png
+      if (!response.ok && urlPath.endsWith('.webp')) {
+        const pngUrl = `https://assets.tcgdex.net/${urlPath.replace(/\.webp$/, '.png')}`;
+        const pngRes = await fetch(pngUrl);
+        if (pngRes.ok) response = pngRes;
+      }
+      // If /univ/ 404s, try /en/
+      if (!response.ok && urlPath.includes('/univ/')) {
+        const enUrl = `https://assets.tcgdex.net/${urlPath.replace('/univ/', '/en/')}`;
+        const enRes = await fetch(enUrl);
+        if (enRes.ok) response = enRes;
+      }
+
       if (!response.ok) throw new Error('Image not found');
       
       const arrayBuffer = await response.arrayBuffer();

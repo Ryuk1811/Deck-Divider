@@ -246,7 +246,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
           <Link
             to="/"
             onClick={() => onOpenFullApp && onOpenFullApp()}
-            className="w-full mt-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition inline-block text-center"
+            className="w-full mt-6 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold rounded-xl transition-colors shadow-2xs inline-block text-center cursor-pointer"
           >
             Go to DECK / divider
           </Link>
@@ -297,7 +297,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                   <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
                     {deck.name}
                   </h2>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0">
+                  <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#DC143C] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
                     {totalCardsCount}/60 Cards
                   </span>
                   <span className={`font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border ${
@@ -351,7 +351,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                     onClick={() => setViewMode(mode.id as any)}
                     className={`h-9 px-3 text-xs font-mono font-bold rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer w-full sm:w-auto text-center ${
                       isActive
-                        ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
+                        ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-xs'
                         : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A]'
                     }`}
                   >

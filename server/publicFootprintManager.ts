@@ -20,28 +20,28 @@ export interface RouteEntry {
 export const CORE_PAGES: RouteEntry[] = [
   { path: '/', lastmod: BUILD_DATE, priority: '1.0', changefreq: 'daily' },
   { path: '/pricing', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
-  { path: '/features', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/how-it-works', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'monthly' },
   { path: '/sets', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'daily' },
   { path: '/decks', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'daily' },
+  { path: '/features', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/how-it-works', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'monthly' },
   { path: '/formats', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/formats/standard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/formats/expanded', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
-  { path: '/formats/glc', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
+  { path: '/formats/expanded', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/formats/glc', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/compare', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/best', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/tools', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/about', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
-  { path: '/faq', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
-  { path: '/leaderboard', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'daily' },
-  { path: '/changelog', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
-  { path: '/support', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'monthly' },
+  { path: '/leaderboard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/about', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/faq', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/support', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/contact', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/privacy', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/terms', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
-  { path: '/cookie-policy', lastmod: BUILD_DATE, priority: '0.4', changefreq: 'monthly' },
   { path: '/security', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/media-kit', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/changelog', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/cookie-policy', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
 ];
 
 // 2. Tournament Decks & Archetypes
@@ -158,23 +158,27 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
     changefreq: 'weekly',
   }));
 
-  // 6. Expansion Set Checklists (Modern sets prioritized over vintage)
-  const setEntries: RouteEntry[] = sets.map(s => ({
-    path: `/set/${s.id}`,
-    lastmod: BUILD_DATE,
-    priority: s.releaseDate && s.releaseDate.startsWith('202') ? '0.7' : '0.6',
-    changefreq: 'weekly',
-  }));
+  // 6. Expansion Set Checklists (Modern sets 0.7 weekly, Vintage sets 0.6 monthly)
+  const setEntries: RouteEntry[] = sets.map(s => {
+    const isModern = (s.releaseDate && (s.releaseDate.startsWith('202') || s.releaseDate.startsWith('2019'))) ||
+      s.id.startsWith('sv') || s.id.startsWith('swsh');
+    return {
+      path: `/set/${s.id}`,
+      lastmod: BUILD_DATE,
+      priority: isModern ? '0.7' : '0.6',
+      changefreq: isModern ? 'weekly' : 'monthly',
+    };
+  });
 
-  // 7. Expansion Set Top Chase Cards
+  // 7. Expansion Set Top Chase Cards (0.5 monthly)
   const topCardEntries: RouteEntry[] = sets.map(s => ({
     path: `/set/${s.id}/top-cards`,
     lastmod: BUILD_DATE,
     priority: '0.5',
-    changefreq: 'weekly',
+    changefreq: 'monthly',
   }));
 
-  // Assemble in strict priority order
+  // Assemble in strict priority order (descending numerical priority)
   const unifiedEntries: RouteEntry[] = [
     ...coreEntries,
     ...toolEntries,
@@ -184,6 +188,8 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
     ...setEntries,
     ...topCardEntries,
   ];
+
+  unifiedEntries.sort((a, b) => parseFloat(b.priority || '0.5') - parseFloat(a.priority || '0.5'));
 
   return buildUrlsetXml(unifiedEntries);
 }
@@ -522,6 +528,18 @@ export async function writeAllFootprintFiles(targetDir: string) {
 
   // IndexNow verification key file
   fs.writeFileSync(path.join(targetDir, '7392abcd.txt'), '7392abcd', 'utf-8');
+
+  // Cloudflare Pages 301 redirects for legacy sitemaps
+  const redirectsContent = `/sitemap-main.xml /sitemap.xml 301
+/sitemap-sets.xml /sitemap.xml 301
+/sitemap-topcards.xml /sitemap.xml 301
+/sitemap-decks.xml /sitemap.xml 301
+/sitemap-compare.xml /sitemap.xml 301
+/sitemap-best.xml /sitemap.xml 301
+/sitemap-tools.xml /sitemap.xml 301
+/sitemap-portfolios.xml /sitemap.xml 301
+`;
+  fs.writeFileSync(path.join(targetDir, '_redirects'), redirectsContent, 'utf-8');
 
   console.log(`[PublicFootprint] ✓ Successfully generated titanium footprint in ${targetDir}`);
 }

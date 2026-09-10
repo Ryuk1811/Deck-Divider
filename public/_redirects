@@ -1,2 +1,8 @@
-# Cloudflare Pages SPA rewrite
-/*      /index.html   200
+/sitemap-main.xml /sitemap.xml 301
+/sitemap-sets.xml /sitemap.xml 301
+/sitemap-topcards.xml /sitemap.xml 301
+/sitemap-decks.xml /sitemap.xml 301
+/sitemap-compare.xml /sitemap.xml 301
+/sitemap-best.xml /sitemap.xml 301
+/sitemap-tools.xml /sitemap.xml 301
+/sitemap-portfolios.xml /sitemap.xml 301

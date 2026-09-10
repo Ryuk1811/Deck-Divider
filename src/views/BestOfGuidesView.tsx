@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Award, 
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
+import { updatePageSeo } from '../utils/seo';
 
 interface GuideItem {
   rank: number;
@@ -354,13 +355,45 @@ export const BestOfGuidesView: React.FC = () => {
   const currentSlug = slug || 'pokemon-card-trackers';
   const guide = BEST_OF_GUIDES[currentSlug];
 
+  useEffect(() => {
+    if (guide) {
+      updatePageSeo({
+        title: `${guide.title} | DECK / divider`,
+        description: guide.metaDesc,
+        canonicalPath: `/best/${guide.slug}`,
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: guide.h1,
+          description: guide.metaDesc,
+          dateModified: '2025-09-01',
+          url: `https://deckdivider.app/best/${guide.slug}`,
+          author: {
+            '@type': 'Organization',
+            name: 'DECK / divider',
+            url: 'https://deckdivider.app',
+          },
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: guide.items.map((item) => ({
+              '@type': 'ListItem',
+              position: item.rank,
+              name: item.name,
+              description: item.summary,
+            })),
+          },
+        },
+      });
+    }
+  }, [guide]);
+
   if (!guide) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Guide Not Found</h1>
-          <button onClick={() => navigate('/compare')} className="text-[#38BDF8] hover:underline">
-            View All Guides &amp; Comparisons
+      <div className="min-h-screen bg-dot-grid text-[#0F172A] flex items-center justify-center">
+        <div className="text-center p-8 bg-white border border-[#E2E8F0] rounded-2xl shadow-xs">
+          <h1 className="text-3xl font-heading font-bold mb-4 text-[#0F172A]">Guide Not Found</h1>
+          <button onClick={() => navigate('/compare')} className="text-[#DC143C] font-mono text-xs font-bold hover:underline">
+            &larr; View All Guides &amp; Comparisons
           </button>
         </div>
       </div>
@@ -368,7 +401,7 @@ export const BestOfGuidesView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] flex flex-col font-sans text-white">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <LandingNav 
         onOpenAuth={() => navigate('/auth')} 
         onNavigateSection={(id) => {
@@ -382,38 +415,38 @@ export const BestOfGuidesView: React.FC = () => {
           
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-xs font-mono text-[#64748B] mb-6">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#0F172A] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/compare" className="hover:text-white transition-colors">Guides &amp; Compare</Link>
+            <Link to="/compare" className="hover:text-[#0F172A] transition-colors">Guides &amp; Compare</Link>
             <span>/</span>
-            <span className="text-[#38BDF8]">{guide.title}</span>
+            <span className="text-[#DC143C] font-semibold">{guide.title}</span>
           </div>
 
           {/* Guide Header */}
           <div className="mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#38BDF8]/10 text-[#38BDF8] text-xs font-mono font-semibold uppercase tracking-wider mb-4 border border-[#38BDF8]/20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#DC143C] text-xs font-mono font-semibold uppercase tracking-wider mb-4 border border-red-200">
               <Award className="w-3.5 h-3.5" />
               Independent Editorial Guide • Updated {guide.updatedDate}
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black tracking-tight text-[#0F172A] mb-4 leading-tight">
               {guide.h1}
             </h1>
-            <p className="text-base sm:text-lg text-[#94A3B8] leading-relaxed">
+            <p className="text-base sm:text-lg text-[#64748B] leading-relaxed">
               An in-depth, hands-on comparison of the premier tools and software available for the Pokémon Trading Card Game community.
             </p>
           </div>
 
           {/* Quick Nav Pill Tabs */}
-          <div className="flex flex-wrap gap-2 mb-10 pb-4 border-b border-[#1E293B]">
+          <div className="flex flex-wrap gap-2 mb-10 pb-4 border-b border-[#E2E8F0]">
             <span className="text-xs font-mono text-[#64748B] self-center mr-2">Jump to:</span>
             {Object.values(BEST_OF_GUIDES).map((g) => (
               <Link
                 key={g.slug}
                 to={`/best/${g.slug}`}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shadow-2xs ${
                   g.slug === currentSlug
-                    ? 'bg-[#38BDF8] text-[#0B0F19] font-bold shadow-xs'
-                    : 'bg-[#111827] text-[#94A3B8] hover:text-white border border-[#1E293B]'
+                    ? 'bg-[#DC143C] text-white'
+                    : 'bg-white text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] border border-[#E2E8F0]'
                 }`}
               >
                 {g.title.split('(')[0].trim()}
@@ -422,28 +455,28 @@ export const BestOfGuidesView: React.FC = () => {
           </div>
 
           {/* Direct Answer Box (Google AI Overview / Featured Snippet Optimized) */}
-          <div className="bg-[#111827] border-l-4 border-[#10B981] rounded-xl p-6 sm:p-8 mb-12 shadow-lg">
-            <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#10B981] mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4" />
+          <div className="bg-white border-l-4 border-l-emerald-500 border border-[#E2E8F0] rounded-xl p-6 sm:p-8 mb-12 shadow-xs">
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 mb-2 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
               Direct Summary &amp; Key Takeaway
             </div>
-            <p className="text-white text-base sm:text-lg leading-relaxed font-medium">
+            <p className="text-[#0F172A] text-base sm:text-lg leading-relaxed font-medium">
               {guide.directAnswerSummary}
             </p>
           </div>
 
           {/* Evaluation Methodology */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-6 mb-12">
-            <h2 className="text-sm font-mono font-bold text-[#94A3B8] uppercase tracking-wider mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#38BDF8]" />
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-12 shadow-xs">
+            <h2 className="text-sm font-mono font-bold text-[#64748B] uppercase tracking-wider mb-4 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#DC143C]" />
               Evaluation Criteria &amp; Testing Methodology
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {guide.evaluationCriteria.map((c, i) => (
-                <div key={i} className="text-xs">
-                  <div className="flex items-center justify-between text-white font-semibold mb-1">
+                <div key={i} className="text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-3">
+                  <div className="flex items-center justify-between text-[#0F172A] font-semibold mb-1">
                     <span>{c.name}</span>
-                    <span className="text-[#38BDF8] font-mono">{c.weight}</span>
+                    <span className="text-[#DC143C] font-mono">{c.weight}</span>
                   </div>
                   <p className="text-[#64748B] leading-normal">{c.description}</p>
                 </div>
@@ -456,28 +489,28 @@ export const BestOfGuidesView: React.FC = () => {
             {guide.items.map((item) => (
               <div 
                 key={item.rank}
-                className={`bg-[#111827] border rounded-2xl p-6 sm:p-8 transition-all ${
-                  item.isUs ? 'border-[#38BDF8]/60 shadow-xl relative overflow-hidden' : 'border-[#1E293B]'
+                className={`bg-white border rounded-2xl p-6 sm:p-8 transition-all shadow-xs ${
+                  item.isUs ? 'border-[#DC143C]/50 ring-2 ring-[#DC143C]/20 relative overflow-hidden' : 'border-[#E2E8F0]'
                 }`}
               >
                 {item.isUs && (
-                  <div className="absolute top-0 right-0 bg-[#38BDF8] text-[#0B0F19] text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
+                  <div className="absolute top-0 right-0 bg-[#DC143C] text-white text-[10px] font-mono font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
                     Editor's #1 Choice
                   </div>
                 )}
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-                      item.rank === 1 ? 'bg-[#38BDF8] text-[#0B0F19]' : 'bg-[#1E293B] text-[#94A3B8]'
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm font-mono ${
+                      item.rank === 1 ? 'bg-[#DC143C] text-white' : 'bg-[#F8FAFC] text-[#64748B] border border-[#E2E8F0]'
                     }`}>
                       #{item.rank}
                     </span>
                     <div>
-                      <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                      <h3 className="text-2xl font-heading font-bold text-[#0F172A] flex items-center gap-2">
                         {item.name}
                       </h3>
-                      <span className="text-xs text-[#38BDF8] font-mono font-medium">
+                      <span className="text-xs text-[#DC143C] font-mono font-semibold">
                         {item.badge}
                       </span>
                     </div>
@@ -485,7 +518,7 @@ export const BestOfGuidesView: React.FC = () => {
                   <div className="flex items-center gap-3 self-start sm:self-auto">
                     <div className="text-right">
                       <div className="text-xs text-[#64748B] font-mono">SCORE</div>
-                      <div className="text-lg font-bold text-[#10B981] flex items-center gap-1">
+                      <div className="text-lg font-bold text-emerald-700 flex items-center gap-1 font-mono">
                         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                         {item.rating} / 5.0
                       </div>
@@ -493,29 +526,29 @@ export const BestOfGuidesView: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-[#CBD5E1] text-sm leading-relaxed mb-6">
+                <p className="text-[#64748B] text-sm leading-relaxed mb-6">
                   {item.summary}
                 </p>
 
                 {/* Pros and Cons */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#0B0F19] rounded-xl p-4 mb-6 border border-[#1E293B] text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F8FAFC] rounded-xl p-4 mb-6 border border-[#E2E8F0] text-xs">
                   <div>
-                    <span className="font-bold text-emerald-400 uppercase tracking-wider block mb-2">Strengths:</span>
-                    <ul className="space-y-1.5 text-slate-300">
+                    <span className="font-bold text-emerald-700 uppercase tracking-wider block mb-2 font-mono">Strengths:</span>
+                    <ul className="space-y-1.5 text-[#0F172A]">
                       {item.pros.map((p, idx) => (
                         <li key={idx} className="flex items-start gap-1.5">
-                          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                           <span>{p}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   <div>
-                    <span className="font-bold text-rose-400 uppercase tracking-wider block mb-2">Trade-offs:</span>
-                    <ul className="space-y-1.5 text-slate-400">
+                    <span className="font-bold text-rose-700 uppercase tracking-wider block mb-2 font-mono">Trade-offs:</span>
+                    <ul className="space-y-1.5 text-[#64748B]">
                       {item.cons.map((c, idx) => (
                         <li key={idx} className="flex items-start gap-1.5">
-                          <X className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                          <X className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
                           <span>{c}</span>
                         </li>
                       ))}
@@ -524,22 +557,22 @@ export const BestOfGuidesView: React.FC = () => {
                 </div>
 
                 {/* Meta details footer */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#1E293B] text-xs">
-                  <div className="space-y-1">
-                    <div><span className="text-[#64748B]">Pricing:</span> <span className="text-white font-medium">{item.pricing}</span></div>
-                    <div><span className="text-[#64748B]">Best For:</span> <span className="text-[#38BDF8]">{item.bestFor}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#E2E8F0] text-xs">
+                  <div className="space-y-1 font-mono">
+                    <div><span className="text-[#64748B]">Pricing:</span> <span className="text-[#0F172A] font-semibold">{item.pricing}</span></div>
+                    <div><span className="text-[#64748B]">Best For:</span> <span className="text-[#DC143C] font-semibold">{item.bestFor}</span></div>
                   </div>
                   {item.isUs ? (
                     <button
                       onClick={() => navigate('/auth')}
-                      className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-bold rounded-xl transition-all shadow-md self-start sm:self-auto"
+                      className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-[#DC143C] hover:bg-red-700 text-white font-mono font-bold text-xs rounded-xl transition-all shadow-xs self-start sm:self-auto"
                     >
                       Try DECK / divider Free <ArrowRight className="w-4 h-4" />
                     </button>
                   ) : (
                     <Link
                       to={`/compare/${item.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-                      className="inline-flex items-center gap-1 text-[#38BDF8] hover:underline self-start sm:self-auto font-medium"
+                      className="inline-flex items-center gap-1 text-[#DC143C] hover:underline self-start sm:self-auto font-mono text-xs font-bold"
                     >
                       View Side-by-Side Comparison <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
@@ -550,21 +583,21 @@ export const BestOfGuidesView: React.FC = () => {
           </div>
 
           {/* FAQ Accordion Section for Rich Snippets */}
-          <div className="border-t border-[#1E293B] pt-12">
-            <h2 className="text-2xl font-bold text-white mb-2">
+          <div className="border-t border-[#E2E8F0] pt-12">
+            <h2 className="text-2xl font-heading font-bold text-[#0F172A] mb-2">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm text-[#94A3B8] mb-6">
+            <p className="text-sm text-[#64748B] mb-6">
               Clear answers to help you select the ideal collection and deck tools.
             </p>
 
             <div className="space-y-4">
               {guide.faqs.map((faq, idx) => (
-                <div key={idx} className="bg-[#111827] border border-[#1E293B] rounded-xl p-6">
-                  <h3 className="text-base font-bold text-white mb-2">
+                <div key={idx} className="bg-white border border-[#E2E8F0] rounded-xl p-6 shadow-xs">
+                  <h3 className="text-base font-heading font-bold text-[#0F172A] mb-2">
                     {faq.question}
                   </h3>
-                  <p className="text-sm text-[#94A3B8] leading-relaxed">
+                  <p className="text-sm text-[#64748B] leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>

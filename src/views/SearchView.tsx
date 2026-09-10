@@ -229,7 +229,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
           onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
           className={`h-10 px-4 flex items-center justify-center gap-2 text-xs font-mono font-bold rounded-md border transition-all cursor-pointer select-none ${
             isFilterPanelOpen || activeFilterCount > 0
-              ? 'bg-[#0F172A] text-white border-[#0F172A]'
+              ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-2xs'
               : 'bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#DC143C]'
           }`}
         >
@@ -429,7 +429,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                       onClick={() => handleToggleType(type)}
                       className={`h-9 px-3 w-full text-xs font-mono font-bold border transition-all rounded-lg flex items-center justify-center text-center truncate cursor-pointer ${
                         isSelected
-                          ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-xs'
+                          ? 'bg-[#DC143C] text-white border-[#DC143C] shadow-xs'
                           : 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
                       }`}
                     >
@@ -496,7 +496,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
             <button
               type="button"
               onClick={handleReset}
-              className="mt-3 px-4 py-2 bg-[#0F172A] text-white rounded-lg font-mono text-xs font-bold cursor-pointer"
+              className="mt-3 px-4 py-2 bg-white text-[#0F172A] border border-[#E2E8F0] hover:bg-[#F8FAFC] rounded-lg font-mono text-xs font-bold cursor-pointer transition-colors"
             >
               Reset Filters
             </button>

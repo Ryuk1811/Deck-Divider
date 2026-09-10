@@ -311,39 +311,39 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
                             <span>VERIFIED {steps[activeStep].stepNumber}/04</span>
                           </motion.div>
 
-                          <div className="bg-[#0F172A] text-white rounded-xl p-4 sm:p-6 border border-slate-800 shadow-2xl space-y-3 sm:space-y-4 text-left transform-gpu">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 sm:pb-3">
-                              <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-[#DC143C]/20 text-[#DC143C] text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase border border-[#DC143C]/40">
+                          <div className="bg-white text-[#0F172A] rounded-xl p-4 sm:p-6 border border-[#E2E8F0] shadow-xl space-y-3 sm:space-y-4 text-left transform-gpu">
+                            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2.5 sm:pb-3">
+                              <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-red-50 text-[#DC143C] text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase border border-red-200">
                                 {steps[activeStep].previewContent.badge}
                               </span>
-                              <span className="text-[10px] sm:text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
-                                <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                              <span className="text-[10px] sm:text-[11px] font-mono text-emerald-600 flex items-center gap-1.5 font-semibold">
+                                <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                 {steps[activeStep].previewContent.status}
                               </span>
                             </div>
 
                             <div className="space-y-0.5 sm:space-y-1">
-                              <span className="text-[10px] sm:text-xs text-slate-400 font-mono">Asset Identifier</span>
-                              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white leading-snug">
+                              <span className="text-[10px] sm:text-xs text-[#64748B] font-mono">Asset Identifier</span>
+                              <h3 className="text-sm sm:text-base md:text-lg font-heading font-bold text-[#0F172A] leading-snug">
                                 {steps[activeStep].previewContent.title}
                               </h3>
                             </div>
 
-                            <div className="bg-[#1E293B] rounded-lg p-2.5 sm:p-3.5 border border-slate-700 space-y-1">
-                              <div className="text-[10px] sm:text-xs text-slate-400 font-mono">Certification Standard</div>
-                              <div className="text-[11px] sm:text-xs font-semibold text-slate-200 truncate">
+                            <div className="bg-[#F8FAFC] rounded-lg p-2.5 sm:p-3.5 border border-[#E2E8F0] space-y-1">
+                              <div className="text-[10px] sm:text-xs text-[#64748B] font-mono">Certification Standard</div>
+                              <div className="text-[11px] sm:text-xs font-semibold text-[#0F172A] truncate font-mono">
                                 {steps[activeStep].previewContent.certNumber}
                               </div>
                             </div>
 
                             <div className="pt-1.5 sm:pt-2 flex items-center justify-between">
                               <div>
-                                <span className="text-[10px] sm:text-[11px] text-slate-400 font-mono block">Indexed Value</span>
-                                <span className="text-xs sm:text-base font-extrabold text-white font-mono">
+                                <span className="text-[10px] sm:text-[11px] text-[#64748B] font-mono block">Indexed Value</span>
+                                <span className="text-xs sm:text-base font-extrabold text-[#0F172A] font-mono">
                                   {steps[activeStep].previewContent.estValue}
                                 </span>
                               </div>
-                              <span className="text-[10px] sm:text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2 py-0.5 sm:py-1 rounded">
+                              <span className="text-[10px] sm:text-[11px] text-[#64748B] font-mono bg-[#F1F5F9] border border-[#E2E8F0] px-2 py-0.5 sm:py-1 rounded font-semibold">
                                 Sync: Active
                               </span>
                             </div>

@@ -264,6 +264,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -714,8 +715,8 @@ export async function renderSsrRoute(
   }
 
   if (cleanPath === '/formats') {
-    const pageTitle = 'Pokémon TCG Formats & Legality Guide — DECK / divider';
-    const pageDesc = 'Understand the rules, rotation schedules, and legal card pools for Standard, Expanded, and Gym Leader Challenge (GLC) formats.';
+    const pageTitle = 'Pokémon TCG Formats & Standard Legality Guide | DECK / divider Tracker';
+    const pageDesc = 'Check standard rotation schedules, build legal PTCGL tournament decks, and explore Standard, Expanded, and GLC card pools on DECK / divider.';
     const canonicalUrl = `${canonicalOrigin}/formats`;
 
     const jsonLd = {
@@ -1132,6 +1133,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1329,6 +1331,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1466,6 +1469,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1506,7 +1510,7 @@ export async function renderSsrRoute(
 
   // 5. PRICING PAGE ROUTE: /pricing
   if (cleanPath === '/pricing') {
-    const pageTitle = 'Pricing Plans & Subscriptions — DECK / divider Pokémon TCG';
+    const pageTitle = 'Pricing Plans & Subscriptions | DECK / divider Pokémon TCG Tracker';
     const pageDesc = 'Compare DECK / divider subscription tiers from free Starter to institutional Collection Vault. 60-card tournament builder, PSA slab tracking, and live market pricing.';
     const canonicalUrl = `${canonicalOrigin}/pricing`;
     const ogImageUrl = 'https://deckdivider.app/og-image.png';
@@ -1525,7 +1529,7 @@ export async function renderSsrRoute(
         {
           '@type': 'SoftwareApplication',
           name: 'DECK / divider',
-          applicationCategory: 'EntertainmentApplication',
+          applicationCategory: 'UtilityApplication, EntertainmentApplication',
           operatingSystem: 'Web, iOS, Android',
           offers: {
             '@type': 'AggregateOffer',
@@ -1583,10 +1587,11 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="DECK / divider Pricing Tiers" />
+    <meta property="og:image:alt" content="DECK / divider Pokémon TCG Tracker Pricing Tiers" />
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DECK / divider" />
@@ -1664,7 +1669,7 @@ export async function renderSsrRoute(
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Bunch</h2>
-          <div style="font-size:28px;font-weight:900;margin:12px 0;">$4.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$11 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
           <p style="color:#64748B;font-size:13px;margin-bottom:16px;">For your first graded slabs &amp; PSA cert logging.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
             <li>Up to 9 custom decks</li>
@@ -1677,7 +1682,7 @@ export async function renderSsrRoute(
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Stack</h2>
-          <div style="font-size:28px;font-weight:900;margin:12px 0;">$6.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$22 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
           <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Expanded capacity for serious binder completists.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
             <li>Up to 15 custom decks</li>
@@ -1691,7 +1696,7 @@ export async function renderSsrRoute(
         <div style="background:#FFFFFF;border:2px solid #DC143C;border-radius:16px;padding:24px;position:relative;box-shadow:0 4px 12px rgba(220,20,60,0.1);">
           <span style="position:absolute;top:-12px;right:16px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">MOST POPULAR</span>
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Deck</h2>
-          <div style="font-size:28px;font-weight:900;margin:12px 0;">$9.99 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;">$33 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
           <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Championship 60-card tournament decks and sealed vault.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
             <li>Up to 18 custom decks (60-card)</li>
@@ -1704,7 +1709,7 @@ export async function renderSsrRoute(
 
         <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;color:#FFFFFF;">Collection</h2>
-          <div style="font-size:28px;font-weight:900;margin:12px 0;color:#FFFFFF;">$19.99 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
+          <div style="font-size:28px;font-weight:900;margin:12px 0;color:#FFFFFF;">$44 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
           <p style="color:#94A3B8;font-size:13px;margin-bottom:16px;">Institutional high-net-worth portfolio vault.</p>
           <ul style="color:#CBD5E1;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
             <li>Unlimited decks &amp; wishlists (&infin;)</li>
@@ -1832,6 +1837,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1943,6 +1949,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -2008,6 +2015,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -2081,8 +2089,8 @@ export async function renderSsrRoute(
   }
 
   // 6. HOMEPAGE / LANDING ROUTE: /
-  const pageTitle = 'DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder';
-  const pageDesc = 'Track your Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks, complete master sets, and view real-time collection values in 15+ currencies.';
+  const pageTitle = 'DECK / divider | Pokémon TCG Collection Tracker & Deck Builder';
+  const pageDesc = 'The ultimate ad-free Pokémon TCG app. Track raw cards, PSA/BGS/CGC slabs, and sealed boxes with live TCGplayer prices. Build standard legal 60-card decks.';
   const canonicalUrl = `${canonicalOrigin}/`;
   const ogImageUrl = 'https://deckdivider.app/og-image.png';
 
@@ -2096,10 +2104,14 @@ export async function renderSsrRoute(
         url: 'https://deckdivider.app',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://deckdivider.app/og-image.png',
-          width: 1200,
-          height: 630,
+          '@id': 'https://deckdivider.app/#logo',
+          url: 'https://deckdivider.app/logo.png',
+          contentUrl: 'https://deckdivider.app/logo.png',
+          width: 512,
+          height: 512,
+          caption: 'DECK / divider Logo',
         },
+        image: 'https://deckdivider.app/logo.png',
         description: 'Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players.',
         sameAs: [
           'https://twitter.com/deckdivider',
@@ -2112,6 +2124,7 @@ export async function renderSsrRoute(
         '@id': 'https://deckdivider.app/#website',
         url: 'https://deckdivider.app',
         name: 'DECK / divider',
+        image: 'https://deckdivider.app/logo.png',
         description: pageDesc,
         publisher: {
           '@id': 'https://deckdivider.app/#organization',
@@ -2127,7 +2140,8 @@ export async function renderSsrRoute(
         '@id': 'https://deckdivider.app/#software',
         name: 'DECK / divider',
         url: 'https://deckdivider.app',
-        applicationCategory: 'EntertainmentApplication',
+        image: 'https://deckdivider.app/logo.png',
+        applicationCategory: 'UtilityApplication, EntertainmentApplication',
         operatingSystem: 'Web, iOS, Android',
         description: pageDesc,
         publisher: {
@@ -2137,8 +2151,8 @@ export async function renderSsrRoute(
           '@type': 'AggregateOffer',
           priceCurrency: 'USD',
           lowPrice: '0',
-          highPrice: '19.99',
-          offerCount: 4,
+          highPrice: '44',
+          offerCount: 5,
         },
       },
       {
@@ -2206,10 +2220,11 @@ export async function renderSsrRoute(
   <meta property="og:description" content="${escapeHtml(pageDesc)}" />
   <meta property="og:image" content="${ogImageUrl}" />
   <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="DECK / divider — Grade it. Price it. Play it. Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder" />
+    <meta property="og:image:alt" content="DECK / divider | Pokémon TCG Collection Tracker & Deck Builder" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DECK / divider" />
@@ -2465,11 +2480,13 @@ export async function renderSsrRoute(
     </section>
   
 <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:32px 20px;text-align:center;color:#64748B;font-size:14px;">
-    <p style="margin:0 0 12px;font-weight:600;color:#0F172A;">DECK / divider — Pokémon TCG Portfolio &amp; Deck Studio</p>
+    <p style="margin:0 0 12px;font-weight:600;color:#0F172A;">DECK / divider — Pokémon TCG Tracker &amp; Deck Builder</p>
     <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
-      <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
-      <a href="/about" style="color:#64748B;text-decoration:none;">About &amp; Architecture</a>
-      <a href="/how-it-works" style="color:#64748B;text-decoration:none;">How It Works</a>
+      <a href="/" style="color:#64748B;text-decoration:none;">Pokémon TCG Tracker</a>
+      <a href="/about" style="color:#64748B;text-decoration:none;">About</a>
+      <a href="/pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
+      <a href="/tools/psa-grade-calculator" style="color:#64748B;text-decoration:none;">PSA Slab Calculator</a>
+      <a href="/tools/deck-legality-checker" style="color:#64748B;text-decoration:none;">Deck Legality Checker</a>
       <a href="/privacy" style="color:#64748B;text-decoration:none;">Privacy Policy</a>
       <a href="/terms" style="color:#64748B;text-decoration:none;">Terms of Service</a>
       <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
@@ -2498,6 +2515,7 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult, i
   html = html.replace(/<meta\s+name=["']robots["'][^>]*>/gi, '');
   html = html.replace(/<meta\s+name=["']googlebot["'][^>]*>/gi, '');
   html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, '');
+  html = html.replace(/<script\s+type=["']application\/ld\+json["']>[\s\S]*?<\/script>/gi, '');
 
   // Inject SSR meta tags before </head>
   if (html.includes('</head>')) {

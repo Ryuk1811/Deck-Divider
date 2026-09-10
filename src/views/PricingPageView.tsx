@@ -437,12 +437,12 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
         </section>
 
         {/* Bottom CTA Banner */}
-        <section className="bg-[#0F172A] text-white rounded-3xl p-8 sm:p-12 lg:p-16 text-center space-y-6 max-w-5xl mx-auto shadow-xl relative overflow-hidden">
+        <section className="bg-white text-[#0F172A] border border-[#E2E8F0] rounded-3xl p-8 sm:p-12 lg:p-16 text-center space-y-6 max-w-5xl mx-auto shadow-xl relative overflow-hidden">
           <div className="space-y-3 relative z-10">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading">
               Ready to take your Pokémon collection to the next level?
             </h2>
-            <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+            <p className="text-[#64748B] text-sm sm:text-base max-w-2xl mx-auto">
               Create your account in seconds and unlock live market tracking, PSA slab logging, and tournament deckbuilding.
             </p>
           </div>

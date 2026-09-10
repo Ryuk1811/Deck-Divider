@@ -14,20 +14,22 @@ export const NotFoundView: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: easeCurve }}
-        className="relative z-10 flex flex-col items-center text-center max-w-lg"
+        className="relative z-10 flex flex-col items-center text-center max-w-lg bg-white border border-[#E2E8F0] p-8 md:p-12 rounded-2xl shadow-xs"
       >
-        <h1 className="text-9xl font-extrabold text-[#0F172A] tracking-tighter mb-4">404</h1>
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">Signal Lost</h2>
-        <p className="text-slate-500 mb-8 leading-relaxed">
-          The transmission you are looking for has been dropped, or the portfolio index does not exist.
+        <span className="text-xs font-mono font-bold text-[#DC143C] bg-[#DC143C]/10 border border-[#DC143C]/20 px-3 py-1 rounded-full mb-4">
+          ERROR 404
+        </span>
+        <h1 className="text-7xl font-extrabold text-[#0F172A] font-heading tracking-tight mb-2">Signal Lost</h1>
+        <p className="text-[#64748B] text-sm mb-8 leading-relaxed">
+          The page or checklist transmission you are looking for has been dropped, moved, or does not exist.
         </p>
         
         <Link 
           to="/"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#0F172A] text-white rounded-full font-medium shadow-xl shadow-slate-900/10 hover:bg-[#1E293B] hover:shadow-2xl hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-4 focus:ring-slate-900/10"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#DC143C] hover:bg-[#B01030] text-white rounded-xl font-mono font-bold text-xs shadow-2xs transition-all active:scale-[0.98]"
         >
           <Home className="w-4 h-4" />
-          Return to Base
+          Return to Tracker
         </Link>
       </motion.div>
     </div>

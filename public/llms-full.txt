@@ -80,9 +80,9 @@
 - [DP Black Star Promos](https://deckdivider.app/set/dpp): 56 cards (Vintage)
 - [Diamond & Pearl](https://deckdivider.app/set/dp1): 130 cards (Vintage)
 - [Mysterious Treasures](https://deckdivider.app/set/dp2): 124 cards (Vintage)
+- [POP Series 6](https://deckdivider.app/set/pop6): 17 cards (Vintage)
 - [DP trainer Kit (Lucario)](https://deckdivider.app/set/tk-dp-l): 11 cards (Vintage)
 - [DP trainer Kit (Manaphy)](https://deckdivider.app/set/tk-dp-m): 12 cards (Vintage)
-- [POP Series 6](https://deckdivider.app/set/pop6): 17 cards (Vintage)
 - [Secret Wonders](https://deckdivider.app/set/dp3): 132 cards (Vintage)
 - [Great Encounters](https://deckdivider.app/set/dp4): 106 cards (Vintage)
 - [POP Series 7](https://deckdivider.app/set/pop7): 17 cards (Vintage)
@@ -121,12 +121,12 @@
 - [Plasma Freeze](https://deckdivider.app/set/bw9): 122 cards (Vintage)
 - [Plasma Blast](https://deckdivider.app/set/bw10): 105 cards (Vintage)
 - [XY Black Star Promos](https://deckdivider.app/set/xyp): 216 cards (Vintage)
-- [Legendary Treasures](https://deckdivider.app/set/bw11): 140 cards (Vintage)
 - [Radiant Collection](https://deckdivider.app/set/rc): 25 cards (Vintage)
+- [Legendary Treasures](https://deckdivider.app/set/bw11): 140 cards (Vintage)
 - [Kalos Starter Set](https://deckdivider.app/set/xy0): 39 cards (Vintage)
 - [XY](https://deckdivider.app/set/xy1): 146 cards (Vintage)
 - [Yellow A Alternate](https://deckdivider.app/set/xya): 6 cards (Vintage)
-- [XY trainer Kit (Sylveon)](https://deckdivider.app/set/tk-xy-sy): 30 cards (Vintage)
+- [XY trainer Kit (Noivern)](https://deckdivider.app/set/tk-xy-n): 30 cards (Vintage)
 
 ## Meta Tournament Archetypes
 - [Gardevoir Ex](https://deckdivider.app/decks/gardevoir-ex): 60-card tournament list with live market cost

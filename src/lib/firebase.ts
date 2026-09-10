@@ -7,7 +7,14 @@ import {
   inMemoryPersistence,
   browserPopupRedirectResolver
 } from "firebase/auth";
-import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
+import { 
+  getFirestore, 
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager,
+  doc, 
+  getDocFromServer 
+} from "firebase/firestore";
 import firebaseConfigJson from "../../firebase-applet-config.json";
 
 // User's explicit Firebase Project configuration for deckdivider1
@@ -40,12 +47,41 @@ export const auth = (() => {
   return getAuth(firebaseApp);
 })();
 
-export const db = getFirestore(
-  firebaseApp,
-  firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== "(default)"
-    ? firebaseConfigJson.firestoreDatabaseId
-    : "(default)"
-);
+const databaseId = firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== "(default)"
+  ? firebaseConfigJson.firestoreDatabaseId
+  : "(default)";
+
+// Initialize Firestore with auto-detect long polling and multi-tab offline caching
+// This prevents WebChannelConnection stream transport dropouts in sandboxed iframes & reverse-proxy networks
+export const db = (() => {
+  if (typeof window !== 'undefined') {
+    try {
+      return initializeFirestore(
+        firebaseApp,
+        {
+          experimentalAutoDetectLongPolling: true,
+          localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+          })
+        },
+        databaseId
+      );
+    } catch {
+      try {
+        return initializeFirestore(
+          firebaseApp,
+          {
+            experimentalAutoDetectLongPolling: true
+          },
+          databaseId
+        );
+      } catch {
+        return getFirestore(firebaseApp, databaseId);
+      }
+    }
+  }
+  return getFirestore(firebaseApp, databaseId);
+})();
 
 // Connection test at boot as mandated by Firebase skill
 export async function testConnection() {

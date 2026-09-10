@@ -229,9 +229,9 @@ export const PublicPortfolioView: React.FC = () => {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <AlertTriangle className="w-12 h-12 text-rose-500 mb-4" />
-        <h2 className="text-xl font-bold text-slate-900 font-heading mb-2">Unavailable</h2>
-        <p className="text-sm text-slate-600 mb-6">{error || 'Something went wrong'}</p>
-        <Link to="/" className="px-6 py-2 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors">
+        <h2 className="text-xl font-bold text-[#0F172A] font-heading mb-2">Unavailable</h2>
+        <p className="text-sm text-[#64748B] mb-6">{error || 'Something went wrong'}</p>
+        <Link to="/" className="px-6 py-2 bg-[#DC143C] text-white font-mono font-bold rounded-lg hover:bg-[#B01030] shadow-2xs transition-colors">
           Return Home
         </Link>
       </div>
@@ -239,9 +239,9 @@ export const PublicPortfolioView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] sticky top-0 z-50 shadow-xs">
         <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500">
@@ -257,23 +257,23 @@ export const PublicPortfolioView: React.FC = () => {
       </header>
 
       {/* Hero Banner */}
-      <div className="bg-slate-900 pt-12 pb-16 px-4">
+      <div className="bg-white border-b border-[#E2E8F0] pt-10 pb-12 px-4 shadow-xs">
         <div className="max-w-5xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-mono">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] text-xs font-mono">
             <ShieldCheck className="w-3.5 h-3.5 text-[#DC143C]" />
             <span>Verified Collector Showcase</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white font-heading tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#0F172A] font-heading tracking-tight">
             {snapshot.profile?.displayName || 'Collector'}'s Portfolio
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-[#64748B] text-sm sm:text-base max-w-2xl mx-auto">
             Viewing a public read-only collection tracking {decksList.length} decks, {allCardsList.length} distinct cards, and sealed vault assets.
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 -mt-8">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           {/* Navigation Tabs */}
           <div className="flex items-center border-b border-slate-100 px-2 overflow-x-auto">
@@ -365,7 +365,7 @@ export const PublicPortfolioView: React.FC = () => {
                             <div className="text-xs font-mono text-slate-400">Card {entry.id}</div>
                           )}
                           {(entry.quantity || 1) > 1 && (
-                            <div className="absolute top-2 right-2 bg-slate-900/90 text-white text-[11px] font-black px-2 py-0.5 rounded-md font-mono shadow-xs">
+                            <div className="absolute top-2 right-2 bg-white text-[#0F172A] border border-[#CBD5E1] text-[11px] font-black px-2 py-0.5 rounded-md font-mono shadow-xs">
                               x{entry.quantity}
                             </div>
                           )}

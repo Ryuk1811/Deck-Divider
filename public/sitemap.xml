@@ -2,2924 +2,2924 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://deckdivider.app/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/pricing</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/features</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/how-it-works</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://deckdivider.app/sets</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/formats</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/formats/standard</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/formats/expanded</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/formats/glc</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/compare</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/best</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/tools</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/about</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/faq</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/leaderboard</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/changelog</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/support</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/contact</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/privacy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/terms</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/cookie-policy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/security</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/media-kit</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://deckdivider.app/tools/psa-grade-calculator</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/tools/deck-legality-checker</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://deckdivider.app/features</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/how-it-works</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/formats</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/formats/standard</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/formats/expanded</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/formats/glc</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/compare</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/best</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/tools</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/leaderboard</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://deckdivider.app/compare/collectr</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/compare/pokellector</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/compare/pricecharting</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/compare/dex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/compare/tcg-collector</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/compare/dragon-shield</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/best/pokemon-card-trackers</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/best/slab-scanners</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/best/deck-builders</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/gardevoir-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/charizard-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/regidrago-vstar</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/dragapult-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/miraidon-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/lugia-vstar</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/raging-bolt-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/terapagos-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/gholdengo-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/roaring-moon-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/iron-thorns-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/pao-chien-ex</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/snorlax-stall</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/ancient-box</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/dialga-vstar</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/decks/giratina-vstar</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/set/miscp</loc>
-    <lastmod>2026-09-09</lastmod>
+    <loc>https://deckdivider.app/set/swshp</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh1</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh2</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh3</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh3.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh4</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh4.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh4.5sv</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh6</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh7</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh8</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh9tg</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh9</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh10</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh10tg</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh10.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh11</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh11tg</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12tg</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12.5gg</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv01</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sve</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/svp</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv02</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv03</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv03.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv04</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv04.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv05</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv06</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv06.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv07</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv08</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv08.5</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv09</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv10</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv10.5b</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv10.5w</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/miscp</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/basep</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/wp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/jumbo</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/gym1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/gym2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/si1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/lc</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bog</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/np</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex5.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-latia</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-latio</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/exu</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex11</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex12</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-m</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-p</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex13</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex14</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex15</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex16</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dpp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-dp-l</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-dp-m</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-dp-l</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-dp-m</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ru1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgssp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-hs-r</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-hs-g</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/col1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bwp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2011bw</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-bw-e</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-bw-z</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2012bw</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dv1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xyp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/bw11</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/rc</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/bw11</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy0</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xya</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-sy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-n</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-sy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2014xy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-w</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-b</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-w</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dc1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-latia</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-latio</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-latia</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2015xy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/g1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-su</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-p</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-su</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy11</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2016xy</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy12</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/smp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/set/tk-sm-l</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://deckdivider.app/set/smp</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-sm-r</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-sm-l</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2017sm</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm3.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm7.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2018sm</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/det1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm11</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sma</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm115</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2019sm</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm12</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swshp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/fut2020</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh3.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2021swsh</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh4.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh4.5sv</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh6</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh7</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/cel25</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/cel25cc</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/set/swsh8</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh9</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh9tg</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh10tg</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh10.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://deckdivider.app/set/cel25</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2022swsh</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh11</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh11tg</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh12</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh12tg</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh12.5gg</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh12.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv01</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/svp</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sve</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv02</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2023sv</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv03</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv03.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mfb</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv04</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv04.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv05</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv06</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv06.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv07</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/A1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/P-A</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/set/sv08</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://deckdivider.app/set/A1</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2024sv</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A1a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv08.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2b</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv09</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv10</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3b</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv10.5w</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv10.5b</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A4</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A4a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mee</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me01</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mep</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B1</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me02</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B1a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B2</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me02.5</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B2a</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me03</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me04</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me05</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://deckdivider.app/about</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/faq</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/support</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/contact</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/privacy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/terms</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/security</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/media-kit</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/changelog</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/cookie-policy</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://deckdivider.app/set/miscp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/basep/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/wp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/jumbo/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/base5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/gym1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/gym2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/si1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/neo4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/lc/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bog/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ecard3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/np/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex5.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-latia/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-latio/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/exu/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex11/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex12/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-m/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-ex-p/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex13/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex14/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex15/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ex16/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dpp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-dp-l/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-dp-m/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-dp-l/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-dp-m/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dp7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pop9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/pl4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/ru1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgssp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-hs-r/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-hs-g/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/hgss4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/col1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bwp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2011bw/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-bw-e/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-bw-z/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2012bw/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dv1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/bw10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xyp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/bw11/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/rc/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/bw11/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy0/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xya/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-sy/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-n/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-sy/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2014xy/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-w/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-b/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-w/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/dc1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-latia/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-latio/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-latia/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2015xy/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/g1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/tk-xy-su/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-xy-p/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-xy-su/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy11/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2016xy/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/xy12/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/smp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/set/tk-sm-l/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://deckdivider.app/set/smp/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/tk-sm-r/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/tk-sm-l/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2017sm/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm3.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm7.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2018sm/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/det1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm11/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sma/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm115/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2019sm/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sm12/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swshp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/fut2020/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh3.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2021swsh/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh4.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh4.5sv/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh6/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh7/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/cel25/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/cel25cc/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/cel25/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh8/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh9/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh9tg/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh9/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh10tg/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh10.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2022swsh/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh11/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh11tg/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh12/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh12tg/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/swsh12.5gg/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/swsh12.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/swsh12.5gg/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv01/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/svp/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sve/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/svp/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv02/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2023sv/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv03/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv03.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mfb/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv04/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv04.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv05/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv06/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv06.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv07/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/A1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/P-A/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/A1/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv08/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/2024sv/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A1a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv08.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A2b/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv09/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv10/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A3b/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://deckdivider.app/set/sv10.5w/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/sv10.5b/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deckdivider.app/set/sv10.5w/top-cards</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A4/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/A4a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mee/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me01/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/mep/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B1/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me02/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B1a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B2/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me02.5/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/B2a/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me03/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me04/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://deckdivider.app/set/me05/top-cards</loc>
-    <lastmod>2026-09-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 </urlset>

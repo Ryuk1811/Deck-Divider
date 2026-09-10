@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, Check, X, Shield, Zap, Award, ExternalLink, HelpCircle, ChevronRight } from 'lucide-react';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
+import { updatePageSeo } from '../utils/seo';
 
 export type Competitor = {
   id: string;
@@ -159,10 +160,56 @@ export const CompetitorComparisonView: React.FC = () => {
   
   const competitor = competitorId ? competitors[competitorId.toLowerCase()] : null;
 
+  useEffect(() => {
+    if (!competitorId || !competitor) {
+      updatePageSeo({
+        title: 'Best Pokémon Card Collection Trackers & Portfolio Apps (2025/2026) | DECK / divider',
+        description: 'Feature-by-feature comparison of top Pokémon card trackers: DECK / divider vs Collectr, Pokellector, PriceCharting, Dex, and Dragon Shield.',
+        canonicalPath: '/compare',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Pokémon Card Collection Tracker Comparisons',
+          description: 'Comprehensive benchmark comparison of top Pokémon card portfolio tools and apps.',
+          url: 'https://deckdivider.app/compare',
+          itemListElement: Object.values(competitors).map((c, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: `DECK / divider vs. ${c.name}`,
+            url: `https://deckdivider.app/compare/${c.id}`,
+          })),
+        },
+      });
+    } else {
+      updatePageSeo({
+        title: `DECK / divider vs. ${competitor.name} (${competitor.tagline}) | Comparison`,
+        description: competitor.quickVerdict,
+        canonicalPath: `/compare/${competitor.id}`,
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'Review',
+          name: `DECK / divider vs. ${competitor.name}`,
+          reviewBody: competitor.quickVerdict,
+          itemReviewed: {
+            '@type': 'SoftwareApplication',
+            name: competitor.name,
+            applicationCategory: 'UtilitiesApplication',
+            operatingSystem: 'All',
+          },
+          author: {
+            '@type': 'Organization',
+            name: 'DECK / divider',
+            url: 'https://deckdivider.app',
+          },
+        },
+      });
+    }
+  }, [competitorId, competitor]);
+
   // Render All Comparisons Directory if no competitor selected or competitor not found
   if (!competitorId || !competitor) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] flex flex-col font-sans text-white">
+      <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
         <LandingNav 
           onOpenAuth={() => navigate('/auth')} 
           onNavigateSection={(id) => {
@@ -171,18 +218,18 @@ export const CompetitorComparisonView: React.FC = () => {
           }} 
         />
 
-        <main className="flex-grow pt-24 pb-20">
+        <main className="flex-grow pt-10 sm:pt-14 pb-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/20 text-[#38BDF8] text-xs font-semibold uppercase tracking-wider mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#DC143C]/10 border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold uppercase tracking-wider mb-4">
                 <Award className="w-3.5 h-3.5" />
                 Independent Competitor Benchmarks
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[#0F172A] font-heading">
                 Best Pokémon TCG Trackers Compared (2025/2026)
               </h1>
-              <p className="text-base sm:text-lg text-[#94A3B8] max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg text-[#64748B] max-w-3xl mx-auto">
                 Discover how DECK / divider compares against Collectr, Pokellector, PriceCharting, Dex, TCG Collector, and Dragon Shield. Detailed feature-by-feature breakdowns for collectors and tournament players.
               </p>
             </div>
@@ -190,30 +237,30 @@ export const CompetitorComparisonView: React.FC = () => {
             {/* Quick Summary Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {Object.values(competitors).map((comp) => (
-                <div key={comp.id} className="bg-[#111827] border border-[#1E293B] hover:border-[#38BDF8]/50 rounded-2xl p-6 transition-all flex flex-col justify-between group">
+                <div key={comp.id} className="bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-6 transition-all flex flex-col justify-between group shadow-xs hover:shadow-sm">
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h2 className="text-xl font-bold text-white group-hover:text-[#38BDF8] transition-colors">
+                      <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] font-heading group-hover:text-[#DC143C] transition-colors">
                         DECK / divider vs. {comp.name}
                       </h2>
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1E293B] text-[#38BDF8] border border-[#334155]">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[#F8FAFC] text-[#DC143C] border border-[#E2E8F0] font-bold">
                         {comp.rating}
                       </span>
                     </div>
                     <p className="text-xs text-[#64748B] font-mono mb-4">{comp.tagline}</p>
-                    <p className="text-sm text-[#94A3B8] line-clamp-3 mb-6">
+                    <p className="text-sm text-[#64748B] line-clamp-3 mb-6 leading-relaxed">
                       {comp.theirFocus}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-[#1E293B]">
-                    <div className="text-xs text-white font-medium mb-3 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-[#38BDF8]" />
+                  <div className="pt-4 border-t border-[#E2E8F0]">
+                    <div className="text-xs text-[#0F172A] font-medium mb-3 flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-[#DC143C]" />
                       <span>{comp.ourAdvantage.slice(0, 75)}...</span>
                     </div>
                     <Link
                       to={`/compare/${comp.id}`}
-                      className="w-full py-2.5 px-4 rounded-xl bg-[#1E293B] group-hover:bg-[#38BDF8] text-white group-hover:text-[#0B0F19] text-xs font-bold transition-all flex items-center justify-center gap-1 border border-[#334155] group-hover:border-[#38BDF8]"
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#F8FAFC] group-hover:bg-[#DC143C] text-[#0F172A] group-hover:text-white text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 border border-[#CBD5E1] group-hover:border-[#DC143C] shadow-2xs"
                     >
                       Read Full Comparison <ChevronRight className="w-4 h-4" />
                     </Link>
@@ -223,76 +270,76 @@ export const CompetitorComparisonView: React.FC = () => {
             </div>
 
             {/* Master Feature Matrix Table */}
-            <div className="bg-[#111827] border border-[#1E293B] rounded-2xl p-6 sm:p-8 mb-16">
-              <h2 className="text-2xl font-bold text-white mb-2">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 mb-16 shadow-xs">
+              <h2 className="text-2xl font-bold text-[#0F172A] font-heading mb-2">
                 Comprehensive Feature Comparison Matrix
               </h2>
-              <p className="text-sm text-[#94A3B8] mb-6">
+              <p className="text-sm text-[#64748B] mb-6">
                 Direct benchmark across core capabilities for serious Pokémon card collectors and competitive competitors.
               </p>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr className="border-b border-[#1E293B] bg-[#0F172A] text-xs font-mono text-[#94A3B8]">
-                      <th className="py-4 px-4 font-semibold">Core Capability</th>
-                      <th className="py-4 px-4 font-bold text-white text-center bg-[#38BDF8]/10 border-x border-[#38BDF8]/30">
+                    <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#64748B]">
+                      <th className="py-4 px-4 font-semibold rounded-tl-xl">Core Capability</th>
+                      <th className="py-4 px-4 font-bold text-[#DC143C] text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20">
                         DECK / divider
                       </th>
                       <th className="py-4 px-4 text-center">Collectr</th>
                       <th className="py-4 px-4 text-center">Pokellector</th>
                       <th className="py-4 px-4 text-center">PriceCharting</th>
-                      <th className="py-4 px-4 text-center">Dex</th>
+                      <th className="py-4 px-4 text-center rounded-tr-xl">Dex</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1E293B]">
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">60-Card Deck Builder with PTCGL Export</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
+                  <tbody className="divide-y divide-[#E2E8F0]">
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">60-Card Deck Builder with PTCGL Export</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">Tournament Format Legality (G &amp; H Regulation)</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Tournament Format Legality (G &amp; H Regulation)</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">Live Multi-Currency FX Conversions</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Live Multi-Currency FX Conversions</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">PSA, BGS &amp; CGC Graded Slab Tracking</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">PSA, BGS &amp; CGC Graded Slab Tracking</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">Sealed Vault (Booster Boxes, ETBs, Cases)</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Sealed Vault (Booster Boxes, ETBs, Cases)</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
-                    <tr className="hover:bg-[#1E293B]/30">
-                      <td className="py-4 px-4 font-medium text-white">Offline-First Client Cache (IndexedDB)</td>
-                      <td className="py-4 px-4 text-center bg-[#38BDF8]/5 border-x border-[#38BDF8]/20"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#64748B] mx-auto" /></td>
-                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-emerald-400 mx-auto" /></td>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Offline-First Client Cache (IndexedDB)</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
+                      <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
                     </tr>
                   </tbody>
                 </table>
@@ -300,18 +347,18 @@ export const CompetitorComparisonView: React.FC = () => {
             </div>
 
             {/* CTA */}
-            <div className="text-center bg-gradient-to-b from-[#111827] to-[#0B0F19] border border-[#1E293B] rounded-2xl p-8 sm:p-12">
-              <h2 className="text-3xl font-black text-white mb-4">
+            <div className="text-center bg-white border border-[#E2E8F0] rounded-2xl p-8 sm:p-12 shadow-xs">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] font-heading mb-4">
                 Ready to Experience the DECK / divider Difference?
               </h2>
-              <p className="text-[#94A3B8] max-w-xl mx-auto mb-8">
+              <p className="text-[#64748B] max-w-xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
                 Join thousands of Pokémon TCG players and collectors tracking their cards, slabs, and tournament lists with zero fluff.
               </p>
               <button
                 onClick={() => navigate('/auth')}
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-bold rounded-xl transition-all shadow-lg hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold text-xs rounded-xl transition-all shadow-2xs"
               >
-                Launch DECK / divider Free <ArrowRight className="w-5 h-5" />
+                Launch DECK / divider Free <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
@@ -328,7 +375,7 @@ export const CompetitorComparisonView: React.FC = () => {
 
   // Render Individual Competitor Deep Dive
   return (
-    <div className="min-h-screen bg-[#0B0F19] flex flex-col font-sans text-white">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <LandingNav 
         onOpenAuth={() => navigate('/auth')} 
         onNavigateSection={(id) => {
@@ -337,55 +384,55 @@ export const CompetitorComparisonView: React.FC = () => {
         }} 
       />
 
-      <main className="flex-grow pt-24 pb-20">
+      <main className="flex-grow pt-10 sm:pt-14 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="mb-8">
-            <Link to="/compare" className="text-xs font-mono text-[#38BDF8] hover:underline flex items-center gap-1">
+            <Link to="/compare" className="text-xs font-mono font-bold text-[#DC143C] hover:underline flex items-center gap-1">
               ← All Competitor Comparisons
             </Link>
           </div>
 
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[#0F172A] font-heading">
               DECK / divider vs. {competitor.name}
             </h1>
-            <p className="text-lg text-[#94A3B8] max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto">
               Wondering whether DECK / divider or {competitor.name} is the best choice for your Pokémon card collection? Here is the definitive feature and pricing benchmark.
             </p>
           </div>
 
           {/* Answer-First Quick Verdict Box (Optimized for AI Overviews & Snippets) */}
-          <div className="bg-[#111827] border-l-4 border-[#38BDF8] rounded-xl p-6 mb-12 shadow-md">
-            <div className="flex items-center gap-2 text-[#38BDF8] font-mono text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="bg-white border border-[#E2E8F0] border-l-4 border-l-[#DC143C] rounded-2xl p-6 mb-12 shadow-xs">
+            <div className="flex items-center gap-2 text-[#DC143C] font-mono text-xs font-bold uppercase tracking-wider mb-2">
               <Award className="w-4 h-4" />
               Quick Verdict: DECK / divider vs. {competitor.name}
             </div>
-            <p className="text-white text-base leading-relaxed font-medium">
+            <p className="text-[#0F172A] text-base leading-relaxed font-medium">
               {competitor.quickVerdict}
             </p>
           </div>
 
           {/* Side-by-Side Philosophy Cards */}
           <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <div className="bg-[#111827] border border-[#1E293B] rounded-2xl p-6">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#1E293B] rounded-xl flex items-center justify-center font-bold text-white text-lg">
+                  <div className="w-10 h-10 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl flex items-center justify-center font-bold text-[#0F172A] text-lg font-mono">
                     {competitor.name[0]}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">{competitor.name}</h2>
+                    <h2 className="text-lg font-bold text-[#0F172A] font-heading">{competitor.name}</h2>
                     <span className="text-xs text-[#64748B] font-mono">{competitor.idealFor}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-[#94A3B8] leading-relaxed mb-4">
+              <p className="text-sm text-[#64748B] leading-relaxed mb-4">
                 {competitor.theirFocus}
               </p>
               <div className="space-y-2 text-xs">
-                <div className="font-semibold text-slate-300">Strengths:</div>
-                <ul className="list-disc list-inside text-[#94A3B8] space-y-1">
+                <div className="font-semibold text-[#0F172A]">Strengths:</div>
+                <ul className="list-disc list-inside text-[#64748B] space-y-1">
                   {competitor.prosThem.map((pro, i) => (
                     <li key={i}>{pro}</li>
                   ))}
@@ -393,25 +440,24 @@ export const CompetitorComparisonView: React.FC = () => {
               </div>
             </div>
             
-            <div className="bg-[#111827] border border-[#38BDF8]/40 rounded-2xl p-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#38BDF8]/10 rounded-full blur-3xl"></div>
+            <div className="bg-white border-2 border-[#DC143C] rounded-2xl p-6 relative overflow-hidden shadow-xs">
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#38BDF8] rounded-xl flex items-center justify-center text-[#0B0F19]">
-                    <Zap className="w-5 h-5 text-[#0B0F19]" />
+                  <div className="w-10 h-10 bg-[#DC143C] rounded-xl flex items-center justify-center text-white">
+                    <Zap className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">DECK / divider</h2>
-                    <span className="text-xs text-[#38BDF8] font-mono">Specialized Pokémon OS</span>
+                    <h2 className="text-lg font-bold text-[#0F172A] font-heading">DECK / divider</h2>
+                    <span className="text-xs text-[#DC143C] font-mono font-bold">Specialized Pokémon OS</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-[#E2E8F0] leading-relaxed mb-4 relative z-10 font-medium">
+              <p className="text-sm text-[#0F172A] leading-relaxed mb-4 relative z-10 font-medium">
                 {competitor.ourAdvantage}
               </p>
               <div className="space-y-2 text-xs relative z-10">
-                <div className="font-semibold text-[#38BDF8]">Why Collectors Switch:</div>
-                <ul className="list-disc list-inside text-slate-200 space-y-1">
+                <div className="font-semibold text-[#DC143C]">Why Collectors Switch:</div>
+                <ul className="list-disc list-inside text-[#64748B] space-y-1">
                   <li>Direct 1-click PTCGL 60-card export</li>
                   <li>Live TCGplayer pricing without slow ads</li>
                   <li>Full multi-currency support with offline encryption</li>
@@ -421,37 +467,37 @@ export const CompetitorComparisonView: React.FC = () => {
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl overflow-hidden mb-12">
-            <div className="p-4 bg-[#0F172A] border-b border-[#1E293B] flex items-center justify-between">
-              <span className="text-xs font-mono uppercase text-[#94A3B8]">Feature Breakdown</span>
-              <span className="text-xs text-[#64748B]">Updated for 2025/2026 season</span>
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden mb-12 shadow-xs">
+            <div className="p-4 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between">
+              <span className="text-xs font-mono font-bold uppercase text-[#64748B]">Feature Breakdown</span>
+              <span className="text-xs text-[#64748B] font-mono">Updated for 2025/2026 season</span>
             </div>
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[#1E293B] bg-[#0F172A] text-xs font-mono text-[#94A3B8]">
+                <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#64748B]">
                   <th className="py-3 px-6 w-1/2">Capability</th>
-                  <th className="py-3 px-6 text-center text-white border-l border-[#1E293B] bg-[#38BDF8]/10">
+                  <th className="py-3 px-6 text-center text-[#DC143C] border-l border-[#E2E8F0] bg-[#DC143C]/5 font-bold">
                     DECK / divider
                   </th>
-                  <th className="py-3 px-6 text-center border-l border-[#1E293B]">{competitor.name}</th>
+                  <th className="py-3 px-6 text-center border-l border-[#E2E8F0]">{competitor.name}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E293B]">
+              <tbody className="divide-y divide-[#E2E8F0]">
                 {competitor.comparisonTable.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-[#1E293B]/30 transition-colors">
-                    <td className="py-4 px-6 text-sm text-[#E2E8F0] font-medium">{row.feature}</td>
-                    <td className="py-4 px-6 text-center border-l border-[#1E293B] bg-[#38BDF8]/5">
+                  <tr key={idx} className="hover:bg-[#F8FAFC] transition-colors">
+                    <td className="py-4 px-6 text-sm text-[#0F172A] font-medium">{row.feature}</td>
+                    <td className="py-4 px-6 text-center border-l border-[#E2E8F0] bg-[#DC143C]/5">
                       {typeof row.us === 'boolean' ? (
-                        row.us ? <Check className="w-5 h-5 text-emerald-400 mx-auto" /> : <X className="w-5 h-5 text-[#64748B] mx-auto" />
+                        row.us ? <Check className="w-5 h-5 text-[#16A34A] mx-auto" /> : <X className="w-5 h-5 text-[#94A3B8] mx-auto" />
                       ) : (
-                        <span className="text-xs font-bold text-[#38BDF8] font-mono">{row.us}</span>
+                        <span className="text-xs font-bold text-[#DC143C] font-mono">{row.us}</span>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-center border-l border-[#1E293B]">
+                    <td className="py-4 px-6 text-center border-l border-[#E2E8F0]">
                       {typeof row.them === 'boolean' ? (
-                        row.them ? <Check className="w-5 h-5 text-[#94A3B8] mx-auto" /> : <X className="w-5 h-5 text-[#64748B] mx-auto" />
+                        row.them ? <Check className="w-5 h-5 text-[#16A34A] mx-auto" /> : <X className="w-5 h-5 text-[#94A3B8] mx-auto" />
                       ) : (
-                        <span className="text-xs text-[#94A3B8] font-mono">{row.them}</span>
+                        <span className="text-xs text-[#64748B] font-mono">{row.them}</span>
                       )}
                     </td>
                   </tr>
@@ -461,21 +507,21 @@ export const CompetitorComparisonView: React.FC = () => {
           </div>
 
           {/* CTA Box */}
-          <div className="text-center bg-[#111827] border border-[#1E293B] rounded-2xl p-8 sm:p-12">
-            <h2 className="text-2xl font-bold text-white mb-2">
+          <div className="text-center bg-white border border-[#E2E8F0] rounded-2xl p-8 sm:p-12 shadow-xs">
+            <h2 className="text-2xl font-bold text-[#0F172A] font-heading mb-2">
               Ready to Upgrade to DECK / divider?
             </h2>
-            <p className="text-sm text-[#94A3B8] max-w-md mx-auto mb-6">
+            <p className="text-sm text-[#64748B] max-w-md mx-auto mb-6">
               Import your cards in seconds or try our demo guest mode without creating an account.
             </p>
             <button 
               onClick={() => navigate('/auth')}
-              className="inline-flex items-center justify-center gap-2 bg-[#DC143C] hover:bg-[#B01030] text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold text-xs py-3.5 px-8 rounded-xl transition-all shadow-2xs"
             >
               Start Free on DECK / divider
               <ArrowRight className="w-4 h-4" />
             </button>
-            <div className="mt-4 text-xs text-[#64748B]">
+            <div className="mt-4 text-xs text-[#64748B] font-mono">
               No credit card required. Free tier includes full vault tracking and deckbuilder.
             </div>
           </div>

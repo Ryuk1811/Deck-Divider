@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Search, ArrowRight } from 'lucide-react';
+import { BookOpen, Search, ArrowRight, Calendar } from 'lucide-react';
 import { CardSet } from '../types';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
@@ -59,7 +59,7 @@ export const PublicSetsDirectoryView: React.FC = () => {
   }, [sets]);
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] flex flex-col font-sans text-white">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <LandingNav 
         onOpenAuth={() => navigate('/auth')} 
         onNavigateSection={(id) => {
@@ -68,62 +68,98 @@ export const PublicSetsDirectoryView: React.FC = () => {
         }} 
       />
 
-      <main className="flex-grow pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <main className="flex-grow pt-10 sm:pt-14 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white">
+          <div className="mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-2xs">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Official Expansion Catalog</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-[#0F172A] font-heading">
               Pokémon TCG Expansions
             </h1>
-            <p className="text-lg text-[#94A3B8] max-w-3xl">
+            <p className="text-sm sm:text-base md:text-lg text-[#64748B] max-w-3xl leading-relaxed">
               Browse our complete database of Pokémon Trading Card Game sets. View checklists, live TCGplayer market values, format legalities, and track your master sets.
             </p>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#38BDF8]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#E2E8F0] border-t-[#DC143C]"></div>
             </div>
           ) : (
-            <div className="space-y-16">
+            <div className="space-y-12 sm:space-y-16">
               {categorizedSets.map((category) => (
                 <section key={category.id} id={category.id} className="scroll-mt-32">
-                  <div className="flex items-center gap-3 mb-6 border-b border-[#1E293B] pb-4">
+                  <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
                     <span className="text-2xl">{category.icon}</span>
-                    <h2 className="text-2xl font-bold text-white">{category.name}</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] font-heading">{category.name}</h2>
+                    <span className="text-xs font-mono font-semibold text-[#64748B] bg-white border border-[#E2E8F0] px-2.5 py-0.5 rounded-full">
+                      {category.sets.length} {category.sets.length === 1 ? 'Set' : 'Sets'}
+                    </span>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {category.sets.map((set) => (
                       <Link 
                         key={set.id}
                         to={`/set/${set.id}`}
-                        className="group flex flex-col bg-[#111827] border border-[#1E293B] hover:border-[#38BDF8]/50 rounded-xl p-4 transition-all hover:shadow-lg hover:shadow-[#38BDF8]/5"
+                        className="group flex flex-col bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl overflow-hidden transition-all hover:shadow-md hover:-translate-y-1"
                       >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-white group-hover:text-[#38BDF8] transition-colors line-clamp-1">
-                              {set.name}
-                            </h3>
-                            <p className="text-sm text-[#64748B] mt-1">{set.releaseDate}</p>
-                          </div>
+                        {/* Expansion Logo Container */}
+                        <div className="h-28 w-full bg-[#F8FAFC] border-b border-[#E2E8F0] p-4 flex items-center justify-center relative overflow-hidden group-hover:bg-slate-50 transition-colors">
+                          {set.logoUrl ? (
+                            <img 
+                              src={set.logoUrl} 
+                              alt={`${set.name} logo`} 
+                              className="max-w-[85%] max-h-[85%] object-contain filter drop-shadow-2xs group-hover:scale-105 transition-transform duration-200"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                if (target.src.endsWith('.webp')) {
+                                  target.src = target.src.replace('.webp', '.png');
+                                } else if (set.symbolUrl && target.src !== set.symbolUrl) {
+                                  target.src = set.symbolUrl;
+                                } else {
+                                  target.style.display = 'none';
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="font-heading font-bold text-sm text-[#64748B]">{set.name}</span>
+                          )}
                           {set.symbolUrl && (
                             <img 
                               src={set.symbolUrl} 
-                              alt={`${set.name} symbol`} 
-                              className="w-6 h-6 object-contain opacity-70 group-hover:opacity-100 transition-opacity ml-3"
+                              alt="" 
+                              className="absolute top-2.5 right-2.5 w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
                               loading="lazy"
+                              onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
                           )}
                         </div>
-                        
-                        <div className="mt-auto pt-4 flex items-center justify-between text-sm">
-                          <span className="text-[#94A3B8]">
-                            {set.printedTotal} Cards
-                          </span>
-                          <span className="flex items-center text-[#38BDF8] opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-300">
-                            Checklist <ArrowRight className="w-4 h-4 ml-1" />
-                          </span>
+
+                        {/* Set Information */}
+                        <div className="p-4 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-sm sm:text-base text-[#0F172A] group-hover:text-[#DC143C] transition-colors line-clamp-1 font-heading">
+                              {set.name}
+                            </h3>
+                            <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-mono mt-1.5">
+                              <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
+                              <span>{set.releaseDate}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 pt-3 border-t border-[#F1F5F9] flex items-center justify-between text-xs font-mono">
+                            <span className="text-[#64748B] bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-0.5 rounded-md font-medium">
+                              {set.printedTotal} Cards
+                            </span>
+                            <span className="flex items-center text-[#DC143C] font-semibold opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0 transform duration-200">
+                              Checklist <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                            </span>
+                          </div>
                         </div>
                       </Link>
                     ))}

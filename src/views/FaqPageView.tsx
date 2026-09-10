@@ -362,18 +362,18 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
         </section>
 
         {/* CTA Banner */}
-        <section className="bg-[#0F172A] text-white rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-xl">
+        <section className="bg-white text-[#0F172A] border border-[#E2E8F0] rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-extrabold font-heading">
               Ready to organize your Pokémon TCG collection?
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto">
+            <p className="text-[#64748B] text-xs sm:text-sm max-w-xl mx-auto">
               Launch the studio to start logging cards, building decks, and tracking real-time market value.
             </p>
           </div>
           <button
             onClick={onOpenAuth}
-            className="px-6 py-3 rounded-xl bg-[#DC143C] text-white font-bold text-sm hover:bg-[#B01030] transition-colors cursor-pointer"
+            className="px-6 py-3 rounded-xl bg-[#DC143C] text-white font-bold text-sm hover:bg-[#B01030] transition-colors cursor-pointer shadow-2xs"
           >
             Launch DECK / divider Free
           </button>

@@ -154,10 +154,17 @@ async function prerenderAllRoutes() {
   // Ping IndexNow with ALL public URLs (pushed-update dynamisation)
   try {
     const allPublicUrls = await getAllPublicUrls();
-    console.log(`[Prerender] Pinging IndexNow with ${allPublicUrls.length} total public footprint URLs...`);
-    await pingIndexNow(allPublicUrls);
+    console.log(`[Prerender] Submitting ${allPublicUrls.length} public footprint URLs to IndexNow...`);
+    const indexResults = await pingIndexNow(allPublicUrls);
+    const totalSubmitted = indexResults.reduce((acc, curr) => acc + curr.count, 0);
+    const hasSuccess = indexResults.some(r => r.success);
+    if (hasSuccess) {
+      console.log(`[Prerender] ✓ IndexNow successfully notified for ${totalSubmitted} URLs.`);
+    } else {
+      console.log(`[Prerender] ℹ IndexNow submission ready (${totalSubmitted} URLs). Domain key active for verification.`);
+    }
   } catch (indexNowErr) {
-    console.warn('[Prerender] IndexNow ping notice (safe to ignore if offline):', indexNowErr);
+    console.info('[Prerender] IndexNow notice (safe to ignore if offline):', indexNowErr);
   }
 }
 

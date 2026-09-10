@@ -728,7 +728,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#0F172A] shadow-xl border-4 border-[#1E293B]">
+          <div className="p-6 rounded-2xl bg-white shadow-xs border border-[#E2E8F0]">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {currentBinderCards.map(({ entry, card, deckName, deckColor, deckId }) => (
                 <div key={`${deckId}-${entry.id}`} className="relative group">

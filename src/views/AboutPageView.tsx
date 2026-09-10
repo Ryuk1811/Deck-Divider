@@ -160,57 +160,57 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
         </section>
 
         {/* 2. Plain, Visible Statement of Price Data & Provenance */}
-        <section className="max-w-5xl mx-auto bg-slate-900 text-white rounded-2xl p-6 sm:p-10 lg:p-12 border border-slate-800 space-y-8 relative overflow-hidden">
+        <section className="max-w-5xl mx-auto bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-10 lg:p-12 shadow-xs space-y-8 relative overflow-hidden">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 text-[#16A34A] font-mono text-xs font-bold uppercase tracking-wider">
               <Database className="w-4 h-4" />
               <span>Data Provenance &amp; Verification</span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-heading">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-[#0F172A] font-heading">
               Where Our Price &amp; Card Data Comes From
             </h2>
-            <p className="text-xs sm:text-base text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-base text-[#64748B] leading-relaxed">
               We believe in total transparency about how card values, set checklists, and format rules are calculated. Here is the exact provenance of all information inside DECK / divider:
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-2.5">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-5 space-y-2.5">
+              <div className="flex items-center gap-2 text-[#16A34A] font-bold text-sm">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>Market Prices: TCGplayer &amp; eBay Comps</span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Raw card values, reverse holos, and special art cards update continuously from verified <strong>TCGplayer Market Prices</strong> and completed <strong>eBay sold transactions</strong>. Prices are averaged to filter out fraudulent or anomalous listings.
+              <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
+                Raw card values, reverse holos, and special art cards update continuously from verified <strong className="text-[#0F172A]">TCGplayer Market Prices</strong> and completed <strong className="text-[#0F172A]">eBay sold transactions</strong>. Prices are averaged to filter out fraudulent or anomalous listings.
               </p>
             </div>
 
-            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-2.5">
-              <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-5 space-y-2.5">
+              <div className="flex items-center gap-2 text-[#2563EB] font-bold text-sm">
                 <Globe className="w-4 h-4 shrink-0" />
                 <span>Currency Exchange: European Central Bank</span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
                 Whether you view your collection in USD ($), EUR (€), GBP (£), JPY (¥), CAD ($), or AUD ($), conversion rates are updated daily from official European Central Bank and international forex feeds.
               </p>
             </div>
 
-            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-2.5">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-5 space-y-2.5">
+              <div className="flex items-center gap-2 text-[#D97706] font-bold text-sm">
                 <Layers className="w-4 h-4 shrink-0" />
                 <span>Expansions &amp; Checklist Matrix</span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
                 Our database covers 148+ expansions spanning Vintage (Base Set through Neo and e-Reader), Mid-Era (EX, Diamond &amp; Pearl, Platinum, Black &amp; White, XY, Sun &amp; Moon), and Modern (Sword &amp; Shield, Scarlet &amp; Violet) with full illustrator credits and rarity symbols.
               </p>
             </div>
 
-            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-2.5">
-              <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-5 space-y-2.5">
+              <div className="flex items-center gap-2 text-[#DC143C] font-bold text-sm">
                 <Award className="w-4 h-4 shrink-0" />
                 <span>Tournament Rules: Play! Pokémon Standard</span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
                 Regulation marks (F, G, H, I) and format legality are kept synchronized with official Play! Pokémon championship rotation bulletins and Pokémon TCG Live export specifications.
               </p>
             </div>

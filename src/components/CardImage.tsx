@@ -87,33 +87,33 @@ export const CardImage: React.FC<CardImageProps> = ({
     // Dynamic TCG Stylized Card Fallback (rendered if CDNs have no artwork)
     return (
       <div
-        className={`relative aspect-[0.718] w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] border border-[#CBD5E1] rounded-lg p-3 flex flex-col justify-between overflow-hidden shadow-inner ${className}`}
+        className={`relative aspect-[0.718] w-full bg-[#F8FAFC] border-2 border-[#CBD5E1] rounded-lg p-3 flex flex-col justify-between overflow-hidden shadow-2xs ${className}`}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/20 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#DC143C]/10 via-transparent to-transparent pointer-events-none" />
 
         {/* Top Header */}
-        <div className="flex items-center justify-between text-white border-b border-white/10 pb-1 z-10">
-          <span className="font-heading font-bold text-[11px] truncate max-w-[80%] text-[#FFD700]">
+        <div className="flex items-center justify-between text-[#0F172A] border-b border-[#E2E8F0] pb-1 z-10">
+          <span className="font-heading font-bold text-[11px] truncate max-w-[80%] text-[#0F172A]">
             {cardName}
           </span>
-          <Sparkles className="w-3.5 h-3.5 text-[#FFD700] flex-shrink-0 animate-pulse" />
+          <Sparkles className="w-3.5 h-3.5 text-[#DC143C] flex-shrink-0 animate-pulse" />
         </div>
 
         {/* Center Emblem Illustration */}
         <div className="flex-1 flex flex-col items-center justify-center text-center my-2 z-10 px-1">
-          <div className="w-10 h-10 rounded-full bg-white/5 border border-white/15 flex items-center justify-center mb-1 shadow-lg backdrop-blur-xs">
+          <div className="w-10 h-10 rounded-full bg-white border border-[#E2E8F0] flex items-center justify-center mb-1 shadow-xs">
             <Shield className="w-5 h-5 text-[#DC143C]" />
           </div>
-          <span className="font-mono text-[9px] uppercase tracking-wider text-white/70 line-clamp-1">
+          <span className="font-mono text-[9px] uppercase tracking-wider text-[#64748B] line-clamp-1 font-semibold">
             {setName || 'Official TCG'}
           </span>
-          <span className="font-heading font-extrabold text-[10px] text-white/90 truncate max-w-full">
+          <span className="font-heading font-extrabold text-[10px] text-[#0F172A] truncate max-w-full">
             {cardName}
           </span>
         </div>
 
         {/* Bottom Footer Details */}
-        <div className="flex items-center justify-between text-[9px] font-mono text-white/60 border-t border-white/10 pt-1 z-10">
+        <div className="flex items-center justify-between text-[9px] font-mono text-[#64748B] border-t border-[#E2E8F0] pt-1 z-10 font-semibold">
           <span className="truncate">{rarity || 'Common'}</span>
           <span>#{cardNumber || '---'}</span>
         </div>
