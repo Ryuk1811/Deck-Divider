@@ -182,6 +182,12 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
             </p>
           </div>
           <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              to="/socials"
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+            >
+              <span>Socials &amp; Reviews</span>
+            </Link>
             <button
               onClick={onEnterApp || onOpenAuth}
               className="px-4 py-2 bg-[#DC143C] hover:bg-[#B01030] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"

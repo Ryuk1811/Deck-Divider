@@ -15,6 +15,32 @@ async function prerenderAllRoutes() {
   } catch (ogErr) {
     console.warn('[Prerender] Notice: Failed generating OG Hero Image:', ogErr);
   }
+
+  // Ensure all icons in dist match the clean public icons
+  try {
+    const iconFiles = [
+      'favicon.ico',
+      'favicon-16x16.png',
+      'favicon-32x32.png',
+      'favicon-48x48.png',
+      'favicon.png',
+      'apple-touch-icon.png',
+      'icon-192.png',
+      'icon-google-192.png',
+      'icon-512.png',
+      'logo.png'
+    ];
+    for (const icon of iconFiles) {
+      const srcPath = path.resolve(process.cwd(), 'public', icon);
+      const destPath = path.join(distDir, icon);
+      if (fs.existsSync(srcPath)) {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  } catch (e) {
+    console.warn('[Prerender] Notice: Icon copy sync', e);
+  }
+
   const templatePath = path.join(distDir, 'index.html');
   if (!fs.existsSync(templatePath)) {
     console.warn('[Prerender] dist/index.html not found. Skipping static prerender.');
@@ -28,30 +54,29 @@ async function prerenderAllRoutes() {
   console.log('[Prerender] ✓ Successfully generated 200.html SPA fallback.');
 
   // 2. Comprehensive public routes list for static pre-rendering
+  // Aligning entirely with the Phase 1 React Router rewrite (Singular domains)
   const publicRoutes: Array<{ route: string; outputPath: string }> = [
     { route: '/', outputPath: path.join(distDir, 'index.html') },
+    { route: '/directory', outputPath: path.join(distDir, 'directory', 'index.html') },
+    { route: '/directory/sets-index', outputPath: path.join(distDir, 'directory', 'sets-index', 'index.html') },
+    { route: '/directory/decks-index', outputPath: path.join(distDir, 'directory', 'decks-index', 'index.html') },
+    { route: '/directory/slabs-index', outputPath: path.join(distDir, 'directory', 'slabs-index', 'index.html') },
+    { route: '/directory/glossary', outputPath: path.join(distDir, 'directory', 'glossary', 'index.html') },
     { route: '/pricing', outputPath: path.join(distDir, 'pricing', 'index.html') },
-    { route: '/faq', outputPath: path.join(distDir, 'faq', 'index.html') },
+    { route: '/sets', outputPath: path.join(distDir, 'sets', 'index.html') },
+    { route: '/leaderboard', outputPath: path.join(distDir, 'leaderboard', 'index.html') },
     { route: '/about', outputPath: path.join(distDir, 'about', 'index.html') },
     { route: '/how-it-works', outputPath: path.join(distDir, 'how-it-works', 'index.html') },
     { route: '/privacy', outputPath: path.join(distDir, 'privacy', 'index.html') },
     { route: '/terms', outputPath: path.join(distDir, 'terms', 'index.html') },
-    { route: '/changelog', outputPath: path.join(distDir, 'changelog', 'index.html') },
-    { route: '/features', outputPath: path.join(distDir, 'features', 'index.html') },
-    { route: '/support', outputPath: path.join(distDir, 'support', 'index.html') },
     { route: '/contact', outputPath: path.join(distDir, 'contact', 'index.html') },
-    { route: '/cookie-policy', outputPath: path.join(distDir, 'cookie-policy', 'index.html') },
-    { route: '/security', outputPath: path.join(distDir, 'security', 'index.html') },
-    { route: '/media-kit', outputPath: path.join(distDir, 'media-kit', 'index.html') },
-    { route: '/sets', outputPath: path.join(distDir, 'sets', 'index.html') },
-    { route: '/leaderboard', outputPath: path.join(distDir, 'leaderboard', 'index.html') },
-    { route: '/community', outputPath: path.join(distDir, 'community', 'index.html') },
-
+    { route: '/faq', outputPath: path.join(distDir, 'faq', 'index.html') },
+    
     // Formats & Legality
     { route: '/formats', outputPath: path.join(distDir, 'formats', 'index.html') },
-    { route: '/formats/standard', outputPath: path.join(distDir, 'formats', 'standard', 'index.html') },
-    { route: '/formats/expanded', outputPath: path.join(distDir, 'formats', 'expanded', 'index.html') },
-    { route: '/formats/glc', outputPath: path.join(distDir, 'formats', 'glc', 'index.html') },
+    { route: '/format/standard', outputPath: path.join(distDir, 'format', 'standard', 'index.html') },
+    { route: '/format/expanded', outputPath: path.join(distDir, 'format', 'expanded', 'index.html') },
+    { route: '/format/glc', outputPath: path.join(distDir, 'format', 'glc', 'index.html') },
 
     // Competitor Comparisons (High Intent Commercial Queries)
     { route: '/compare', outputPath: path.join(distDir, 'compare', 'index.html') },
@@ -70,43 +95,37 @@ async function prerenderAllRoutes() {
 
     // High Intent Utility Tools
     { route: '/tools', outputPath: path.join(distDir, 'tools', 'index.html') },
-    { route: '/tools/psa-grade-calculator', outputPath: path.join(distDir, 'tools', 'psa-grade-calculator', 'index.html') },
-    { route: '/tools/deck-legality-checker', outputPath: path.join(distDir, 'tools', 'deck-legality-checker', 'index.html') },
+    { route: '/tool/psa-grade-calculator', outputPath: path.join(distDir, 'tool', 'psa-grade-calculator', 'index.html') },
+    { route: '/tool/deck-legality-checker', outputPath: path.join(distDir, 'tool', 'deck-legality-checker', 'index.html') },
 
-    // Programmatic Tournament Deck Archetypes (Plural & Singular Aliases)
-    { route: '/decks/gardevoir-ex', outputPath: path.join(distDir, 'decks', 'gardevoir-ex', 'index.html') },
+    // Programmatic Tournament Deck Archetypes (Singular)
     { route: '/deck/gardevoir-ex', outputPath: path.join(distDir, 'deck', 'gardevoir-ex', 'index.html') },
-    { route: '/decks/charizard-ex', outputPath: path.join(distDir, 'decks', 'charizard-ex', 'index.html') },
     { route: '/deck/charizard-ex', outputPath: path.join(distDir, 'deck', 'charizard-ex', 'index.html') },
-    { route: '/decks/regidrago-vstar', outputPath: path.join(distDir, 'decks', 'regidrago-vstar', 'index.html') },
     { route: '/deck/regidrago-vstar', outputPath: path.join(distDir, 'deck', 'regidrago-vstar', 'index.html') },
-    { route: '/decks/dragapult-ex', outputPath: path.join(distDir, 'decks', 'dragapult-ex', 'index.html') },
     { route: '/deck/dragapult-ex', outputPath: path.join(distDir, 'deck', 'dragapult-ex', 'index.html') },
-    { route: '/decks/miraidon-ex', outputPath: path.join(distDir, 'decks', 'miraidon-ex', 'index.html') },
     { route: '/deck/miraidon-ex', outputPath: path.join(distDir, 'deck', 'miraidon-ex', 'index.html') },
-    { route: '/decks/lugia-vstar', outputPath: path.join(distDir, 'decks', 'lugia-vstar', 'index.html') },
     { route: '/deck/lugia-vstar', outputPath: path.join(distDir, 'deck', 'lugia-vstar', 'index.html') },
-    { route: '/decks/lost-box-giratina', outputPath: path.join(distDir, 'decks', 'lost-box-giratina', 'index.html') },
-    { route: '/deck/lost-box-giratina', outputPath: path.join(distDir, 'deck', 'lost-box-giratina', 'index.html') },
-    { route: '/decks/chien-pao-ex', outputPath: path.join(distDir, 'decks', 'chien-pao-ex', 'index.html') },
-    { route: '/deck/chien-pao-ex', outputPath: path.join(distDir, 'deck', 'chien-pao-ex', 'index.html') },
-    { route: '/decks/raging-bolt-ex', outputPath: path.join(distDir, 'decks', 'raging-bolt-ex', 'index.html') },
     { route: '/deck/raging-bolt-ex', outputPath: path.join(distDir, 'deck', 'raging-bolt-ex', 'index.html') },
-    { route: '/decks/gholdengo-ex', outputPath: path.join(distDir, 'decks', 'gholdengo-ex', 'index.html') },
+    { route: '/deck/terapagos-ex', outputPath: path.join(distDir, 'deck', 'terapagos-ex', 'index.html') },
     { route: '/deck/gholdengo-ex', outputPath: path.join(distDir, 'deck', 'gholdengo-ex', 'index.html') },
-    { route: '/decks/future-box-iron-crown', outputPath: path.join(distDir, 'decks', 'future-box-iron-crown', 'index.html') },
-    { route: '/deck/future-box-iron-crown', outputPath: path.join(distDir, 'deck', 'future-box-iron-crown', 'index.html') },
+    { route: '/deck/roaring-moon-ex', outputPath: path.join(distDir, 'deck', 'roaring-moon-ex', 'index.html') },
+    { route: '/deck/iron-thorns-ex', outputPath: path.join(distDir, 'deck', 'iron-thorns-ex', 'index.html') },
+    { route: '/deck/pao-chien-ex', outputPath: path.join(distDir, 'deck', 'pao-chien-ex', 'index.html') },
+    { route: '/deck/snorlax-stall', outputPath: path.join(distDir, 'deck', 'snorlax-stall', 'index.html') },
+    { route: '/deck/ancient-box', outputPath: path.join(distDir, 'deck', 'ancient-box', 'index.html') },
+    { route: '/deck/dialga-vstar', outputPath: path.join(distDir, 'deck', 'dialga-vstar', 'index.html') },
+    { route: '/deck/giratina-vstar', outputPath: path.join(distDir, 'deck', 'giratina-vstar', 'index.html') },
   ];
 
-  let sets: any[] = [];
+  console.log('[Prerender] Fetching TCG Expansions for dynamic static generation...');
   try {
-    console.log('[Prerender] Fetching TCG Expansions for dynamic static generation...');
-    sets = await getExpansions();
-    if (Array.isArray(sets) && sets.length > 0) {
-      // Pre-render top 60 sets for instant edge performance
-      const targetSets = sets.slice(0, 60);
+    const sets = await getExpansions();
+    if (sets && sets.length > 0) {
+      // Pre-render the top 100 historical sets and top-card views at build time. 
+      // The rest are caught by Cloudflare Pages wildcard fallback.
+      const targetSets = sets.slice(0, 100);
       targetSets.forEach((set: any) => {
-        if (set && set.id) {
+        if (set.id) {
           publicRoutes.push({
             route: `/set/${set.id}`,
             outputPath: path.join(distDir, 'set', set.id, 'index.html')
@@ -119,56 +138,51 @@ async function prerenderAllRoutes() {
       });
     }
   } catch (err) {
-    console.warn('[Prerender] Failed to fetch expansions for static routing:', err);
+    console.warn('[Prerender] Warning: Could not fetch expansions for SSG.', err);
   }
 
-  // Generate complete titanium footprint (sitemaps, RSS feed, LLMs.txt, robots.txt)
-  try {
-    console.log('[Prerender] Generating dynamic titanium public footprint...');
-    await writeAllFootprintFiles(distDir);
-    await writeAllFootprintFiles(path.join(process.cwd(), 'public'));
-  } catch (footprintErr) {
-    console.error('[Prerender] Failed to generate footprint files:', footprintErr);
-  }
+  // 3. Guarantee XML Sitemaps, Robots, LLMs txt are dropped in BOTH dist and public
+  console.log('[Prerender] Generating dynamic titanium public footprint...');
+  const publicDir = path.resolve(process.cwd(), 'public');
+  await writeAllFootprintFiles(distDir);
+  await writeAllFootprintFiles(publicDir);
 
+  // 4. Heavy Static Pre-rendering execution
   console.log(`[Prerender] Generating static HTML for ${publicRoutes.length} public routes...`);
 
   for (const { route, outputPath } of publicRoutes) {
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
     try {
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
+      const ssrResult = await renderSsrRoute(route);
+      let injectedHtml = injectSsrIntoTemplate(rawTemplate, ssrResult, true);
 
-      const ssrResult = await renderSsrRoute(route, {}, 'deckdivider.app');
-      const renderedHtml = injectSsrIntoTemplate(rawTemplate, ssrResult, true);
+      // Force hydration logic to understand it's a prerendered static page payload
+      injectedHtml = injectedHtml.replace(
+        '</body>',
+        '<script>window.__STATIC_PRERENDER__ = true;</script></body>'
+      );
 
-      fs.writeFileSync(outputPath, renderedHtml, 'utf-8');
+      fs.writeFileSync(outputPath, injectedHtml, 'utf-8');
     } catch (err) {
-      console.error(`[Prerender] ✗ Failed generating static HTML for route ${route}:`, err);
+      console.warn(`[Prerender] Skipped route ${route} due to error:`, err);
     }
   }
 
   console.log(`[Prerender] ✓ Static HTML pre-rendering complete for ${publicRoutes.length} routes.`);
 
-  // Ping IndexNow with ALL public URLs (pushed-update dynamisation)
+  // 5. Bing/Yandex IndexNow Submission (Proactive Discovery)
   try {
-    const allPublicUrls = await getAllPublicUrls();
-    console.log(`[Prerender] Submitting ${allPublicUrls.length} public footprint URLs to IndexNow...`);
-    const indexResults = await pingIndexNow(allPublicUrls);
-    const totalSubmitted = indexResults.reduce((acc, curr) => acc + curr.count, 0);
-    const hasSuccess = indexResults.some(r => r.success);
-    if (hasSuccess) {
-      console.log(`[Prerender] ✓ IndexNow successfully notified for ${totalSubmitted} URLs.`);
-    } else {
-      console.log(`[Prerender] ℹ IndexNow submission ready (${totalSubmitted} URLs). Domain key active for verification.`);
-    }
-  } catch (indexNowErr) {
-    console.info('[Prerender] IndexNow notice (safe to ignore if offline):', indexNowErr);
+    const allUrls = await getAllPublicUrls();
+    console.log(`[Prerender] Submitting ${allUrls.length} public footprint URLs to IndexNow...`);
+    await pingIndexNow(allUrls);
+  } catch(e) {
+    console.warn(`[Prerender] IndexNow notice: Domain must be live on https://deckdivider.app before API fully accepts submissions.`);
   }
+
 }
 
-prerenderAllRoutes().catch((err) => {
-  console.error('[Prerender Fatal]', err);
-  process.exit(1);
-});
+prerenderAllRoutes().catch(console.error);

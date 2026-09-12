@@ -29,56 +29,52 @@ import {
 import { initForexMetronome } from './utils/forexMetronome';
 import { initSnapshotMetronome, recordSnapshotCompleted } from './utils/cloudSnapshotMetronome';
 import { queueCardsForProgressivePrewarm } from './utils/progressiveImageLoader';
-import { Sidebar, ActiveTab } from './components/Sidebar';
-import { DeckDividerBrand, DeckDividersIcon } from './components/DeckDividerBrand';
-import { CommandPalette } from './components/CommandPalette';
-import { CardDetailModal } from './components/CardDetailModal';
-import { QuickLookModal } from './components/QuickLookModal';
-import { LimitReachedModal } from './components/LimitReachedModal';
-import { GuestLimitModal } from './components/GuestLimitModal';
-import { PayPalSubscriptionModal } from './components/PayPalSubscriptionModal';
-import { PayPalSuccessModal } from './components/PayPalSuccessModal';
-import { PayPalCancelModal } from './components/PayPalCancelModal';
-import { PagesDropdown } from './components/PagesDropdown';
+import { Sidebar, ActiveTab } from './components/ui/Sidebar';
+import { DeckDividerBrand, DeckDividersIcon } from './components/ui/DeckDividerBrand';
+import { CommandPalette } from './components/ui/CommandPalette';
+import { CardDetailModal } from './components/modals/CardDetailModal';
+import { QuickLookModal } from './components/modals/QuickLookModal';
+import { LimitReachedModal } from './components/modals/LimitReachedModal';
+import { GuestLimitModal } from './components/modals/GuestLimitModal';
+import { PayPalSubscriptionModal } from './components/modals/PayPalSubscriptionModal';
+import { PayPalSuccessModal } from './components/modals/PayPalSuccessModal';
+import { PayPalCancelModal } from './components/modals/PayPalCancelModal';
+import { PagesDropdown } from './components/ui/PagesDropdown';
 
-import { CollectionView } from './views/CollectionView';
-import { MetricsView } from './views/MetricsView';
-import { DecksView } from './views/DecksView';
-import { SearchView } from './views/SearchView';
-import { SetsView } from './views/SetsView';
-import { PublicSetsDirectoryView } from './views/PublicSetsDirectoryView';
-import { PublicSetView } from './views/PublicSetView';
-import { PublicSetTopCardsView } from './views/PublicSetTopCardsView';
-import { FormatLegalityDirectoryView } from './views/FormatLegalityDirectoryView';
-import { FormatLegalityView } from './views/FormatLegalityView';
-import { CompetitorComparisonView } from './views/CompetitorComparisonView';
-import { CommunityLeaderboardView } from './views/CommunityLeaderboardView';
-import { BestOfGuidesView } from './views/BestOfGuidesView';
-import { HighIntentToolsView } from './views/HighIntentToolsView';
-import { ListsView } from './views/ListsView';
-import { SettingsView } from './views/SettingsView';
-import { AuthView } from './views/AuthView';
-import { LandingPageView } from './views/LandingPageView';
-import { AboutPageView } from './views/AboutPageView';
-import { HowItWorksPageView } from './views/HowItWorksPageView';
-import { PrivacyPolicyView } from './views/PrivacyPolicyView';
-import { TermsOfServiceView } from './views/TermsOfServiceView';
-import { PricingPageView } from './views/PricingPageView';
-import { FaqPageView } from './views/FaqPageView';
-import { NotFoundView } from './views/NotFoundView';
-import { AdminDashboardView } from './views/AdminDashboardView';
+import { CollectionView } from './views/app/CollectionView';
+import { MetricsView } from './views/app/MetricsView';
+import { DecksView } from './views/app/DecksView';
+import { SearchView } from './views/app/SearchView';
+import { SetsView } from './views/app/SetsView';
+import { PublicSetsDirectoryView } from './views/public/PublicSetsDirectoryView';
+import { PublicSetView } from './views/public/PublicSetView';
+import { PublicSetTopCardsView } from './views/public/PublicSetTopCardsView';
+import { PublicSocialsView } from './views/public/PublicSocialsView';
+import { FormatLegalityDirectoryView } from './views/public/FormatLegalityDirectoryView';
+import { FormatLegalityView } from './views/public/FormatLegalityView';
+import { CompetitorComparisonView } from './views/marketing/CompetitorComparisonView';
+import { CommunityLeaderboardView } from './views/public/CommunityLeaderboardView';
+import { BestOfGuidesView } from './views/marketing/BestOfGuidesView';
+import { HighIntentToolsView } from './views/public/HighIntentToolsView';
+import { ListsView } from './views/app/ListsView';
+import { SettingsView } from './views/app/SettingsView';
+import { AuthView } from './views/auth/AuthView';
+import { LandingPageView } from './views/marketing/LandingPageView';
+import { AboutPageView } from './views/marketing/AboutPageView';
+import { HowItWorksPageView } from './views/marketing/HowItWorksPageView';
+import { PrivacyPolicyView } from './views/legal/PrivacyPolicyView';
+import { TermsOfServiceView } from './views/legal/TermsOfServiceView';
+import { PricingPageView } from './views/marketing/PricingPageView';
+import { FaqPageView } from './views/marketing/FaqPageView';
+import { NotFoundView } from './views/app/NotFoundView';
+import { AdminDashboardView } from './views/admin/AdminDashboardView';
 import { 
-  FeaturesPageView, 
-  ChangelogPageView, 
-  SupportPageView, 
   ContactPageView, 
-  CookiePolicyView, 
-  SecurityPageView, 
-  MediaKitPageView 
-} from './views/AdditionalPages';
-import { AnalyticsFunnelModal } from './components/AnalyticsFunnelModal';
+  SecurityPageView 
+} from './views/legal/AdditionalPages';
+import { AnalyticsFunnelModal } from './components/modals/AnalyticsFunnelModal';
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
-import { SealedPortfolioManager } from './components/SealedPortfolioManager';
+import { SealedPortfolioManager } from './components/app/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
@@ -87,7 +83,7 @@ import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustom
 import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
-import { BackupRecoveryModal } from './components/BackupRecoveryModal';
+import { BackupRecoveryModal } from './components/modals/BackupRecoveryModal';
 import {
   generateShowcaseDecks,
   generateShowcaseSealed,
@@ -101,10 +97,10 @@ import { Loader2 } from 'lucide-react';
 import { db, auth, handleFirestoreError, OperationType } from './lib/firebase';
 import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
-import { PublicDeckView } from './views/PublicDeckView';
+import { PublicDeckView } from './views/public/PublicDeckView';
 import { useParams, useSearchParams } from 'react-router-dom';
 
-import { PublicPortfolioView } from './views/PublicPortfolioView';
+import { PublicPortfolioView } from './views/public/PublicPortfolioView';
 
 const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayCurrency: string, setDisplayCurrency: (c: string) => void }) => {
   const { deckId } = useParams<{ deckId: string }>();
@@ -1766,6 +1762,7 @@ export default function App() {
   return (
     <>
       <Routes>
+        {/* === CORE MARKETING === */}
         <Route
           path="/"
           element={
@@ -1809,125 +1806,54 @@ export default function App() {
             )
           }
         />
-
-        <Route
-          path="/about"
-          element={
-            <AboutPageView
-              onOpenAuth={handleOpenAuth}
-              onNavigateHome={() => navigate('/')}
-              onNavigateHowItWorks={() => navigate('/how-it-works')}
-              displayCurrency={displayCurrency}
-            />
-          }
-        />
-
-        <Route
-          path="/how-it-works"
-          element={
-            <HowItWorksPageView
-              onOpenAuth={handleOpenAuth}
-              onNavigateHome={() => navigate('/')}
-              onNavigateAbout={() => navigate('/about')}
-              displayCurrency={displayCurrency}
-            />
-          }
-        />
-
-        <Route
-          path="/privacy"
-          element={
-            <PrivacyPolicyView
-              onOpenAuth={handleOpenAuth}
-              onNavigateHome={() => navigate('/')}
-              onNavigateHowItWorks={() => navigate('/how-it-works')}
-            />
-          }
-        />
-
-        <Route
-          path="/terms"
-          element={
-            <TermsOfServiceView
-              onOpenAuth={handleOpenAuth}
-              onNavigateHome={() => navigate('/')}
-              onNavigateHowItWorks={() => navigate('/how-it-works')}
-            />
-          }
-        />
-
-        <Route path="/features" element={<FeaturesPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/support" element={<SupportPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/about" element={<AboutPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} displayCurrency={displayCurrency} />} />
+        <Route path="/how-it-works" element={<HowItWorksPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
+        <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => navigate('/app')} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
+        <Route path="/faq" element={<FaqPageView onOpenAuth={handleOpenAuth} onEnterApp={() => navigate('/app')} displayCurrency={displayCurrency} user={user} />} />
         <Route path="/contact" element={<ContactPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/cookie-policy" element={<CookiePolicyView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+
+        {/* === LEGAL & TRUST === */}
+        <Route path="/privacy" element={<PrivacyPolicyView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/terms" element={<TermsOfServiceView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
         <Route path="/security" element={<SecurityPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/media-kit" element={<MediaKitPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
 
-        <Route
-          path="/pricing"
-          element={
-            <PricingPageView
-              onOpenAuth={handleOpenAuth}
-              onEnterApp={() => navigate('/app')}
-              currentTier={currentTier}
-              onSelectTier={(tier) => {
-                if (!user) {
-                  handleOpenAuth();
-                } else {
-                  handleChangeTier(tier);
-                }
-              }}
-              displayCurrency={displayCurrency}
-              user={user}
-            />
-          }
-        />
-
-        <Route
-          path="/faq"
-          element={
-            <FaqPageView
-              onOpenAuth={handleOpenAuth}
-              onEnterApp={() => navigate('/app')}
-              displayCurrency={displayCurrency}
-              user={user}
-            />
-          }
-        />
-
-        <Route
-          path="/auth"
-          element={
-            <AuthView
-              onBack={() => navigate('/')}
-              onGuestAccess={() => {
-                handleSetGuestMode(true);
-                navigate('/app');
-              }}
-            />
-          }
-        />
-
+        {/* === PUBLIC DIRECTORIES === */}
         <Route path="/sets" element={<PublicSetsDirectoryView />} />
+        <Route path="/formats" element={<FormatLegalityDirectoryView />} />
+        <Route path="/compare" element={<CompetitorComparisonView />} />
+        <Route path="/best" element={<BestOfGuidesView />} />
+        <Route path="/leaderboard" element={<CommunityLeaderboardView />} />
+        <Route path="/tools" element={<HighIntentToolsView />} />
+        <Route path="/socials" element={<PublicSocialsView />} />
+        <Route path="/reviews" element={<PublicSocialsView />} />
+
+        {/* === PUBLIC ENTITIES (Singular Canonical Paths) === */}
         <Route path="/set/:setId" element={<PublicSetView />} />
         <Route path="/set/:setId/top-cards" element={<PublicSetTopCardsView />} />
-        <Route path="/formats" element={<FormatLegalityDirectoryView />} />
-        <Route path="/formats/:formatId" element={<FormatLegalityView />} />
-        <Route path="/compare" element={<CompetitorComparisonView />} />
+        <Route path="/format/:formatId" element={<FormatLegalityView />} />
         <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
-        <Route path="/leaderboard" element={<CommunityLeaderboardView />} />
-        <Route path="/community" element={<CommunityLeaderboardView />} />
-        <Route path="/best" element={<BestOfGuidesView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
-        <Route path="/tools" element={<HighIntentToolsView />} />
-                <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
-                <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
-        <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+        <Route path="/tool/:toolId" element={<HighIntentToolsView />} />
+        <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
+
+        {/* === ALIASES FOR LEGACY & PLURALS === */}
+        <Route path="/formats/:formatId" element={<FormatLegalityView />} />
+        <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
+        <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
         <Route path="/portfolios/:shareId" element={<PublicPortfolioView />} />
-        <Route path="/admin" element={<AdminDashboardView />} />
+        <Route path="/support" element={<Navigate to="/contact" replace />} />
+        <Route path="/features" element={<Navigate to="/" replace />} />
+        <Route path="/changelog" element={<Navigate to="/" replace />} />
+        <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
+        <Route path="/media-kit" element={<Navigate to="/about" replace />} />
+        <Route path="/community" element={<Navigate to="/leaderboard" replace />} />
+
+        {/* === AUTH & ADMIN === */}
+        <Route path="/auth" element={<AuthView onBack={() => navigate('/')} onGuestAccess={() => { handleSetGuestMode(true); navigate('/app'); }} />} />
         <Route path="/admin/*" element={<AdminDashboardView />} />
+
+        {/* === AUTHENTICATED APP === */}
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<NotFoundView />} />

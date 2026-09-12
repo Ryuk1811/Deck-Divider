@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Flame } from 'lucide-react';
 import { DisplayCurrency } from '../../../types';
-import { CardImage } from '../../CardImage';
+import { CardImage } from '../../ui/CardImage';
 
 interface SearchMockupProps {
   currency?: DisplayCurrency;

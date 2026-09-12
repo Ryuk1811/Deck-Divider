@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Sparkles, Filter, ArrowUpRight, CheckCircle2, Layers } from 'lucide-react';
 import { DisplayCurrency } from '../../../types';
-import { CardImage } from '../../CardImage';
+import { CardImage } from '../../ui/CardImage';
 
 interface CollectionMockupProps {
   currency?: DisplayCurrency;

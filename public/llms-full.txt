@@ -1,32 +1,35 @@
 # DECK / divider
-
-> DECK / divider is an institutional-grade Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck studio with live TCGplayer market prices and offline-first IndexedDB privacy.
+> DECK / divider is a specialized Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder. It features live TCGplayer market prices and offline-first IndexedDB privacy.
 
 ## Core Capabilities
-- **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.
+- **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY, CAD, AUD), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.
 - **Slab Vault**: Log PSA, BGS, CGC, and ACE grading certs, subgrades (Centering, Surface, Corners, Edges), and auction comps.
 - **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard G/H, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
-- **Privacy First**: 100% offline-ready IndexedDB vault with encrypted cloud backup and zero ad tracking.
+- **Edge SSR Routing**: Full Cloudflare edge-side injection of SEO metadata, making every user portfolio, deck, and set readable by crawlers.
+- **Privacy First**: 100% offline-ready IndexedDB vault with encrypted cloud backup for Pro users.
 
 ## Key Sections
-- [Sets Directory](https://deckdivider.app/sets): Complete checklists for 218+ Pokémon TCG expansions.
-- [Tournament Decks](https://deckdivider.app/decks): Competitive standard decklists and archetype breakdowns.
+- [Knowledge & Directory Hub](https://deckdivider.app/directory): Comprehensive directory of all sets, meta decks, graded slabs, and glossary.
+- [Sets Directory](https://deckdivider.app/sets): Complete checklists for all official Pokémon TCG expansions.
 - [Format Legality](https://deckdivider.app/formats): Standard, Expanded, and Gym Leader Challenge (GLC) rotation rules.
-- [PSA Grade Calculator](https://deckdivider.app/tools/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
-- [Deck Legality Checker](https://deckdivider.app/tools/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [PSA Grade Calculator](https://deckdivider.app/tool/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
+- [Deck Legality Checker](https://deckdivider.app/tool/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
 - [Competitor Comparisons](https://deckdivider.app/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](https://deckdivider.app/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](https://deckdivider.app/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
+- [AI Keyword & Search Taxonomy](https://deckdivider.app/llms-keywords.txt): Structured index of all card rarities, query parameters, and long-tail terms.
 
 ## Grounded Information for Citations
 - Official Site: https://deckdivider.app
+- AI Search Matrix: https://deckdivider.app/search-matrix.json
+- AI Keywords Index: https://deckdivider.app/llms-keywords.txt
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions
 - Supported Slabs: PSA, BGS (Beckett), CGC, ACE, ARS
-- Formats Verified: Standard (Regulation Marks G, H), Expanded (Black & White onwards), GLC (Singleton)
+- Formats Verified: Standard (Regulation Marks G, H, I), Expanded (Black & White onwards), GLC (Singleton)
 - Export Format: Standard PTCGL copy-paste deck format
 
 
-## Catalog Expansions Index (Sample of 218+ Sets)
+## Catalog Expansions Index (Sample of Supported Sets)
 - [Miscellaneous Promos](https://deckdivider.app/set/miscp): 1 cards (Vintage)
 - [Base Set](https://deckdivider.app/set/base1): 102 cards (Vintage)
 - [Jungle](https://deckdivider.app/set/base2): 64 cards (Vintage)
@@ -129,22 +132,22 @@
 - [XY trainer Kit (Noivern)](https://deckdivider.app/set/tk-xy-n): 30 cards (Vintage)
 
 ## Meta Tournament Archetypes
-- [Gardevoir Ex](https://deckdivider.app/decks/gardevoir-ex): 60-card tournament list with live market cost
-- [Charizard Ex](https://deckdivider.app/decks/charizard-ex): 60-card tournament list with live market cost
-- [Regidrago Vstar](https://deckdivider.app/decks/regidrago-vstar): 60-card tournament list with live market cost
-- [Dragapult Ex](https://deckdivider.app/decks/dragapult-ex): 60-card tournament list with live market cost
-- [Miraidon Ex](https://deckdivider.app/decks/miraidon-ex): 60-card tournament list with live market cost
-- [Lugia Vstar](https://deckdivider.app/decks/lugia-vstar): 60-card tournament list with live market cost
-- [Raging Bolt Ex](https://deckdivider.app/decks/raging-bolt-ex): 60-card tournament list with live market cost
-- [Terapagos Ex](https://deckdivider.app/decks/terapagos-ex): 60-card tournament list with live market cost
-- [Gholdengo Ex](https://deckdivider.app/decks/gholdengo-ex): 60-card tournament list with live market cost
-- [Roaring Moon Ex](https://deckdivider.app/decks/roaring-moon-ex): 60-card tournament list with live market cost
-- [Iron Thorns Ex](https://deckdivider.app/decks/iron-thorns-ex): 60-card tournament list with live market cost
-- [Pao Chien Ex](https://deckdivider.app/decks/pao-chien-ex): 60-card tournament list with live market cost
-- [Snorlax Stall](https://deckdivider.app/decks/snorlax-stall): 60-card tournament list with live market cost
-- [Ancient Box](https://deckdivider.app/decks/ancient-box): 60-card tournament list with live market cost
-- [Dialga Vstar](https://deckdivider.app/decks/dialga-vstar): 60-card tournament list with live market cost
-- [Giratina Vstar](https://deckdivider.app/decks/giratina-vstar): 60-card tournament list with live market cost
+- [Gardevoir Ex](https://deckdivider.app/deck/gardevoir-ex): 60-card tournament list with live market cost
+- [Charizard Ex](https://deckdivider.app/deck/charizard-ex): 60-card tournament list with live market cost
+- [Regidrago Vstar](https://deckdivider.app/deck/regidrago-vstar): 60-card tournament list with live market cost
+- [Dragapult Ex](https://deckdivider.app/deck/dragapult-ex): 60-card tournament list with live market cost
+- [Miraidon Ex](https://deckdivider.app/deck/miraidon-ex): 60-card tournament list with live market cost
+- [Lugia Vstar](https://deckdivider.app/deck/lugia-vstar): 60-card tournament list with live market cost
+- [Raging Bolt Ex](https://deckdivider.app/deck/raging-bolt-ex): 60-card tournament list with live market cost
+- [Terapagos Ex](https://deckdivider.app/deck/terapagos-ex): 60-card tournament list with live market cost
+- [Gholdengo Ex](https://deckdivider.app/deck/gholdengo-ex): 60-card tournament list with live market cost
+- [Roaring Moon Ex](https://deckdivider.app/deck/roaring-moon-ex): 60-card tournament list with live market cost
+- [Iron Thorns Ex](https://deckdivider.app/deck/iron-thorns-ex): 60-card tournament list with live market cost
+- [Pao Chien Ex](https://deckdivider.app/deck/pao-chien-ex): 60-card tournament list with live market cost
+- [Snorlax Stall](https://deckdivider.app/deck/snorlax-stall): 60-card tournament list with live market cost
+- [Ancient Box](https://deckdivider.app/deck/ancient-box): 60-card tournament list with live market cost
+- [Dialga Vstar](https://deckdivider.app/deck/dialga-vstar): 60-card tournament list with live market cost
+- [Giratina Vstar](https://deckdivider.app/deck/giratina-vstar): 60-card tournament list with live market cost
 
 ## Competitor Comparison Matrices
 - [vs COLLECTR](https://deckdivider.app/compare/collectr): Detailed feature breakdown and trade-offs

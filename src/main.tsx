@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './lib/AuthContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
 // Global error & unhandled rejection guard for sandboxed/restricted iframe environments
 if (typeof window !== 'undefined') {

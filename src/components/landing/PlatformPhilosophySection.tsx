@@ -10,13 +10,13 @@ export const PlatformPhilosophySection: React.FC = () => {
         <div className="max-w-3xl space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-[11px] font-mono font-semibold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-[#DC143C]" />
-            Purpose & Architecture
+            About the App
           </div>
           <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading tracking-tight leading-tight">
-            Built with institutional precision. Designed for pure collectors.
+            Built for speed and clarity. Designed for Pokémon card collectors.
           </h3>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            DECK / divider was created out of frustration with clunky, ad-stuffed tracking apps and slow marketplaces. Our mission is to provide an ultra-responsive, distraction-free operating system for Pokémon TCG collectors and competitive players.
+            DECK / divider is a clean, ad-free tool for Pokémon TCG collectors and tournament players. Search cards, build legal 60-card decks, track graded slabs, and monitor market values without clutter.
           </p>
         </div>
 
@@ -28,10 +28,10 @@ export const PlatformPhilosophySection: React.FC = () => {
               <Users className="w-5 h-5" />
             </div>
             <h4 className="text-base sm:text-lg font-bold text-slate-900 font-heading">
-              Usage & Audience
+              Who It's For
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Tailored for competitive players needing 60-card format legality, master set purists tracking every variant stamp, and high-value vault collectors verifying certification numbers.
+              Competitive players building format-legal decks, master set collectors tracking every card variant, and graded slab collectors organizing their binders and boxes.
             </p>
           </div>
 
@@ -41,10 +41,10 @@ export const PlatformPhilosophySection: React.FC = () => {
               <Shield className="w-5 h-5" />
             </div>
             <h4 className="text-base sm:text-lg font-bold text-slate-900 font-heading">
-              Core Intention
+              Privacy First
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Zero ad networks, zero data brokering, and zero intrusive popups. Your collection size, cost bases, and deck strategies remain private and device-encrypted.
+              No ads, no tracking cookies, and no popups. Your collection details, lists, and deck builds stay private and under your control.
             </p>
           </div>
 
@@ -54,10 +54,10 @@ export const PlatformPhilosophySection: React.FC = () => {
               <Target className="w-5 h-5" />
             </div>
             <h4 className="text-base sm:text-lg font-bold text-slate-900 font-heading">
-              The Platform Aim
+              Our Goal
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              To unite cataloging, live price discovery, and tournament deck validation into a unified, high-speed workstation backed by offline-first caching and instant sync.
+              To bring fast card search, live price estimates, and tournament deck building together in a simple, reliable app that works on any device.
             </p>
           </div>
 

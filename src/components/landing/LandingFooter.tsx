@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DeckDividerBrand } from '../DeckDividerBrand';
+import { DeckDividerBrand } from '../ui/DeckDividerBrand';
+import {
+  Layers,
+  Users,
+  BookOpen,
+  Compass,
+  ShieldCheck,
+  Mail,
+  Check
+} from 'lucide-react';
 
 interface LandingFooterProps {
   onEnterApp?: () => void;
@@ -15,112 +24,390 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
   onNavigateSection,
   displayCurrency = 'USD',
 }) => {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const supportEmail = 'deckdivider@outlook.com';
+
+  const handleCopyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(supportEmail);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
+  const handleHashNav = (sectionId: string) => (e: React.MouseEvent) => {
+    if (window.location.pathname === '/' && onNavigateSection) {
+      e.preventDefault();
+      onNavigateSection(sectionId);
+    }
+  };
+
   return (
-    <footer className="bg-white border-t border-slate-200 mt-auto relative z-10 w-full overflow-hidden">
-      <div className="w-full px-6 lg:px-12 py-8 flex flex-col gap-6">
-        {/* Top Row: Inline Config */}
-        <div className="flex items-center gap-4 w-full overflow-hidden">
-          <div className="flex-shrink-0">
-            <DeckDividerBrand />
+    <footer className="w-full bg-white border-t border-slate-200 mt-auto relative z-10 select-none">
+      <div className="w-full max-w-[2200px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-10 sm:py-12 lg:py-14 space-y-10">
+        
+        {/* Top Zone: Brand Overview, Direct Support & System Metric */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-8 border-b border-slate-100">
+          <div className="space-y-2 max-w-xl">
+            <Link
+              to="/"
+              className="inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] rounded-lg"
+              aria-label="DECK / divider Home"
+            >
+              <DeckDividerBrand size="md" />
+            </Link>
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
+              Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder with live market pricing.
+            </p>
           </div>
-          <div className="flex-shrink-0 px-3 py-1.5 border border-slate-200 bg-slate-50 rounded-md flex items-center justify-center">
-            <span className="font-mono text-[11px] font-bold text-slate-700 tracking-wider">SUPPORT: deckdivider@outlook.com</span>
-          </div>
-          <div className="text-slate-500 text-sm truncate flex-grow">
-            Raw cards, graded slabs, sealed product, and competitive decks — tracked live.
-          </div>
-        </div>
 
-        {/* Divider 1 */}
-        <div className="w-full h-px bg-slate-200" />
-
-        {/* Middle Row: Expanded Chart Form */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 w-full text-sm text-slate-600">
-          
-          <div className="md:col-span-12 lg:col-span-4 space-y-6">
-            <div>
-              <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-                About the Platform
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Direct Support Pill */}
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2">
+              <Mail className="w-4 h-4 text-[#DC143C]" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  Direct Support
+                </span>
+                <a
+                  href={`mailto:${supportEmail}`}
+                  className="text-xs font-mono font-semibold text-slate-800 hover:text-[#DC143C] transition-colors"
+                >
+                  {supportEmail}
+                </a>
               </div>
-              <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-                DECK / divider is an advanced analytics and portfolio management tool designed specifically for the Pokémon TCG community. We aggregate live market data and provide institutional-grade tools to collectors and competitive players worldwide.
-              </p>
+              <button
+                onClick={handleCopyEmail}
+                title="Copy Support Email"
+                className="ml-2 p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                aria-label="Copy support email"
+              >
+                {copiedEmail ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <span className="text-[10px] font-mono font-bold text-slate-600">COPY</span>
+                )}
+              </button>
             </div>
-          </div>
 
-          <div className="md:col-span-4 lg:col-span-2">
-            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Platform
-            </div>
-            <div className="flex flex-col gap-y-3">
-              <Link to="/about" className="hover:text-cyan-600 transition-colors font-medium">About Us</Link>
-              <Link to="/how-it-works" className="hover:text-cyan-600 transition-colors font-medium">How It Works</Link>
-              <Link to="/pricing" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('pricing'); } }} className="text-left hover:text-cyan-600 transition-colors font-medium">Pricing</Link>
-              <Link to="/features" className="hover:text-cyan-600 transition-colors font-medium">All Features</Link>
-              <Link to="/changelog" className="hover:text-cyan-600 transition-colors font-medium">Changelog</Link>
-            </div>
-          </div>
-
-          <div className="md:col-span-4 lg:col-span-3">
-            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Resources & Legal
-            </div>
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4">
-              <Link to="/faq" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('faq-and-insights'); } }} className="text-left hover:text-cyan-600 transition-colors font-medium">FAQ</Link>
-              <Link to="/support" className="hover:text-cyan-600 transition-colors font-medium">Support Center</Link>
-              <Link to="/contact" className="hover:text-cyan-600 transition-colors font-medium">Contact Us</Link>
-              <Link to="/media-kit" className="hover:text-cyan-600 transition-colors font-medium">Media Kit</Link>
-              <Link to="/privacy" className="hover:text-cyan-600 transition-colors font-medium">Privacy Policy</Link>
-              <Link to="/terms" className="hover:text-cyan-600 transition-colors font-medium">Terms of Service</Link>
-              <Link to="/cookie-policy" className="hover:text-cyan-600 transition-colors font-medium">Cookie Policy</Link>
-              <Link to="/security" className="hover:text-cyan-600 transition-colors font-medium">Security</Link>
-            </div>
-          </div>
-
-          <div className="md:col-span-4 lg:col-span-3">
-            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Community &amp; Data
-            </div>
-            <div className="grid grid-cols-2 gap-y-2.5 gap-x-4 text-xs">
-              <Link to="/leaderboard" className="hover:text-cyan-600 transition-colors font-medium">Leaderboard</Link>
-              <Link to="/sets" className="hover:text-cyan-600 transition-colors font-medium">Expansions</Link>
-              <Link to="/formats" className="hover:text-cyan-600 transition-colors font-medium">Format Legality</Link>
-              <Link to="/compare" className="hover:text-cyan-600 transition-colors font-medium">App Comparisons</Link>
-              <Link to="/best/pokemon-card-trackers" className="hover:text-cyan-600 transition-colors font-medium">Best Trackers</Link>
-              <Link to="/best/slab-scanners" className="hover:text-cyan-600 transition-colors font-medium">Slab Trackers</Link>
-              <Link to="/tools/psa-grade-calculator" className="hover:text-cyan-600 transition-colors font-medium">PSA Calculator</Link>
-              <Link to="/tools/deck-legality-checker" className="hover:text-cyan-600 transition-colors font-medium">Legality Tool</Link>
-              
-            </div>
-          </div>
-
-          <div className="md:col-span-4 lg:col-span-3">
-            <div className="font-mono font-bold text-[10px] tracking-wider text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">
-              Core Engine
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
-              <a href="/#collection" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('collection'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Raw & Slabs</a>
-              <a href="/#decks" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('decks'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Deck Builder</a>
-              <a href="/#master-sets" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('master-sets'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Master Sets</a>
-              <a href="/#search" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('search'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Search</a>
-              <a href="/#lists" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('lists'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Wishlists</a>
-              <a href="/#sealed-vault" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); onNavigateSection('sealed-vault'); } }} className="text-left hover:text-slate-900 transition-colors flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-slate-300"></span>Sealed Vault</a>
+            {/* Offline-First & Realtime Badge */}
+            <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-mono font-semibold text-slate-700">
+                18,400+ Cards • Live Market Prices
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Divider 2 */}
-        <div className="w-full h-px bg-slate-200 mt-2" />
-
-        {/* Bottom Row: Inline Legal & Disclaimer */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full text-xs text-slate-400">
-          <div className="flex-shrink-0 whitespace-nowrap font-medium">
-            © {new Date().getFullYear()} DECK / divider. All rights reserved.
+        {/* Middle Zone: Strict 5-Column Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-8 xl:gap-10 text-xs sm:text-[13px]">
+          
+          {/* Column 1: Workspace & Studio */}
+          <div className="space-y-3.5">
+            <div className="font-mono font-bold text-[11px] tracking-wider text-slate-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <Layers className="w-3.5 h-3.5 text-[#DC143C]" />
+              <span>Workspace</span>
+            </div>
+            <ul className="space-y-2.5 font-medium">
+              <li>
+                <a
+                  href="/#collection"
+                  onClick={handleHashNav('collection')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Raw &amp; Graded Slabs
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/#decks"
+                  onClick={handleHashNav('decks')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  60-Card Deck Builder
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/#master-sets"
+                  onClick={handleHashNav('master-sets')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Master Set Checklists
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/#search"
+                  onClick={handleHashNav('search')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Card Database Search
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/#lists"
+                  onClick={handleHashNav('lists')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Wishlists &amp; Binders
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/#sealed-vault"
+                  onClick={handleHashNav('sealed-vault')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Sealed Collection
+                </a>
+              </li>
+            </ul>
           </div>
-          <div className="text-center md:text-right flex-grow text-[11px] leading-relaxed text-slate-400">
-            DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
+
+          {/* Column 2: Community & Directories */}
+          <div className="space-y-3.5">
+            <div className="font-mono font-bold text-[11px] tracking-wider text-slate-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <Users className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Community</span>
+            </div>
+            <ul className="space-y-2.5 font-medium">
+              <li>
+                <Link
+                  to="/socials"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Socials &amp; Reviews
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/leaderboard"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Collector Leaderboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/sets"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  All Expansions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/formats"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Format Legality
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/format/standard"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Standard Format Hub
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Guides & Calculators */}
+          <div className="space-y-3.5">
+            <div className="font-mono font-bold text-[11px] tracking-wider text-slate-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <BookOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>Guides &amp; Tools</span>
+            </div>
+            <ul className="space-y-2.5 font-medium">
+              <li>
+                <Link
+                  to="/best/pokemon-card-trackers"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Best Card Trackers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/best/slab-scanners"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Graded Slab Scanners
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/best/deck-builders"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Deck Builders Ranked
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/compare"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  App Comparisons
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/tools/psa-grade-calculator"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  PSA Grade Calculator
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/tools/deck-legality-checker"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Format Legality Checker
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Platform & Support */}
+          <div className="space-y-3.5">
+            <div className="font-mono font-bold text-[11px] tracking-wider text-slate-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <Compass className="w-3.5 h-3.5 text-sky-500" />
+              <span>Platform</span>
+            </div>
+            <ul className="space-y-2.5 font-medium">
+              <li>
+                <Link
+                  to="/about"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/how-it-works"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/pricing"
+                  onClick={handleHashNav('pricing')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/faq"
+                  onClick={handleHashNav('faq-and-insights')}
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Contact &amp; Support
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Trust & Legal */}
+          <div className="space-y-3.5">
+            <div className="font-mono font-bold text-[11px] tracking-wider text-slate-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Trust &amp; Legal</span>
+            </div>
+            <ul className="space-y-2.5 font-medium">
+              <li>
+                <Link
+                  to="/privacy"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/security"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Security
+                </Link>
+              </li>
+              <li>
+                <div className="pt-2 text-[11px] text-slate-400 leading-relaxed font-sans">
+                  No ads or tracking cookies. Export and backup your data anytime.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar: Simple Fan-Made Project Disclaimer */}
+        <div className="pt-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div className="flex items-center gap-2 whitespace-nowrap font-medium text-slate-500">
+            <span>© {new Date().getFullYear()} DECK / divider.</span>
+            <span className="hidden sm:inline text-slate-300">•</span>
+            <span className="text-[11px] font-mono text-slate-400">All rights reserved.</span>
+          </div>
+
+          <div className="text-center md:text-right text-[11px] leading-relaxed text-slate-400 max-w-2xl font-sans">
+            This is an independent fan-made project and is not affiliated with, endorsed by, or sponsored by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon Company.
           </div>
         </div>
+
       </div>
     </footer>
   );

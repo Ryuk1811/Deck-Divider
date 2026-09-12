@@ -444,3 +444,40 @@ export const CURRENCY_RATES: Record<string, number> = {
   PLN: 3.95,
   TRY: 33.0,
 };
+
+export type ReviewCategory = 
+  | 'General & UI'
+  | 'Master Set Checklist'
+  | 'Deck Builder & PTCGL'
+  | 'Graded Slabs & Pricing'
+  | 'Sealed Vault'
+  | 'Feature Request';
+
+export interface CommunityReview {
+  id: string;
+  authorName: string;
+  isAnonymous: boolean;
+  userId?: string;
+  rating: number; // 1 to 5
+  title: string;
+  comment: string;
+  category: ReviewCategory | string;
+  userRole?: string;
+  createdAt: string;
+  likesCount?: number;
+  isVerified?: boolean;
+}
+
+export interface SocialChannel {
+  id: string;
+  name: string;
+  handle: string;
+  url: string;
+  category: 'Community' | 'Updates' | 'Video' | 'Code' | 'Photos';
+  description: string;
+  memberCount?: string;
+  status: 'Official' | 'Active' | 'Coming Soon';
+  accentColor: string;
+  iconName: string;
+}
+

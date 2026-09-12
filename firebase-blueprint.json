@@ -117,9 +117,32 @@
         "storedKeys": { "type": "array" }
       },
       "required": ["iv", "ciphertext", "authTag"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Public community trainer review and rating document",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "authorName": { "type": "string" },
+        "isAnonymous": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "title": { "type": "string" },
+        "comment": { "type": "string" },
+        "category": { "type": "string" },
+        "userRole": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "likesCount": { "type": "number" },
+        "isVerified": { "type": "boolean" }
+      },
+      "required": ["rating", "comment", "createdAt"]
     }
   },
   "firestore": {
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Public community trainer review collection"
+    },
     "/system_vault/{documentId}": {
       "schema": { "$ref": "#/entities/SystemVaultRecord" },
       "description": "AES-256-GCM encrypted system secrets and environment credentials"

@@ -18,15 +18,15 @@ export const LandingPrivacyPolicySection: React.FC<LandingPrivacyPolicySectionPr
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 text-emerald-700 text-xs font-mono font-bold uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Data Sovereignty & Security
+              Privacy &amp; Security
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-900 font-heading">
-              Your collection data is private. We never monetize your portfolio.
+              Your collection is private. We never sell your data.
             </h3>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
-              Last updated: September 2026
+              Updated: 2026
             </span>
           </div>
         </div>
@@ -36,40 +36,40 @@ export const LandingPrivacyPolicySection: React.FC<LandingPrivacyPolicySectionPr
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
               <EyeOff className="w-4 h-4 text-slate-600" />
-              <span>Zero Data Brokering</span>
+              <span>No Data Selling</span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              We never sell or distribute your portfolio value, transaction history, or want-lists to third-party ad networks.
+              We never sell your card collection, decks, or trade lists to advertisers or third parties.
             </p>
           </div>
 
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
               <Lock className="w-4 h-4 text-slate-600" />
-              <span>Local Encryption</span>
+              <span>Private &amp; Secure</span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Sensitive financial basis and custom acquisition logs can be stored with client-side AES-GCM encryption.
+              Your deck lists and binder notes are securely stored and only accessible by you.
             </p>
           </div>
 
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
               <Download className="w-4 h-4 text-slate-600" />
-              <span>Total Portability</span>
+              <span>Export Anytime</span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Export your entire card binder, decks, and logs in universal JSON/CSV format at any point with one click.
+              Export your entire collection, binder, and deck lists to CSV or JSON with one click.
             </p>
           </div>
 
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
               <Trash2 className="w-4 h-4 text-slate-600" />
-              <span>Instant Deletion</span>
+              <span>Delete Anytime</span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              When you delete your account or cards, your records are completely purged from all active database replicas.
+              You can easily remove individual cards or delete your entire account data at any time.
             </p>
           </div>
         </div>

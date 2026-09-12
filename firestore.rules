@@ -131,5 +131,17 @@ service cloud.firestore {
       allow create: if isAuthenticated() && (request.resource.data.ownerId == request.auth.uid || isSuperUser());
       allow update, delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isSuperUser());
     }
+
+    // Community Reviews collection (Public Read, Public Submission with validation, SuperUser moderation)
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.resource.data.rating is number && 
+                      request.resource.data.rating >= 1 && 
+                      request.resource.data.rating <= 5 && 
+                      request.resource.data.comment is string && 
+                      request.resource.data.comment.size() > 0 && 
+                      request.resource.data.comment.size() <= 2000;
+      allow update, delete: if isSuperUser() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
   }
 }

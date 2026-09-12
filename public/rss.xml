@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>DECK / divider — Pokémon TCG Intelligence, Slabs &amp; Deck Studio</title>
+    <title>DECK / divider — Pokémon TCG Intelligence &amp; Tracker</title>
     <link>https://deckdivider.app/</link>
     <description>Institutional-grade collection tracker, live TCGplayer market price comps, PSA slab cert registry, and 60-card tournament deck studio.</description>
     <language>en-US</language>
-    <lastBuildDate>Thu, 10 Sep 2026 16:11:10 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 12 Sep 2026 15:39:25 GMT</lastBuildDate>
     <atom:link href="https://deckdivider.app/feed.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Latest Expansion Catalog Sync &amp; Live Market Pricing</title>
       <link>https://deckdivider.app/sets</link>
-      <guid>https://deckdivider.app/sets?v=013ahk1b</guid>
-      <pubDate>Thu, 10 Sep 2026 16:11:10 GMT</pubDate>
+      <guid>https://deckdivider.app/sets?v=js8i7fqg</guid>
+      <pubDate>Sat, 12 Sep 2026 15:39:25 GMT</pubDate>
       <description>Updated set checklists, master set progress counts, and live TCGplayer market valuation comps across all official Pokémon TCG expansions.</description>
     </item>
     
     <item>
       <title>Tournament Meta Decks: Standard Rotation Updates</title>
-      <link>https://deckdivider.app/decks</link>
-      <guid>https://deckdivider.app/decks?v=013ahk1b</guid>
-      <pubDate>Thu, 10 Sep 2026 16:11:10 GMT</pubDate>
-      <description>Standard format tournament decklists updated with regulation marks (F, G, H), archetype costs, and 1-click PTCGL export strings.</description>
+      <link>https://deckdivider.app/deck/charizard-ex</link>
+      <guid>https://deckdivider.app/deck/charizard-ex?v=js8i7fqg</guid>
+      <pubDate>Sat, 12 Sep 2026 15:39:25 GMT</pubDate>
+      <description>Standard format tournament decklists updated with regulation marks (G, H), archetype costs, and 1-click PTCGL export strings.</description>
     </item>
 
     <item>
       <title>PSA Grade &amp; Expected Value ROI Calculator</title>
-      <link>https://deckdivider.app/tools/psa-grade-calculator</link>
-      <guid>https://deckdivider.app/tools/psa-grade-calculator?v=013ahk1b</guid>
-      <pubDate>Thu, 10 Sep 2026 16:11:10 GMT</pubDate>
+      <link>https://deckdivider.app/tool/psa-grade-calculator</link>
+      <guid>https://deckdivider.app/tool/psa-grade-calculator?v=js8i7fqg</guid>
+      <pubDate>Sat, 12 Sep 2026 15:39:25 GMT</pubDate>
       <description>Calculate expected submission value, PSA 10 vs 9 price spread, and profit margin before submitting raw cards to grading companies.</description>
     </item>
   </channel>

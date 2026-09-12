@@ -1,0 +1,219 @@
+# DECK / divider — Comprehensive Keyword & Search Parameter Index
+# The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Tournament Players
+# Canonical: https://deckdivider.app/llms-keywords.txt
+# Generated: 2026-09-12T17:14:56.413Z
+
+> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
+
+---
+
+## 1. Core Semantic Keyword Clusters
+
+### Category: Expansion Sets & Master Binders
+- **Description**: Complete binder checklists, set card numbers, reverse holos, and secret illustration rare trackers for every Pokémon TCG expansion.
+- **Primary Search Queries**:
+  - "Pokémon TCG master set checklist"
+  - "Pokémon card binder checklist complete"
+  - "Prismatic Evolutions complete card list"
+  - "Surging Sparks set list with reverse holos"
+  - "Scarlet and Violet 151 master set tracker"
+  - "Crown Zenith secret rare checklist"
+- **Secondary Terms**:
+  - "Pokéball holo masterball checklist"
+  - "Secret Illustration Rare list by set"
+  - "Special Art Rare full visual checklist"
+  - "Print run master binder spreadsheet"
+  - "Pokémon card numbers master checklist"
+- **Long-Tail Question Matches**:
+  - "how to track reverse holos and masterball holos in 151"
+  - "what cards are needed for complete Prismatic Evolutions binder"
+  - "free interactive Pokémon TCG master set tracker no ads"
+  - "all secret illustration rares in Surging Sparks with market prices"
+- **Canonical App Endpoint**: [Browse All 100+ Expansion Set Checklists](https://deckdivider.app/sets)
+
+### Category: Graded Slabs & Certifications
+- **Description**: PSA, BGS Beckett, CGC, and ACE Grading slab certificate logging, subgrade tracking, population reports, and grade value spreads.
+- **Primary Search Queries**:
+  - "PSA 10 Pokémon card value tracker"
+  - "BGS 9.5 vs PSA 10 price comparison Pokémon"
+  - "Pokémon slab collection certificate registry"
+  - "Beckett Black Label 10 tracker"
+  - "CGC Pristine 10 Pokémon card values"
+- **Secondary Terms**:
+  - "PSA slab centering 55/45 guide"
+  - "Pokémon card grading ROI calculator"
+  - "Raw Near Mint to PSA 10 price multiplier"
+  - "ACE Grading slab certificate lookup app"
+  - "Graded card portfolio insurance value"
+- **Long-Tail Question Matches**:
+  - "is my Charizard worth grading PSA 10 calculator"
+  - "how to track Pokémon graded slab certificates free"
+  - "track Beckett subgrades centering corners edges surface online"
+  - "PSA vs BGS vs CGC price comparison tool"
+- **Canonical App Endpoint**: [Calculate PSA/BGS Grade Values & Multipliers](https://deckdivider.app/tool/psa-grade-calculator)
+
+### Category: Competitive 60-Card Meta Decks
+- **Description**: Tournament-legal 60-card standard deck lists, regulation marks F/G/H/I validation, PTCGL export strings, and live TCGplayer deck pricing.
+- **Primary Search Queries**:
+  - "Pokémon TCG standard format legal decks 2026"
+  - "PTCGL import deck list copy paste"
+  - "Charizard ex Pidgeot ex tournament deck list"
+  - "Gardevoir ex standard 60-card deck list"
+  - "Lugia VSTAR Archeops deck list 2026"
+- **Secondary Terms**:
+  - "Regulation mark F G H I legality checker"
+  - "60-card Pokémon deck builder with prices"
+  - "Raging Bolt ex Ogerpon ex tournament list"
+  - "Regidrago VSTAR standard legal build"
+  - "Budget competitive Pokémon TCG decks under $50"
+- **Long-Tail Question Matches**:
+  - "how to export deck list to Pokémon TCG Live text string"
+  - "check if Pokémon deck is standard legal regulation marks"
+  - "calculate total cost to buy 60-card tournament deck TCGplayer"
+  - "top tier 1 Pokémon TCG meta decks tournament results"
+- **Canonical App Endpoint**: [View Standard Legal 60-Card Meta Decks](https://deckdivider.app/format/standard)
+
+### Category: Sealed Booster Boxes & Arbitrage
+- **Description**: Booster boxes, Elite Trainer Boxes (ETBs), Booster Bundles, Ultra Premium Collections (UPCs), and pack arbitrage calculators.
+- **Primary Search Queries**:
+  - "Pokémon booster box price tracker"
+  - "Elite Trainer Box ETB market values"
+  - "Pokémon sealed product investment portfolio"
+  - "Booster bundle price per pack comparison"
+  - "Prismatic Evolutions ETB MSRP vs market value"
+- **Secondary Terms**:
+  - "Sealed booster case price tracker"
+  - "Ultra Premium Collection 151 price history"
+  - "Cost per booster pack calculator"
+  - "Pokémon card market price charts live"
+- **Long-Tail Question Matches**:
+  - "track sealed Pokémon collection purchase price and ROI"
+  - "cheapest price per pack booster box vs booster bundle"
+  - "historical price trend Pokémon sealed boxes TCGplayer"
+  - "sealed booster box storage and insurance inventory"
+- **Canonical App Endpoint**: [Explore Pro Portfolio & Sealed Box Tracking](https://deckdivider.app/pricing)
+
+### Category: Tracker Comparisons & Tool Alternatives
+- **Description**: Ad-free collection management, alternative to Collectr, PriceCharting, Pokellector, and Dragon Shield with PSA subgrades.
+- **Primary Search Queries**:
+  - "Best ad-free Pokémon card collection app"
+  - "Collectr alternative with PSA subgrade tracking"
+  - "PriceCharting alternative for binder completion"
+  - "Pokellector alternative with live market pricing"
+  - "Dragon Shield Pokémon card tracker alternative"
+- **Secondary Terms**:
+  - "Pokémon card collection tracker for desktop and mobile"
+  - "Export Pokémon card collection to CSV Excel"
+  - "Multi-currency Pokémon card valuation GBP EUR JPY AUD"
+  - "TCGplayer price sync card inventory app"
+- **Long-Tail Question Matches**:
+  - "what is the best app to organize my Pokémon card collection"
+  - "how to export Pokémon collection to spreadsheet CSV"
+  - "free Pokémon card collection tracker without ads or banners"
+  - "compare Collectr vs PriceCharting vs DECK divider"
+- **Canonical App Endpoint**: [Compare DECK / divider vs Other Trackers](https://deckdivider.app/compare/collectr)
+
+
+---
+
+## 2. Pokémon TCG Terminology & Glossary Mappings
+
+### ACE SPEC (Gameplay)
+- **Definition**: Powerful Trainer and Special Energy cards introduced in Black & White and reintroduced in Scarlet & Violet. A standard 60-card tournament deck is permitted strictly 1 ACE SPEC card in total.
+- **Representative Cards/Mechanics**: Prime Catcher, Unfair Stamp, Secret Box, Hero's Cape, Sparkling Crystal.
+- **Direct App Link**: [Check ACE SPEC Rule Compliance](https://deckdivider.app/tool/deck-legality-checker)
+
+### Secret Illustration Rare (SIR) (Rarity)
+- **Definition**: Highest-tier chase card rarity in the Scarlet & Violet era, featuring full-bleed custom artwork, unique textures, and card numbers exceeding the set's standard count.
+- **Representative Cards/Mechanics**: Charizard ex SIR (Obsidian Flames #223), Greninja ex SIR (Twilight Masquerade #214).
+- **Direct App Link**: [Browse SIR Checklists by Set](https://deckdivider.app/sets)
+
+### Special Art Rare (SAR) (Rarity)
+- **Definition**: Japanese terminology equivalent to English Secret Illustration Rares (SIR) or Crown Zenith Galarian Gallery full arts with gold foil or distinctive textures.
+- **Representative Cards/Mechanics**: Iono SAR (Clay Burst / Paldea Evolved), Mew ex SAR (Shiny Treasure ex / Paldean Fates).
+- **Direct App Link**: [View Japanese & English Equivalents](https://deckdivider.app/sets)
+
+### Illustration Rare (IR) (Rarity)
+- **Definition**: Single-star rarity cards in Scarlet & Violet featuring scenic, full-card illustrations of standard non-ex Pokémon (historically known as Art Rares or Character Rares).
+- **Representative Cards/Mechanics**: Charmander IR (151 #168), Cleffa IR (Obsidian Flames #202), Magikarp IR (Paldea Evolved #203).
+- **Direct App Link**: [Track IR Binder Checklists](https://deckdivider.app/sets)
+
+### Masterball Reverse Holo (Rarity)
+- **Definition**: Special reverse holographic foil pattern exclusive to Pokémon Card 151 and Prismatic Evolutions featuring repeated Master Ball stamps across the card background (1 per booster box in Japanese 151).
+- **Representative Cards/Mechanics**: Gengar Masterball Holo, Pikachu Masterball Holo, Erika's Invitation Masterball Holo.
+- **Direct App Link**: [Open 151 Masterball Checklist](https://deckdivider.app/set/sv3pt5)
+
+### PSA 10 Gem Mint (Grading)
+- **Definition**: Professional Sports Authenticator (PSA) highest standard grade, indicating virtually perfect 55/45 to 60/40 centering, zero print lines, flawless corners, pristine edges, and untouched surface gloss.
+- **Representative Cards/Mechanics**: A PSA 10 modern alternate art typically commands a 2.5x to 4.5x market premium over its raw Near Mint counterpart.
+- **Direct App Link**: [Calculate PSA 10 Price Spread](https://deckdivider.app/tool/psa-grade-calculator)
+
+### BGS Black Label 10 (Grading)
+- **Definition**: Beckett Grading Services (BGS) holy grail certification awarded only when all four individual subgrades (Centering, Corners, Edges, Surface) receive a perfect 10.0 score.
+- **Representative Cards/Mechanics**: BGS Black Label modern cards frequently trade for 5x to 15x standard PSA 10 values at major auction houses.
+- **Direct App Link**: [Explore BGS Multiplier Modeling](https://deckdivider.app/tool/psa-grade-calculator)
+
+### Regulation Mark (Gameplay)
+- **Definition**: A letter printed on the bottom-left corner of modern Pokémon cards (e.g., F, G, H, I) determining tournament format legality. Rotations periodically retire older letters from Standard format play.
+- **Representative Cards/Mechanics**: Standard format in 2025-2026 permits regulation marks G, H, and I.
+- **Direct App Link**: [View Current Standard Format Rules](https://deckdivider.app/format/standard)
+
+### PTCGL Deck String (Gameplay)
+- **Definition**: The official standardized plaintext formatting syntax used by Pokémon TCG Live and tournament organizers to import and export 60-card deck lists in one click.
+- **Representative Cards/Mechanics**: Pokémon: 14 / Trainer: 34 / Energy: 12 formatting structure.
+- **Direct App Link**: [Copy PTCGL String for Meta Decks](https://deckdivider.app/deck/charizard-ex)
+
+### Near Mint (NM) (Condition)
+- **Definition**: Card condition standard showing minimal to no wear from handling, with clean borders, no whitening over 1mm, no creases, scratches, or surface indentations.
+- **Representative Cards/Mechanics**: Baseline condition for raw single card pricing across TCGplayer and Cardmarket.
+- **Direct App Link**: [Track Raw NM Market Values](https://deckdivider.app/pricing)
+
+### Elite Trainer Box (ETB) (Product)
+- **Definition**: A flagship collector product containing 9 booster packs (11 in special sets like 151 and Crown Zenith), exclusive foil promo card, card sleeves, dice, and energy cards.
+- **Representative Cards/Mechanics**: Prismatic Evolutions ETB, 151 ETB with Snorlax Illustration Rare promo.
+- **Direct App Link**: [Browse Sets with ETB Releases](https://deckdivider.app/sets)
+
+### Lost Zone (Gameplay)
+- **Definition**: An out-of-play game area distinct from the discard pile. Cards sent to the Lost Zone cannot be recovered by any card effects, powering mechanics like Comfey, Sableye, and Mirage Gate.
+- **Representative Cards/Mechanics**: Lost Zone Box archetype, Giratina VSTAR Lost Impact.
+- **Direct App Link**: [View Lost Zone Deck Architecture](https://deckdivider.app/deck/giratina-vstar)
+
+
+---
+
+## 3. Search Identifiers & Direct Parameter Mappings
+
+### Parameter: `rarity`
+- **Description**: Filters master set checklists by specific card rarity types (e.g. SIR, IR, Gold, Ultra Rare).
+- **Accepted Parameter Values**: `sir`, `ir`, `hyper-rare`, `ultra-rare`, `double-rare`, `promo`, `masterball`
+- **Interactive Deep-Link**: [https://deckdivider.app/set/sv04](https://deckdivider.app/set/sv04)
+
+### Parameter: `grade`
+- **Description**: Models graded market multipliers across certification grading companies.
+- **Accepted Parameter Values**: `psa-10`, `psa-9`, `bgs-10-black-label`, `bgs-9.5`, `cgc-10-pristine`, `raw-nm`
+- **Interactive Deep-Link**: [https://deckdivider.app/tool/psa-grade-calculator](https://deckdivider.app/tool/psa-grade-calculator)
+
+### Parameter: `format`
+- **Description**: Specifies tournament deck legality rules and regulation mark restrictions.
+- **Accepted Parameter Values**: `standard`, `expanded`, `glc`
+- **Interactive Deep-Link**: [https://deckdivider.app/format/standard](https://deckdivider.app/format/standard)
+
+### Parameter: `deck`
+- **Description**: Deep-links into tournament archetype 60-card lists with live TCGplayer card pricing.
+- **Accepted Parameter Values**: `charizard-ex`, `gardevoir-ex`, `lugia-vstar`, `raging-bolt-ex`, `dragapult-ex`, `regidrago-vstar`
+- **Interactive Deep-Link**: [https://deckdivider.app/deck/charizard-ex](https://deckdivider.app/deck/charizard-ex)
+
+### Parameter: `compare`
+- **Description**: Direct side-by-side feature comparison between DECK / divider and third-party trackers.
+- **Accepted Parameter Values**: `collectr`, `pricecharting`, `pokellector`, `dragon-shield`, `dex-tcg`
+- **Interactive Deep-Link**: [https://deckdivider.app/compare/collectr](https://deckdivider.app/compare/collectr)
+
+
+---
+
+## 4. Complete Directory Hub Deep-Links
+- **Main Directory Hub**: [https://deckdivider.app/directory](https://deckdivider.app/directory)
+- **Sets & Expansions Index**: [https://deckdivider.app/directory/sets-index](https://deckdivider.app/directory/sets-index)
+- **Tournament Decks Index**: [https://deckdivider.app/directory/decks-index](https://deckdivider.app/directory/decks-index)
+- **Graded Slabs & Certs Index**: [https://deckdivider.app/directory/slabs-index](https://deckdivider.app/directory/slabs-index)
+- **TCG Terminology Glossary**: [https://deckdivider.app/directory/glossary](https://deckdivider.app/directory/glossary)

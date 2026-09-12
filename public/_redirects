@@ -1,3 +1,13 @@
+/decks/:id /deck/:id 301
+/portfolios/:id /portfolio/:id 301
+/tools/:id /tool/:id 301
+/formats/:id /format/:id 301
+/support /contact 301
+/features / 301
+/changelog / 301
+/cookie-policy /privacy 301
+/media-kit /about 301
+/community /leaderboard 301
 /sitemap-main.xml /sitemap.xml 301
 /sitemap-sets.xml /sitemap.xml 301
 /sitemap-topcards.xml /sitemap.xml 301

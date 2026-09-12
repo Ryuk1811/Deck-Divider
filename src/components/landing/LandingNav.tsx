@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DeckDividerBrand } from '../DeckDividerBrand';
+import { DeckDividerBrand } from '../ui/DeckDividerBrand';
 import { Menu, X, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PagesDropdown, ALL_PAGES } from '../PagesDropdown';
+import { PagesDropdown, ALL_PAGES } from '../ui/PagesDropdown';
 
 interface LandingNavProps {
   onOpenAuth?: () => void;

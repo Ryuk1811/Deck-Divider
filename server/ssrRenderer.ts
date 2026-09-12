@@ -1,5 +1,6 @@
 import { getCardDetail } from './tcgCatalogManager.js';
 import { BUILD_HASH } from './publicFootprintManager.js';
+import { renderDirectoryPage } from './routes/directoryRenderer.js';
 
 export const DEFAULT_OG_IMAGE = `https://deckdivider.app/og-image.png?v=${BUILD_HASH}`;
 
@@ -150,6 +151,14 @@ export async function renderSsrRoute(
   const baseUrl = `${protocol}://${host}`;
   const cleanPath = urlPath.split('?')[0].replace(/\/$/, '') || '/';
 
+  // 0. DECOUPLED KEYWORD DIRECTORY HUB: /directory, /directory/*
+  if (cleanPath === '/directory' || cleanPath.startsWith('/directory/')) {
+    const dirResult = await renderDirectoryPage(cleanPath);
+    if (dirResult) {
+      return dirResult;
+    }
+  }
+
   // 1. PUBLIC DECK ROUTE: /deck/:deckId or /decks/:deckId
   if (cleanPath.startsWith('/deck/') || cleanPath.startsWith('/decks/')) {
     const deckId = cleanPath.startsWith('/decks/') ? cleanPath.replace('/decks/', '') : cleanPath.replace('/deck/', '');
@@ -254,7 +263,7 @@ export async function renderSsrRoute(
       },
     };
 
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -264,7 +273,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1123,7 +1132,7 @@ export async function renderSsrRoute(
       },
     };
 
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -1133,7 +1142,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1321,7 +1330,7 @@ export async function renderSsrRoute(
       ],
     };
 
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -1331,7 +1340,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1459,7 +1468,7 @@ export async function renderSsrRoute(
     const pageTitle = 'Sign In & Register — DECK / divider Pokémon TCG Studio';
     const pageDesc = 'Sign in to DECK / divider to manage your Pokémon TCG collection vault, build competitive 60-card tournament decks, and track real-time portfolio market value.';
     const canonicalUrl = `${canonicalOrigin}/auth`;
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -1469,7 +1478,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1513,7 +1522,7 @@ export async function renderSsrRoute(
     const pageTitle = 'Pricing Plans & Subscriptions | DECK / divider Pokémon TCG Tracker';
     const pageDesc = 'Compare DECK / divider subscription tiers from free Starter to institutional Collection Vault. 60-card tournament builder, PSA slab tracking, and live market pricing.';
     const canonicalUrl = `${canonicalOrigin}/pricing`;
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -1587,7 +1596,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1768,7 +1777,7 @@ export async function renderSsrRoute(
     const pageTitle = 'Frequently Asked Questions — DECK / divider Pokémon TCG';
     const pageDesc = 'Answers to common questions about DECK / divider live market valuations, PSA slab certification logging, 60-card tournament deck rules, and collection security.';
     const canonicalUrl = `${canonicalOrigin}/faq`;
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -1837,7 +1846,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -1939,7 +1948,7 @@ export async function renderSsrRoute(
     const pageTitle = 'Privacy Policy — DECK / divider Pokémon TCG';
     const pageDesc = 'DECK / divider privacy policy. Learn how your collection portfolio data, pricing records, and account credentials are encrypted and protected.';
     const canonicalUrl = `${canonicalOrigin}/privacy`;
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -1949,7 +1958,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -2005,7 +2014,7 @@ export async function renderSsrRoute(
     const pageTitle = 'Terms of Service — DECK / divider Pokémon TCG';
     const pageDesc = 'DECK / divider terms of service and acceptable use policies for Pokémon TCG portfolio tracking, deckbuilder, and slab registries.';
     const canonicalUrl = `${canonicalOrigin}/terms`;
-    const ogImageUrl = 'https://deckdivider.app/og-image.png';
+    const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
@@ -2015,7 +2024,7 @@ export async function renderSsrRoute(
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+    <meta name="thumbnail" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -2092,7 +2101,7 @@ export async function renderSsrRoute(
   const pageTitle = 'DECK / divider | Pokémon TCG Collection Tracker & Deck Builder';
   const pageDesc = 'The ultimate ad-free Pokémon TCG app. Track raw cards, PSA/BGS/CGC slabs, and sealed boxes with live TCGplayer prices. Build standard legal 60-card decks.';
   const canonicalUrl = `${canonicalOrigin}/`;
-  const ogImageUrl = 'https://deckdivider.app/og-image.png';
+  const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -2111,7 +2120,7 @@ export async function renderSsrRoute(
           height: 512,
           caption: 'DECK / divider Logo',
         },
-        image: 'https://deckdivider.app/logo.png',
+        image: 'https://deckdivider.app/og-image.png?v=2',
         description: 'Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players.',
         sameAs: [
           'https://twitter.com/deckdivider',
@@ -2124,7 +2133,7 @@ export async function renderSsrRoute(
         '@id': 'https://deckdivider.app/#website',
         url: 'https://deckdivider.app',
         name: 'DECK / divider',
-        image: 'https://deckdivider.app/logo.png',
+        image: 'https://deckdivider.app/og-image.png?v=2',
         description: pageDesc,
         publisher: {
           '@id': 'https://deckdivider.app/#organization',
@@ -2140,7 +2149,7 @@ export async function renderSsrRoute(
         '@id': 'https://deckdivider.app/#software',
         name: 'DECK / divider',
         url: 'https://deckdivider.app',
-        image: 'https://deckdivider.app/logo.png',
+        image: 'https://deckdivider.app/og-image.png?v=2',
         applicationCategory: 'UtilityApplication, EntertainmentApplication',
         operatingSystem: 'Web, iOS, Android',
         description: pageDesc,
@@ -2220,7 +2229,7 @@ export async function renderSsrRoute(
   <meta property="og:description" content="${escapeHtml(pageDesc)}" />
   <meta property="og:image" content="${ogImageUrl}" />
   <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta name="thumbnail" content="https://deckdivider.app/logo.png" />
+  <meta name="thumbnail" content="${ogImageUrl}" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />

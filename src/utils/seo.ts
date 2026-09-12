@@ -8,13 +8,14 @@ export interface PageSeoOptions {
   description: string;
   canonicalPath?: string;
   ogImage?: string;
+  keywords?: string[] | string;
   jsonLd?: Record<string, any> | Array<Record<string, any>>;
 }
 
 export function updatePageSeo(options: PageSeoOptions): void {
   if (typeof document === 'undefined') return;
 
-  const { title, description, canonicalPath, ogImage, jsonLd } = options;
+  const { title, description, canonicalPath, ogImage, keywords, jsonLd } = options;
 
   // 1. Update Title
   if (title) {
@@ -36,6 +37,18 @@ export function updatePageSeo(options: PageSeoOptions): void {
 
     let twitterDesc = document.querySelector('meta[name="twitter:description"]');
     if (twitterDesc) twitterDesc.setAttribute('content', description);
+  }
+
+  // 2b. Update Keywords
+  if (keywords) {
+    const keywordsContent = Array.isArray(keywords) ? keywords.join(', ') : keywords;
+    let metaKw = document.querySelector('meta[name="keywords"]');
+    if (!metaKw) {
+      metaKw = document.createElement('meta');
+      metaKw.setAttribute('name', 'keywords');
+      document.head.appendChild(metaKw);
+    }
+    metaKw.setAttribute('content', keywordsContent);
   }
 
   // 3. Update Canonical URL
