@@ -26,13 +26,15 @@ import {
   HelpCircle,
   TrendingUp,
   Check,
-  Clock
+  Clock,
+  Copy
 } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { CommunityReview, ReviewCategory } from '../../types';
 import { OFFICIAL_SOCIAL_CHANNELS, SOCIAL_FAQS } from '../../data/socialsData';
+import { getSocialsPageSchema } from '../../components/seo/schemaData';
 import { 
   getCommunityReviews, 
   subscribeToReviews, 
@@ -190,46 +192,19 @@ export const PublicSocialsView: React.FC = () => {
   };
 
   // Structured schema for reviews and social organization
-  const seoSchema: any = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: 'DECK / divider',
-    description: 'Free Pokémon TCG card checklist, 60-card PTCGL deck builder, and slab tracker.'
-  };
-
-  if (stats.total > 0) {
-    seoSchema.aggregateRating = {
-      '@type': 'AggregateRating',
-      ratingValue: stats.average,
-      reviewCount: stats.total,
-      bestRating: '5',
-      worstRating: '1'
-    };
-    seoSchema.review = reviews.slice(0, 10).map(r => ({
-      '@type': 'Review',
-      author: {
-        '@type': 'Person',
-        name: r.isAnonymous ? 'Anonymous Trainer' : r.authorName
-      },
-      datePublished: r.createdAt.slice(0, 10),
-      reviewBody: r.comment,
-      reviewRating: {
-        '@type': 'Rating',
-        ratingValue: r.rating,
-        bestRating: '5',
-        worstRating: '1'
-      }
-    }));
-  }
+  const seoSchema = useMemo(() => getSocialsPageSchema(stats, reviews), [stats, reviews]);
 
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A] selection:bg-[#DC143C]/20 selection:text-[#0F172A]">
       <PageHead
         title="Official Socials & Community Reviews | DECK / divider"
-        description="Official DECK / divider Discord, X (Twitter), YouTube, and GitHub channels. Read community reviews and share your Pokémon TCG feedback."
+        description="Official DECK / divider Reddit (r/DeckDivider), Instagram (@deckdivider), and X (@DeckDivider) community channels. Read community reviews and share your Pokémon TCG feedback."
         canonicalPath="/socials"
         keywords={[
-          'pokemon tcg discord community',
+          'pokemon tcg reddit community',
+          'deck divider reddit r/DeckDivider',
+          'deck divider instagram @deckdivider',
+          'deck divider twitter x @DeckDivider',
           'deck divider reviews',
           'pokemon card tracker review',
           'ptcgl deck builder community',
@@ -305,30 +280,252 @@ export const PublicSocialsView: React.FC = () => {
                   Community Channels &amp; Badges
                 </h2>
               </div>
+              <div className="flex items-center gap-2 text-xs font-mono text-[#64748B] bg-white border border-[#E2E8F0] px-3.5 py-1.5 rounded-full shadow-2xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>3 Verified Channels Online</span>
+              </div>
             </div>
 
-            <div className="bg-white border border-[#E2E8F0] rounded-3xl p-8 sm:p-12 text-center shadow-xs">
-              <div className="w-14 h-14 bg-[#DC143C]/10 text-[#DC143C] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#DC143C]/20">
-                <Clock className="w-7 h-7" />
+            {/* Graphic 3-Column Social Channel Badges */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Reddit Badge Card */}
+              <div className="bg-white border border-[#E2E8F0] hover:border-[#FF4500]/50 rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
+                {/* Subtle top accent bar */}
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#FF4500]" />
+                
+                <div>
+                  {/* Channel Header */}
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="w-13 h-13 rounded-2xl bg-[#FFF2ED] border border-[#FFD9CC] flex items-center justify-center text-[#FF4500] shadow-2xs group-hover:scale-105 transition-transform">
+                      {/* Reddit Snoo Vector Icon */}
+                      <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.56 1.25 1.248a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.56 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
+                      </svg>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FFF2ED] text-[#FF4500] border border-[#FFD9CC] text-[10px] font-mono font-bold uppercase tracking-wider">
+                        <Check className="w-3 h-3" />
+                        Official Subreddit
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">r/DeckDivider</span>
+                    </div>
+                  </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-1.5 flex items-center gap-2">
+                    Reddit Community
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#64748B] leading-relaxed mb-4 font-sans">
+                    Join trainer discussions on Pokémon TCG master sets, deck builds, collection showcases, and upcoming expansion checklists.
+                  </p>
+
+                  {/* Feature Topic Badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {['#MasterSets', '#DeckStrategy', '#CollectionShowcase', '#FeatureRequests'].map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-[10px] font-mono text-[#475569]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="pt-4 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <a
+                    href="https://www.reddit.com/r/DeckDivider/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-[#FF4500] hover:bg-[#E03D00] text-white font-mono text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <span>Join r/DeckDivider</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('https://www.reddit.com/r/DeckDivider/');
+                        setCopiedChannelId('reddit');
+                        setTimeout(() => setCopiedChannelId(null), 2000);
+                      }
+                    }}
+                    title="Copy Reddit Link"
+                    className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#F1F5F9] text-[#475569] transition-colors flex items-center justify-center flex-shrink-0"
+                    aria-label="Copy Reddit link"
+                  >
+                    {copiedChannelId === 'reddit' ? (
+                      <Check className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-              <span className="inline-block px-3 py-1 rounded-full bg-[#F1F5F9] text-[#0F172A] border border-[#CBD5E1] text-xs font-mono font-bold uppercase tracking-wider mb-3">
-                Coming Soon
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#0F172A] font-heading mb-3">
-                Official Channels Coming Soon
-              </h3>
-              <p className="text-sm sm:text-base text-[#64748B] max-w-xl mx-auto leading-relaxed mb-6 font-sans">
-                Our verified community spaces and official channels are currently being prepared. In the meantime, you can read community reviews and share your feedback below.
-              </p>
-              <div className="flex items-center justify-center gap-3">
-                <a
-                  href="#reviews"
-                  className="px-5 py-2.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold transition-all shadow-2xs inline-flex items-center gap-2"
-                >
-                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  View Community Reviews
-                </a>
+
+              {/* Instagram Badge Card */}
+              <div className="bg-white border border-[#E2E8F0] hover:border-[#E1306C]/50 rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
+                {/* Subtle top accent bar */}
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCB045]" />
+                
+                <div>
+                  {/* Channel Header */}
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-[#FFF0F5] to-[#FFF7ED] border border-[#FBCFE8] flex items-center justify-center text-[#E1306C] shadow-2xs group-hover:scale-105 transition-transform">
+                      {/* Instagram Vector Icon */}
+                      <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-50 text-[#E1306C] border border-pink-200 text-[10px] font-mono font-bold uppercase tracking-wider">
+                        <Check className="w-3 h-3" />
+                        Official Account
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">@deckdivider</span>
+                    </div>
+                  </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-1.5 flex items-center gap-2">
+                    Instagram Showcase
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#64748B] leading-relaxed mb-4 font-sans">
+                    High-resolution card photography, PSA/BGS 10 gem mint slab showcases, booster openings, and Special Illustration Rares.
+                  </p>
+
+                  {/* Feature Topic Badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {['#SlabCollector', '#GemMint10', '#SIRPulls', '#CardPhotography'].map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-[10px] font-mono text-[#475569]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="pt-4 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <a
+                    href="https://www.instagram.com/deckdivider/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#E1306C] hover:opacity-95 text-white font-mono text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <span>Follow @deckdivider</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('https://www.instagram.com/deckdivider/');
+                        setCopiedChannelId('instagram');
+                        setTimeout(() => setCopiedChannelId(null), 2000);
+                      }
+                    }}
+                    title="Copy Instagram Link"
+                    className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#F1F5F9] text-[#475569] transition-colors flex items-center justify-center flex-shrink-0"
+                    aria-label="Copy Instagram link"
+                  >
+                    {copiedChannelId === 'instagram' ? (
+                      <Check className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {/* Twitter / X Badge Card */}
+              <div className="bg-white border border-[#E2E8F0] hover:border-[#0F172A]/50 rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
+                {/* Subtle top accent bar */}
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#0F172A]" />
+                
+                <div>
+                  {/* Channel Header */}
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="w-13 h-13 rounded-2xl bg-[#0F172A] border border-[#1E293B] flex items-center justify-center text-white shadow-2xs group-hover:scale-105 transition-transform">
+                      {/* X (Twitter) Vector Icon */}
+                      <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-[#0F172A] border border-slate-300 text-[10px] font-mono font-bold uppercase tracking-wider">
+                        <Check className="w-3 h-3" />
+                        Official Handle
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">@DeckDivider</span>
+                    </div>
+                  </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-1.5 flex items-center gap-2">
+                    X (Twitter) Feed
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#64748B] leading-relaxed mb-4 font-sans">
+                    Live market price trend alerts, new set database releases, platform changelog updates, and PTCGL meta announcements.
+                  </p>
+
+                  {/* Feature Topic Badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {['#PriceAlerts', '#TCGMeta', '#Changelog', '#SetReleases'].map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-[10px] font-mono text-[#475569]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="pt-4 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <a
+                    href="https://x.com/DeckDivider"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-mono text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <span>Follow @DeckDivider</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('https://x.com/DeckDivider');
+                        setCopiedChannelId('twitter');
+                        setTimeout(() => setCopiedChannelId(null), 2000);
+                      }
+                    }}
+                    title="Copy X Link"
+                    className="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#F1F5F9] text-[#475569] transition-colors flex items-center justify-center flex-shrink-0"
+                    aria-label="Copy X link"
+                  >
+                    {copiedChannelId === 'twitter' ? (
+                      <Check className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
             </div>
           </section>
 
@@ -597,7 +794,7 @@ export const PublicSocialsView: React.FC = () => {
             heading="DECK / divider Community Standards"
             summary="DECK / divider is an independent Pokémon Trading Card Game collector checklist, deck builder, and portfolio tracking platform. Our community guidelines encourage transparent, constructive, and helpful feedback from collectors, players, and trainers worldwide."
             keyFacts={[
-              { label: 'Community Status', value: 'Official Social Channels Coming Soon' },
+              { label: 'Official Channels', value: 'r/DeckDivider (Reddit) • @deckdivider (Instagram) • @DeckDivider (X)' },
               { label: 'Trainer Reviews', value: stats.total > 0 ? `${stats.average.toFixed(1)} / 5.0 (${stats.total} Reviews)` : 'Open for Community Reviews' },
               { label: 'Review Privacy Options', value: 'Verified Trainer Name or Anonymous Submission' },
               { label: 'Direct Support', value: 'deckdivider@outlook.com' },

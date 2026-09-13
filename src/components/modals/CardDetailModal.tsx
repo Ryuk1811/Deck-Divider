@@ -24,6 +24,7 @@ import {
 } from '../../types';
 import { formatCurrency, ENERGY_COLORS, convertUSDToCurrency, convertCurrencyToUSD, getCurrencySymbol } from '../../utils/formatters';
 import { generatePriceHistory, getCardByIdFromEngine, mapToPokemonCard } from '../../lib/searchEngine';
+import { getPokemonSpeciesTypes } from '../../data/pokemonSpeciesTypes';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 import { CardImage } from '../ui/CardImage';
@@ -338,7 +339,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-5xl bg-white p-4 sm:p-6 md:p-8 border border-[#E2E8F0] shadow-2xl max-h-[95vh] flex flex-col overflow-hidden rounded-2xl relative">
+      <div className="w-full max-w-5xl bg-white p-4 sm:p-6 md:p-8 border border-[#E2E8F0] shadow-2xl h-[95vh] flex flex-col overflow-hidden rounded-2xl relative">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -382,18 +383,24 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
               {/* Energy Types & Rarity Badges */}
               <div className="flex items-center justify-center gap-1.5 pt-1 flex-wrap">
-                {fullCardData.types?.map((type, idx) => {
-                  const displayType = type === 'Darkness' ? 'Dark' : type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type;
-                  const style = ENERGY_COLORS[displayType] || ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
-                  return (
-                    <span
-                      key={`${type}-${idx}`}
-                      className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-mono font-bold border ${style.bg} ${style.text} ${style.border}`}
-                    >
-                      {displayType}
-                    </span>
-                  );
-                })}
+                {(() => {
+                  const isTrainerOrEnergy = fullCardData.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some((c: string) => fullCardData.category?.toLowerCase().includes(c));
+                  const displayTypes = isTrainerOrEnergy
+                    ? (fullCardData.types || [])
+                    : (getPokemonSpeciesTypes(fullCardData.name, fullCardData.category, fullCardData.types));
+
+                  return displayTypes && displayTypes.length > 0 && displayTypes.map((type, idx) => {
+                    const style = ENERGY_COLORS[type] || ENERGY_COLORS['Normal'] || ENERGY_COLORS['Colorless'];
+                    return (
+                      <span
+                        key={`${type}-${idx}`}
+                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-mono font-bold border ${style.bg} ${style.text} ${style.border}`}
+                      >
+                        {type}
+                      </span>
+                    );
+                  });
+                })()}
                 <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-mono font-bold bg-[#0F172A] text-white">
                   {fullCardData.rarity}
                 </span>
@@ -402,7 +409,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
           </div>
 
           {/* Right Column: Scroll View with Tidally Locked Major Details */}
-          <div className="flex-1 min-w-0 w-full flex flex-col min-h-0 max-h-[45vh] lg:max-h-full relative bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-1 overflow-hidden">
+          <div className="flex-1 min-w-0 w-full flex flex-col min-h-0 h-full relative bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-1 overflow-hidden">
             <div className="custom-scrollbar flex-1 overflow-y-auto relative">
               {/* Sticky/Tidally Locked Tab Navigation Bar */}
               <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 px-4 py-3 border-b border-[#E2E8F0] flex items-center gap-1.5 flex-wrap flex-shrink-0">

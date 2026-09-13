@@ -92,7 +92,10 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
     id: 'socials-and-reviews',
     category: 'Community, Social Badges & Trainer Reviews',
     primaryKeywords: [
-      'Pokémon TCG discord community server',
+      'DECK divider Reddit r/DeckDivider community',
+      'DECK divider Instagram @deckdivider card showcases',
+      'DECK divider X Twitter @DeckDivider market updates',
+      'Pokémon TCG collector reddit discussions',
       'DECK divider app reviews and ratings',
       'Pokémon card tracker reviews',
       'best free Pokémon TCG deck builder review',
@@ -100,13 +103,16 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
     ],
     secondaryKeywords: [
       'official Pokémon TCG collector socials',
-      'join Pokémon TCG deck builder discord',
+      'join r/DeckDivider reddit Pokémon cards',
+      'follow @deckdivider on Instagram Pokémon slabs',
       'DECK divider Twitter updates and patch notes',
-      'trainer feedback and ratings'
+      'trainer feedback and ratings',
+      'verified Pokémon card collection portfolio reviews'
     ],
     longTailQueries: [
-      'where to find Pokémon card collector discord community',
+      'where to find Pokémon card collector reddit community r/DeckDivider',
       'how to submit reviews for Pokémon TCG portfolio tracker',
+      'follow Pokémon card slab showcases on Instagram @deckdivider',
       'unbiased reviews of Pokémon card checklist apps'
     ]
   }

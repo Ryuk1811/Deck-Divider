@@ -74,7 +74,7 @@ const CHARIZARD_151_RAW: PokemonCard = {
   category: 'Pokémon',
   stage: 'Stage 2',
   hp: 330,
-  types: ['Dark'],
+  types: ['Darkness'],
   rarity: 'Special Illustration Rare',
   artist: 'AKIRA EGAWA',
   number: '199/165',
@@ -127,7 +127,7 @@ const MOONBREON_VMAX: PokemonCard = {
   category: 'Pokémon',
   stage: 'VMAX',
   hp: 310,
-  types: ['Dark'],
+  types: ['Darkness'],
   rarity: 'Secret Rare',
   artist: 'KEIICHIRO ITO',
   number: '215/203',
@@ -144,13 +144,13 @@ const MOONBREON_VMAX: PokemonCard = {
   attacks: [
     {
       name: 'Dark Signal',
-      cost: ['Dark', 'Colorless', 'Colorless'],
+      cost: ['Darkness', 'Colorless', 'Colorless'],
       damage: '160',
       text: 'Switch in 1 of your opponent\'s Benched Pokémon to the Active Spot.',
     },
     {
       name: 'Max Darkness',
-      cost: ['Dark', 'Colorless', 'Colorless'],
+      cost: ['Darkness', 'Colorless', 'Colorless'],
       damage: '160',
       text: '',
     },
@@ -180,7 +180,7 @@ const GENGAR_VMAX_ALT: PokemonCard = {
   category: 'Pokémon',
   stage: 'VMAX',
   hp: 320,
-  types: ['Dark'],
+  types: ['Darkness'],
   rarity: 'Secret Rare',
   artist: 'sowsow',
   number: '271/264',
@@ -197,13 +197,13 @@ const GENGAR_VMAX_ALT: PokemonCard = {
   attacks: [
     {
       name: 'Fear and Panic',
-      cost: ['Dark', 'Dark'],
+      cost: ['Darkness', 'Darkness'],
       damage: '60×',
       text: 'This attack does 60 damage for each of your opponent\'s Pokémon V and Pokémon-GX in play.',
     },
     {
       name: 'G-Max Swallow Up',
-      cost: ['Dark', 'Dark', 'Dark'],
+      cost: ['Darkness', 'Darkness', 'Darkness'],
       damage: '250',
       text: 'During your next turn, this Pokémon can\'t attack.',
     },
@@ -314,7 +314,7 @@ const LUGIA_V_ALT: PokemonCard = {
       text: 'You may discard a Stadium in play.',
     },
   ],
-  weaknesses: [{ type: 'Electric', value: '×2' }],
+  weaknesses: [{ type: 'Lightning', value: '×2' }],
   prices: {
     raw: 215.0,
     psa10Estimate: 460.0,
@@ -367,7 +367,7 @@ const BUBBLE_MEW_SIR: PokemonCard = {
       text: 'Choose 1 of your opponent\'s Active Pokémon\'s attacks and use it as this attack.',
     },
   ],
-  weaknesses: [{ type: 'Dark', value: '×2' }],
+  weaknesses: [{ type: 'Darkness', value: '×2' }],
   prices: {
     raw: 135.0,
     psa10Estimate: 310.0,
@@ -392,7 +392,7 @@ const GREY_FELT_HAT_PIKACHU: PokemonCard = {
   category: 'Pokémon',
   stage: 'Basic',
   hp: 60,
-  types: ['Electric'],
+  types: ['Lightning'],
   rarity: 'Promo',
   artist: 'Naoyo Kimura',
   number: '085',
@@ -467,7 +467,7 @@ const BLASTOISE_151_SIR: PokemonCard = {
       text: 'Discard up to 2 Basic Water Energy cards from your hand. This attack does 140 damage for each card discarded.',
     },
   ],
-  weaknesses: [{ type: 'Electric', value: '×2' }],
+  weaknesses: [{ type: 'Lightning', value: '×2' }],
   prices: {
     raw: 68.0,
     psa10Estimate: 180.0,
@@ -611,7 +611,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
         text: 'You may discard a Stadium in play.',
       },
     ],
-    weaknesses: [{ type: 'Electric', value: '×2' }],
+    weaknesses: [{ type: 'Lightning', value: '×2' }],
     prices: {
       raw: 28.0,
       psa10Estimate: 85.0,

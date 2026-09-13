@@ -34,11 +34,19 @@ const ALL_ENERGY_TYPES: EnergyType[] = [
   'Grass',
   'Electric',
   'Psychic',
-  'Fighting',
-  'Dark',
-  'Steel',
+  'Ghost',
   'Dragon',
-  'Colorless',
+  'Dark',
+  'Fairy',
+  'Fighting',
+  'Flying',
+  'Poison',
+  'Ground',
+  'Rock',
+  'Bug',
+  'Ice',
+  'Steel',
+  'Normal',
 ];
 
 const ALL_RARITIES: CardRarity[] = [

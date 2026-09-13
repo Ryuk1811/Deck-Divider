@@ -99,6 +99,43 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 18,400+ Cards • Live Market Prices
               </span>
             </div>
+
+            {/* Official Socials Discovery Badges */}
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 rounded-xl p-1.5">
+              <a
+                href="https://www.reddit.com/r/DeckDivider/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="r/DeckDivider on Reddit"
+                className="px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 hover:border-[#FF4500]/50 hover:bg-[#FF4500]/5 text-slate-600 hover:text-[#FF4500] text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+                aria-label="DECK divider Reddit community r/DeckDivider"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF4500]"></span>
+                <span>Reddit</span>
+              </a>
+              <a
+                href="https://www.instagram.com/deckdivider/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="@deckdivider on Instagram"
+                className="px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 hover:border-[#E1306C]/50 hover:bg-[#E1306C]/5 text-slate-600 hover:text-[#E1306C] text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+                aria-label="DECK divider Instagram @deckdivider"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E1306C]"></span>
+                <span>Instagram</span>
+              </a>
+              <a
+                href="https://x.com/DeckDivider"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="@DeckDivider on X (Twitter)"
+                className="px-2.5 py-1 rounded-lg bg-white border border-slate-200/90 hover:border-slate-900/50 hover:bg-slate-900/5 text-slate-600 hover:text-slate-900 text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+                aria-label="DECK divider X profile @DeckDivider"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
+                <span>𝕏 / Twitter</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -190,6 +227,39 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Socials &amp; Reviews
                 </Link>
+              </li>
+              <li>
+                <a
+                  href="https://www.reddit.com/r/DeckDivider/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-600 hover:text-[#FF4500] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF4500]"></span>
+                  Reddit: r/DeckDivider
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/deckdivider/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-600 hover:text-[#E1306C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E1306C]"></span>
+                  Instagram: @deckdivider
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://x.com/DeckDivider"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
+                  𝕏 / Twitter: @DeckDivider
+                </a>
               </li>
               <li>
                 <Link

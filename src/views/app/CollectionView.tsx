@@ -36,6 +36,7 @@ import { DropdownMenu } from '../../components/ui/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
 import { PublicShareLinkBox } from '../../components/ui/PublicShareLinkBox';
 import { encodePortfolioToUrl } from '../../utils/portfolioUrlEncoder';
+import { getPokemonSpeciesTypes } from '../../data/pokemonSpeciesTypes';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -67,11 +68,19 @@ const ALL_TYPES: EnergyType[] = [
   'Grass',
   'Electric',
   'Psychic',
-  'Fighting',
-  'Dark',
-  'Steel',
+  'Ghost',
   'Dragon',
-  'Colorless',
+  'Dark',
+  'Fairy',
+  'Fighting',
+  'Flying',
+  'Poison',
+  'Ground',
+  'Rock',
+  'Bug',
+  'Ice',
+  'Steel',
+  'Normal',
 ];
 
 const COLLECTION_CHUNK_SIZE = 40;
@@ -183,15 +192,24 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
         if (!matchesName && !matchesSet && !matchesNumber) return false;
       }
 
-      // Energy Type Filter
+      // Species / Energy Type Filter
       if (selectedTypes.length > 0) {
-        const expandedSelectedTypes = selectedTypes.flatMap(t => {
-          if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
-          if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
-          if (t === 'Dark' || t === 'Darkness') return ['Dark', 'Darkness'];
-          return [t];
-        });
-        const hasMatchingType = card.types?.some((t) => expandedSelectedTypes.includes(t as any));
+        const isTrainerOrEnergy = card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some((c: string) => card.category?.toLowerCase().includes(c));
+        const speciesTypes = isTrainerOrEnergy
+          ? (card.types || [])
+          : getPokemonSpeciesTypes(card.name, card.category, card.types);
+        const allCardTypes = [...(speciesTypes || []), ...(card.types || [])];
+        
+        const hasMatchingType = allCardTypes.some((t) =>
+          selectedTypes.some((st) => {
+            if (st.toLowerCase() === t.toLowerCase()) return true;
+            if (st === 'Electric' && t === 'Lightning') return true;
+            if (st === 'Dark' && t === 'Darkness') return true;
+            if (st === 'Steel' && t === 'Metal') return true;
+            if (st === 'Normal' && t === 'Colorless') return true;
+            return false;
+          })
+        );
         if (!hasMatchingType) return false;
       }
 
@@ -277,7 +295,9 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
     filteredEntries.forEach((item) => {
       let key = 'Other';
       if (groupBy === 'type') {
-        key = item.card.types?.[0] || 'Trainer/Energy';
+        const isTrainerOrEnergy = item.card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some((c: string) => item.card.category?.toLowerCase().includes(c));
+        const speciesTypes = isTrainerOrEnergy ? item.card.types : getPokemonSpeciesTypes(item.card.name, item.card.category, item.card.types);
+        key = speciesTypes?.[0] || item.card.types?.[0] || 'Trainer/Energy';
       } else if (groupBy === 'rarity') {
         key = item.card.rarity || 'Common';
       } else if (groupBy === 'set') {
@@ -796,7 +816,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     </td>
                     <td className="p-3">
                       <span className="text-[#DC143C] font-bold">
-                        {card.types?.map((t) => (t === 'Darkness' ? 'Dark' : t)).join(', ') || 'N/A'}
+                        {card.types?.map((t) => t).join(', ') || 'N/A'}
                       </span>
                     </td>
                     <td className="p-3">

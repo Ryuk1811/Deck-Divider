@@ -96,17 +96,17 @@ export const initSearchEngine = async (): Promise<void> => {
 
 import { PokemonCard, EnergyType, CardRarity, CardSet } from '../types';
 import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
+import { getPokemonSpeciesTypes } from '../data/pokemonSpeciesTypes';
 
 export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
-  const normalizedTypes = card.types
-    ? (Array.from(
-        new Set(
-          card.types.map((t) =>
-            t === 'Lightning' ? 'Electric' : t === 'Metal' ? 'Steel' : t === 'Darkness' ? 'Dark' : t
-          )
-        )
-      ) as EnergyType[])
-    : undefined;
+  const isTrainerOrEnergy = card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some(c => card.category?.toLowerCase().includes(c));
+  const speciesTypes = isTrainerOrEnergy
+    ? (card.types as EnergyType[] | undefined)
+    : (getPokemonSpeciesTypes(card.name, card.category, card.types) as EnergyType[]);
+
+  const normalizedTypes = speciesTypes && speciesTypes.length > 0
+    ? speciesTypes
+    : card.types ? (Array.from(new Set(card.types)) as EnergyType[]) : undefined;
 
   return {
     id: card.id,
@@ -335,19 +335,22 @@ export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
   const filterFn = (doc: any): boolean => {
     if (!doc) return false;
 
-    // 1. Type matching (Electric/Lightning, Steel/Metal)
+    // 1. Type matching (Species types and energy types)
     if (filters.types && filters.types.length > 0) {
-      if (!doc.types || !Array.isArray(doc.types) || doc.types.length === 0) {
+      const speciesTypes = getPokemonSpeciesTypes(doc.name, doc.category, doc.types);
+      const allTypes = [...(speciesTypes || []), ...(Array.isArray(doc.types) ? doc.types : [])];
+      if (allTypes.length === 0) {
         return false;
       }
-      const expandedFilterTypes = filters.types.flatMap((t) => {
-        if (t === 'Electric' || t === 'Lightning') return ['Electric', 'Lightning'];
-        if (t === 'Steel' || t === 'Metal') return ['Steel', 'Metal'];
-        if (t === 'Dark' || t === 'Darkness') return ['Dark', 'Darkness'];
-        return [t];
-      });
-      const hasMatchingType = expandedFilterTypes.some((reqType) =>
-        doc.types.some((cardType: string) => cardType.toLowerCase() === reqType.toLowerCase())
+      const hasMatchingType = filters.types.some((reqType) =>
+        allTypes.some((cardType: string) => {
+          if (cardType.toLowerCase() === reqType.toLowerCase()) return true;
+          if (reqType === 'Electric' && cardType === 'Lightning') return true;
+          if (reqType === 'Dark' && cardType === 'Darkness') return true;
+          if (reqType === 'Steel' && cardType === 'Metal') return true;
+          if (reqType === 'Normal' && cardType === 'Colorless') return true;
+          return false;
+        })
       );
       if (!hasMatchingType) return false;
     }

@@ -1642,7 +1642,7 @@ async function startServer() {
         body: JSON.stringify({
           query: `
             query {
-              cards(filters: {}) {
+              cards {
                 id
                 localId
                 name

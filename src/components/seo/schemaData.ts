@@ -11,6 +11,11 @@ export const getBaseOrganizationSchema = () => ({
   logo: 'https://deckdivider.app/icon-512.png',
   email: 'deckdivider@outlook.com',
   description: 'Institutional-grade Pokémon TCG portfolio tracker, graded slab vault, and tournament deck studio.',
+  sameAs: [
+    'https://www.reddit.com/r/DeckDivider/',
+    'https://www.instagram.com/deckdivider/',
+    'https://x.com/DeckDivider'
+  ],
   knowsAbout: [
     'Pokémon Trading Card Game',
     'TCGplayer Market Pricing',
@@ -19,6 +24,62 @@ export const getBaseOrganizationSchema = () => ({
     'Deck Building and PTCGL Export'
   ]
 });
+
+export const getSocialsPageSchema = (stats?: { total: number; average: number }, reviews?: any[]) => {
+  const schema: any = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      getBaseOrganizationSchema(),
+      {
+        '@type': 'WebPage',
+        '@id': 'https://deckdivider.app/socials#webpage',
+        url: 'https://deckdivider.app/socials',
+        name: 'Official Socials, Community Channels & Trainer Reviews | DECK / divider',
+        description: 'Official DECK / divider community channels on Reddit (r/DeckDivider), Instagram (@deckdivider), and X (@DeckDivider). Read verified trainer reviews and share your Pokémon TCG feedback.',
+        isPartOf: {
+          '@id': 'https://deckdivider.app/#website'
+        },
+        about: {
+          '@type': 'Organization',
+          '@id': 'https://deckdivider.app/#organization'
+        }
+      }
+    ]
+  };
+
+  if (stats && stats.total > 0) {
+    schema['@graph'].push({
+      '@type': 'Product',
+      '@id': 'https://deckdivider.app/#product',
+      name: 'DECK / divider',
+      description: 'Pokémon TCG card checklist, 60-card PTCGL deck builder, and slab tracker.',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: stats.average.toFixed(1),
+        reviewCount: stats.total,
+        bestRating: '5',
+        worstRating: '1'
+      },
+      review: (reviews || []).slice(0, 10).map((r) => ({
+        '@type': 'Review',
+        author: {
+          '@type': 'Person',
+          name: r.isAnonymous ? 'Anonymous Trainer' : r.authorName
+        },
+        datePublished: r.createdAt ? r.createdAt.slice(0, 10) : '2026-01-01',
+        reviewBody: r.comment,
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: r.rating,
+          bestRating: '5',
+          worstRating: '1'
+        }
+      }))
+    });
+  }
+
+  return schema;
+};
 
 export const getHomepageSchema = () => ({
   '@context': 'https://schema.org',

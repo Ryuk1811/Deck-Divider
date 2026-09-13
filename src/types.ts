@@ -69,21 +69,32 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
   },
 };
 
-export type EnergyType =
+export type PokemonSpeciesType =
+  | 'Normal'
   | 'Fire'
   | 'Water'
   | 'Grass'
   | 'Electric'
-  | 'Lightning'
-  | 'Psychic'
+  | 'Ice'
   | 'Fighting'
-  | 'Dark'
-  | 'Darkness'
-  | 'Steel'
-  | 'Metal'
+  | 'Poison'
+  | 'Ground'
+  | 'Flying'
+  | 'Psychic'
+  | 'Bug'
+  | 'Rock'
+  | 'Ghost'
   | 'Dragon'
-  | 'Colorless'
-  | 'Fairy';
+  | 'Steel'
+  | 'Fairy'
+  | 'Dark';
+
+export type EnergyType =
+  | PokemonSpeciesType
+  | 'Lightning'
+  | 'Darkness'
+  | 'Metal'
+  | 'Colorless';
 
 export type CardRarity =
   | 'Common'

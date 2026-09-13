@@ -52,20 +52,25 @@ function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): 
 }
 
 // Map TCGdex Set schema to app CardSet schema
+import { getPokemonSpeciesTypes } from '../data/pokemonSpeciesTypes';
+
 function mapTCGdexSet(set: any): CardSet {
   return normalizeSet(set);
 }
 
 // Map TCGdex Card detail schema to app PokemonCard schema
 export function mapTCGdexCard(card: any): PokemonCard {
-  // Normalize types: Lightning -> Electric, Metal -> Steel, Darkness -> Dark
   const rawTypes = card.types || [];
-  const normalizedTypes = rawTypes.map((t: string) => {
-    if (t === 'Lightning') return 'Electric';
-    if (t === 'Metal') return 'Steel';
-    if (t === 'Darkness') return 'Dark';
-    return t;
-  }) as EnergyType[];
+  const isTrainerOrEnergy = card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some((c: string) => card.category?.toLowerCase().includes(c));
+  const speciesTypes = (
+    isTrainerOrEnergy
+      ? (rawTypes as EnergyType[])
+      : (getPokemonSpeciesTypes(card.name, card.category, rawTypes) as EnergyType[])
+  ) || [];
+
+  const normalizedTypes: EnergyType[] = speciesTypes.length > 0
+    ? speciesTypes
+    : (rawTypes.length > 0 ? (rawTypes as EnergyType[]) : ['Normal']);
 
   const hpVal = typeof card.hp === 'number' ? card.hp : parseInt(String(card.hp || 0), 10) || undefined;
 
@@ -78,7 +83,7 @@ export function mapTCGdexCard(card: any): PokemonCard {
     supertype: card.category === 'Pokemon' || card.category === 'Pokémon' ? 'Pokémon' : card.category || 'Pokémon',
     subtypes: card.stage ? [card.stage] : [],
     hp: hpVal,
-    types: normalizedTypes.length > 0 ? normalizedTypes : ['Colorless'],
+    types: normalizedTypes.length > 0 ? normalizedTypes : ['Normal'],
     stage: card.stage,
     category: card.category || 'Pokémon',
     artist: card.illustrator || 'Unknown',
@@ -86,36 +91,20 @@ export function mapTCGdexCard(card: any): PokemonCard {
     attacks: card.attacks
       ? card.attacks.map((a: any) => ({
           name: a.name,
-          cost: (a.cost || []).map((c: string) =>
-            c === 'Lightning' ? 'Electric' : c === 'Metal' ? 'Steel' : c === 'Darkness' ? 'Dark' : c
-          ),
+          cost: (a.cost || []).map((c: string) => c as EnergyType),
           damage: a.damage ? String(a.damage) : '',
           text: a.effect || a.text || '',
         }))
       : undefined,
     weaknesses: card.weaknesses
       ? card.weaknesses.map((w: any) => ({
-          type:
-            w.type === 'Lightning'
-              ? 'Electric'
-              : w.type === 'Metal'
-              ? 'Steel'
-              : w.type === 'Darkness'
-              ? 'Dark'
-              : w.type,
+          type: w.type,
           value: w.value || '×2',
         }))
       : undefined,
     resistances: card.resistances
       ? card.resistances.map((r: any) => ({
-          type:
-            r.type === 'Lightning'
-              ? 'Electric'
-              : r.type === 'Metal'
-              ? 'Steel'
-              : r.type === 'Darkness'
-              ? 'Dark'
-              : r.type,
+          type: r.type,
           value: r.value || '-30',
         }))
       : undefined,

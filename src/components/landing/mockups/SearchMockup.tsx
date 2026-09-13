@@ -26,7 +26,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
       set: 'Obsidian Flames',
       number: '223/197',
       rarity: 'Hyper Rare (Gold)',
-      type: 'Dark',
+      type: 'Darkness',
       hp: 330,
       price: '$68.00',
       image: 'https://images.pokemontcg.io/sv3/223_hires.png',

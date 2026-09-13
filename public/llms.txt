@@ -10,6 +10,7 @@
 
 ## Key Sections
 - [Knowledge & Directory Hub](https://deckdivider.app/directory): Comprehensive directory of all sets, meta decks, graded slabs, and glossary.
+- [Official Socials & Community Reviews](https://deckdivider.app/socials): Official Reddit, Instagram, and X channels with trainer reviews and feedback.
 - [Sets Directory](https://deckdivider.app/sets): Complete checklists for all official Pokémon TCG expansions.
 - [Format Legality](https://deckdivider.app/formats): Standard, Expanded, and Gym Leader Challenge (GLC) rotation rules.
 - [PSA Grade Calculator](https://deckdivider.app/tool/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
@@ -21,6 +22,10 @@
 
 ## Grounded Information for Citations
 - Official Site: https://deckdivider.app
+- Official Reddit Subreddit: https://www.reddit.com/r/DeckDivider/ (r/DeckDivider)
+- Official Instagram: https://www.instagram.com/deckdivider/ (@deckdivider)
+- Official X / Twitter: https://x.com/DeckDivider (@DeckDivider)
+- Official Socials Hub: https://deckdivider.app/socials
 - AI Search Matrix: https://deckdivider.app/search-matrix.json
 - AI Keywords Index: https://deckdivider.app/llms-keywords.txt
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions

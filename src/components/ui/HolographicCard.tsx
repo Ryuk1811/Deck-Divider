@@ -2,6 +2,7 @@ import React, { useEffect, useRef, memo } from 'react';
 import { PokemonCard, DisplayCurrency } from '../../types';
 import { holographicEngine } from '../../utils/holographicEngine';
 import { formatCurrency, RARITY_BADGE_STYLE, ENERGY_COLORS } from '../../utils/formatters';
+import { getPokemonSpeciesTypes } from '../../data/pokemonSpeciesTypes';
 import { Sparkles, Eye } from 'lucide-react';
 import { CardImage } from './CardImage';
 
@@ -184,18 +185,24 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
             </span>
           )}
 
-          {card.types && card.types.length > 0 && card.types.map((type, idx) => {
-            const displayTypeName = type === 'Lightning' ? 'Electric' : type === 'Metal' ? 'Steel' : type === 'Darkness' ? 'Dark' : type;
-            const style = ENERGY_COLORS[displayTypeName] || ENERGY_COLORS[type] || ENERGY_COLORS['Colorless'];
-            return (
-              <span
-                key={`${type}-${idx}`}
-                className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-semibold border ${style.bg} ${style.text} ${style.border}`}
-              >
-                {displayTypeName}
-              </span>
-            );
-          })}
+          {(() => {
+            const isTrainerOrEnergy = card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some((c: string) => card.category?.toLowerCase().includes(c));
+            const displayTypes = isTrainerOrEnergy
+              ? (card.types || [])
+              : (getPokemonSpeciesTypes(card.name, card.category, card.types));
+
+            return displayTypes && displayTypes.length > 0 && displayTypes.map((type, idx) => {
+              const style = ENERGY_COLORS[type] || ENERGY_COLORS['Normal'] || ENERGY_COLORS['Colorless'];
+              return (
+                <span
+                  key={`${type}-${idx}`}
+                  className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-mono font-semibold border ${style.bg} ${style.text} ${style.border}`}
+                >
+                  {type}
+                </span>
+              );
+            });
+          })()}
 
           {card.legalities?.standard && (
             <span className="inline-flex items-center rounded-md px-1 py-0.5 text-[8px] font-mono font-bold bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]" title="Standard Format Legal">
