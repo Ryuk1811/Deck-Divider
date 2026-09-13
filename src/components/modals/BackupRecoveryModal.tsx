@@ -37,7 +37,7 @@ export const BackupRecoveryModal: React.FC<BackupRecoveryModalProps> = ({
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const locals = getLocalRollingBackups(userId || 'guest_user');
+      const locals = await getLocalRollingBackups(userId || 'guest_user');
       setLocalBackups(locals);
 
       if (userId && userId !== 'guest_user') {

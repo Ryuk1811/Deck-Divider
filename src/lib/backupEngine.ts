@@ -28,16 +28,16 @@ export interface BackupPoint {
   rawPayload?: UserCompressedSnapshotState;
 }
 
-import { safeGetItem, safeSetItem } from '../utils/safeStorage';
+import { setEncryptedItem, getEncryptedItem } from './encryptedVault';
 
 const LOCAL_BACKUPS_STORAGE_KEY = 'tcg_rolling_local_backups_v1';
 const MAX_CLOUD_BACKUPS = 10;
 const MAX_LOCAL_BACKUPS = 5;
 
 /**
- * Save a rolling local backup to localStorage as an offline safety fallback
+ * Save a rolling local backup to encrypted vault as an offline safety fallback
  */
-export function saveRollingLocalBackup(state: UserCompressedSnapshotState): BackupPoint | null {
+export async function saveRollingLocalBackup(state: UserCompressedSnapshotState): Promise<BackupPoint | null> {
   try {
     const backupId = `local_backup_${Date.now()}`;
     const timestamp = new Date().toISOString();
@@ -63,8 +63,7 @@ export function saveRollingLocalBackup(state: UserCompressedSnapshotState): Back
       rawPayload: state,
     };
 
-    const existingStr = safeGetItem(LOCAL_BACKUPS_STORAGE_KEY);
-    let existingBackups: BackupPoint[] = existingStr ? JSON.parse(existingStr) : [];
+    let existingBackups = (await getEncryptedItem<BackupPoint[]>(LOCAL_BACKUPS_STORAGE_KEY, state.userId)) || [];
 
     // Prepend new backup
     existingBackups.unshift(backupPoint);
@@ -74,7 +73,7 @@ export function saveRollingLocalBackup(state: UserCompressedSnapshotState): Back
       existingBackups = existingBackups.slice(0, MAX_LOCAL_BACKUPS);
     }
 
-    safeSetItem(LOCAL_BACKUPS_STORAGE_KEY, JSON.stringify(existingBackups));
+    await setEncryptedItem(LOCAL_BACKUPS_STORAGE_KEY, existingBackups, state.userId);
     return backupPoint;
   } catch (err) {
     console.warn('Local rolling backup warning:', err);
@@ -83,13 +82,12 @@ export function saveRollingLocalBackup(state: UserCompressedSnapshotState): Back
 }
 
 /**
- * Fetch all local rolling backups from localStorage
+ * Fetch all local rolling backups from encrypted vault
  */
-export function getLocalRollingBackups(userId: string): BackupPoint[] {
+export async function getLocalRollingBackups(userId: string): Promise<BackupPoint[]> {
   try {
-    const existingStr = safeGetItem(LOCAL_BACKUPS_STORAGE_KEY);
-    if (!existingStr) return [];
-    const backups: BackupPoint[] = JSON.parse(existingStr);
+    const backups = await getEncryptedItem<BackupPoint[]>(LOCAL_BACKUPS_STORAGE_KEY, userId);
+    if (!backups || !Array.isArray(backups)) return [];
     return backups.filter((b) => b.userId === userId);
   } catch (err) {
     console.warn('Failed to parse local backups:', err);
@@ -105,12 +103,12 @@ export async function createCloudBackupPoint(
 ): Promise<BackupPoint | null> {
   if (!state.userId || state.userId === 'guest_user') {
     // For guest users, save local backup only
-    return saveRollingLocalBackup(state);
+    return await saveRollingLocalBackup(state);
   }
 
   try {
     // Save local rolling backup first as failsafe
-    saveRollingLocalBackup(state);
+    await saveRollingLocalBackup(state);
 
     const packed = await packageUserSnapshot(state);
     const backupDocId = `backup_${Date.now()}`;

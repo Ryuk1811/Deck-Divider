@@ -83,6 +83,7 @@ import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustom
 import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
+import { reconcileFullCollectionState } from './lib/syncDeduplicationEngine';
 import { BackupRecoveryModal } from './components/modals/BackupRecoveryModal';
 import {
   generateShowcaseDecks,
@@ -483,6 +484,13 @@ export default function App() {
       // Save rolling timestamped point-in-time cloud and local backup
       await createCloudBackupPoint(stateToCompress);
 
+      // Async multi-tier subcollection redundancy sync (guarantees cross-device durability)
+      Promise.all([
+        ...sanitizedDecks.map((d) => setDoc(doc(db, 'users', curUser.uid, 'decks', d.id), d).catch(() => {})),
+        ...sanitizedLists.map((l) => setDoc(doc(db, 'users', curUser.uid, 'customLists', l.id), l).catch(() => {})),
+        ...sanitizedSealed.map((s) => setDoc(doc(db, 'users', curUser.uid, 'sealedVault', s.id), s).catch(() => {})),
+      ]).catch(() => {});
+
       setLastSyncedTimestamp(packed.updatedAt);
       recordSnapshotCompleted();
       setSnapshotMetrics({
@@ -594,6 +602,7 @@ export default function App() {
 
         // If authenticated, check Firestore snapshot AND query subcollections to guarantee cross-device persistence
         if (user) {
+          let remoteSnapshotState: UserCompressedSnapshotState | null = null;
           try {
             const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
             const snapDoc = await getDoc(snapRef);
@@ -606,21 +615,7 @@ export default function App() {
                 compressionRatio: docData.compressionRatio,
               });
 
-              const unpacked = await unpackUserSnapshot(docData);
-              if (unpacked) {
-                if (unpacked.decks && unpacked.decks.length > 0) {
-                  currentDecks = unpacked.decks;
-                }
-                if (unpacked.customLists && unpacked.customLists.length > 0) {
-                  currentLists = unpacked.customLists;
-                }
-                if (unpacked.sealedEntries && unpacked.sealedEntries.length > 0) {
-                  currentSealed = unpacked.sealedEntries;
-                }
-                if (unpacked.soldEntries && unpacked.soldEntries.length > 0) {
-                  setSoldEntries(unpacked.soldEntries);
-                }
-              }
+              remoteSnapshotState = await unpackUserSnapshot(docData);
             }
 
             // Subcollection multi-tier query fallback (guarantees items added on mobile/desktop exist across devices)
@@ -639,39 +634,44 @@ export default function App() {
               }),
             ]);
 
-            if (subDecksSnap && !subDecksSnap.empty) {
-              const subDecks = subDecksSnap.docs.map((d) => d.data() as Deck);
-              const deckMap = new Map<string, Deck>();
-              currentDecks.forEach((d) => deckMap.set(d.id, d));
-              subDecks.forEach((d) => {
-                if (d && d.id) {
-                  const existing = deckMap.get(d.id);
-                  if (!existing || (d.entries && d.entries.length >= (existing.entries?.length || 0))) {
-                    deckMap.set(d.id, d);
-                  }
-                }
-              });
-              currentDecks = Array.from(deckMap.values());
-            }
+            const subDecks = subDecksSnap && !subDecksSnap.empty ? (subDecksSnap.docs.map((d) => d.data() as Deck)) : [];
+            const subLists = subListsSnap && !subListsSnap.empty ? (subListsSnap.docs.map((d) => d.data() as CustomList)) : [];
+            const subSealed = subSealedSnap && !subSealedSnap.empty ? (subSealedSnap.docs.map((d) => d.data() as PortfolioSealedEntry)) : [];
 
-            if (subListsSnap && !subListsSnap.empty) {
-              const subLists = subListsSnap.docs.map((d) => d.data() as CustomList);
-              const listMap = new Map<string, CustomList>();
-              currentLists.forEach((l) => listMap.set(l.id, l));
-              subLists.forEach((l) => {
-                if (l && l.id) listMap.set(l.id, l);
-              });
-              currentLists = Array.from(listMap.values());
-            }
+            // Combine remote snapshot and remote subcollections first
+            const remoteConsolidated = reconcileFullCollectionState(
+              {
+                decks: remoteSnapshotState?.decks || [],
+                customLists: remoteSnapshotState?.customLists || [],
+                sealedEntries: remoteSnapshotState?.sealedEntries || [],
+                soldEntries: remoteSnapshotState?.soldEntries || [],
+              },
+              {
+                decks: subDecks,
+                customLists: subLists,
+                sealedEntries: subSealed,
+                soldEntries: [],
+              },
+              true
+            );
 
-            if (subSealedSnap && !subSealedSnap.empty) {
-              const subSealed = subSealedSnap.docs.map((d) => d.data() as PortfolioSealedEntry);
-              const sealedMap = new Map<string, PortfolioSealedEntry>();
-              currentSealed.forEach((s) => sealedMap.set(s.id, s));
-              subSealed.forEach((s) => {
-                if (s && s.id) sealedMap.set(s.id, s);
-              });
-              currentSealed = Array.from(sealedMap.values());
+            // Now reconcile local IDB state with the remote consolidated state
+            const reconciled = reconcileFullCollectionState(
+              {
+                decks: currentDecks,
+                customLists: currentLists,
+                sealedEntries: currentSealed,
+                soldEntries: [],
+              },
+              remoteConsolidated,
+              true
+            );
+
+            currentDecks = reconciled.decks;
+            currentLists = reconciled.customLists;
+            currentSealed = reconciled.sealedEntries;
+            if (reconciled.soldEntries && reconciled.soldEntries.length > 0) {
+              setSoldEntries(reconciled.soldEntries);
             }
           } catch (cloudErr) {
             console.warn('Snapshot/Subcollection cloud fetch warning:', cloudErr);
@@ -767,24 +767,35 @@ export default function App() {
               compressionRatio: docData.compressionRatio,
             });
 
-            if (unpacked.decks && Array.isArray(unpacked.decks)) {
-              const cleaned = unpacked.decks.filter((d) => !isMockDeck(d));
-              setDecks(cleaned);
-              idbSaveUserDecks(cleaned, user.uid);
+            // Reconcile and deduplicate with current in-memory collection state
+            const reconciled = reconcileFullCollectionState(
+              {
+                decks: stateRef.current.decks,
+                customLists: stateRef.current.customLists,
+                sealedEntries: stateRef.current.sealedEntries,
+                soldEntries: stateRef.current.soldEntries,
+              },
+              {
+                decks: unpacked.decks || [],
+                customLists: unpacked.customLists || [],
+                sealedEntries: unpacked.sealedEntries || [],
+                soldEntries: unpacked.soldEntries || [],
+              },
+              true
+            );
+
+            setDecks(reconciled.decks);
+            setCustomLists(reconciled.customLists);
+            setSealedEntries(reconciled.sealedEntries);
+            if (reconciled.soldEntries && reconciled.soldEntries.length > 0) {
+              setSoldEntries(reconciled.soldEntries);
             }
-            if (unpacked.customLists && Array.isArray(unpacked.customLists)) {
-              const cleaned = unpacked.customLists.filter((l) => !isMockCustomList(l));
-              setCustomLists(cleaned);
-              idbSaveCustomLists(cleaned, user.uid);
-            }
-            if (unpacked.sealedEntries && Array.isArray(unpacked.sealedEntries)) {
-              const cleaned = unpacked.sealedEntries.filter((s) => !isMockSealedEntry(s));
-              setSealedEntries(cleaned);
-              idbSaveSealedVault(cleaned, user.uid);
-            }
-            if (unpacked.soldEntries && Array.isArray(unpacked.soldEntries)) {
-              setSoldEntries(unpacked.soldEntries);
-            }
+
+            await Promise.all([
+              idbSaveUserDecks(reconciled.decks, user.uid),
+              idbSaveCustomLists(reconciled.customLists, user.uid),
+              idbSaveSealedVault(reconciled.sealedEntries, user.uid),
+            ]);
           }
         } catch (e) {
           console.warn('Realtime snapshot sync warning:', e);

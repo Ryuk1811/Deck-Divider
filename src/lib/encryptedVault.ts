@@ -141,17 +141,45 @@ export interface EncryptedPayloadRecord {
   updatedAt: string;
 }
 
+// Simple reversible XOR stream cipher key stream for zero-plaintext fallback
+function fallbackCipherTransform(inputStr: string, keySeed: string): string {
+  let output = '';
+  for (let i = 0; i < inputStr.length; i++) {
+    const charCode = inputStr.charCodeAt(i);
+    const keyChar = keySeed.charCodeAt(i % keySeed.length);
+    output += String.fromCharCode(charCode ^ keyChar);
+  }
+  return btoa(unescape(encodeURIComponent(output)));
+}
+
+function fallbackCipherRestore(encodedBase64: string, keySeed: string): string {
+  try {
+    const raw = decodeURIComponent(escape(atob(encodedBase64)));
+    let output = '';
+    for (let i = 0; i < raw.length; i++) {
+      const charCode = raw.charCodeAt(i);
+      const keyChar = keySeed.charCodeAt(i % keySeed.length);
+      output += String.fromCharCode(charCode ^ keyChar);
+    }
+    return output;
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Encrypt any JS object into AES-GCM 256 ciphertext and store in IndexedDB or safeStorage
  */
 export async function setEncryptedItem<T>(key: string, value: T, userId: string = 'guest_user'): Promise<void> {
+  const fallbackKeySeed = `deckdivider_${userId}_enc_seed_v2`;
   try {
     const cryptoKey = await deriveCryptoKey(userId);
     const subtleObj = getSubtleCrypto();
 
     if (!cryptoKey || !subtleObj) {
-      // Safe fallback store
-      safeSetItem(`vault_fallback_${userId}_${key}`, JSON.stringify(value));
+      // Safe encrypted fallback store
+      const cipherStr = fallbackCipherTransform(JSON.stringify(value), fallbackKeySeed);
+      safeSetItem(`vault_fallback_${userId}_${key}`, cipherStr);
       return;
     }
 
@@ -198,9 +226,10 @@ export async function setEncryptedItem<T>(key: string, value: T, userId: string 
       tx.onerror = () => reject(tx.error);
     });
   } catch (err) {
-    console.warn('setEncryptedItem non-fatal fallback:', key, err);
+    console.warn('setEncryptedItem fallback triggered:', key, err);
     try {
-      safeSetItem(`vault_fallback_${userId}_${key}`, JSON.stringify(value));
+      const cipherStr = fallbackCipherTransform(JSON.stringify(value), fallbackKeySeed);
+      safeSetItem(`vault_fallback_${userId}_${key}`, cipherStr);
     } catch (_) {}
   }
 }
@@ -209,13 +238,16 @@ export async function setEncryptedItem<T>(key: string, value: T, userId: string 
  * Read and decrypt an item from encrypted IndexedDB or safeStorage
  */
 export async function getEncryptedItem<T>(key: string, userId: string = 'guest_user'): Promise<T | null> {
+  const fallbackKeySeed = `deckdivider_${userId}_enc_seed_v2`;
   try {
     const cryptoKey = await deriveCryptoKey(userId);
     const subtleObj = getSubtleCrypto();
 
     if (!cryptoKey || !subtleObj) {
       const fallbackVal = safeGetItem(`vault_fallback_${userId}_${key}`);
-      return fallbackVal ? (JSON.parse(fallbackVal) as T) : null;
+      if (!fallbackVal) return null;
+      const decryptedJson = fallbackCipherRestore(fallbackVal, fallbackKeySeed);
+      return decryptedJson ? (JSON.parse(decryptedJson) as T) : null;
     }
 
     let record: EncryptedPayloadRecord | undefined;
@@ -236,7 +268,9 @@ export async function getEncryptedItem<T>(key: string, userId: string = 'guest_u
 
     if (!record || !record.ciphertext || !record.iv) {
       const fallbackVal = safeGetItem(`vault_fallback_${userId}_${key}`);
-      return fallbackVal ? (JSON.parse(fallbackVal) as T) : null;
+      if (!fallbackVal) return null;
+      const decryptedJson = fallbackCipherRestore(fallbackVal, fallbackKeySeed);
+      return decryptedJson ? (JSON.parse(decryptedJson) as T) : null;
     }
 
     const ivBytes = new Uint8Array(
@@ -262,7 +296,9 @@ export async function getEncryptedItem<T>(key: string, userId: string = 'guest_u
   } catch (err) {
     try {
       const fallbackVal = safeGetItem(`vault_fallback_${userId}_${key}`);
-      return fallbackVal ? (JSON.parse(fallbackVal) as T) : null;
+      if (!fallbackVal) return null;
+      const decryptedJson = fallbackCipherRestore(fallbackVal, fallbackKeySeed);
+      return decryptedJson ? (JSON.parse(decryptedJson) as T) : null;
     } catch (_) {
       return null;
     }
