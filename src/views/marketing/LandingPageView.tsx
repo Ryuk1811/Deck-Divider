@@ -21,7 +21,7 @@ import { LandingFeatureGrid } from '../../components/landing/LandingFeatureGrid'
 import { SectionHeaderLine } from '../../components/landing/SectionHeaderLine';
 import { PlatformPhilosophySection } from '../../components/landing/PlatformPhilosophySection';
 import { LandingPrivacyPolicySection } from '../../components/landing/LandingPrivacyPolicySection';
-import { PageHead, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PageHead } from '../../components/seo/PageHead';
 import { getHomepageSchema } from '../../components/seo/schemaData';
 
 interface LandingPageViewProps {
@@ -152,19 +152,6 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
         {/* Feature Discoverability Grid (Summary of features & propositions) */}
         <LandingFeatureGrid />
-
-        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 my-8">
-          <GeoExtractableBlock
-            heading="What is DECK / divider?"
-            summary="DECK / divider is an institutional Pokémon Trading Card Game (TCG) platform combining live TCGplayer market price tracking across 15+ fiat currencies, PSA/BGS/CGC slab certification registration, 60-card tournament-legal deck building with 1-click PTCGL export, and factory-sealed booster box vaulting."
-            keyFacts={[
-              { label: 'Platform Type', value: 'Web App & Offline PWA' },
-              { label: 'Price Engine', value: 'TCGplayer & eBay Daily Comps' },
-              { label: 'Grading Slabs', value: 'PSA, BGS, CGC, ACE, ARS' },
-              { label: 'Deck Engine', value: 'Standard & Expanded (G, H, I)' },
-            ]}
-          />
-        </div>
 
         {/* Section 02 Header Line: Features */}
         <SectionHeaderLine
