@@ -767,35 +767,24 @@ export default function App() {
               compressionRatio: docData.compressionRatio,
             });
 
-            // Reconcile and deduplicate with current in-memory collection state
-            const reconciled = reconcileFullCollectionState(
-              {
-                decks: stateRef.current.decks,
-                customLists: stateRef.current.customLists,
-                sealedEntries: stateRef.current.sealedEntries,
-                soldEntries: stateRef.current.soldEntries,
-              },
-              {
-                decks: unpacked.decks || [],
-                customLists: unpacked.customLists || [],
-                sealedEntries: unpacked.sealedEntries || [],
-                soldEntries: unpacked.soldEntries || [],
-              },
-              true
-            );
-
-            setDecks(reconciled.decks);
-            setCustomLists(reconciled.customLists);
-            setSealedEntries(reconciled.sealedEntries);
-            if (reconciled.soldEntries && reconciled.soldEntries.length > 0) {
-              setSoldEntries(reconciled.soldEntries);
+            if (unpacked.decks && Array.isArray(unpacked.decks)) {
+              const cleaned = unpacked.decks.filter((d) => !isMockDeck(d));
+              setDecks(cleaned);
+              idbSaveUserDecks(cleaned, user.uid);
             }
-
-            await Promise.all([
-              idbSaveUserDecks(reconciled.decks, user.uid),
-              idbSaveCustomLists(reconciled.customLists, user.uid),
-              idbSaveSealedVault(reconciled.sealedEntries, user.uid),
-            ]);
+            if (unpacked.customLists && Array.isArray(unpacked.customLists)) {
+              const cleaned = unpacked.customLists.filter((l) => !isMockCustomList(l));
+              setCustomLists(cleaned);
+              idbSaveCustomLists(cleaned, user.uid);
+            }
+            if (unpacked.sealedEntries && Array.isArray(unpacked.sealedEntries)) {
+              const cleaned = unpacked.sealedEntries.filter((s) => !isMockSealedEntry(s));
+              setSealedEntries(cleaned);
+              idbSaveSealedVault(cleaned, user.uid);
+            }
+            if (unpacked.soldEntries && Array.isArray(unpacked.soldEntries)) {
+              setSoldEntries(unpacked.soldEntries);
+            }
           }
         } catch (e) {
           console.warn('Realtime snapshot sync warning:', e);
@@ -940,14 +929,6 @@ export default function App() {
 
   // Deck Management Handlers
   const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Deck Creation Restricted',
-        'Creating custom tournament decks and binders requires a free account so your decklists are safely stored in your personal vault.'
-      );
-      return;
-    }
-
     const maxDecks = TIER_LIMITS[currentTier].maxDecks;
     if (decks.length >= maxDecks) {
       setLimitModalConfig({
@@ -968,13 +949,15 @@ export default function App() {
       updatedAt: new Date().toISOString(),
     };
 
-    setDecks((prev) => [newDeck, ...prev]);
-    idbSaveUserDecks([newDeck, ...decks]);
+    const newDecks = [newDeck, ...decks];
+    setDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
     setTargetDeckIdForView(newDeckId);
 
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'decks', newDeckId), newDeck);
+        saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck save notice:', err);
       }
@@ -982,21 +965,15 @@ export default function App() {
   };
 
   const handleUpdateDeck = async (updatedDeck: Deck) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Deck Modification Restricted',
-        'Saving changes to deck settings or rosters requires signing in.'
-      );
-      return;
-    }
     triggerSyncPulse();
     const newDecks = decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d));
     setDecks(newDecks);
-    idbSaveUserDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'decks', updatedDeck.id), updatedDeck, { merge: true });
+        saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck update notice:', err);
       }
@@ -1004,18 +981,15 @@ export default function App() {
   };
 
   const handleDeleteDeck = async (deckId: string) => {
-    if (!user) {
-      triggerGuestRestriction('Deck Deletion Restricted', 'Deleting decks requires signing into your account.');
-      return;
-    }
     triggerSyncPulse();
     const newDecks = decks.filter((d) => d.id !== deckId);
     setDecks(newDecks);
-    idbSaveUserDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await deleteDoc(doc(db, 'users', user.uid, 'decks', deckId));
+        await saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck delete notice:', err);
       }
@@ -1027,10 +1001,6 @@ export default function App() {
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
-    if (!user) {
-      triggerGuestRestriction('Deck Splitting Restricted', 'Splitting decks and binder groups requires an active account.');
-      return;
-    }
     triggerSyncPulse();
     const sourceDeck = decks.find((d) => d.id === sourceDeckId);
     if (!sourceDeck) return;
@@ -1059,12 +1029,13 @@ export default function App() {
       newSplitDeck,
     ];
     setDecks(newDecks);
-    idbSaveUserDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'decks', updatedSourceDeck.id), updatedSourceDeck);
         await setDoc(doc(db, 'users', user.uid, 'decks', newSplitDeckId), newSplitDeck);
+        saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck split save notice:', err);
       }
@@ -1076,13 +1047,18 @@ export default function App() {
     entryData: Omit<PortfolioCardEntry, 'id' | 'isSold'>,
     mode: 'increment' | 'separate'
   ) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Card Addition Restricted',
-        'Adding cards and certified graded slabs to decks requires a free account.'
-      );
+    const targetDeckRef = decks.find((d) => d.id === deckId);
+    const maxCards = TIER_LIMITS[currentTier].maxCardsPerDeck;
+    const currentCardCount = targetDeckRef ? targetDeckRef.entries.reduce((a, b) => a + b.quantity, 0) : 0;
+    if (currentCardCount + entryData.quantity > maxCards) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'ADD_CARD_TO_DECK',
+        details: { currentCount: currentCardCount, limitCount: maxCards, deckName: targetDeckRef?.name },
+      });
       return;
     }
+
     triggerSyncPulse();
     let targetDeck: Deck | undefined;
 
@@ -1121,11 +1097,12 @@ export default function App() {
     });
 
     setDecks(newDecks);
-    idbSaveUserDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
 
     if (user && targetDeck) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+        saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck add-card notice:', err);
       }
@@ -1156,10 +1133,6 @@ export default function App() {
       salePlatform: string;
     }
   ) => {
-    if (!user) {
-      triggerGuestRestriction('Sales Logging Restricted', 'Logging realized sales and profit tracking requires an account.');
-      return;
-    }
     triggerSyncPulse();
     let soldItem: PortfolioCardEntry | null = null;
     let targetDeck: Deck | undefined;
@@ -1184,11 +1157,12 @@ export default function App() {
     });
 
     setDecks(newDecks);
-    idbSaveUserDecks(newDecks);
+    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
 
     if (user && targetDeck) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+        saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck mark-sold notice:', err);
       }
@@ -1214,14 +1188,6 @@ export default function App() {
 
   // Custom List Handlers
   const handleCreateList = async (listData: Omit<CustomList, 'id' | 'createdAt'>) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Custom Lists Restricted',
-        'Creating wishlists, trade binders, and custom lists requires a free account.'
-      );
-      return;
-    }
-
     const maxLists = TIER_LIMITS[currentTier].maxLists;
     if (customLists.length >= maxLists) {
       setLimitModalConfig({
@@ -1242,11 +1208,12 @@ export default function App() {
 
     const newLists = [newList, ...customLists];
     setCustomLists(newLists);
-    idbSaveCustomLists(newLists);
+    idbSaveCustomLists(newLists, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'customLists', newListId), newList);
+        saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list create notice:', err);
       }
@@ -1254,18 +1221,15 @@ export default function App() {
   };
 
   const handleDeleteList = async (listId: string) => {
-    if (!user) {
-      triggerGuestRestriction('Custom Lists Restricted', 'Managing custom lists requires signing into your account.');
-      return;
-    }
     triggerSyncPulse();
     const newLists = customLists.filter((l) => l.id !== listId);
     setCustomLists(newLists);
-    idbSaveCustomLists(newLists);
+    idbSaveCustomLists(newLists, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await deleteDoc(doc(db, 'users', user.uid, 'customLists', listId));
+        await saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list delete notice:', err);
       }
@@ -1273,13 +1237,6 @@ export default function App() {
   };
 
   const handleAddCardToList = async (listId: string, cardId: string) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Card Addition Restricted',
-        'Adding cards to custom lists and wishlists requires signing into your account.'
-      );
-      return;
-    }
     const targetList = customLists.find((l) => l.id === listId);
     const maxItems = TIER_LIMITS[currentTier].maxItemsPerList;
     if (targetList && targetList.cardIds.length >= maxItems) {
@@ -1303,11 +1260,12 @@ export default function App() {
     });
 
     setCustomLists(newLists);
-    idbSaveCustomLists(newLists);
+    idbSaveCustomLists(newLists, user?.uid || 'guest_user');
 
     if (user && updatedList) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+        saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list add-card notice:', err);
       }
@@ -1315,10 +1273,6 @@ export default function App() {
   };
 
   const handleRemoveCardFromList = async (listId: string, cardId: string) => {
-    if (!user) {
-      triggerGuestRestriction('List Modification Restricted', 'Modifying custom lists requires signing in.');
-      return;
-    }
     triggerSyncPulse();
     let updatedList: CustomList | undefined;
 
@@ -1331,11 +1285,12 @@ export default function App() {
     });
 
     setCustomLists(newLists);
-    idbSaveCustomLists(newLists);
+    idbSaveCustomLists(newLists, user?.uid || 'guest_user');
 
     if (user && updatedList) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+        saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list remove-card notice:', err);
       }
@@ -1344,21 +1299,15 @@ export default function App() {
 
   // Sealed Vault Handlers
   const handleAddSealedEntry = async (entry: PortfolioSealedEntry) => {
-    if (!user) {
-      triggerGuestRestriction(
-        'Sealed Vault Restricted',
-        'Adding booster boxes, ETBs, and sealed products to your vault requires an account.'
-      );
-      return;
-    }
     triggerSyncPulse();
     const newSealed = [entry, ...sealedEntries];
     setSealedEntries(newSealed);
-    idbSaveSealedVault(newSealed);
+    idbSaveSealedVault(newSealed, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'sealedVault', entry.id), entry);
+        saveCompressedCloudSnapshot({ sealedEntries: newSealed });
       } catch (err) {
         console.warn('Firestore sealed entry save notice:', err);
       }
@@ -1379,18 +1328,15 @@ export default function App() {
   };
 
   const handleDeleteSealedEntry = async (id: string) => {
-    if (!user) {
-      triggerGuestRestriction('Sealed Vault Restricted', 'Managing sealed vault inventory requires signing in.');
-      return;
-    }
     triggerSyncPulse();
     const newSealed = sealedEntries.filter((e) => e.id !== id);
     setSealedEntries(newSealed);
-    idbSaveSealedVault(newSealed);
+    idbSaveSealedVault(newSealed, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await deleteDoc(doc(db, 'users', user.uid, 'sealedVault', id));
+        await saveCompressedCloudSnapshot({ sealedEntries: newSealed });
       } catch (err) {
         console.warn('Firestore sealed entry delete notice:', err);
       }
@@ -1398,10 +1344,6 @@ export default function App() {
   };
 
   const handleMarkSoldSealedEntry = async (id: string, salePrice: number) => {
-    if (!user) {
-      triggerGuestRestriction('Sealed Vault Restricted', 'Logging sealed sales requires an account.');
-      return;
-    }
     triggerSyncPulse();
     let updatedItem: PortfolioSealedEntry | null = null;
     const newSealed = sealedEntries.map((e) => {
@@ -1413,11 +1355,12 @@ export default function App() {
     });
 
     setSealedEntries(newSealed);
-    idbSaveSealedVault(newSealed);
+    idbSaveSealedVault(newSealed, user?.uid || 'guest_user');
 
     if (user && updatedItem) {
       try {
         await setDoc(doc(db, 'users', user.uid, 'sealedVault', (updatedItem as PortfolioSealedEntry).id), updatedItem);
+        saveCompressedCloudSnapshot({ sealedEntries: newSealed });
       } catch (err) {
         console.warn('Firestore sealed mark-sold notice:', err);
       }

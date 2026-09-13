@@ -117,8 +117,20 @@ export const DecksView: React.FC<DecksViewProps> = ({
   // Share Copy feedback
   const [copiedLink, setCopiedLink] = useState(false);
 
+  // Custom Delete Deck Confirmation State (replaces blocked window.confirm)
+  const [deckPendingDelete, setDeckPendingDelete] = useState<Deck | null>(null);
+
   const currentDeck = decks.find((d) => d.id === selectedDeckId) || decks[0];
   const tierLimit = TIER_LIMITS[currentTier];
+
+  // Keep selectedDeckId in sync with existing decks
+  useEffect(() => {
+    if (initialSelectedDeckId && decks.some((d) => d.id === initialSelectedDeckId)) {
+      setSelectedDeckId(initialSelectedDeckId);
+    } else if (!decks.some((d) => d.id === selectedDeckId) && decks.length > 0) {
+      setSelectedDeckId(decks[0].id);
+    }
+  }, [initialSelectedDeckId, decks, selectedDeckId]);
 
   const handleOpenCreateModal = () => {
     if (decks.length >= tierLimit.maxDecks) {
@@ -145,19 +157,20 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
   const handleDeleteDeckConfirm = (deckToDelete: Deck, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (
-      window.confirm(
-        `Are you sure you want to delete deck "${deckToDelete.name}"? The deck structure will be removed. All cards remain safely stored in your collection.`
-      )
-    ) {
-      onDeleteDeck(deckToDelete.id);
-      const remaining = decks.filter((d) => d.id !== deckToDelete.id);
-      if (remaining.length > 0) {
-        setSelectedDeckId(remaining[0].id);
-      } else {
-        setSelectedDeckId('');
-      }
+    setDeckPendingDelete(deckToDelete);
+  };
+
+  const handleExecuteDeckDelete = () => {
+    if (!deckPendingDelete) return;
+    const deletedId = deckPendingDelete.id;
+    onDeleteDeck(deletedId);
+    const remaining = decks.filter((d) => d.id !== deletedId);
+    if (remaining.length > 0) {
+      setSelectedDeckId(remaining[0].id);
+    } else {
+      setSelectedDeckId('');
     }
+    setDeckPendingDelete(null);
   };
 
   // Progressive background prewarm of current deck card images
@@ -1071,6 +1084,49 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 Log Realized Sale
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRM DELETE DECK MODAL */}
+      {deckPendingDelete && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-2xl space-y-4 rounded-xl">
+            <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-3">
+              <div className="w-10 h-10 rounded-full bg-[#FEF2F2] border border-[#EF4444]/20 flex items-center justify-center text-[#EF4444] shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-heading font-bold text-base text-[#0F172A]">
+                  Delete Deck Structure
+                </h3>
+                <p className="font-mono text-xs text-[#64748B]">
+                  Confirm deletion for "{deckPendingDelete.name}"
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] font-mono text-xs text-[#64748B] leading-relaxed">
+              <span className="font-bold text-[#0F172A]">Notice:</span> Deleting this deck will remove the binder categorization and list structure ({deckPendingDelete.entries?.length || 0} card slots). All cards and logs remain securely preserved in your primary vault.
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeckPendingDelete(null)}
+                className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteDeckDelete}
+                className="px-5 py-2 bg-[#EF4444] hover:bg-[#DC2626] text-white font-mono text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Yes, Delete Deck</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

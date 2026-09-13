@@ -37,9 +37,17 @@ export const ListsView: React.FC<ListsViewProps> = ({
   );
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [listPendingDelete, setListPendingDelete] = useState<CustomList | null>(null);
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
   const prevSignalRef = React.useRef(createListSignal);
+
+  // Sync selectedListId if lists update
+  useEffect(() => {
+    if (!lists.some((l) => l.id === selectedListId) && lists.length > 0) {
+      setSelectedListId(lists[0].id);
+    }
+  }, [lists, selectedListId]);
 
   const tierLimit = TIER_LIMITS[currentTier];
 
@@ -56,6 +64,19 @@ export const ListsView: React.FC<ListsViewProps> = ({
     setNewListName('');
     setNewListDesc('');
     setIsCreateModalOpen(true);
+  };
+
+  const handleExecuteDeleteList = () => {
+    if (!listPendingDelete) return;
+    const deletedId = listPendingDelete.id;
+    onDeleteList(deletedId);
+    const remaining = lists.filter((l) => l.id !== deletedId);
+    if (remaining.length > 0) {
+      setSelectedListId(remaining[0].id);
+    } else {
+      setSelectedListId('');
+    }
+    setListPendingDelete(null);
   };
 
   useEffect(() => {
@@ -234,8 +255,8 @@ export const ListsView: React.FC<ListsViewProps> = ({
 
             <button
               type="button"
-              onClick={() => onDeleteList(currentList.id)}
-              className="p-2 rounded-md bg-white border border-[#E2E8F0] text-[#FF4500] hover:bg-[#FEF2F2] flex items-center gap-1.5 text-xs font-mono font-bold"
+              onClick={() => setListPendingDelete(currentList)}
+              className="p-2 rounded-md bg-white border border-[#E2E8F0] text-[#FF4500] hover:bg-[#FEF2F2] flex items-center gap-1.5 text-xs font-mono font-bold cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
               <span>Delete List</span>
@@ -345,6 +366,49 @@ export const ListsView: React.FC<ListsViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRM DELETE LIST MODAL */}
+      {listPendingDelete && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-2xl space-y-4 rounded-xl">
+            <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-3">
+              <div className="w-10 h-10 rounded-full bg-[#FEF2F2] border border-[#EF4444]/20 flex items-center justify-center text-[#EF4444] shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-heading font-bold text-base text-[#0F172A]">
+                  Delete Custom List
+                </h3>
+                <p className="font-mono text-xs text-[#64748B]">
+                  Confirm deletion for "{listPendingDelete.name}"
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] font-mono text-xs text-[#64748B] leading-relaxed">
+              <span className="font-bold text-[#0F172A]">Notice:</span> Deleting this list will remove the list grouping ({listPendingDelete.cardIds?.length || 0} cards). All cards remain safely stored in your primary vault.
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setListPendingDelete(null)}
+                className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteDeleteList}
+                className="px-5 py-2 bg-[#EF4444] hover:bg-[#DC2626] text-white font-mono text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Yes, Delete List</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
