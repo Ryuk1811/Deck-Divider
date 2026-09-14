@@ -217,7 +217,9 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               description: data.description || data.effect || prev.description,
               regulationMark: data.regulationMark || prev.regulationMark,
               legalities: data.legal ? {
-                standard: Boolean(data.legal.standard),
+                standard: (data.regulationMark || prev.regulationMark)
+                  ? ['H', 'I', 'J'].includes(String(data.regulationMark || prev.regulationMark).toUpperCase())
+                  : Boolean(data.legal.standard),
                 expanded: Boolean(data.legal.expanded)
               } : prev.legalities,
               variants: data.variants || prev.variants,

@@ -62,7 +62,7 @@
     {
       "id": "competitive-meta-decks",
       "category": "Competitive 60-Card Meta Decks",
-      "description": "Tournament-legal 60-card standard deck lists, regulation marks F/G/H/I validation, PTCGL export strings, and live TCGplayer deck pricing.",
+      "description": "Tournament-legal 60-card standard deck lists, regulation marks H/I/J validation, PTCGL export strings, and live TCGplayer deck pricing.",
       "primaryKeywords": [
         "Pokémon TCG standard format legal decks 2026",
         "PTCGL import deck list copy paste",
@@ -71,7 +71,7 @@
         "Lugia VSTAR Archeops deck list 2026"
       ],
       "secondaryKeywords": [
-        "Regulation mark F G H I legality checker",
+        "Regulation mark H I J legality checker",
         "60-card Pokémon deck builder with prices",
         "Raging Bolt ex Ogerpon ex tournament list",
         "Regidrago VSTAR standard legal build",
@@ -207,8 +207,8 @@
       "term": "Regulation Mark",
       "slug": "regulation-mark",
       "category": "Gameplay",
-      "definition": "A letter printed on the bottom-left corner of modern Pokémon cards (e.g., F, G, H, I) determining tournament format legality. Rotations periodically retire older letters from Standard format play.",
-      "example": "Standard format in 2025-2026 permits regulation marks G, H, and I.",
+      "definition": "A letter printed on the bottom-left corner of modern Pokémon cards (e.g., H, I, J) determining tournament format legality. Rotations periodically retire older letters from Standard format play.",
+      "example": "Standard format in 2026 permits regulation marks H, I, and J (Mark G rotated on PTCGL March 26, 2026, and in-person events April 10, 2026).",
       "relatedUrl": "https://deckdivider.app/format/standard",
       "relatedUrlLabel": "View Current Standard Format Rules"
     },

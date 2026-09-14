@@ -180,7 +180,7 @@ export const ALL_PAGES: PageItem[] = [
     path: '/tools/deck-legality-checker',
     category: 'Tools',
     icon: ShieldAlert,
-    description: 'Validate 60-card rosters against G, H, I marks',
+    description: 'Validate 60-card rosters against H, I, J marks',
   },
   
 

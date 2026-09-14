@@ -4,7 +4,7 @@
 ## Core Capabilities
 - **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY, CAD, AUD), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.
 - **Slab Vault**: Log PSA, BGS, CGC, and ACE grading certs, subgrades (Centering, Surface, Corners, Edges), and auction comps.
-- **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard G/H, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
+- **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard H/I/J, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
 - **Edge SSR Routing**: Full Cloudflare edge-side injection of SEO metadata, making every user portfolio, deck, and set readable by crawlers.
 - **Privacy First**: 100% offline-ready IndexedDB vault with encrypted cloud backup for Pro users.
 
@@ -30,5 +30,5 @@
 - AI Keywords Index: https://deckdivider.app/llms-keywords.txt
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions
 - Supported Slabs: PSA, BGS (Beckett), CGC, ACE, ARS
-- Formats Verified: Standard (Regulation Marks G, H, I), Expanded (Black & White onwards), GLC (Singleton)
+- Formats Verified: Standard (Regulation Marks H, I, J), Expanded (Black & White onwards), GLC (Singleton)
 - Export Format: Standard PTCGL copy-paste deck format

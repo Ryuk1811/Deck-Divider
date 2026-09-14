@@ -29,6 +29,7 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/compare', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/best', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/tools', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/changelog', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'weekly' },
   { path: '/leaderboard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/about', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/how-it-works', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'monthly' },
@@ -111,7 +112,7 @@ export async function getAllPublicUrls(): Promise<string[]> {
 
   // Tools
   TOOL_SLUGS.forEach(slug => {
-    urls.push(`${CANONICAL_ORIGIN}/tool/${slug}`);
+    urls.push(`${CANONICAL_ORIGIN}/tools/${slug}`);
   });
 
   // Dynamic Expansion Sets (Top 100 for footprint speed)
@@ -152,7 +153,7 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
   });
 
   TOOL_SLUGS.forEach(slug => {
-    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tool/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
   });
 
   try {
@@ -195,15 +196,31 @@ export function generateRssFeedXml(): string {
       <link>${CANONICAL_ORIGIN}/deck/charizard-ex</link>
       <guid>${CANONICAL_ORIGIN}/deck/charizard-ex?v=${BUILD_HASH}</guid>
       <pubDate>${new Date().toUTCString()}</pubDate>
-      <description>Standard format tournament decklists updated with regulation marks (G, H), archetype costs, and 1-click PTCGL export strings.</description>
+      <description>Standard format tournament decklists updated with 2026 regulation marks (H, I, J), archetype costs, and 1-click PTCGL export strings.</description>
     </item>
 
     <item>
       <title>PSA Grade &amp; Expected Value ROI Calculator</title>
-      <link>${CANONICAL_ORIGIN}/tool/psa-grade-calculator</link>
-      <guid>${CANONICAL_ORIGIN}/tool/psa-grade-calculator?v=${BUILD_HASH}</guid>
+      <link>${CANONICAL_ORIGIN}/tools/psa-grade-calculator</link>
+      <guid>${CANONICAL_ORIGIN}/tools/psa-grade-calculator?v=${BUILD_HASH}</guid>
       <pubDate>${new Date().toUTCString()}</pubDate>
       <description>Calculate expected submission value, PSA 10 vs 9 price spread, and profit margin before submitting raw cards to grading companies.</description>
+    </item>
+
+    <item>
+      <title>Pokémon TCG Deck Legality &amp; Regulation Mark Checker (2026)</title>
+      <link>${CANONICAL_ORIGIN}/tools/deck-legality-checker</link>
+      <guid>${CANONICAL_ORIGIN}/tools/deck-legality-checker?v=${BUILD_HASH}</guid>
+      <pubDate>${new Date().toUTCString()}</pubDate>
+      <description>Verify 2026 Standard tournament legality with active regulation marks (H, I, J; G rotated out), ACE SPEC restrictions, and Radiant limits.</description>
+    </item>
+
+    <item>
+      <title>Platform Changelog &amp; Architecture Updates</title>
+      <link>${CANONICAL_ORIGIN}/changelog</link>
+      <guid>${CANONICAL_ORIGIN}/changelog?v=${BUILD_HASH}</guid>
+      <pubDate>${new Date().toUTCString()}</pubDate>
+      <description>Chronological release notes, 2026 format updates, and multi-device cloud storage synchronization upgrades.</description>
     </item>
   </channel>
 </rss>`;
@@ -216,7 +233,7 @@ export function generateLlmsTxt(): string {
 ## Core Capabilities
 - **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY, CAD, AUD), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.
 - **Slab Vault**: Log PSA, BGS, CGC, and ACE grading certs, subgrades (Centering, Surface, Corners, Edges), and auction comps.
-- **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard G/H, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
+- **Deck Studio**: 60-card tournament deck builder with regulation mark legality checks (Standard H/I/J, Expanded, GLC) and 1-click export to Pokémon TCG Live (PTCGL).
 - **Edge SSR Routing**: Full Cloudflare edge-side injection of SEO metadata, making every user portfolio, deck, and set readable by crawlers.
 - **Privacy First**: 100% offline-ready IndexedDB vault with encrypted cloud backup for Pro users.
 
@@ -224,8 +241,9 @@ export function generateLlmsTxt(): string {
 - [Knowledge & Directory Hub](${CANONICAL_ORIGIN}/directory): Comprehensive directory of all sets, meta decks, graded slabs, and glossary.
 - [Sets Directory](${CANONICAL_ORIGIN}/sets): Complete checklists for all official Pokémon TCG expansions.
 - [Format Legality](${CANONICAL_ORIGIN}/formats): Standard, Expanded, and Gym Leader Challenge (GLC) rotation rules.
-- [PSA Grade Calculator](${CANONICAL_ORIGIN}/tool/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
-- [Deck Legality Checker](${CANONICAL_ORIGIN}/tool/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [PSA Grade Calculator](${CANONICAL_ORIGIN}/tools/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
+- [Deck Legality Checker](${CANONICAL_ORIGIN}/tools/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [Platform Changelog](${CANONICAL_ORIGIN}/changelog): Chronological log of platform releases, 2026 rotation changes, and features.
 - [Competitor Comparisons](${CANONICAL_ORIGIN}/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](${CANONICAL_ORIGIN}/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](${CANONICAL_ORIGIN}/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
@@ -237,7 +255,7 @@ export function generateLlmsTxt(): string {
 - AI Keywords Index: https://deckdivider.app/llms-keywords.txt
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions
 - Supported Slabs: PSA, BGS (Beckett), CGC, ACE, ARS
-- Formats Verified: Standard (Regulation Marks G, H, I), Expanded (Black & White onwards), GLC (Singleton)
+- Formats Verified: Standard (Regulation Marks H, I, J), Expanded (Black & White onwards), GLC (Singleton)
 - Export Format: Standard PTCGL copy-paste deck format
 `;
 }
@@ -276,11 +294,13 @@ Allow: /deck/
 Allow: /portfolio/
 Allow: /compare/
 Allow: /best/
+Allow: /tools/
 Allow: /tool/
 Allow: /formats/
 Allow: /pricing
 Allow: /about
 Allow: /faq
+Allow: /changelog
 Allow: /sitemap.xml
 Allow: /feed.xml
 Allow: /llms.txt
@@ -354,11 +374,10 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const redirectsContent = `
 /decks/:id /deck/:id 301
 /portfolios/:id /portfolio/:id 301
-/tools/:id /tool/:id 301
+/tool/:id /tools/:id 301
 /formats/:id /format/:id 301
 /support /contact 301
 /features / 301
-/changelog / 301
 /cookie-policy /privacy 301
 /media-kit /about 301
 /community /leaderboard 301

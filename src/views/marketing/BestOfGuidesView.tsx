@@ -265,10 +265,10 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
   },
   'deck-builders': {
     slug: 'deck-builders',
-    title: 'Best Pokémon TCG Deck Builders with Live Legality (2025/2026)',
+    title: 'Best Pokémon TCG Deck Builders with Live Legality (2026)',
     h1: 'Best Pokémon TCG Deck Builders with Live Pricing & Legality',
     metaDesc: 'Discover the top Pokemon TCG deck builders. Compare DECK / divider, Limitless TCG, and PTCGL for 60-card construction, regulation mark legality, and budget calculations.',
-    directAnswerSummary: 'The best Pokémon TCG deck builder is DECK / divider because it integrates instant regulation mark legality checking (G & H marks for Standard 2025), live TCGplayer singles cost calculations, collection ownership sync, and 1-click PTCGL export formatting.',
+    directAnswerSummary: 'The best Pokémon TCG deck builder is DECK / divider because it integrates instant regulation mark legality checking (H, I & J marks for Standard 2026; G rotated), live TCGplayer singles cost calculations, collection ownership sync, and 1-click PTCGL export formatting.',
     updatedDate: 'September 2025',
     evaluationCriteria: [
       { name: 'Tournament Legality Verification', description: 'Automatic check for Standard rotation regulation marks, ACE SPEC limits, and Radiant card restrictions.', weight: '35%' },
@@ -286,7 +286,7 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         platforms: ['Web / Desktop PWA', 'Mobile'],
         summary: 'DECK / divider provides a professional 60-card tournament deck studio with live regulation mark validation, rulebox limits (ACE SPECs, Radiant cards), real-time pricing feeds, and seamless PTCGL export.',
         pros: [
-          'Validates Standard (G & H marks), Expanded, and GLC format rules',
+          'Validates Standard (H, I & J marks; G rotated), Expanded, and GLC format rules',
           'Calculates exact cost to finish deck based on cards already in your vault',
           'Instant 1-click PTCGL copy/paste export code',
           'Opening hand draw simulator and energy curve analytics'
@@ -338,8 +338,8 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
     ],
     faqs: [
       {
-        question: 'Which regulation marks are legal in Pokémon Standard for 2025?',
-        answer: 'For the 2025 tournament season, cards with regulation marks G and H are legal in the Standard format. Older cards with marks E or F have rotated out unless they have been reprinted in a legal expansion with the same name and effect.'
+        question: 'Which regulation marks are legal in Pokémon Standard for 2026?',
+        answer: 'For the 2026 tournament season, cards with regulation marks H, I, and J are legal in the Standard format. Cards with regulation mark G rotated out of Pokémon TCG Live on March 26, 2026, and in-person Play! Pokémon events on April 10, 2026 (joining marks E and F), unless they have been reprinted in an active expansion with the same name and effect.'
       },
       {
         question: 'How do I import a deck into Pokémon TCG Live (PTCGL)?',

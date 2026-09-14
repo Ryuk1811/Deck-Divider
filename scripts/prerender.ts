@@ -72,6 +72,8 @@ async function prerenderAllRoutes() {
     { route: '/contact', outputPath: path.join(distDir, 'contact', 'index.html') },
     { route: '/faq', outputPath: path.join(distDir, 'faq', 'index.html') },
     
+    { route: '/changelog', outputPath: path.join(distDir, 'changelog', 'index.html') },
+    
     // Formats & Legality
     { route: '/formats', outputPath: path.join(distDir, 'formats', 'index.html') },
     { route: '/format/standard', outputPath: path.join(distDir, 'format', 'standard', 'index.html') },
@@ -93,10 +95,10 @@ async function prerenderAllRoutes() {
     { route: '/best/slab-scanners', outputPath: path.join(distDir, 'best', 'slab-scanners', 'index.html') },
     { route: '/best/deck-builders', outputPath: path.join(distDir, 'best', 'deck-builders', 'index.html') },
 
-    // High Intent Utility Tools
+    // High Intent Utility Tools (Canonical /tools/)
     { route: '/tools', outputPath: path.join(distDir, 'tools', 'index.html') },
-    { route: '/tool/psa-grade-calculator', outputPath: path.join(distDir, 'tool', 'psa-grade-calculator', 'index.html') },
-    { route: '/tool/deck-legality-checker', outputPath: path.join(distDir, 'tool', 'deck-legality-checker', 'index.html') },
+    { route: '/tools/psa-grade-calculator', outputPath: path.join(distDir, 'tools', 'psa-grade-calculator', 'index.html') },
+    { route: '/tools/deck-legality-checker', outputPath: path.join(distDir, 'tools', 'deck-legality-checker', 'index.html') },
 
     // Programmatic Tournament Deck Archetypes (Singular)
     { route: '/deck/gardevoir-ex', outputPath: path.join(distDir, 'deck', 'gardevoir-ex', 'index.html') },
@@ -173,6 +175,21 @@ async function prerenderAllRoutes() {
   }
 
   console.log(`[Prerender] ✓ Static HTML pre-rendering complete for ${publicRoutes.length} routes.`);
+
+  // Write static HTML 301/refresh redirects for legacy /tool/ URLs
+  const legacyToolRedirects = [
+    { from: 'psa-grade-calculator', to: '/tools/psa-grade-calculator' },
+    { from: 'deck-legality-checker', to: '/tools/deck-legality-checker' },
+  ];
+  for (const item of legacyToolRedirects) {
+    const redirectDir = path.join(distDir, 'tool', item.from);
+    fs.mkdirSync(redirectDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(redirectDir, 'index.html'),
+      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Redirecting...</title><link rel="canonical" href="https://deckdivider.app${item.to}"><meta http-equiv="refresh" content="0; url=${item.to}"></head><body><p>Redirecting to <a href="${item.to}">${item.to}</a>...</p></body></html>`,
+      'utf-8'
+    );
+  }
 
   // 5. Bing/Yandex IndexNow Submission (Proactive Discovery)
   try {

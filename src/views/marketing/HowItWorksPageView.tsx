@@ -73,14 +73,14 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       description: 'Build 60-card tournament decks with automatic standard legality checks, energy balance insights, and 1-click export to Pokémon TCG Live.',
       tags: ['Play! Pokémon Rules', 'ACE SPEC Checking', 'PTCGL Export'],
       details: [
-        'Automatic checks for regulation marks (G, H, I for Standard format) and banlists.',
+        'Automatic checks for regulation marks (H, I, J for 2026 Standard format; G rotated out) and banlists.',
         'Validates 4-copy card limits, Radiant rules, and ACE SPEC limits.',
         'Export deck lists directly to Pokémon TCG Live or save for tournaments.',
       ],
       previewContent: {
         badge: 'TOURNAMENT DECK STUDIO',
         title: 'Gardevoir ex Championship 60',
-        certNumber: 'Standard Format (2025/2026)',
+        certNumber: 'Standard Format (2026 - Marks H, I, J)',
         estValue: '60 / 60 Legal Cards',
         status: 'Tournament Ready',
       },
@@ -113,7 +113,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
     },
     {
       q: 'How does tournament legality checking work?',
-      a: 'The deck builder checks each card’s regulation mark (such as G, H, I for Standard) against official Play! Pokémon rules, flagging illegal cards or duplicate limits instantly.',
+      a: 'The deck builder checks each card’s regulation mark against official 2026 Play! Pokémon rules (Marks H, I, J legal; G rotated out), flagging illegal cards or duplicate limits instantly.',
     },
     {
       q: 'Can I export my cards and deck rosters?',
@@ -200,7 +200,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="How does DECK / divider organize Pokémon collections?"
-            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 148+ sets with ⌘K search, 2) Automatic market valuation calculated from live TCGplayer comps in 15+ currencies, 3) 60-card tournament deck construction with standard legality rules (G, H, I) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
+            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 148+ sets with ⌘K search, 2) Automatic market valuation calculated from live TCGplayer comps in 15+ currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
             keyFacts={[
               { label: 'Step 1', value: 'Card Intake & Cert Registration' },
               { label: 'Step 2', value: 'Live Pricing & Currency Sync' },

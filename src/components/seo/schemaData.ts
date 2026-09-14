@@ -145,7 +145,7 @@ export const getFormatLegalitySchema = () => ({
     {
       '@type': 'TechArticle',
       headline: 'Official Pokémon TCG Format Legality & Standard Rotation Guide 2026',
-      description: 'Comprehensive tournament legality rules for Pokémon TCG Standard (Regulation Marks G & H), Expanded, and Gym Leader Challenge formats.',
+      description: 'Comprehensive tournament legality rules for Pokémon TCG Standard (Regulation Marks H, I, and J), Expanded, and Gym Leader Challenge formats.',
       url: 'https://deckdivider.app/formats',
       datePublished: '2026-01-01',
       dateModified: '2026-09-12',
@@ -161,7 +161,7 @@ export const getFormatLegalitySchema = () => ({
           name: 'What cards are legal in Pokémon TCG Standard format in 2026?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'As of 2026, the Standard format permits cards with Regulation Marks G and H. Regulation Mark F cards have rotated out of premier Standard play, except for reprints that retain active text.'
+            text: 'For the 2026 Standard format, cards with Regulation Marks H, I, and J are legal. Regulation Mark G (along with F and earlier) rotated out of the Standard format (effective March 26, 2026 on Pokémon TCG Live, and April 10, 2026 for in-person Play! Pokémon events), except for older prints that have received an identical text reprint with an active regulation mark.'
           }
         },
         {
@@ -230,7 +230,7 @@ export const getDeckLegalityCheckerSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Pokémon TCG Deck Legality & Regulation Mark Checker',
-  description: 'Instant 60-card tournament decklist validator for Standard rotation marks (G, H), Expanded card limits, and PTCGL export compatibility.',
+  description: 'Instant 60-card tournament decklist validator for Standard rotation marks (H, I, J), Expanded card limits, and PTCGL export compatibility.',
   url: 'https://deckdivider.app/tools/deck-legality-checker',
   applicationCategory: 'UtilitiesApplication',
   operatingSystem: 'All'
@@ -352,7 +352,7 @@ export const getHowItWorksSchema = () => ({
     {
       '@type': 'HowToStep',
       name: 'Verify Format Legality and Export to PTCGL',
-      text: 'Build standard 60-card decks with automated regulation mark validation (G, H, I) and export 1-click clipboard text for Pokémon TCG Live.'
+      text: 'Build standard 60-card decks with automated regulation mark validation (H, I, J; G rotated) and export 1-click clipboard text for Pokémon TCG Live.'
     },
     {
       '@type': 'HowToStep',

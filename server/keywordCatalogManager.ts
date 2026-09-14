@@ -85,13 +85,13 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'track Beckett subgrades centering corners edges surface online',
       'PSA vs BGS vs CGC price comparison tool'
     ],
-    targetUrl: 'https://deckdivider.app/tool/psa-grade-calculator',
+    targetUrl: 'https://deckdivider.app/tools/psa-grade-calculator',
     ctaText: 'Calculate PSA/BGS Grade Values & Multipliers'
   },
   {
     id: 'competitive-meta-decks',
     category: 'Competitive 60-Card Meta Decks',
-    description: 'Tournament-legal 60-card standard deck lists, regulation marks F/G/H/I validation, PTCGL export strings, and live TCGplayer deck pricing.',
+    description: 'Tournament-legal 60-card standard deck lists, regulation marks H/I/J validation, PTCGL export strings, and live TCGplayer deck pricing.',
     primaryKeywords: [
       'Pokémon TCG standard format legal decks 2026',
       'PTCGL import deck list copy paste',
@@ -100,7 +100,7 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'Lugia VSTAR Archeops deck list 2026'
     ],
     secondaryKeywords: [
-      'Regulation mark F G H I legality checker',
+      'Regulation mark H I J legality checker',
       '60-card Pokémon deck builder with prices',
       'Raging Bolt ex Ogerpon ex tournament list',
       'Regidrago VSTAR standard legal build',
@@ -176,7 +176,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Gameplay',
     definition: 'Powerful Trainer and Special Energy cards introduced in Black & White and reintroduced in Scarlet & Violet. A standard 60-card tournament deck is permitted strictly 1 ACE SPEC card in total.',
     example: 'Prime Catcher, Unfair Stamp, Secret Box, Hero\'s Cape, Sparkling Crystal.',
-    relatedUrl: 'https://deckdivider.app/tool/deck-legality-checker',
+    relatedUrl: 'https://deckdivider.app/tools/deck-legality-checker',
     relatedUrlLabel: 'Check ACE SPEC Rule Compliance'
   },
   {
@@ -221,7 +221,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Grading',
     definition: 'Professional Sports Authenticator (PSA) highest standard grade, indicating virtually perfect 55/45 to 60/40 centering, zero print lines, flawless corners, pristine edges, and untouched surface gloss.',
     example: 'A PSA 10 modern alternate art typically commands a 2.5x to 4.5x market premium over its raw Near Mint counterpart.',
-    relatedUrl: 'https://deckdivider.app/tool/psa-grade-calculator',
+    relatedUrl: 'https://deckdivider.app/tools/psa-grade-calculator',
     relatedUrlLabel: 'Calculate PSA 10 Price Spread'
   },
   {
@@ -230,15 +230,15 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Grading',
     definition: 'Beckett Grading Services (BGS) holy grail certification awarded only when all four individual subgrades (Centering, Corners, Edges, Surface) receive a perfect 10.0 score.',
     example: 'BGS Black Label modern cards frequently trade for 5x to 15x standard PSA 10 values at major auction houses.',
-    relatedUrl: 'https://deckdivider.app/tool/psa-grade-calculator',
+    relatedUrl: 'https://deckdivider.app/tools/psa-grade-calculator',
     relatedUrlLabel: 'Explore BGS Multiplier Modeling'
   },
   {
     term: 'Regulation Mark',
     slug: 'regulation-mark',
     category: 'Gameplay',
-    definition: 'A letter printed on the bottom-left corner of modern Pokémon cards (e.g., F, G, H, I) determining tournament format legality. Rotations periodically retire older letters from Standard format play.',
-    example: 'Standard format in 2025-2026 permits regulation marks G, H, and I.',
+    definition: 'A letter printed on the bottom-left corner of modern Pokémon cards (e.g., H, I, J) determining tournament format legality. Rotations periodically retire older letters from Standard format play.',
+    example: 'Standard format in 2026 permits regulation marks H, I, and J (Mark G rotated out on Pokémon TCG Live March 26, 2026, and in-person Play! Pokémon events April 10, 2026).',
     relatedUrl: 'https://deckdivider.app/format/standard',
     relatedUrlLabel: 'View Current Standard Format Rules'
   },
@@ -291,7 +291,7 @@ export const SEARCH_PARAMETERS: SearchParameter[] = [
     param: 'grade',
     description: 'Models graded market multipliers across certification grading companies.',
     possibleValues: ['psa-10', 'psa-9', 'bgs-10-black-label', 'bgs-9.5', 'cgc-10-pristine', 'raw-nm'],
-    exampleUrl: 'https://deckdivider.app/tool/psa-grade-calculator'
+    exampleUrl: 'https://deckdivider.app/tools/psa-grade-calculator'
   },
   {
     param: 'format',

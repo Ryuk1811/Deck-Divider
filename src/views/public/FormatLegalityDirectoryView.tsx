@@ -11,7 +11,7 @@ export const formats = [
     id: 'standard',
     name: 'Standard Format',
     description: 'The most popular tournament format. Allows only the most recent expansions, rotating annually to keep gameplay fresh.',
-    regulationMarks: ['G', 'H'],
+    regulationMarks: ['H', 'I', 'J'],
     icon: <Shield className="w-8 h-8 text-[#DC143C]" />
   },
   {
@@ -37,11 +37,11 @@ export const FormatLegalityDirectoryView: React.FC = () => {
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
         title="Official Pokémon TCG Format Legality & Standard Rotation 2026 Guide"
-        description="Complete tournament legality rules for Pokémon TCG Standard (Regulation Marks G & H), Expanded, and Gym Leader Challenge (GLC). Verified rotation timelines and card pool limits."
+        description="Complete tournament legality rules for Pokémon TCG Standard (Regulation Marks H, I, and J), Expanded, and Gym Leader Challenge (GLC). Verified rotation timelines and card pool limits."
         canonicalPath="/formats"
         keywords={[
           'pokemon standard rotation 2026',
-          'pokemon regulation marks g h',
+          'pokemon regulation marks h i j',
           'pokemon tcg legal cards',
           'pokemon expanded format rules',
           'gym leader challenge glc rules',
@@ -73,10 +73,10 @@ export const FormatLegalityDirectoryView: React.FC = () => {
           <GeoExtractableBlock
             className="mb-10"
             heading="2026 Standard Rotation Summary & Legal Card Criteria"
-            summary="For the 2026 competitive circuit, the Pokémon TCG Standard format permits all cards bearing Regulation Marks G and H (and newly introduced I). Cards from Regulation Mark F are rotated out of premier play unless reprinted with an active mark and identical card text. Expanded format includes all Black & White series releases to modern, subject to official ban lists."
+            summary="For the 2026 competitive circuit, the Pokémon TCG Standard format permits all cards bearing Regulation Marks H, I, and J. Under official 2026 rotation rules, cards from Regulation Mark G (as well as F and earlier) are rotated out of premier Standard play (effective March 26, 2026 on Pokémon TCG Live and April 10, 2026 for in-person Play! Pokémon events), unless reprinted in an active set with identical card text. Expanded format includes all Black & White series releases to modern, subject to official ban lists."
             keyFacts={[
-              { label: 'Standard Marks', value: 'Marks G & H Legal' },
-              { label: 'Rotated Out', value: 'Mark F (Except Reprints)' },
+              { label: 'Standard Marks', value: 'Marks H, I, J Legal' },
+              { label: 'Rotated Out', value: 'Mark G & Earlier (Except Reprints)' },
               { label: 'Expanded Era', value: 'BW to Scarlet & Violet' },
               { label: 'GLC Limit', value: 'Singleton (No Rule Box)' },
             ]}
@@ -121,7 +121,7 @@ export const FormatLegalityDirectoryView: React.FC = () => {
                   Interactive Regulation Mark &amp; Legality Checker
                 </h3>
                 <p className="text-sm text-[#64748B]">
-                  Not sure which cards are legal in Standard right now? Test Regulation Marks G, H, and I with live format breakdown and deckbuilding limits.
+                  Not sure which cards are legal in Standard right now? Test Regulation Marks H, I, and J with live format breakdown and deckbuilding limits.
                 </p>
               </div>
             </div>

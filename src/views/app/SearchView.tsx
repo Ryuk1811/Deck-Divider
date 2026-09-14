@@ -349,6 +349,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 <option value="G">Regulation G</option>
                 <option value="H">Regulation H</option>
                 <option value="I">Regulation I</option>
+                <option value="J">Regulation J</option>
               </select>
             </div>
 

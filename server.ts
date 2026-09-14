@@ -1835,6 +1835,22 @@ async function startServer() {
   });
   
   // --- End TCGdex Proxy ---
+
+  // --- Canonical 301 Redirects for Legacy Tool Routes ---
+  app.get(['/tool', '/tool/*'], (req, res) => {
+    const subpath = req.path.replace(/^\/tool\/?/, '').replace(/\/+$/, '');
+    const destination = subpath ? `/tools/${subpath}` : '/tools';
+    return res.redirect(301, destination);
+  });
+
+  // Trailing slash redirect for tools
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/tools/') && req.path.endsWith('/') && req.path.length > 7) {
+      return res.redirect(301, req.path.slice(0, -1));
+    }
+    next();
+  });
+
   // --- SSR & Marketing Route Delivery Engine ---
   const isProduction =
     process.env.NODE_ENV === 'production' ||

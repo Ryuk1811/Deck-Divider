@@ -546,11 +546,11 @@ export async function renderSsrRoute(
     const archetype = cleanPath.replace('/decks/', '').toLowerCase();
 
     const archetypeDatabase: Record<string, { name: string; keyPokemon: string; format: string; cardCount: number; estPrice: number }> = {
-      'gardevoir-ex': { name: 'Gardevoir ex', keyPokemon: 'Gardevoir ex, Scream Tail, Drifloon', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 85.50 },
-      'charizard-ex': { name: 'Charizard ex', keyPokemon: 'Charizard ex, Pidgeot ex, Dusknoir', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 110.00 },
-      'regidrago-vstar': { name: 'Regidrago VSTAR', keyPokemon: 'Regidrago VSTAR, Teal Mask Ogerpon ex, Dragapult ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 145.00 },
-      'dragapult-ex': { name: 'Dragapult ex', keyPokemon: 'Dragapult ex, Xatu, Pidgeot ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 95.00 },
-      'miraidon-ex': { name: 'Miraidon ex', keyPokemon: 'Miraidon ex, Raikou V, Iron Hands ex', format: 'Standard (F, G, H)', cardCount: 60, estPrice: 75.00 },
+      'gardevoir-ex': { name: 'Gardevoir ex', keyPokemon: 'Gardevoir ex, Scream Tail, Drifloon', format: 'Standard (H, I, J)', cardCount: 60, estPrice: 85.50 },
+      'charizard-ex': { name: 'Charizard ex', keyPokemon: 'Charizard ex, Pidgeot ex, Dusknoir', format: 'Standard (H, I, J)', cardCount: 60, estPrice: 110.00 },
+      'regidrago-vstar': { name: 'Regidrago VSTAR', keyPokemon: 'Regidrago VSTAR, Teal Mask Ogerpon ex, Dragapult ex', format: 'Standard (H, I, J)', cardCount: 60, estPrice: 145.00 },
+      'dragapult-ex': { name: 'Dragapult ex', keyPokemon: 'Dragapult ex, Xatu, Pidgeot ex', format: 'Standard (H, I, J)', cardCount: 60, estPrice: 95.00 },
+      'miraidon-ex': { name: 'Miraidon ex', keyPokemon: 'Miraidon ex, Raikou V, Iron Hands ex', format: 'Standard (H, I, J)', cardCount: 60, estPrice: 75.00 },
     };
 
     const deckData = archetypeDatabase[archetype] || {
@@ -629,33 +629,112 @@ export async function renderSsrRoute(
     return { bodyHtml, title: pageTitle, metaTags, };
   }
 
-  // 2. ABOUT PAGE ROUTE: /about
+  // 2. CHANGELOG PAGE ROUTE: /changelog
   if (cleanPath === '/changelog') {
-    const pageTitle = 'Changelog & Updates — DECK / divider';
-    const pageDesc = 'Stay up-to-date with the latest features, database expansions, and performance improvements to our Pokémon TCG collector software.';
+    const pageTitle = 'Platform Changelog & Release Notes — DECK / divider';
+    const pageDesc = 'Official release history of DECK / divider: 2026 Pokémon Standard rotation updates, PSA grading ROI calculators, AES-GCM vault security, and deck studio improvements.';
     const canonicalUrl = `${canonicalOrigin}/changelog`;
 
     const jsonLd = {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: pageTitle,
-      description: pageDesc,
-      url: canonicalUrl
+      '@graph': [
+        {
+          '@type': 'WebPage',
+          '@id': `${canonicalUrl}#webpage`,
+          url: canonicalUrl,
+          name: pageTitle,
+          description: pageDesc,
+          isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${canonicalOrigin}/#website`,
+            url: canonicalOrigin,
+            name: 'DECK / divider'
+          }
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+            { '@type': 'ListItem', position: 2, name: 'Changelog', item: canonicalUrl }
+          ]
+        }
+      ]
     };
+
+    const contentHtml = `
+      <div style="margin-bottom:32px;">
+        <span style="display:inline-block;background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;">Continuous Deployment</span>
+        <p style="color:#475569;font-size:15px;line-height:1.6;margin:0;">Stay informed on every tournament format rotation, slab valuation tool, and zero-knowledge security upgrade deployed to DECK / divider.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:36px;">
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+          <strong style="display:block;color:#BE123C;font-size:16px;margin-bottom:4px;">2026 Standard Format</strong>
+          <span style="color:#64748B;font-size:13px;line-height:1.5;display:block;">Regulation Marks H, I, J active. Mark G officially rotated out to Expanded format.</span>
+        </div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+          <strong style="display:block;color:#2563EB;font-size:16px;margin-bottom:4px;">AES-256 Vault Encryption</strong>
+          <span style="color:#64748B;font-size:13px;line-height:1.5;display:block;">Client-side zero-knowledge portfolio encryption with encrypted cloud sync.</span>
+        </div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+          <strong style="display:block;color:#059669;font-size:16px;margin-bottom:4px;">PSA / BGS ROI Engine</strong>
+          <span style="color:#64748B;font-size:13px;line-height:1.5;display:block;">Expected Value (EV) profit simulation modeling PSA 10/9 market premiums.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:32px;">
+        <article style="border-left:4px solid #DC143C;padding-left:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+            <span style="font-family:monospace;font-size:18px;font-weight:800;color:#0F172A;">v2.5.0</span>
+            <span style="background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">Latest Release</span>
+            <span style="color:#94A3B8;font-size:12px;">September 2026</span>
+          </div>
+          <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">2026 Standard Rotation &amp; High-Intent Canonical Routing</h2>
+          <p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 12px;">Comprehensive platform update implementing the official 2026 Pokémon TCG Standard rotation rules, canonical /tools/ URL restructuring, and dedicated crawler-ready SSR documents.</p>
+          <ul style="color:#334155;font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Enforced 2026 Standard rotation: Regulation Marks H, I, and J are legal; Regulation Mark G has rotated out.</li>
+            <li>ACE SPEC single-card deck limit and Radiant Pokémon restrictions strictly validated with instant visual alerts.</li>
+            <li>Unified tools routing under canonical /tools/psa-grade-calculator and /tools/deck-legality-checker paths.</li>
+            <li>Deployed high-intent semantic HTML server-side rendering (SSR) documents for search indexing.</li>
+          </ul>
+        </article>
+
+        <article style="border-left:4px solid #3B82F6;padding-left:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+            <span style="font-family:monospace;font-size:18px;font-weight:800;color:#0F172A;">v2.4.0</span>
+            <span style="background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">Security &amp; Cloud</span>
+            <span style="color:#94A3B8;font-size:12px;">August 2026</span>
+          </div>
+          <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">Zero-Knowledge AES-GCM Encryption &amp; Conflict-Free Cloud Sync</h2>
+          <p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 12px;">Pro users now benefit from end-to-end encrypted cloud vault synchronization with zero-knowledge architecture, ensuring card collections and tournament decks remain private.</p>
+          <ul style="color:#334155;font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Client-side AES-GCM 256-bit encryption for all cloud portfolio snapshots.</li>
+            <li>SHA-256 integrity verification across local IndexedDB and cloud storage.</li>
+            <li>One-click encrypted backup exports and instant cross-device snapshot restore.</li>
+          </ul>
+        </article>
+
+        <article style="border-left:4px solid #8B5CF6;padding-left:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+            <span style="font-family:monospace;font-size:18px;font-weight:800;color:#0F172A;">v2.3.0</span>
+            <span style="background:#F5F3FF;color:#6D28D9;border:1px solid #DDD6FE;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">Grading &amp; Analytics</span>
+            <span style="color:#94A3B8;font-size:12px;">June 2026</span>
+          </div>
+          <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">PSA, BGS &amp; CGC Subgrade Tracking &amp; Multi-Currency Engine</h2>
+          <p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 12px;">Introduced slab certification logging with individual subgrades, historical grade multipliers, and real-time currency conversion across 15+ global currencies.</p>
+          <ul style="color:#334155;font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+            <li>Beckett BGS quad-subgrade tracking: Centering, Corners, Edges, and Surface breakdown.</li>
+            <li>Grading Expected Value (EV) calculator modeling break-even submission costs against PSA 10/9 market premiums.</li>
+            <li>Live currency exchange engine supporting USD, EUR, GBP, JPY, CAD, and AUD with automated rate refreshes.</li>
+          </ul>
+        </article>
+      </div>
+    `;
 
     const bodyHtml = createStandardPageHtml(
       pageTitle,
       pageDesc,
-      `<div style="display:flex;flex-direction:column;gap:16px;">
-        <div style="border-left:3px solid #DC143C;padding-left:16px;">
-          <strong style="color:#0F172A;display:block;font-size:15px;">Version 2.4 — Live Multi-Currency & Graded Slabs</strong>
-          <span style="color:#64748B;font-size:13px;">Added support for PSA, BGS, and CGC subgrades, live currency exchange in 15+ currencies, and automated CSV backups.</span>
-        </div>
-        <div style="border-left:3px solid #CBD5E1;padding-left:16px;">
-          <strong style="color:#0F172A;display:block;font-size:15px;">Version 2.3 — Scarlet & Violet SV8 Stellar Crown Update</strong>
-          <span style="color:#64748B;font-size:13px;">Complete master set checklists, reverse holo checkboxes, and Secret Illustration Rare odds tracking.</span>
-        </div>
-      </div>`,
+      contentHtml,
       '/auth',
       'Open App'
     );
@@ -739,11 +818,11 @@ export async function renderSsrRoute(
     const bodyHtml = createStandardPageHtml(
       pageTitle,
       pageDesc,
-      `<p style="color:#475569;margin-bottom:20px;">Detailed guidelines on regulation marks (F, G, H, I), tournament deck construction rules, and format card pools.</p>
+      `<p style="color:#475569;margin-bottom:20px;">Detailed guidelines on regulation marks (H, I, J; G rotated out), tournament deck construction rules, and format card pools.</p>
       <div style="display:flex;flex-direction:column;gap:16px;">
         <a href="/formats/standard" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;text-decoration:none;">
           <strong style="color:#DC143C;display:block;font-size:16px;margin-bottom:4px;">Standard Format Guide &rarr;</strong>
-          <span style="color:#64748B;font-size:14px;">Current tournament format with Regulation Marks F, G, and H.</span>
+          <span style="color:#64748B;font-size:14px;">Current tournament format with Regulation Marks H, I, and J (Mark G rotated).</span>
         </a>
         <a href="/formats/expanded" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:8px;text-decoration:none;">
           <strong style="color:#0F172A;display:block;font-size:16px;margin-bottom:4px;">Expanded Format Guide &rarr;</strong>
@@ -1026,82 +1105,523 @@ export async function renderSsrRoute(
     };
   }
 
-  // HIGH-INTENT UTILITY TOOLS: /tools & /tools/:toolId & /geo-insights
-  if (cleanPath === '/tools' || cleanPath.startsWith('/tools/') || cleanPath === '/geo-insights') {
-    const toolId = cleanPath.startsWith('/tools/') ? cleanPath.split('/')[2] : 'psa-grade-calculator';
-    const toolInfo: Record<string, { title: string; desc: string }> = {
-      'psa-grade-calculator': {
-        title: 'PSA & BGS Grade ROI Calculator — Estimate Grading Profitability | DECK / divider',
-        desc: 'Calculate whether grading your Pokémon card with PSA, BGS, or CGC is profitable. Accounts for grading tier fees, shipping, raw comp value, and projected grade premiums.'
-      },
-      'deck-legality-checker': {
-        title: 'Pokémon TCG Regulation Mark & Deck Legality Checker | DECK / divider',
-        desc: 'Instant legality check for Standard, Expanded, and GLC formats. Verifies regulation marks (F, G, H, I), ACE SPEC restrictions, and Radiant Pokémon limits.'
-      },
-      'geo-inspector': {
-        title: 'GEO & AI Citation Inspector — Prompt Simulator for LLMs | DECK / divider',
-        desc: 'Inspect and test how ChatGPT Search, Perplexity, Google AI Overviews, and Claude cite DECK / divider across high-intent Pokémon TCG queries and benchmark prompts.'
-      }
-    };
+  // HIGH-INTENT UTILITY TOOLS: /tools & /tools/:toolId & /tool/:toolId & /geo-insights
+  if (
+    cleanPath === '/tools' || 
+    cleanPath.startsWith('/tools/') || 
+    cleanPath === '/tool' || 
+    cleanPath.startsWith('/tool/') || 
+    cleanPath === '/geo-insights'
+  ) {
+    let toolId = '';
+    if (cleanPath.startsWith('/tools/')) {
+      toolId = cleanPath.replace(/^\/tools\//, '').split('/')[0];
+    } else if (cleanPath.startsWith('/tool/')) {
+      toolId = cleanPath.replace(/^\/tool\//, '').split('/')[0];
+    }
 
-    const currentTool = toolInfo[toolId] || {
-      title: 'Free Pokémon TCG Collector & Tournament Tools | DECK / divider',
-      desc: 'Suite of free interactive tools for Pokémon card collectors: PSA grading profit calculators, tournament regulation mark checkers, and export utilities.'
-    };
+    // 1. PSA GRADE ROI CALCULATOR DEDICATED SEO DOCUMENT
+    if (toolId === 'psa-grade-calculator') {
+      const pageTitle = 'Pokémon Card Grading ROI & Value Calculator (PSA, BGS, CGC) | DECK / divider';
+      const pageDesc = 'Calculate whether grading your Pokémon cards with PSA, BGS, or CGC is profitable. Free Expected Value (EV) calculator modeling grading tiers, submission fees, shipping insurance, and PSA 10 vs 9 price multipliers.';
+      const canonicalUrl = `${canonicalOrigin}/tools/psa-grade-calculator`;
 
-    const canonicalUrl = cleanPath.startsWith('/tools/') ? `${canonicalOrigin}/tools/${toolId}` : `${canonicalOrigin}/tools`;
+      const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebApplication',
+            '@id': `${canonicalUrl}#app`,
+            name: pageTitle,
+            description: pageDesc,
+            url: canonicalUrl,
+            applicationCategory: 'FinanceApplication',
+            operatingSystem: 'All',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD'
+            },
+            featureList: [
+              'Expected Value (EV) calculation modeling PSA 10, 9, and 8 probabilities',
+              'Tiered grading fee analysis for PSA, Beckett BGS, and CGC',
+              'Break-even purchase cost simulator',
+              'Live multi-currency conversion support'
+            ]
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+              { '@type': 'ListItem', position: 2, name: 'Tools', item: `${canonicalOrigin}/tools` },
+              { '@type': 'ListItem', position: 3, name: 'PSA Grade ROI Calculator', item: canonicalUrl }
+            ]
+          },
+          {
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'How is Pokémon card grading ROI and Expected Value (EV) calculated?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Grading Expected Value is calculated using the formula: EV = (Probability of PSA 10 × Value of PSA 10) + (Probability of PSA 9 × Value of PSA 9) + (Probability of PSA 8 × Value of PSA 8) - (Raw Card Purchase Cost + Grading Tier Fee + Return Shipping & Insurance). If EV exceeds your total cost by at least 25%, submitting is statistically profitable.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Is grading modern Pokémon cards with PSA worth it in 2026?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Grading modern Pokémon cards (Scarlet & Violet era) is only profitable if the card achieves a PSA 10 Gem Mint grade. In 2026, PSA 9 mint copies of modern cards typically sell for only 1.0x to 1.2x raw Near Mint value, meaning a PSA 9 frequently results in a net financial loss after accounting for $19.99+ grading fees and shipping. Cards should only be submitted if they pass strict centering (60/40 front) and surface inspections.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What are the current PSA grading tiers and submission fees?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'PSA standard submission tiers include: Value ($19.99/card, max declared value $499, ~45–65 business days), Value Plus ($39.99/card, max declared value $499, ~20 business days), Regular ($74.99/card, max declared value $1,499, ~10 business days), and Express ($149.99/card, max declared value $2,499, ~5 business days).'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What 4-point pre-screening checklist should I follow before grading?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Before submitting cards to PSA, BGS, or CGC, examine four critical points: 1) Centering: front border centering must be 55/45 to 60/40 or better for PSA 10; 2) Corners: check all 4 corners under 10x magnification for micro-whitening; 3) Edges: look for factory silvering or rough blade cuts; 4) Surface: check under angled LED light for print lines, roller scratches, or holo foil scratches.'
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const contentHtml = `
+        <div style="margin-bottom:28px;">
+          <span style="display:inline-block;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;">TCG Grading Expected Value Engine</span>
+          <p style="color:#475569;font-size:15px;line-height:1.6;margin:0;">Model your expected net return, submission fees, and break-even points before grading Pokémon cards with PSA, Beckett BGS, or CGC.</p>
+        </div>
+
+        <!-- Executive Summary Answer Box -->
+        <div style="background:#F8FAFC;border:2px solid #E2E8F0;border-left:5px solid #16A34A;border-radius:12px;padding:20px;margin-bottom:32px;">
+          <h2 style="font-size:16px;font-weight:800;color:#0F172A;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Executive Summary: Grading ROI Formula</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 10px;">
+            Grading Expected Value (EV) measures statistical profitability across grade outcomes. Submitting a card is profitable when the expected sale value exceeds the total investment:
+          </p>
+          <div style="background:#0F172A;color:#38BDF8;font-family:monospace;font-size:13px;padding:12px 16px;border-radius:8px;margin-bottom:10px;">
+            EV = (P(10) × Value₁₀) + (P(9) × Value₉) + (P(8) × Value₈) - (Raw Cost + Grading Fee + Shipping &amp; Insurance)
+          </div>
+          <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">
+            <strong>Rule of Thumb:</strong> Modern cards generally require a minimum 2.5x price multiplier between raw Near Mint and PSA 10 to absorb grading fees ($19.99–$24.99/card) and shipping risk.
+          </p>
+        </div>
+
+        <!-- Interactive Calculator Preview Grid -->
+        <div style="margin-bottom:36px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">Simulation Benchmarks &amp; Multipliers</h2>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
+              <thead>
+                <tr style="background:#F1F5F9;border-bottom:2px solid #CBD5E1;">
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Grade Tier</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Market Multiplier (Raw NM)</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Estimated Win Rate</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Financial Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #E2E8F0;">
+                  <td style="padding:10px 12px;font-weight:700;color:#15803D;">PSA 10 Gem Mint</td>
+                  <td style="padding:10px 12px;color:#334155;">2.5x – 5.0x Raw Price</td>
+                  <td style="padding:10px 12px;color:#334155;">35% – 55% (Pre-screened)</td>
+                  <td style="padding:10px 12px;color:#15803D;font-weight:600;">High Net Profit ($50–$300+)</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;">
+                  <td style="padding:10px 12px;font-weight:700;color:#B45309;">PSA 9 Mint</td>
+                  <td style="padding:10px 12px;color:#334155;">0.9x – 1.2x Raw Price</td>
+                  <td style="padding:10px 12px;color:#334155;">40% – 50%</td>
+                  <td style="padding:10px 12px;color:#B45309;font-weight:600;">Break-even or Small Loss (-$10 to +$5)</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;">
+                  <td style="padding:10px 12px;font-weight:700;color:#DC2626;">PSA 8 Near Mint-Mint</td>
+                  <td style="padding:10px 12px;color:#334155;">0.6x – 0.8x Raw Price</td>
+                  <td style="padding:10px 12px;color:#334155;">5% – 15%</td>
+                  <td style="padding:10px 12px;color:#DC2626;font-weight:600;">Net Loss (-$25 to -$45)</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px;font-weight:700;color:#7C3AED;">BGS 10 Black Label</td>
+                  <td style="padding:10px 12px;color:#334155;">8.0x – 25.0x Raw Price</td>
+                  <td style="padding:10px 12px;color:#334155;">&lt; 2%</td>
+                  <td style="padding:10px 12px;color:#7C3AED;font-weight:600;">Massive Premium ($500–$5,000+)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4-Point Pre-Grading Inspection Guide -->
+        <div style="margin-bottom:36px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">The 4-Point Pre-Grading Checklist</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">1. Centering Ratios</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">PSA 10 requires 55/45 to 60/40 on the front and 75/25 on the back. Measure using millimeter precision or an optical centering card.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">2. Surface Integrity</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Inspect under directional raking LED light. Look for factory print lines, roller indents, and holographic foil scratches.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">3. Corners</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Examine all 4 front and rear corners under a 10x jeweler loupe. Any visible white fiber exposure knocks the card down to PSA 9.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">4. Edge Wear &amp; Silvering</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Check edges for rough factory die-cutting, chipping, or foil silvering on the top and bottom borders.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grading Companies Compared -->
+        <div style="margin-bottom:32px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">PSA vs. Beckett BGS vs. CGC Grading Service Fees</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#BE123C;margin:0 0 8px;">Professional Sports Authenticator (PSA)</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Value Tier:</strong> $19.99/card (Max declared value $499)</p>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Regular Tier:</strong> $74.99/card (Max declared value $1,499)</p>
+              <p style="font-size:13px;color:#64748B;margin:0;">Highest liquidity and resale premiums for modern Pokémon cards.</p>
+            </div>
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#1E40AF;margin:0 0 8px;">Beckett Grading Services (BGS)</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Base Without Subs:</strong> $18.00/card</p>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Standard with Subgrades:</strong> $22.00/card</p>
+              <p style="font-size:13px;color:#64748B;margin:0;">Provides subgrades (Centering, Corners, Edges, Surface). BGS 10 Black Label holds premier market prestige.</p>
+            </div>
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#047857;margin:0 0 8px;">Certified Guaranty Company (CGC)</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Economy Tier:</strong> $15.00/card (Max declared value $500)</p>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;"><strong>Standard Tier:</strong> $25.00/card (Max declared value $1,000)</p>
+              <p style="font-size:13px;color:#64748B;margin:0;">Crystal-clear slabs and competitive pricing with CGC Pristine 10 gold labels.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const bodyHtml = createStandardPageHtml(
+        pageTitle,
+        pageDesc,
+        contentHtml,
+        '/tools/psa-grade-calculator',
+        'Launch Live Interactive Calculator'
+      );
+
+      return {
+        bodyHtml,
+        title: pageTitle,
+        metaTags: `
+          <meta name="description" content="${pageDesc}" />
+          <meta property="og:title" content="${pageTitle}" />
+          <meta property="og:description" content="${pageDesc}" />
+          <meta property="og:url" content="${canonicalUrl}" />
+          <link rel="canonical" href="${canonicalUrl}" />
+          <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+        `
+      };
+    }
+
+    // 2. DECK LEGALITY CHECKER DEDICATED SEO DOCUMENT
+    if (toolId === 'deck-legality-checker') {
+      const pageTitle = 'Pokémon TCG Regulation Mark & Deck Legality Checker (2026 Standard) | DECK / divider';
+      const pageDesc = 'Verify Pokémon TCG 60-card deck legality for the 2026 tournament season. Instant validation for Standard format (Regulation Marks H, I, J; Mark G rotated), ACE SPEC limits, and Radiant Pokémon restrictions.';
+      const canonicalUrl = `${canonicalOrigin}/tools/deck-legality-checker`;
+
+      const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebApplication',
+            '@id': `${canonicalUrl}#app`,
+            name: pageTitle,
+            description: pageDesc,
+            url: canonicalUrl,
+            applicationCategory: 'UtilitiesApplication',
+            operatingSystem: 'All',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD'
+            },
+            featureList: [
+              'Official 2026 Standard regulation mark validator (H, I, J legal; G rotated)',
+              'ACE SPEC single-card limit enforcement',
+              'Radiant Pokémon 1-per-deck restriction validation',
+              '4-copy maximum rule validation with Basic Energy exemptions',
+              'PTCGL 1-click clipboard export format'
+            ]
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+              { '@type': 'ListItem', position: 2, name: 'Tools', item: `${canonicalOrigin}/tools` },
+              { '@type': 'ListItem', position: 3, name: 'Deck Legality Checker', item: canonicalUrl }
+            ]
+          },
+          {
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'Which regulation marks are legal in the 2026 Pokémon Standard format?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'For the 2026 tournament season, Standard format is restricted to cards with Regulation Marks H, I, and J. Regulation Mark G officially rotated out to Expanded format. Basic Energy cards and cards with legal reprints (such as Ultra Ball or Boss\'s Orders) remain tournament legal regardless of the original regulation mark printed on the card.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'Can I play older prints of cards that have legal reprints in Standard?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes! Under Play! Pokémon tournament rules, any prior printing of a card (including Sun & Moon or Sword & Shield prints) is tournament legal in Standard as long as the card shares the exact same English name and mechanical rules text as an active Standard-legal reprint with an H, I, or J regulation mark.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'How many ACE SPEC cards can be included in a 60-card Pokémon deck?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Exactly ONE ACE SPEC card in total is allowed in a 60-card deck. You cannot run Prime Catcher and Unfair Stamp in the same list; running more than one ACE SPEC card will result in an illegal deck list and disqualification.'
+                }
+              },
+              {
+                '@type': 'Question',
+                name: 'What are the rules for Radiant Pokémon in 2026?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'A deck may contain only ONE Radiant Pokémon in total (such as Radiant Greninja, Radiant Charizard, or Radiant Alakazam). Note that Radiant cards from Sword & Shield with Regulation Mark F or earlier are also rotated out of Standard format.'
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const contentHtml = `
+        <div style="margin-bottom:28px;">
+          <span style="display:inline-block;background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;">Official 2026 Tournament Regulation Engine</span>
+          <p style="color:#475569;font-size:15px;line-height:1.6;margin:0;">Validate your Pokémon TCG 60-card list against official 2026 Play! Pokémon Standard format rotation rules, ACE SPEC limits, and tournament legality benchmarks.</p>
+        </div>
+
+        <!-- Official 2026 Rotation Status Callout -->
+        <div style="background:#F8FAFC;border:2px solid #E2E8F0;border-left:5px solid #DC143C;border-radius:12px;padding:20px;margin-bottom:32px;">
+          <h2 style="font-size:16px;font-weight:800;color:#0F172A;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Official 2026 Standard Rotation Rule</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 10px;">
+            For the 2026 competitive season, Pokémon TCG Standard format decks are legally restricted to cards bearing <strong>Regulation Marks H, I, and J</strong>.
+          </p>
+          <div style="background:#0F172A;color:#FCA5A5;font-family:monospace;font-size:13px;padding:12px 16px;border-radius:8px;margin-bottom:10px;">
+            LEGAL: [ Mark H ] • [ Mark I ] • [ Mark J ] | ROTATED: [ Mark G ] (Expanded &amp; GLC Only)
+          </div>
+          <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">
+            <strong>Important Reprints Exception:</strong> Older prints of cards (e.g. Ultra Ball, Professor's Research, Super Rod) remain 100% legal in Standard if an identical card is currently printed with mark H, I, or J. Basic Energy cards are always legal.
+          </p>
+        </div>
+
+        <!-- Regulation Mark Matrix Table -->
+        <div style="margin-bottom:36px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">Regulation Mark Rotation Matrix</h2>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">
+              <thead>
+                <tr style="background:#F1F5F9;border-bottom:2px solid #CBD5E1;">
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Mark</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Status in Standard (2026)</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Associated Expansions</th>
+                  <th style="padding:10px 12px;color:#0F172A;font-weight:700;">Tournament Formats</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #E2E8F0;background:#F0FDF4;">
+                  <td style="padding:10px 12px;font-weight:800;color:#15803D;font-family:monospace;font-size:15px;">Mark J</td>
+                  <td style="padding:10px 12px;color:#15803D;font-weight:700;">STANDARD LEGAL</td>
+                  <td style="padding:10px 12px;color:#334155;">2026 Core Expansions</td>
+                  <td style="padding:10px 12px;color:#334155;">Standard, Expanded</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;background:#F0FDF4;">
+                  <td style="padding:10px 12px;font-weight:800;color:#15803D;font-family:monospace;font-size:15px;">Mark I</td>
+                  <td style="padding:10px 12px;color:#15803D;font-weight:700;">STANDARD LEGAL</td>
+                  <td style="padding:10px 12px;color:#334155;">Surging Sparks, Prismatic Evolutions, Journey Together</td>
+                  <td style="padding:10px 12px;color:#334155;">Standard, Expanded</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;background:#F0FDF4;">
+                  <td style="padding:10px 12px;font-weight:800;color:#15803D;font-family:monospace;font-size:15px;">Mark H</td>
+                  <td style="padding:10px 12px;color:#15803D;font-weight:700;">STANDARD LEGAL</td>
+                  <td style="padding:10px 12px;color:#334155;">Temporal Forces, Twilight Masquerade, Shrouded Fable, Stellar Crown</td>
+                  <td style="padding:10px 12px;color:#334155;">Standard, Expanded</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;background:#FEF2F2;">
+                  <td style="padding:10px 12px;font-weight:800;color:#DC2626;font-family:monospace;font-size:15px;">Mark G</td>
+                  <td style="padding:10px 12px;color:#DC2626;font-weight:700;">ROTATED OUT</td>
+                  <td style="padding:10px 12px;color:#334155;">Scarlet &amp; Violet Base, Paldea Evolved, Obsidian Flames, 151, Paradox Rift</td>
+                  <td style="padding:10px 12px;color:#B91C1C;font-weight:600;">Expanded, GLC Only</td>
+                </tr>
+                <tr style="border-bottom:1px solid #E2E8F0;background:#FEF2F2;">
+                  <td style="padding:10px 12px;font-weight:800;color:#DC2626;font-family:monospace;font-size:15px;">Mark F</td>
+                  <td style="padding:10px 12px;color:#DC2626;font-weight:700;">ROTATED OUT</td>
+                  <td style="padding:10px 12px;color:#334155;">Brilliant Stars, Astral Radiance, Lost Origin, Silver Tempest, Crown Zenith</td>
+                  <td style="padding:10px 12px;color:#B91C1C;font-weight:600;">Expanded, GLC Only</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mandatory Deck Construction Checklist -->
+        <div style="margin-bottom:36px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">Mandatory 60-Card Deck Construction Rules</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">Exactly 60 Cards</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Every tournament deck must contain exactly 60 cards. 59 or 61 cards results in immediate match forfeiture.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#0F172A;display:block;font-size:15px;margin-bottom:6px;">4-Copy Rule</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">No more than 4 copies of any card sharing the same name (regardless of rarity or illustration). Basic Energy is exempt.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#BE123C;display:block;font-size:15px;margin-bottom:6px;">Strictly 1 ACE SPEC</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Only 1 ACE SPEC card total allowed in the entire deck list across Items, Tools, and Special Energy.</p>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+              <strong style="color:#2563EB;display:block;font-size:15px;margin-bottom:6px;">Strictly 1 Radiant Pokémon</strong>
+              <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Only 1 Radiant Pokémon may be registered in your 60-card list under official Play! Pokémon rules.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Format Comparison -->
+        <div style="margin-bottom:32px;">
+          <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin:0 0 16px;">Competitive Format Guidelines</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#BE123C;margin:0 0 8px;">Standard Format</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;">Official premier competitive format. Uses Regulation Marks H, I, J. Rotates annually in spring.</p>
+              <span style="font-size:12px;color:#15803D;font-weight:700;">Championship Points &amp; Regionals</span>
+            </div>
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#1E40AF;margin:0 0 8px;">Expanded Format</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;">Includes all sets from Black &amp; White (2011) to current. Non-rotating format with a specific ban list.</p>
+              <span style="font-size:12px;color:#1E40AF;font-weight:700;">Expanded Ban List Applies</span>
+            </div>
+            <div style="border:1px solid #E2E8F0;border-radius:12px;padding:16px;background:#FFFFFF;">
+              <h3 style="font-size:16px;font-weight:700;color:#7C3AED;margin:0 0 8px;">Gym Leader Challenge (GLC)</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 8px;">Singleton (1 copy of each card), mono-type, no Rule Box Pokémon (no ex, V, GX, or ACE SPECs).</p>
+              <span style="font-size:12px;color:#7C3AED;font-weight:700;">Casual &amp; Community Favorite</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const bodyHtml = createStandardPageHtml(
+        pageTitle,
+        pageDesc,
+        contentHtml,
+        '/tools/deck-legality-checker',
+        'Check Your Deck Now'
+      );
+
+      return {
+        bodyHtml,
+        title: pageTitle,
+        metaTags: `
+          <meta name="description" content="${pageDesc}" />
+          <meta property="og:title" content="${pageTitle}" />
+          <meta property="og:description" content="${pageDesc}" />
+          <meta property="og:url" content="${canonicalUrl}" />
+          <link rel="canonical" href="${canonicalUrl}" />
+          <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+        `
+      };
+    }
+
+    // 3. GENERAL TOOLS DIRECTORY /tools
+    const pageTitle = 'Free Pokémon TCG Collector & Tournament Tools | DECK / divider';
+    const pageDesc = 'Explore our suite of free interactive utilities for Pokémon card collectors and tournament players: PSA grade ROI calculators, 2026 regulation mark checkers, and export utilities.';
+    const canonicalUrl = `${canonicalOrigin}/tools`;
 
     const jsonLd = {
       '@context': 'https://schema.org',
       '@graph': [
         {
-          '@type': 'WebApplication',
-          name: currentTool.title,
-          description: currentTool.desc,
+          '@type': 'CollectionPage',
+          '@id': `${canonicalUrl}#page`,
+          name: pageTitle,
+          description: pageDesc,
           url: canonicalUrl,
-          applicationCategory: 'UtilityApplication',
-          operatingSystem: 'All',
-          dateModified: new Date().toISOString(),
-          speakable: {
-            '@type': 'SpeakableSpecification',
-            cssSelector: ['h1', 'p']
+          isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${canonicalOrigin}/#website`,
+            url: canonicalOrigin,
+            name: 'DECK / divider'
           }
         },
         {
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: 'How is grading ROI calculated?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Grading ROI subtracts your card purchase price, grading fee, and shipping insurance costs from the current market price of the expected slab grade (e.g. PSA 10 or PSA 9).'
-              }
-            }
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+            { '@type': 'ListItem', position: 2, name: 'Tools', item: canonicalUrl }
           ]
         }
       ]
     };
 
+    const contentHtml = `
+      <p style="color:#475569;font-size:15px;line-height:1.6;margin-bottom:28px;">
+        Free interactive utilities engineered for competitive Pokémon TCG players, card graders, and serious master set collectors.
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:inline-block;background:#F0FDF4;color:#15803D;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-bottom:12px;">FINANCE &amp; GRADING</div>
+            <h2 style="font-size:18px;font-weight:800;color:#0F172A;margin:0 0 8px;">PSA Grade ROI Calculator</h2>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0 0 16px;">
+              Calculate Expected Value (EV), grading fees, and net profit before submitting cards to PSA, BGS, or CGC. Includes live grade multipliers and probability modeling.
+            </p>
+          </div>
+          <a href="/tools/psa-grade-calculator" style="background:#15803D;color:#FFFFFF;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;text-align:center;">Launch ROI Calculator &rarr;</a>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:inline-block;background:#FFF1F2;color:#BE123C;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-bottom:12px;">TOURNAMENTS &amp; RULES</div>
+            <h2 style="font-size:18px;font-weight:800;color:#0F172A;margin:0 0 8px;">Deck Legality &amp; Regulation Mark Checker</h2>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0 0 16px;">
+              Check your 60-card list against the 2026 Standard rotation (Marks H, I, J; G rotated), ACE SPEC restrictions, and Radiant rules.
+            </p>
+          </div>
+          <a href="/tools/deck-legality-checker" style="background:#BE123C;color:#FFFFFF;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;text-align:center;">Check Deck Legality &rarr;</a>
+        </div>
+      </div>
+    `;
+
     const bodyHtml = createStandardPageHtml(
-      currentTool.title,
-      currentTool.desc,
-      `<p style="color:#475569;margin-bottom:16px;">Free interactive utility for Pokémon TCG collectors and competitive players.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;">
-        <a href="/tools/psa-grade-calculator" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">PSA Grade ROI Calculator &rarr;</a>
-        <a href="/tools/deck-legality-checker" style="background:#F8FAFC;border:1px solid #E2E8F0;padding:14px;border-radius:8px;text-decoration:none;color:#0F172A;font-weight:600;">Deck Legality Checker &rarr;</a>
-        
-      </div>`,
-      '/auth',
+      pageTitle,
+      pageDesc,
+      contentHtml,
+      '/tools/psa-grade-calculator',
       'Open Tools Suite'
     );
 
-    return { bodyHtml,
-      title: currentTool.title,
+    return {
+      bodyHtml,
+      title: pageTitle,
       metaTags: `
-        <meta name="description" content="${currentTool.desc}" />
-        <meta property="og:title" content="${currentTool.title}" />
-        <meta property="og:description" content="${currentTool.desc}" />
+        <meta name="description" content="${pageDesc}" />
+        <meta property="og:title" content="${pageTitle}" />
+        <meta property="og:description" content="${pageDesc}" />
         <meta property="og:url" content="${canonicalUrl}" />
         <link rel="canonical" href="${canonicalUrl}" />
         <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
@@ -1220,7 +1740,7 @@ export async function renderSsrRoute(
           </div>
           <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
             <strong style="color:#F43F5E;display:block;font-size:14px;margin-bottom:6px;">Play! Pokémon Legality</strong>
-            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Standard regulation mark verification (F, G, H, I) and PTCGL export formats kept in sync with official tournament rotation bulletins.</p>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Standard regulation mark verification (H, I, J; G rotated) and PTCGL export formats kept in sync with official tournament rotation bulletins.</p>
           </div>
         </div>
       </section>
@@ -1241,7 +1761,7 @@ export async function renderSsrRoute(
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">02 / 04</div>
             <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">Tournament Deckbuilder</h3>
             <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">Standard Format Legality &amp; PTCGL Export</span>
-            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Continuous 60-card format checks enforcing the 4-copy rule, Radiant limits, ACE SPEC restrictions, and regulation mark rules (F, G, H, I).</p>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Continuous 60-card format checks enforcing the 4-copy rule, Radiant limits, ACE SPEC restrictions, and regulation mark rules (H, I, J; G rotated).</p>
           </div>
 
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
@@ -1808,7 +2328,7 @@ export async function renderSsrRoute(
           name: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+            text: 'Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
           },
         },
         {
@@ -1898,7 +2418,7 @@ export async function renderSsrRoute(
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Can I export deck lists directly into Pokémon TCG Live (PTCGL)?</h2>
-          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.</p>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
@@ -2189,7 +2709,7 @@ export async function renderSsrRoute(
             name: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+              text: 'Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
             },
           },
           {
@@ -2326,7 +2846,7 @@ export async function renderSsrRoute(
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.02);">
           <div style="color:#DC143C;font-size:18px;font-weight:800;margin-bottom:8px;">03. Tournament Studio</div>
           <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;">60-Card Format Compliance</h3>
-          <p style="color:#64748B;font-size:14px;margin:0;">Standard &amp; Expanded format legality checks, regulation marks (F, G, H), ACE SPEC audits, and one-click printable tournament registration rosters.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">Standard &amp; Expanded format legality checks, regulation marks (H, I, J; G rotated), ACE SPEC audits, and one-click printable tournament registration rosters.</p>
         </div>
 
         <!-- Feature 4 -->
@@ -2431,7 +2951,7 @@ export async function renderSsrRoute(
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
           <h3 style="font-size:16px;font-weight:700;margin:0 0 8px;">Does DECK / divider enforce official Play! Pokémon tournament rules?</h3>
-          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The deck engine validates Standard (F, G, H regulation marks) and Expanded format compliance, enforcing the 4-copy rule, Radiant limits, ACE SPEC single-card restrictions, and generates official registration rosters.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">Yes. The deck engine validates Standard (H, I, J regulation marks; G rotated) and Expanded format compliance, enforcing the 4-copy rule, Radiant limits, ACE SPEC single-card restrictions, and generates official registration rosters.</p>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">

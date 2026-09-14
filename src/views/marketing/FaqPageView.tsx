@@ -67,9 +67,9 @@ const FAQ_COLLECTION: FaqData[] = [
     category: 'Decks & Formats',
     question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
     answer:
-      'Yes. The deck builder checks standard 60-card format legality (including regulation marks F, G, H, I and the 4-card copy rule) and lets you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+      'Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
     highlights: [
-      'Format compliance audits for Standard (regulation marks F, G, H, I) and Expanded formats.',
+      'Format compliance audits for Standard (regulation marks H, I, J; G rotated) and Expanded formats.',
       'ACE SPEC single-card limit enforcement and Radiant Pokémon rules.',
       'One-click export string compatible with PTCGL, Limitless TCG, and tournament sheets.',
     ],
@@ -221,7 +221,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
           keyFacts={[
             { label: 'Market Comps', value: 'TCGplayer & eBay Daily Sync' },
             { label: 'Supported Grading', value: 'PSA, BGS, CGC, ACE, ARS' },
-            { label: 'Deck Legality', value: 'Standard & Expanded (G, H, I)' },
+            { label: 'Deck Legality', value: 'Standard & Expanded (H, I, J)' },
             { label: 'Export Target', value: 'Pokémon TCG Live (PTCGL)' },
           ]}
         />

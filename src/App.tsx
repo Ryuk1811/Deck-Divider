@@ -66,6 +66,7 @@ import { PrivacyPolicyView } from './views/legal/PrivacyPolicyView';
 import { TermsOfServiceView } from './views/legal/TermsOfServiceView';
 import { PricingPageView } from './views/marketing/PricingPageView';
 import { FaqPageView } from './views/marketing/FaqPageView';
+import { ChangelogPageView } from './views/marketing/ChangelogPageView';
 import { NotFoundView } from './views/app/NotFoundView';
 import { AdminDashboardView } from './views/admin/AdminDashboardView';
 import { 
@@ -1798,7 +1799,7 @@ export default function App() {
         <Route path="/portfolios/:shareId" element={<PublicPortfolioView />} />
         <Route path="/support" element={<Navigate to="/contact" replace />} />
         <Route path="/features" element={<Navigate to="/" replace />} />
-        <Route path="/changelog" element={<Navigate to="/" replace />} />
+        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
         <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
         <Route path="/media-kit" element={<Navigate to="/about" replace />} />
         <Route path="/community" element={<Navigate to="/leaderboard" replace />} />

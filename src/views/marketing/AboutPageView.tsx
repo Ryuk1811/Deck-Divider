@@ -40,7 +40,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
       icon: <Award className="w-5 h-5 text-[#DC143C]" />,
       title: 'Tournament Deckbuilder',
       tagline: 'Standard Format Legality & PTCGL Export',
-      description: 'Engineered specifically for official Pokémon TCG formats. Our builder checks standard 60-card format legality (regulation marks F, G, H, I), validates the 4-card copy rule, Radiant restrictions, and ACE SPEC limits, and generates 1-click PTCGL export lists.',
+      description: 'Engineered specifically for official Pokémon TCG formats. Our builder checks official 2026 standard 60-card format legality (regulation marks H, I, J; G rotated out), validates the 4-card copy rule, Radiant restrictions, and ACE SPEC limits, and generates 1-click PTCGL export lists.',
       highlight: 'Standard & Expanded rule validation with instant printable tournament rosters.',
     },
     {
@@ -243,7 +243,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                 <span>Tournament Rules: Play! Pokémon Standard</span>
               </div>
               <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
-                Regulation marks (F, G, H, I) and format legality are kept synchronized with official Play! Pokémon championship rotation bulletins and Pokémon TCG Live export specifications.
+                Standard regulation marks (H, I, J — following the 2026 rotation where Mark G rotated out on Pokémon TCG Live on March 26, 2026, and in-person Play! Pokémon events on April 10, 2026) and format legality are kept synchronized with official Play! Pokémon championship rotation bulletins and Pokémon TCG Live export specifications.
               </p>
             </div>
           </div>

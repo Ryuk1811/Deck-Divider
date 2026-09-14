@@ -1,10 +1,9 @@
 /decks/:id /deck/:id 301
 /portfolios/:id /portfolio/:id 301
-/tools/:id /tool/:id 301
+/tool/:id /tools/:id 301
 /formats/:id /format/:id 301
 /support /contact 301
 /features / 301
-/changelog / 301
 /cookie-policy /privacy 301
 /media-kit /about 301
 /community /leaderboard 301

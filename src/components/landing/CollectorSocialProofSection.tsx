@@ -42,7 +42,7 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
     {
       stat: '100%',
       label: 'Format Verification',
-      sub: 'F, G, H, I regulation mark checks',
+      sub: 'H, I, J Standard regulation mark checks',
       icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />,
     },
     {

@@ -53,7 +53,7 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'Raging Bolt ex Ogerpon ex tournament deck'
     ],
     secondaryKeywords: [
-      'Regulation mark F G H I legality checker',
+      'Regulation mark H I J legality checker',
       '60-card Pokémon deck builder with prices',
       'Regidrago VSTAR standard legal build',
       'Dragapult ex competitive deck list',
@@ -244,7 +244,7 @@ export function generateDeckSeoMetadata(deck: Deck | null, deckId?: string) {
       `${deckName} card counts and strategy`,
       'Pokémon TCG standard format legal decks 2026',
       'PTCGL import deck list copy paste',
-      'Regulation mark F G H I legality checker',
+      'Regulation mark H I J legality checker',
       '60-card Pokémon deck builder with prices',
       'ACE SPEC Trainer card rules',
       ...keyCards.map(c => `${deckName} ${c}`)

@@ -31,7 +31,7 @@ export const HighIntentToolsView: React.FC = () => {
     if (currentTool === 'deck-legality-checker') {
       updatePageSeo({
         title: 'Pokémon TCG Regulation Mark & Standard Legality Checker | DECK / divider',
-        description: 'Verify Pokémon TCG regulation marks (G, H, I) and tournament legality across Standard, Expanded, and GLC formats with official deck construction rules.',
+        description: 'Verify Pokémon TCG regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with official deck construction rules.',
         canonicalPath: '/tools/deck-legality-checker',
         jsonLd: {
           '@context': 'https://schema.org',
@@ -108,7 +108,7 @@ export const HighIntentToolsView: React.FC = () => {
         }
         description={
           isDeckChecker
-            ? 'Check Pokémon card regulation marks (G, H, I) and tournament legality across Standard, Expanded, and GLC formats with live rule validation.'
+            ? 'Check Pokémon card regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with live rule validation.'
             : 'Calculate net ROI, grading costs, and expected value (EV) before submitting cards to PSA, BGS, or CGC. Includes Gem Mint probability simulator.'
         }
         canonicalPath={isDeckChecker ? '/tools/deck-legality-checker' : '/tools/psa-grade-calculator'}
@@ -118,7 +118,7 @@ export const HighIntentToolsView: React.FC = () => {
                 'pokemon deck legality checker',
                 'pokemon regulation mark checker',
                 'pokemon standard legal cards 2026',
-                'regulation mark g h',
+                'regulation mark h i j',
                 'ptcgl deck builder validator'
               ]
             : [
@@ -181,19 +181,19 @@ export const HighIntentToolsView: React.FC = () => {
             className="mb-8"
             heading={
               isDeckChecker
-                ? 'Standard Format Rotation 2026: Regulation Marks G & H Legal'
+                ? 'Standard Format Rotation 2026: Regulation Marks H, I & J Legal'
                 : 'Formula: When Is It Mathematically Profitable to Grade Pokémon Cards?'
             }
             summary={
               isDeckChecker
-                ? 'Under current Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark G or H (found in the lower-left corner). Cards printed with Mark F or older are prohibited unless reprinted in a G/H set with the exact same card title and mechanic text.'
+                ? 'Under official 2026 Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark H, I, or J (found in the lower-left corner). Regulation Mark G rotated out on Pokémon TCG Live on March 26, 2026, and for in-person Play! Pokémon events on April 10, 2026. Cards printed with Mark G or older are prohibited unless reprinted in an active H/I/J set with the exact same card title and mechanic text.'
                 : 'Submitting a raw Pokémon card to PSA or CGC is profitable only when Expected Value (EV) exceeds the total cost (Raw Card Purchase Price + Grading Tier Fee + Roundtrip Shipping/Insurance). Standard modern raw cards have a 35% to 55% PSA 10 gem mint rate based on population reports.'
             }
             keyFacts={
               isDeckChecker
                 ? [
-                    { label: 'Active Marks', value: 'Marks G & H' },
-                    { label: 'Rotated', value: 'Mark F & Older' },
+                    { label: 'Active Marks', value: 'Marks H, I & J' },
+                    { label: 'Rotated', value: 'Mark G & Older' },
                     { label: 'Banned Cards', value: 'Zero in Standard' },
                     { label: 'Deck Limit', value: 'Strictly 60 Cards' },
                   ]
@@ -461,7 +461,7 @@ export const HighIntentToolsView: React.FC = () => {
             <div>
               <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] font-heading mb-3 tracking-tight">
-                  Pokémon TCG Tournament Legality &amp; Rotation Checker (2025/2026)
+                  Pokémon TCG Tournament Legality &amp; Rotation Checker (2026)
                 </h1>
                 <p className="text-[#64748B] text-sm sm:text-base leading-relaxed">
                   Verify the tournament legality of any card or regulation mark across the official Pokémon Standard, Expanded, and Gym Leader Challenge (GLC) formats.
@@ -472,10 +472,10 @@ export const HighIntentToolsView: React.FC = () => {
               <div className="bg-white border-l-4 border-[#16A34A] border-y border-r border-[#E2E8F0] rounded-2xl p-6 sm:p-7 mb-10 shadow-xs">
                 <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#16A34A] mb-2 flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
-                  Legal Regulation Marks in Standard 2025
+                  Legal Regulation Marks in Standard 2026
                 </div>
                 <p className="text-[#0F172A] text-sm sm:text-base leading-relaxed font-medium">
-                  For the 2025 tournament cycle, cards with <strong className="text-[#0F172A]">regulation marks "G" and "H" (and upcoming "I")</strong> are fully legal in official Pokémon TCG Standard format tournaments. Cards bearing regulation marks "E" and "F" have officially rotated out, unless a card has received an identical text reprint in a legal expansion.
+                  For the 2026 tournament cycle, cards with <strong className="text-[#0F172A]">regulation marks "H", "I", and "J"</strong> are fully legal in official Pokémon TCG Standard format tournaments. Cards bearing regulation mark "G" (along with "E" and "F") have officially rotated out (effective March 26, 2026 on Pokémon TCG Live and April 10, 2026 for Play! Pokémon in-person events), unless a card has received an identical text reprint in a legal expansion.
                 </p>
               </div>
 
@@ -486,7 +486,7 @@ export const HighIntentToolsView: React.FC = () => {
                 </h2>
 
                 <div className="flex flex-wrap gap-3 mb-8">
-                  {['E', 'F', 'G', 'H', 'I'].map((mark) => (
+                  {['E', 'F', 'G', 'H', 'I', 'J'].map((mark) => (
                     <button
                       key={mark}
                       onClick={() => setSelectedMark(mark)}
@@ -509,11 +509,11 @@ export const HighIntentToolsView: React.FC = () => {
                       <div className="text-2xl font-black text-[#0F172A]">Mark "{selectedMark}"</div>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold font-mono border ${
-                      ['G', 'H', 'I'].includes(selectedMark)
+                      ['H', 'I', 'J'].includes(selectedMark)
                         ? 'bg-[#F0FDF4] text-[#16A34A] border-[#86EFAC]'
                         : 'bg-[#FEF2F2] text-[#DC143C] border-[#FECACA]'
                     }`}>
-                      {['G', 'H', 'I'].includes(selectedMark) ? 'LEGAL IN STANDARD' : 'ROTATED OUT OF STANDARD'}
+                      {['H', 'I', 'J'].includes(selectedMark) ? 'LEGAL IN STANDARD' : 'ROTATED OUT OF STANDARD'}
                     </span>
                   </div>
 
@@ -524,9 +524,9 @@ export const HighIntentToolsView: React.FC = () => {
                     >
                       <div>
                         <span className="text-[#64748B] block mb-1">Standard Format</span>
-                        <span className={`font-bold flex items-center gap-1 ${['G', 'H', 'I'].includes(selectedMark) ? 'text-[#16A34A]' : 'text-[#DC143C]'}`}>
-                          {['G', 'H', 'I'].includes(selectedMark) ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                          {['G', 'H', 'I'].includes(selectedMark) ? 'Allowed (2025/2026)' : 'Rotated (Illegal)'}
+                        <span className={`font-bold flex items-center gap-1 ${['H', 'I', 'J'].includes(selectedMark) ? 'text-[#16A34A]' : 'text-[#DC143C]'}`}>
+                          {['H', 'I', 'J'].includes(selectedMark) ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                          {['H', 'I', 'J'].includes(selectedMark) ? 'Allowed (2026 Standard)' : 'Rotated (Illegal in Standard)'}
                         </span>
                       </div>
                       <div className="mt-3 pt-2 border-t border-[#F1F5F9] text-[11px] font-mono text-[#DC143C] font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">

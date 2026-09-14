@@ -102,7 +102,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
           <div style="font-size:24px;margin-bottom:12px;">⚔️</div>
           <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">60-Card Meta Decks</h2>
-          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Standard format legal tournament deck lists with regulation marks F/G/H/I compliance and 1-click PTCGL export strings.</p>
+          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Standard format legal tournament deck lists with 2026 regulation marks H/I/J compliance and 1-click PTCGL export strings.</p>
           <a href="/directory/decks-index" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">View Meta Decks &rarr;</a>
         </div>
 
@@ -304,7 +304,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         </nav>
       </div>
       <div>
-        <a href="/tool/deck-legality-checker" style="background:#0F172A;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Deck Legality Checker</a>
+        <a href="/tools/deck-legality-checker" style="background:#0F172A;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Deck Legality Checker</a>
       </div>
     </header>
 
@@ -386,7 +386,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         </nav>
       </div>
       <div>
-        <a href="/tool/psa-grade-calculator" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Open Grade Calculator</a>
+        <a href="/tools/psa-grade-calculator" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Open Grade Calculator</a>
       </div>
     </header>
 
@@ -409,7 +409,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
             <li><strong>PSA 9 (Mint)</strong>: 60/40 to 65/35 centering, microscopic edge wear, typically 1.0x–1.3x raw NM.</li>
             <li><strong>PSA 8 (NM-MT)</strong>: Minor print lines or slight corner softness.</li>
           </ul>
-          <a href="/tool/psa-grade-calculator" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">Model PSA 10 Price Spread &rarr;</a>
+          <a href="/tools/psa-grade-calculator" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">Model PSA 10 Price Spread &rarr;</a>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">

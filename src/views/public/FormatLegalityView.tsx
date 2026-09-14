@@ -120,7 +120,7 @@ export const FormatLegalityView: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#0F172A] font-heading">Need to check a specific card or regulation mark?</h3>
-                <p className="text-xs text-[#64748B]">Inspect marks G, H, and I with our interactive regulation mark simulator.</p>
+                <p className="text-xs text-[#64748B]">Inspect marks H, I, and J with our interactive regulation mark simulator.</p>
               </div>
             </div>
             <Link

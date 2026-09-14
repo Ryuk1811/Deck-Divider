@@ -380,7 +380,18 @@ export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
 
     // 5. Legality
     if (filters.legality) {
-      if (!doc.legal || !doc.legal[filters.legality]) return false;
+      if (filters.legality === 'standard') {
+        if (doc.regulationMark) {
+          const reg = doc.regulationMark.toUpperCase();
+          if (!['H', 'I', 'J'].includes(reg)) {
+            return false;
+          }
+        } else if (!doc.legal || !doc.legal.standard) {
+          return false;
+        }
+      } else {
+        if (!doc.legal || !doc.legal[filters.legality]) return false;
+      }
     }
 
     // 6. Variant

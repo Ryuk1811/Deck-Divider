@@ -41,7 +41,7 @@ export const competitors: Record<string, Competitor> = {
     comparisonTable: [
       { feature: 'Dedicated Pokémon TCG Specialization', us: true, them: false },
       { feature: '60-Card Deckbuilder & PTCGL Export', us: true, them: false },
-      { feature: 'Tournament Legality Checker (G, H, I Marks)', us: true, them: false },
+      { feature: 'Tournament Legality Checker (H, I, J Marks)', us: true, them: false },
       { feature: 'Live TCGplayer Market Prices', us: true, them: true },
       { feature: 'Multi-Currency Conversion (USD, EUR, GBP, JPY)', us: true, them: false },
       { feature: 'Private Offline-First Storage', us: true, them: false },
@@ -330,7 +330,7 @@ export const CompetitorComparisonView: React.FC = () => {
                       <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]">
-                      <td className="py-4 px-4 font-medium text-[#0F172A]">Tournament Format Legality (G &amp; H Regulation)</td>
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Tournament Format Legality (H, I &amp; J Regulation)</td>
                       <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
                       <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                       <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
