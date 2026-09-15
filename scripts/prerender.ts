@@ -25,6 +25,7 @@ async function prerenderAllRoutes() {
       'favicon-48x48.png',
       'favicon.png',
       'apple-touch-icon.png',
+      'apple-touch-icon-precomposed.png',
       'icon-192.png',
       'icon-google-192.png',
       'icon-512.png',

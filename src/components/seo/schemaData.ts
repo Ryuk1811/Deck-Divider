@@ -8,7 +8,7 @@ export const getBaseOrganizationSchema = () => ({
   '@id': 'https://deckdivider.app/#organization',
   name: 'DECK / divider',
   url: 'https://deckdivider.app',
-  logo: 'https://deckdivider.app/icon-512.png',
+  logo: 'https://deckdivider.app/logo.png',
   email: 'deckdivider@outlook.com',
   description: 'Institutional-grade Pokémon TCG portfolio tracker, graded slab vault, and tournament deck studio.',
   sameAs: [

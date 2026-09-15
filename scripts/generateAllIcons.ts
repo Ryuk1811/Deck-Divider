@@ -48,6 +48,7 @@ async function regenerateAllIcons() {
     { name: 'favicon-48x48.png', size: 48, paddingRatio: 0.05 },
     { name: 'favicon.png', size: 32, paddingRatio: 0.05 },
     { name: 'apple-touch-icon.png', size: 180, paddingRatio: 0.08 },
+    { name: 'apple-touch-icon-precomposed.png', size: 180, paddingRatio: 0.08 },
     { name: 'icon-192.png', size: 192, paddingRatio: 0.08 },
     { name: 'icon-google-192.png', size: 192, paddingRatio: 0.12 }, // extra padding for Google SERP circular mask
     { name: 'icon-512.png', size: 512, paddingRatio: 0.08 }

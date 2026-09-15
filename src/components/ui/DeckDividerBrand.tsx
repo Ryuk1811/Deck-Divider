@@ -49,7 +49,7 @@ export const DeckDividersIcon: React.FC<DeckDividersIconProps> = ({
       title={title}
     >
       <img
-        src="/logo.png?v=6"
+        src="/logo.png?v=11"
         alt={title || "DECK / divider"}
         className="w-full h-full object-contain pointer-events-none"
       />
