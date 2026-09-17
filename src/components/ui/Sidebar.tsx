@@ -148,34 +148,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile Drawer Backdrop Overlay */}
-      {isMobileOpen && (
-        <div
-          onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-slate-950/60 z-[60] md:hidden backdrop-blur-sm transition-opacity"
-        />
-      )}
-
-      {/* Main Sidebar Component */}
+      {/* Main Sidebar Component - Strictly Desktop Only (hidden on mobile) */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-[70] flex flex-col h-[100dvh] bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out ${
+        className={`hidden md:flex flex-col h-[100dvh] bg-white border-r border-[#E2E8F0] select-none transition-all duration-300 ease-in-out shrink-0 z-20 ${
           isCollapsed ? 'w-16' : 'w-56 max-w-[85vw]'
-        } ${
-          isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* 1. Header Section - Height exactly h-16 to perfectly align inline with Top Bar */}
-        <div className={`h-16 flex items-center justify-center border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
+        <div className={`h-16 flex items-center justify-between border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {!isCollapsed ? (
-            <div className="w-full flex items-center justify-center">
+            <div className="w-full flex items-center justify-between gap-2">
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
                 showLogo={false}
-                fullWidth={true}
+                fullWidth={false}
                 onClick={handleToggleCollapse}
-                className="cursor-pointer w-full"
+                className="cursor-pointer"
               />
+              {/* Mobile Explicit Close Button inside Drawer */}
+              <button
+                type="button"
+                onClick={() => setIsMobileOpen(false)}
+                className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-200 active:bg-slate-300 transition-colors cursor-pointer"
+                title="Close Menu"
+                aria-label="Close Navigation Drawer"
+              >
+                <X className="w-5 h-5 text-slate-700" />
+              </button>
             </div>
           ) : (
             <div className="w-full flex items-center justify-center">

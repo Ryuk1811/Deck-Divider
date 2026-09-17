@@ -25,6 +25,7 @@ import {
   DollarSign,
   Zap,
   Menu,
+  Search,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import { initSnapshotMetronome, recordSnapshotCompleted } from './utils/cloudSnapshotMetronome';
@@ -40,6 +41,8 @@ import { PayPalSubscriptionModal } from './components/modals/PayPalSubscriptionM
 import { PayPalSuccessModal } from './components/modals/PayPalSuccessModal';
 import { PayPalCancelModal } from './components/modals/PayPalCancelModal';
 import { PagesDropdown } from './components/ui/PagesDropdown';
+import { MobileBottomNav } from './components/ui/MobileBottomNav';
+import { MobileTopBar } from './components/ui/MobileTopBar';
 
 import { CollectionView } from './views/app/CollectionView';
 import { MetricsView } from './views/app/MetricsView';
@@ -153,7 +156,14 @@ export default function App() {
     setCustomLists([]);
     setSealedEntries([]);
     setSoldEntries([]);
-    navigate('/');
+    try {
+      await Promise.all([
+        idbSaveUserDecks([], 'guest_user'),
+        idbSaveCustomLists([], 'guest_user'),
+        idbSaveSealedVault([], 'guest_user'),
+      ]);
+    } catch (e) {}
+    navigate('/auth');
   };
 
   // Dynamically manage robots meta tag on route transitions
@@ -201,6 +211,10 @@ export default function App() {
   const [authViewRequested, setAuthViewRequested] = useState(false);
   const [guestMode, setGuestMode] = useState<boolean>(() => {
     try {
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/auth')) {
+        localStorage.removeItem('dd_guest_mode');
+        return false;
+      }
       return localStorage.getItem('dd_guest_mode') === 'true';
     } catch (e) {
       return false;
@@ -578,12 +592,25 @@ export default function App() {
     });
   }, [user]);
 
-  // Load from Local Encrypted Storage on initial mount & Seed Sample data for demo guests if empty
+  // Load from Local Encrypted Storage on initial mount & strictly sanitize mock data
   React.useEffect(() => {
     if (authLoading) return;
     const activeUid = user?.uid || 'guest_user';
 
     const initializeAppState = async () => {
+      // If logging in with a real user account, immediately flush any leftover guest mode storage
+      if (user) {
+        try {
+          localStorage.removeItem('dd_guest_mode');
+          localStorage.removeItem('dd_guest_is_public');
+          await Promise.all([
+            idbSaveUserDecks([], 'guest_user'),
+            idbSaveCustomLists([], 'guest_user'),
+            idbSaveSealedVault([], 'guest_user'),
+          ]);
+        } catch (e) {}
+      }
+
       // Reset collection state to prevent state bleed between user accounts
       setDecks([]);
       setCustomLists([]);
@@ -705,38 +732,26 @@ export default function App() {
             customLists: currentLists,
             sealedEntries: currentSealed,
           });
-        } else {
-          // Automatic showcase seeding ONLY for Guest / Demo mode when collection is empty
-          if (currentDecks.length === 0 && currentLists.length === 0 && currentSealed.length === 0) {
-            currentDecks = generateShowcaseDecks(activeUid);
-            currentLists = generateShowcaseCustomLists(activeUid);
-            currentSealed = generateShowcaseSealed(activeUid);
-
-            await Promise.all([
-              idbSaveUserDecks(currentDecks, activeUid),
-              idbSaveCustomLists(currentLists, activeUid),
-              idbSaveSealedVault(currentSealed, activeUid),
-            ]);
-          }
         }
 
-        setDecks(currentDecks);
-        setCustomLists(currentLists);
-        setSealedEntries(currentSealed);
+        // Filter out any mock items from accounts to guarantee a clean zero-state
+        const sanitizedDecks = currentDecks
+          .filter((d) => !isMockDeck(d))
+          .map((deck) => ({
+            ...deck,
+            entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
+          }));
+        const sanitizedLists = currentLists.filter((l) => !isMockCustomList(l));
+        const sanitizedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
+
+        setDecks(sanitizedDecks);
+        setCustomLists(sanitizedLists);
+        setSealedEntries(sanitizedSealed);
       } catch (err) {
         console.error('Data initialization error:', err);
-        if (!user) {
-          const fallbackDecks = generateShowcaseDecks(activeUid);
-          const fallbackLists = generateShowcaseCustomLists(activeUid);
-          const fallbackSealed = generateShowcaseSealed(activeUid);
-          setDecks(fallbackDecks);
-          setCustomLists(fallbackLists);
-          setSealedEntries(fallbackSealed);
-        } else {
-          setDecks([]);
-          setCustomLists([]);
-          setSealedEntries([]);
-        }
+        setDecks([]);
+        setCustomLists([]);
+        setSealedEntries([]);
       }
     };
 
@@ -1464,39 +1479,39 @@ export default function App() {
 
       {/* Main Panel Area */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
-        {/* Panel Top Header Bar (Continuously aligns with Sidebar's top border line h-16) */}
-        <header className="h-16 flex items-center justify-between px-3 md:px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-2 sm:gap-4">
-          {/* Left: Mobile/Tablet Drawer Trigger + Section Header Tag & Title */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <button
-              type="button"
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden p-2 -ml-1 rounded-lg text-[#0F172A] hover:bg-slate-100 active:bg-slate-200 transition-colors cursor-pointer flex items-center justify-center shrink-0"
-              title="Open Navigation Menu"
-              aria-label="Open Navigation Menu"
-            >
-              <Menu className="w-5 h-5 text-[#0F172A]" />
-            </button>
-            <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2 sm:px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
+        {/* Mobile Top App Bar (< md) - PokeData iOS Style Native Header */}
+        <MobileTopBar
+          activeTab={activeTab}
+          currency={displayCurrency}
+          userEmail={user?.email || undefined}
+          onOpenSearch={() => setIsCommandPaletteOpen(true)}
+          onOpenAuth={() => navigate('/auth')}
+        />
+
+        {/* Desktop Panel Top Header Bar (≥ md) - Continuously aligns with Sidebar's top border line h-16 */}
+        <header className="hidden md:flex h-16 items-center justify-between px-6 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] flex-shrink-0 z-20 shadow-xs gap-4">
+          {/* Desktop Header Tag & Title (≥ md) - 100% UNTOUCHED */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className="font-mono text-[11px] font-bold text-[#DC143C] uppercase tracking-wider bg-[#FFF0F3] px-2.5 py-1 rounded-md border border-[#DC143C]/20 flex-shrink-0">
               {sectionMeta[activeTab].tag}
             </span>
             <span className="text-[#CBD5E1] font-mono text-sm flex-shrink-0">/</span>
-            <h1 className="font-heading font-bold text-sm sm:text-base md:text-lg text-[#0F172A] truncate">
+            <h1 className="font-heading font-bold text-base md:text-lg text-[#0F172A] truncate">
               {sectionMeta[activeTab].title}
             </h1>
           </div>
 
-          {/* Right: Dynamic Metric Badge & Pages Dropdown */}
+          {/* Desktop Right Metric Badge (≥ md) */}
           <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
-            <div className="hidden sm:flex h-8 sm:h-9 px-2.5 sm:px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold rounded-md shadow-xs max-w-[150px] md:max-w-[220px] truncate">
-              {activeTab === 'collection' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'decks' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'sets' && <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'lists' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'sealed_vault' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'metrics' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'search' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
-              {activeTab === 'settings' && <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DC143C] shrink-0" />}
+            <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs max-w-[220px] truncate">
+              {activeTab === 'collection' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'decks' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'sets' && <Boxes className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'lists' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'sealed_vault' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'metrics' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'search' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
+              {activeTab === 'settings' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
               
               <span className="truncate">
                 {activeTab === 'collection' && `Portfolio: ${decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Cards`}
@@ -1513,7 +1528,7 @@ export default function App() {
         </header>
 
         {/* Scrollable View Area (Infinite Scrolling inside Panel) */}
-        <main className="flex-1 overflow-y-auto flex flex-col min-h-0">
+        <main className="flex-1 overflow-y-auto flex flex-col min-h-0 pb-20 md:pb-0">
           <div className="flex-1">
             {activeTab === 'collection' && (
             <CollectionView
@@ -1521,6 +1536,7 @@ export default function App() {
               allCards={effectiveCards}
               currency={displayCurrency}
               customLists={customLists}
+              sealedEntries={sealedEntries}
               userEmail={user?.email || undefined}
               userId={user?.uid}
               currentTier={currentTier}
@@ -1544,6 +1560,7 @@ export default function App() {
               }}
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
+              onNavigateToTab={setActiveTab}
               onLoadShowcase={!user ? handleLoadShowcaseData : undefined}
               onAddSampleDeck={!user ? handleLoadSampleDeck : undefined}
             />
@@ -1709,6 +1726,12 @@ export default function App() {
             </p>
           </footer>
         </main>
+
+        {/* Mobile-Native Bottom Navigation Bar (md:hidden) */}
+        <MobileBottomNav
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
     </div>
   );
@@ -1736,8 +1759,7 @@ export default function App() {
                   if (user) {
                     navigate('/app');
                   } else {
-                    handleSetGuestMode(true);
-                    navigate('/app');
+                    handleOpenAuth();
                   }
                 }}
                 onOpenAuth={handleOpenAuth}
@@ -1763,8 +1785,8 @@ export default function App() {
         />
         <Route path="/about" element={<AboutPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} displayCurrency={displayCurrency} />} />
         <Route path="/how-it-works" element={<HowItWorksPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
-        <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => navigate('/app')} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
-        <Route path="/faq" element={<FaqPageView onOpenAuth={handleOpenAuth} onEnterApp={() => navigate('/app')} displayCurrency={displayCurrency} user={user} />} />
+        <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
+        <Route path="/faq" element={<FaqPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} displayCurrency={displayCurrency} user={user} />} />
         <Route path="/contact" element={<ContactPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
 
         {/* === LEGAL & TRUST === */}

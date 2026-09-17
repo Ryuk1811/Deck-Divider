@@ -32,9 +32,12 @@ export function AuthView({
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Track auth page view on mount
+  // Track auth page view on mount & flush any residual guest flags
   useEffect(() => {
     trackAuthView();
+    try {
+      localStorage.removeItem('dd_guest_mode');
+    } catch (e) {}
   }, []);
 
   // If user is already authenticated, automatically redirect to /app

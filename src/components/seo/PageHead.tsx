@@ -51,6 +51,9 @@ export const PageHead: React.FC<PageHeadProps> = ({
     }
     setMetaTag('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
     setMetaTag('name', 'thumbnail', ogImage);
+    setMetaTag('name', 'theme-color', '#0F172A');
+    setMetaTag('name', 'author', 'DECK / divider');
+    document.documentElement.setAttribute('lang', 'en');
 
     // 3. Canonical Link
     const fullCanonicalUrl = `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
@@ -69,12 +72,15 @@ export const PageHead: React.FC<PageHeadProps> = ({
     setMetaTag('property', 'og:type', ogType);
     setMetaTag('property', 'og:image', ogImage);
     setMetaTag('property', 'og:site_name', 'DECK / divider');
+    setMetaTag('property', 'og:locale', 'en_US');
 
     // 5. Twitter Cards
     setMetaTag('name', 'twitter:card', 'summary_large_image');
     setMetaTag('name', 'twitter:title', title);
     setMetaTag('name', 'twitter:description', description);
     setMetaTag('name', 'twitter:image', ogImage);
+    setMetaTag('name', 'twitter:site', '@DeckDivider');
+    setMetaTag('name', 'twitter:creator', '@DeckDivider');
 
     // 6. JSON-LD Schema Injection
     if (schema) {

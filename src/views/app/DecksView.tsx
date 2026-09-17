@@ -555,7 +555,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 </div>
               ) : (
                 /* SINGULAR ENTITY CARDS AGAINST DOTTED CANVAS BACKGROUND */
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-5 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 p-2.5 sm:p-5 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
                   {activeEntries.map((entry) => (
                     <div key={entry.id} className="relative group">
                       <HolographicCard

@@ -37,12 +37,16 @@ import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoa
 import { PublicShareLinkBox } from '../../components/ui/PublicShareLinkBox';
 import { encodePortfolioToUrl } from '../../utils/portfolioUrlEncoder';
 import { getPokemonSpeciesTypes } from '../../data/pokemonSpeciesTypes';
+import { MobilePortfolioHub } from '../../components/app/MobilePortfolioHub';
+import { ActiveTab } from '../../components/ui/Sidebar';
+import { PortfolioSealedEntry } from '../../types';
 
 interface CollectionViewProps {
   decks: Deck[];
   allCards: PokemonCard[];
   currency: DisplayCurrency;
   customLists: CustomList[];
+  sealedEntries?: PortfolioSealedEntry[];
   userEmail?: string;
   userId?: string;
   currentTier?: AccountTier;
@@ -54,6 +58,7 @@ interface CollectionViewProps {
   onSelectDeck: (deckId: string) => void;
   onAddCardToList?: (listId: string, cardId: string) => void;
   onNavigateToSearch?: () => void;
+  onNavigateToTab?: (tab: ActiveTab) => void;
   onLoadShowcase?: () => void;
   onAddSampleDeck?: () => void;
 }
@@ -90,6 +95,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   allCards,
   currency,
   customLists,
+  sealedEntries = [],
   userEmail,
   userId,
   currentTier = 'Starter',
@@ -101,6 +107,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onSelectDeck,
   onAddCardToList,
   onNavigateToSearch,
+  onNavigateToTab,
   onLoadShowcase,
   onAddSampleDeck,
 }) => {
@@ -170,6 +177,19 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   // Total Collection Metrics
   const totalValuation = useMemo(
     () => collectionEntries.reduce((acc, item) => acc + item.card.prices.raw * item.entry.quantity, 0),
+    [collectionEntries]
+  );
+  const totalCostBasis = useMemo(
+    () =>
+      collectionEntries.reduce(
+        (acc, item) =>
+          acc +
+          (item.entry.purchasePrice && item.entry.purchasePrice > 0
+            ? item.entry.purchasePrice
+            : item.card.prices.raw * 0.74) *
+            item.entry.quantity,
+        0
+      ),
     [collectionEntries]
   );
   const totalQuantity = useMemo(
@@ -361,9 +381,38 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
     selectedDeckFilter !== 'all';
 
   return (
-    <div className="app-view-container space-y-6">
-      {/* 1. TOP GLOBAL COLLECTION METRICS & CONTROL BAR */}
-      <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
+    <div className="app-view-container space-y-4 sm:space-y-6">
+      {/* 0. MOBILE-NATIVE PORTFOLIO HUB (Matches Mobile App Mockup, strictly hidden on desktop md:hidden) */}
+      <MobilePortfolioHub
+        decks={decks}
+        allCards={allCards}
+        currency={currency}
+        customLists={customLists}
+        sealedEntries={sealedEntries}
+        onNavigateToTab={onNavigateToTab}
+        onNavigateToSearch={onNavigateToSearch}
+        onSelectCard={onSelectCard}
+        onQuickLookCard={onQuickLookCard}
+        onSelectDeck={onSelectDeck}
+        totalCardsCount={totalQuantity}
+        uniqueCardsCount={uniqueCardCount}
+        totalHoldingsValue={totalValuation}
+        totalCostBasis={totalCostBasis}
+        isFilterPanelOpen={isFilterPanelOpen}
+        onToggleFilterPanel={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+        hasActiveFilters={hasActiveFilters}
+        viewMode={viewMode}
+        onChangeViewMode={(mode) => setViewMode(mode)}
+        isPublicProfile={isPublicProfile}
+        onTogglePublicProfile={onTogglePublicProfile}
+        currentTier={currentTier}
+        onTriggerLimitModal={onTriggerLimitModal}
+        userId={userId}
+        userEmail={userEmail}
+      />
+
+      {/* 1. TOP GLOBAL COLLECTION METRICS & CONTROL BAR (Preserved 100% for Desktop, hidden on mobile) */}
+      <div className="hidden md:block p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 flex items-center justify-center text-[#DC143C]">
@@ -748,8 +797,8 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white shadow-xs border border-[#E2E8F0]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="p-3 sm:p-6 rounded-2xl bg-white shadow-xs border border-[#E2E8F0]">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
               {currentBinderCards.map(({ entry, card, deckName, deckColor, deckId }) => (
                 <div key={`${deckId}-${entry.id}`} className="relative group">
                   <HolographicCard
@@ -879,7 +928,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 p-2.5 sm:p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
                   {displayItems.map(({ entry, card, deckName, deckColor, deckId }) => (
                     <div key={`${deckId}-${entry.id}`} className="group relative">
                       <HolographicCard
