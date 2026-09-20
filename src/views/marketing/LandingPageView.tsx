@@ -21,6 +21,7 @@ import { LandingFeatureGrid } from '../../components/landing/LandingFeatureGrid'
 import { SectionHeaderLine } from '../../components/landing/SectionHeaderLine';
 import { PlatformPhilosophySection } from '../../components/landing/PlatformPhilosophySection';
 import { LandingPrivacyPolicySection } from '../../components/landing/LandingPrivacyPolicySection';
+import { LandingSocialsSection } from '../../components/landing/LandingSocialsSection';
 import { PageHead } from '../../components/seo/PageHead';
 import { getHomepageSchema } from '../../components/seo/schemaData';
 
@@ -419,6 +420,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           }}
         />
       </main>
+
+      {/* Socials & Badges Strip */}
+      <LandingSocialsSection />
 
       {/* 6. Page Footer */}
       <LandingFooter

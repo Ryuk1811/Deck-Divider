@@ -527,6 +527,42 @@ export const PublicSocialsView: React.FC = () => {
               </div>
 
             </div>
+
+            {/* Featured Directory & Platform Badges */}
+            <div className="mt-8 pt-5 pb-5 px-6 border border-[#E2E8F0] bg-white rounded-2xl flex flex-wrap items-center justify-center sm:justify-start gap-6 shadow-2xs">
+              <span className="text-xs font-mono font-bold text-[#64748B] uppercase tracking-wider">
+                Featured On &amp; Directory Badges:
+              </span>
+              <div className="flex flex-wrap items-center gap-6">
+                <a
+                  href="https://neeed.directory"
+                  target="_blank"
+                  rel="noopener"
+                  className="hover:scale-[1.03] transition-transform inline-block"
+                >
+                  <img
+                    src="https://neeed.directory/badges/neeed-badge-light.svg"
+                    alt="Featured on neeed.directory"
+                    width="139"
+                    className="h-10 w-auto object-contain"
+                  />
+                </a>
+                <a
+                  href="https://www.producthunt.com/products/deck-divider?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deck-divider-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:scale-[1.03] transition-transform inline-block"
+                >
+                  <img
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&amp;theme=light&amp;t=1789911020614"
+                    alt="Deck Divider - Track your Pokémon cards, slabs, and decks in one place | Product Hunt"
+                    width="250"
+                    height="54"
+                    className="h-10 w-auto object-contain"
+                  />
+                </a>
+              </div>
+            </div>
           </section>
 
           {/* Section 2: Reviews & Community Ratings */}

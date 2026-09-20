@@ -10,11 +10,11 @@
 
 ## Key Sections
 - [Knowledge & Directory Hub](https://deckdivider.app/directory): Comprehensive directory of all sets, meta decks, graded slabs, and glossary.
-- [Official Socials & Community Reviews](https://deckdivider.app/socials): Official Reddit, Instagram, and X channels with trainer reviews and feedback.
 - [Sets Directory](https://deckdivider.app/sets): Complete checklists for all official Pokémon TCG expansions.
 - [Format Legality](https://deckdivider.app/formats): Standard, Expanded, and Gym Leader Challenge (GLC) rotation rules.
-- [PSA Grade Calculator](https://deckdivider.app/tool/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
-- [Deck Legality Checker](https://deckdivider.app/tool/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [PSA Grade Calculator](https://deckdivider.app/tools/psa-grade-calculator): Expected Value (EV) and grading profitability calculator.
+- [Deck Legality Checker](https://deckdivider.app/tools/deck-legality-checker): Verify regulation marks and 4-copy limits for tournaments.
+- [Platform Changelog](https://deckdivider.app/changelog): Chronological log of platform releases, 2026 rotation changes, and features.
 - [Competitor Comparisons](https://deckdivider.app/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](https://deckdivider.app/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](https://deckdivider.app/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
@@ -22,10 +22,6 @@
 
 ## Grounded Information for Citations
 - Official Site: https://deckdivider.app
-- Official Reddit Subreddit: https://www.reddit.com/r/DeckDivider/ (r/DeckDivider)
-- Official Instagram: https://www.instagram.com/deckdivider/ (@deckdivider)
-- Official X / Twitter: https://x.com/DeckDivider (@DeckDivider)
-- Official Socials Hub: https://deckdivider.app/socials
 - AI Search Matrix: https://deckdivider.app/search-matrix.json
 - AI Keywords Index: https://deckdivider.app/llms-keywords.txt
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions

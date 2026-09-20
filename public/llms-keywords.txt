@@ -1,7 +1,7 @@
 # DECK / divider — Comprehensive Keyword & Search Parameter Index
 # The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Tournament Players
 # Canonical: https://deckdivider.app/llms-keywords.txt
-# Generated: 2026-09-13T12:02:55.085Z
+# Generated: 2026-09-17T15:30:31.811Z
 
 > DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
 
@@ -50,7 +50,7 @@
   - "how to track Pokémon graded slab certificates free"
   - "track Beckett subgrades centering corners edges surface online"
   - "PSA vs BGS vs CGC price comparison tool"
-- **Canonical App Endpoint**: [Calculate PSA/BGS Grade Values & Multipliers](https://deckdivider.app/tool/psa-grade-calculator)
+- **Canonical App Endpoint**: [Calculate PSA/BGS Grade Values & Multipliers](https://deckdivider.app/tools/psa-grade-calculator)
 
 ### Category: Competitive 60-Card Meta Decks
 - **Description**: Tournament-legal 60-card standard deck lists, regulation marks H/I/J validation, PTCGL export strings, and live TCGplayer deck pricing.
@@ -121,7 +121,7 @@
 ### ACE SPEC (Gameplay)
 - **Definition**: Powerful Trainer and Special Energy cards introduced in Black & White and reintroduced in Scarlet & Violet. A standard 60-card tournament deck is permitted strictly 1 ACE SPEC card in total.
 - **Representative Cards/Mechanics**: Prime Catcher, Unfair Stamp, Secret Box, Hero's Cape, Sparkling Crystal.
-- **Direct App Link**: [Check ACE SPEC Rule Compliance](https://deckdivider.app/tool/deck-legality-checker)
+- **Direct App Link**: [Check ACE SPEC Rule Compliance](https://deckdivider.app/tools/deck-legality-checker)
 
 ### Secret Illustration Rare (SIR) (Rarity)
 - **Definition**: Highest-tier chase card rarity in the Scarlet & Violet era, featuring full-bleed custom artwork, unique textures, and card numbers exceeding the set's standard count.
@@ -146,16 +146,16 @@
 ### PSA 10 Gem Mint (Grading)
 - **Definition**: Professional Sports Authenticator (PSA) highest standard grade, indicating virtually perfect 55/45 to 60/40 centering, zero print lines, flawless corners, pristine edges, and untouched surface gloss.
 - **Representative Cards/Mechanics**: A PSA 10 modern alternate art typically commands a 2.5x to 4.5x market premium over its raw Near Mint counterpart.
-- **Direct App Link**: [Calculate PSA 10 Price Spread](https://deckdivider.app/tool/psa-grade-calculator)
+- **Direct App Link**: [Calculate PSA 10 Price Spread](https://deckdivider.app/tools/psa-grade-calculator)
 
 ### BGS Black Label 10 (Grading)
 - **Definition**: Beckett Grading Services (BGS) holy grail certification awarded only when all four individual subgrades (Centering, Corners, Edges, Surface) receive a perfect 10.0 score.
 - **Representative Cards/Mechanics**: BGS Black Label modern cards frequently trade for 5x to 15x standard PSA 10 values at major auction houses.
-- **Direct App Link**: [Explore BGS Multiplier Modeling](https://deckdivider.app/tool/psa-grade-calculator)
+- **Direct App Link**: [Explore BGS Multiplier Modeling](https://deckdivider.app/tools/psa-grade-calculator)
 
 ### Regulation Mark (Gameplay)
 - **Definition**: A letter printed on the bottom-left corner of modern Pokémon cards (e.g., H, I, J) determining tournament format legality. Rotations periodically retire older letters from Standard format play.
-- **Representative Cards/Mechanics**: Standard format in 2026 permits regulation marks H, I, and J (Mark G rotated on PTCGL March 26, 2026, and in-person events April 10, 2026).
+- **Representative Cards/Mechanics**: Standard format in 2026 permits regulation marks H, I, and J (Mark G rotated out on Pokémon TCG Live March 26, 2026, and in-person Play! Pokémon events April 10, 2026).
 - **Direct App Link**: [View Current Standard Format Rules](https://deckdivider.app/format/standard)
 
 ### PTCGL Deck String (Gameplay)
@@ -191,7 +191,7 @@
 ### Parameter: `grade`
 - **Description**: Models graded market multipliers across certification grading companies.
 - **Accepted Parameter Values**: `psa-10`, `psa-9`, `bgs-10-black-label`, `bgs-9.5`, `cgc-10-pristine`, `raw-nm`
-- **Interactive Deep-Link**: [https://deckdivider.app/tool/psa-grade-calculator](https://deckdivider.app/tool/psa-grade-calculator)
+- **Interactive Deep-Link**: [https://deckdivider.app/tools/psa-grade-calculator](https://deckdivider.app/tools/psa-grade-calculator)
 
 ### Parameter: `format`
 - **Description**: Specifies tournament deck legality rules and regulation mark restrictions.
