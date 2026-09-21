@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import sharp from 'sharp';
 
 // Build multi-resolution standard Windows/Web ICO format buffer
 function createIcoBuffer(pngBuffers: { width: number; height: number; buffer: Buffer }[]): Buffer {
@@ -39,8 +38,6 @@ async function regenerateAllIcons() {
     throw new Error('Canonical public/logo.png not found');
   }
 
-  console.log('[IconGenerator] Loading master high-res logo from:', logoPath);
-
   // Target sizes for crisp rendering across all engines (ChatGPT, Grok, Apple, Google, Chrome)
   const targets = [
     { name: 'favicon-16x16.png', size: 16, paddingRatio: 0.05 },
@@ -57,6 +54,59 @@ async function regenerateAllIcons() {
   const publicDir = path.resolve(process.cwd(), 'public');
   const distDir = path.resolve(process.cwd(), 'dist');
 
+  // Check if we should skip sharp generation (Cloudflare Pages or explicitly requested, or if sharp can't be imported)
+  const isCloudflarePages = process.env.CF_PAGES === '1' || process.env.CF_PAGES_COMMIT_SHA;
+  let shouldSkipSharp = isCloudflarePages || process.env.SKIP_SHARP === 'true';
+
+  let sharp: any = null;
+  if (!shouldSkipSharp) {
+    try {
+      sharp = (await import('sharp')).default;
+    } catch (e) {
+      console.warn('[IconGenerator] sharp failed to load, falling back to copy mode.', e);
+      shouldSkipSharp = true;
+    }
+  }
+
+  if (shouldSkipSharp) {
+    console.log('[IconGenerator] Using pre-generated assets (Cloudflare CI / copy-only fallback).');
+    
+    // Copy all target icon files to dist if it exists
+    if (fs.existsSync(distDir)) {
+      for (const target of targets) {
+        const src = path.join(publicDir, target.name);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, path.join(distDir, target.name));
+        }
+      }
+      
+      const icoSrc = path.join(publicDir, 'favicon.ico');
+      if (fs.existsSync(icoSrc)) {
+        fs.copyFileSync(icoSrc, path.join(distDir, 'favicon.ico'));
+      }
+
+      if (fs.existsSync(logoPath)) {
+        fs.copyFileSync(logoPath, path.join(distDir, 'logo.png'));
+      }
+    }
+
+    // Ensure root favicon.ico and logo.png exist
+    const rootIco = path.resolve(process.cwd(), 'favicon.ico');
+    const rootLogo = path.resolve(process.cwd(), 'logo.png');
+    const publicIco = path.join(publicDir, 'favicon.ico');
+
+    if (fs.existsSync(publicIco) && !fs.existsSync(rootIco)) {
+      fs.copyFileSync(publicIco, rootIco);
+    }
+    if (fs.existsSync(logoPath) && !fs.existsSync(rootLogo)) {
+      fs.copyFileSync(logoPath, rootLogo);
+    }
+
+    console.log('[IconGenerator] ✓ Synced pre-generated icons successfully.');
+    return;
+  }
+
+  console.log('[IconGenerator] Loading master high-res logo from:', logoPath);
   const icoFrames: { width: number; height: number; buffer: Buffer }[] = [];
 
   for (const target of targets) {

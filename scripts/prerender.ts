@@ -201,6 +201,11 @@ async function prerenderAllRoutes() {
     console.warn(`[Prerender] IndexNow notice: Domain must be live on https://deckdivider.app before API fully accepts submissions.`);
   }
 
+  console.log('[Prerender] ✓ Prerender pipeline completed successfully.');
+  process.exit(0);
 }
 
-prerenderAllRoutes().catch(console.error);
+prerenderAllRoutes().catch((err) => {
+  console.error('[Prerender] Fatal error:', err);
+  process.exit(1);
+});

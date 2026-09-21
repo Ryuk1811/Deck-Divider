@@ -6,6 +6,23 @@ import sharp from 'sharp';
 export async function generateOgHeroImage() {
   const width = 1200;
   const height = 630;
+  const publicDir = path.resolve(process.cwd(), 'public');
+  const distDir = path.resolve(process.cwd(), 'dist');
+  const ogHeroPublicPath = path.join(publicDir, 'og-hero.png');
+  const ogImagePublicPath = path.join(publicDir, 'og-image.png');
+
+  // Skip Puppeteer in Cloudflare Pages CI or if pre-generated assets are already present
+  const isCloudflarePages = process.env.CF_PAGES === '1' || process.env.CF_PAGES_COMMIT_SHA;
+  const shouldSkip = isCloudflarePages || process.env.SKIP_PUPPETEER === 'true' || (!process.env.FORCE_OG_GEN && fs.existsSync(ogHeroPublicPath) && fs.existsSync(ogImagePublicPath));
+
+  if (shouldSkip) {
+    console.log('[OG Generator] Using pre-generated high-fidelity Hero OG Image (Cloudflare CI / static cache).');
+    if (fs.existsSync(distDir)) {
+      if (fs.existsSync(ogHeroPublicPath)) fs.copyFileSync(ogHeroPublicPath, path.join(distDir, 'og-hero.png'));
+      if (fs.existsSync(ogImagePublicPath)) fs.copyFileSync(ogImagePublicPath, path.join(distDir, 'og-image.png'));
+    }
+    return;
+  }
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -622,12 +639,6 @@ export async function generateOgHeroImage() {
     .resize(width, height)
     .png({ compressionLevel: 9, quality: 95 })
     .toBuffer();
-
-  const publicDir = path.resolve(process.cwd(), 'public');
-  const distDir = path.resolve(process.cwd(), 'dist');
-
-  const ogHeroPublicPath = path.join(publicDir, 'og-hero.png');
-  const ogImagePublicPath = path.join(publicDir, 'og-image.png');
 
   fs.writeFileSync(ogHeroPublicPath, outputPngBuffer);
   fs.writeFileSync(ogImagePublicPath, outputPngBuffer);

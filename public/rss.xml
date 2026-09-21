@@ -5,46 +5,46 @@
     <link>https://deckdivider.app/</link>
     <description>Institutional-grade collection tracker, live TCGplayer market price comps, PSA slab cert registry, and 60-card tournament deck studio.</description>
     <language>en-US</language>
-    <lastBuildDate>Thu, 17 Sep 2026 15:30:31 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 21 Sep 2026 17:59:34 GMT</lastBuildDate>
     <atom:link href="https://deckdivider.app/feed.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Latest Expansion Catalog Sync &amp; Live Market Pricing</title>
       <link>https://deckdivider.app/sets</link>
-      <guid>https://deckdivider.app/sets?v=d79koh94</guid>
-      <pubDate>Thu, 17 Sep 2026 15:30:31 GMT</pubDate>
+      <guid>https://deckdivider.app/sets?v=x4moinl6</guid>
+      <pubDate>Mon, 21 Sep 2026 17:59:34 GMT</pubDate>
       <description>Updated set checklists, master set progress counts, and live TCGplayer market valuation comps across all official Pokémon TCG expansions.</description>
     </item>
     
     <item>
       <title>Tournament Meta Decks: Standard Rotation Updates</title>
       <link>https://deckdivider.app/deck/charizard-ex</link>
-      <guid>https://deckdivider.app/deck/charizard-ex?v=d79koh94</guid>
-      <pubDate>Thu, 17 Sep 2026 15:30:31 GMT</pubDate>
+      <guid>https://deckdivider.app/deck/charizard-ex?v=x4moinl6</guid>
+      <pubDate>Mon, 21 Sep 2026 17:59:34 GMT</pubDate>
       <description>Standard format tournament decklists updated with 2026 regulation marks (H, I, J), archetype costs, and 1-click PTCGL export strings.</description>
     </item>
 
     <item>
       <title>PSA Grade &amp; Expected Value ROI Calculator</title>
       <link>https://deckdivider.app/tools/psa-grade-calculator</link>
-      <guid>https://deckdivider.app/tools/psa-grade-calculator?v=d79koh94</guid>
-      <pubDate>Thu, 17 Sep 2026 15:30:31 GMT</pubDate>
+      <guid>https://deckdivider.app/tools/psa-grade-calculator?v=x4moinl6</guid>
+      <pubDate>Mon, 21 Sep 2026 17:59:34 GMT</pubDate>
       <description>Calculate expected submission value, PSA 10 vs 9 price spread, and profit margin before submitting raw cards to grading companies.</description>
     </item>
 
     <item>
       <title>Pokémon TCG Deck Legality &amp; Regulation Mark Checker (2026)</title>
       <link>https://deckdivider.app/tools/deck-legality-checker</link>
-      <guid>https://deckdivider.app/tools/deck-legality-checker?v=d79koh94</guid>
-      <pubDate>Thu, 17 Sep 2026 15:30:31 GMT</pubDate>
+      <guid>https://deckdivider.app/tools/deck-legality-checker?v=x4moinl6</guid>
+      <pubDate>Mon, 21 Sep 2026 17:59:34 GMT</pubDate>
       <description>Verify 2026 Standard tournament legality with active regulation marks (H, I, J; G rotated out), ACE SPEC restrictions, and Radiant limits.</description>
     </item>
 
     <item>
       <title>Platform Changelog &amp; Architecture Updates</title>
       <link>https://deckdivider.app/changelog</link>
-      <guid>https://deckdivider.app/changelog?v=d79koh94</guid>
-      <pubDate>Thu, 17 Sep 2026 15:30:31 GMT</pubDate>
+      <guid>https://deckdivider.app/changelog?v=x4moinl6</guid>
+      <pubDate>Mon, 21 Sep 2026 17:59:34 GMT</pubDate>
       <description>Chronological release notes, 2026 format updates, and multi-device cloud storage synchronization upgrades.</description>
     </item>
   </channel>

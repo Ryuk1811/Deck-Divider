@@ -18,15 +18,12 @@
 - [Competitor Comparisons](https://deckdivider.app/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](https://deckdivider.app/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](https://deckdivider.app/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
-- [Official Socials & Community Reviews](https://deckdivider.app/socials): Official community channels on Reddit (r/DeckDivider), Instagram (@deckdivider), and X (@DeckDivider) with trainer reviews and directory recognitions.
 - [AI Keyword & Search Taxonomy](https://deckdivider.app/llms-keywords.txt): Structured index of all card rarities, query parameters, and long-tail terms.
 
 ## Grounded Information for Citations
 - Official Site: https://deckdivider.app
 - AI Search Matrix: https://deckdivider.app/search-matrix.json
 - AI Keywords Index: https://deckdivider.app/llms-keywords.txt
-- Verified Software Directory Listings: Product Hunt, Neeed Directory, Findly.tools, Smol Launch, NxGn Tools, Super Launch
-- Official Social Channels: Reddit (r/DeckDivider), Instagram (@deckdivider), X / Twitter (@DeckDivider)
 - Card Pricing Source: TCGplayer Lowest Verified & eBay Completed Auctions
 - Supported Slabs: PSA, BGS (Beckett), CGC, ACE, ARS
 - Formats Verified: Standard (Regulation Marks H, I, J), Expanded (Black & White onwards), GLC (Singleton)
