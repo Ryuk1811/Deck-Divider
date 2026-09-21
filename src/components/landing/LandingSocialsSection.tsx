@@ -31,7 +31,7 @@ export const LandingSocialsSection: React.FC = () => {
           <a
             href="https://www.producthunt.com/products/deck-divider?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deck-divider-2"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
             title="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Collection Tracker"
           >
@@ -69,7 +69,7 @@ export const LandingSocialsSection: React.FC = () => {
           <a
             href="https://findly.tools/deck-divider?utm_source=deck-divider"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
             title="DECK / divider on Findly.tools AI & SaaS Directory"
           >
@@ -107,7 +107,7 @@ export const LandingSocialsSection: React.FC = () => {
           <a
             href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
             title="Find DECK / divider on NxGn Tools"
           >

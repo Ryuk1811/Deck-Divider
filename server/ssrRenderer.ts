@@ -60,7 +60,36 @@ export function isBot(userAgent: string = ''): boolean {
     'perplexitybot',
     'bytespider',
     'cohere-ai',
-    'ia_archiver'
+    'ia_archiver',
+    'producthunt',
+    'neeed',
+    'findly',
+    'smollaunch',
+    'nxgntools',
+    'super-launch',
+    'superlaunch',
+    'curl',
+    'wget',
+    'python-requests',
+    'python',
+    'axios',
+    'node-fetch',
+    'undici',
+    'got',
+    'needle',
+    'urllib',
+    'go-http-client',
+    'postman',
+    'httpie',
+    'linkchecker',
+    'sitecheck',
+    'crawler',
+    'spider',
+    'scraper',
+    'bot',
+    'checker',
+    'verifier',
+    'validator'
   ];
   return botPatterns.some(bot => ua.includes(bot));
 }
@@ -1778,18 +1807,51 @@ export async function renderSsrRoute(
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;margin-bottom:32px;">
-        <a href="https://www.reddit.com/r/DeckDivider/" target="_blank" rel="noopener noreferrer" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
+        <a href="https://www.reddit.com/r/DeckDivider/" target="_blank" rel="noopener" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
           <strong style="color:#DC143C;font-size:14px;display:block;margin-bottom:4px;">r/DeckDivider (Reddit)</strong>
           <span style="color:#64748B;font-size:12px;">Community discussions, deck tier lists, and feature requests.</span>
         </a>
-        <a href="https://www.instagram.com/deckdivider/" target="_blank" rel="noopener noreferrer" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
+        <a href="https://www.instagram.com/deckdivider/" target="_blank" rel="noopener" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
           <strong style="color:#DC143C;font-size:14px;display:block;margin-bottom:4px;">@deckdivider (Instagram)</strong>
           <span style="color:#64748B;font-size:12px;">Grail slab showcases, card spotlight guides, and set checklists.</span>
         </a>
-        <a href="https://x.com/DeckDivider" target="_blank" rel="noopener noreferrer" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
+        <a href="https://x.com/DeckDivider" target="_blank" rel="noopener" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-decoration:none;color:#0F172A;display:block;">
           <strong style="color:#DC143C;font-size:14px;display:block;margin-bottom:4px;">@DeckDivider (X / Twitter)</strong>
           <span style="color:#64748B;font-size:12px;">Live update release notes, rotation announcements, and market alerts.</span>
         </a>
+      </div>
+
+      <div style="border-top:1px solid #E2E8F0;padding-top:28px;margin-bottom:28px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#DC143C;"></span>
+          <span style="color:#64748B;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Featured In &amp; Verified Directory Badges</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;align-items:center;">
+          <!-- 1. Product Hunt -->
+          <a href="https://www.producthunt.com/products/deck-divider?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deck-divider-2" target="_blank" rel="noopener" title="DECK / divider on Product Hunt" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&theme=light&t=1789911020614" alt="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" width="250" height="54" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 2. Neeed Directory -->
+          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 3. Findly.tools -->
+          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 4. Smol Launch -->
+          <a href="https://smollaunch.com" target="_blank" rel="noopener" title="DECK / divider on Smol Launch" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://smollaunch.com/badges/featured.svg" alt="DECK / divider Featured Product on Smol Launch" width="250" height="60" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 5. NxGn Tools -->
+          <a href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="Find DECK / divider on NxGn Tools" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON" alt="Find DECK / divider on NxGn Tools Next-Gen Directory" width="160" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 6. Super Launch -->
+          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+        </div>
       </div>
     `;
 
@@ -3175,7 +3237,43 @@ export async function renderSsrRoute(
     </section>
   </main>
 
-      <section style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:48px 20px;margin-top:48px;">
+    <!-- Featured Directory Badges & Verified Dofollow Links -->
+    <section id="featured-badges" style="background:#F8FAFC;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;padding:36px 20px;margin-top:40px;">
+      <div style="max-width:1100px;margin:0 auto;text-align:center;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#DC143C;"></span>
+          <span style="color:#64748B;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Featured In &amp; Verified Directory Badges</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:20px;align-items:center;justify-items:center;">
+          <!-- 1. Product Hunt -->
+          <a href="https://www.producthunt.com/products/deck-divider?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deck-divider-2" target="_blank" rel="noopener" title="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&theme=light&t=1789911020614" alt="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" width="250" height="54" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 2. Neeed Directory -->
+          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory — Verified Pokémon TCG Software" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 3. Findly.tools -->
+          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools — Verified TCG Deck Studio" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 4. Smol Launch -->
+          <a href="https://smollaunch.com" target="_blank" rel="noopener" title="DECK / divider Featured Product on Smol Launch" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://smollaunch.com/badges/featured.svg" alt="DECK / divider Featured Product on Smol Launch" width="250" height="60" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 5. NxGn Tools -->
+          <a href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="Find DECK / divider on NxGn Tools" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON" alt="Find DECK / divider on NxGn Tools Next-Gen Directory" width="160" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 6. Super Launch -->
+          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch — Top Pokémon TCG App" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:48px 20px;margin-top:48px;">
       <div style="max-width:1100px;margin:0 auto;">
         <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Browse Pokémon TCG Set Checklists</h2>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;">
@@ -3210,6 +3308,7 @@ export async function renderSsrRoute(
         <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Collector Tools &amp; Resources</h2>
         <div style="display:flex;flex-wrap:wrap;gap:12px;color:#64748B;font-size:14px;">
           <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing &amp; Pro Vault</a> •
+          <a href="/socials" style="color:#0F172A;text-decoration:none;font-weight:600;">Community &amp; Socials</a> •
           <a href="/formats" style="color:#0F172A;text-decoration:none;font-weight:600;">Format Legality Guide</a> •
           <a href="/tools/psa-grade-calculator" style="color:#0F172A;text-decoration:none;font-weight:600;">PSA Grade Calculator</a> •
           <a href="/tools/deck-legality-checker" style="color:#0F172A;text-decoration:none;font-weight:600;">Deck Legality Checker</a> •
@@ -3227,6 +3326,7 @@ export async function renderSsrRoute(
       <a href="/" style="color:#64748B;text-decoration:none;">Pokémon TCG Tracker</a>
       <a href="/about" style="color:#64748B;text-decoration:none;">About</a>
       <a href="/pricing" style="color:#64748B;text-decoration:none;">Pricing</a>
+      <a href="/socials" style="color:#64748B;text-decoration:none;">Community &amp; Reviews</a>
       <a href="/tools/psa-grade-calculator" style="color:#64748B;text-decoration:none;">PSA Slab Calculator</a>
       <a href="/tools/deck-legality-checker" style="color:#64748B;text-decoration:none;">Deck Legality Checker</a>
       <a href="/privacy" style="color:#64748B;text-decoration:none;">Privacy Policy</a>
@@ -3267,32 +3367,29 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult, i
   const rootContent = (ssr.bodyHtml || '').trim();
 
   if (rootContent) {
-    if (isBotRequest) {
-      // For search bots (Googlebot, GoogleOther, Gemini, Bingbot, etc.), inject SSR HTML directly into <div id="root">
-      // so Google's Web Rendering Service and HTML parsers see all headings, paragraphs, and anchor links immediately.
-      const rootMarker = '<div id="root">';
-      const scriptMarker = '<script type="module"';
-      if (html.includes(rootMarker)) {
-        const rootStart = html.indexOf(rootMarker);
-        const scriptStart = html.indexOf(scriptMarker, rootStart);
-        if (scriptStart !== -1) {
-          const before = html.substring(0, rootStart);
-          const after = html.substring(scriptStart);
-          html = `${before}<div id="root">\n${rootContent}\n    </div>\n    ${after}`;
-        } else {
-          html = html.replace(/<div id="root">[\s\S]*?<\/body>/i, `<div id="root">\n${rootContent}\n    </div>\n  </body>`);
-        }
+    // Inject SSR HTML directly into <div id="root"> so every verification crawler, bot,
+    // scraper, and human visitor receives full semantic HTML with complete dofollow anchors immediately.
+    const rootMarker = '<div id="root">';
+    const scriptMarker = '<script type="module"';
+    if (html.includes(rootMarker)) {
+      const rootStart = html.indexOf(rootMarker);
+      const scriptStart = html.indexOf(scriptMarker, rootStart);
+      if (scriptStart !== -1) {
+        const before = html.substring(0, rootStart);
+        const after = html.substring(scriptStart);
+        html = `${before}<div id="root">\n${rootContent}\n    </div>\n    ${after}`;
+      } else {
+        html = html.replace(/<div id="root">[\s\S]*?<\/body>/i, `<div id="root">\n${rootContent}\n    </div>\n  </body>`);
       }
-    } else {
-      // For regular human browsers, preserve the sleek spinner inside <div id="root">
-      // and provide the semantic content inside <noscript> as an accessible fallback.
-      if (!html.includes('id="ssr-crawler-fallback"')) {
-        const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
-        if (html.includes('</body>')) {
-          html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
-        } else {
-          html += noscriptBlock;
-        }
+    }
+
+    // Also include an accessible noscript fallback block
+    if (!html.includes('id="ssr-crawler-fallback"')) {
+      const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
+      if (html.includes('</body>')) {
+        html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
+      } else {
+        html += noscriptBlock;
       }
     }
   }

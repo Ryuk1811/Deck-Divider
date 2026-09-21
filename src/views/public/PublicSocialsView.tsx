@@ -566,7 +566,7 @@ export const PublicSocialsView: React.FC = () => {
                 <a
                   href="https://www.producthunt.com/products/deck-divider?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deck-divider-2"
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
                   title="Deck Divider on Product Hunt"
                 >
@@ -604,7 +604,7 @@ export const PublicSocialsView: React.FC = () => {
                 <a
                   href="https://findly.tools/deck-divider?utm_source=deck-divider"
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
                   title="Deck Divider on Findly.tools"
                 >
