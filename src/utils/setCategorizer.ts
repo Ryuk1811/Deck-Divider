@@ -5,6 +5,10 @@ import { CardSet } from '../types';
  */
 export const DEFAULT_SERIES_CATEGORIES = [
   'All',
+  '30th Celebrations',
+  'Mega Evolution Series',
+  'Legends: Z-A',
+  'Pokémon TCG Pocket',
   'Scarlet & Violet',
   'Sword & Shield',
   'Sun & Moon',
@@ -25,6 +29,11 @@ export const DEFAULT_SERIES_CATEGORIES = [
  * Standard known series priority weights (lower = newer/higher priority).
  */
 const KNOWN_SERIES_WEIGHTS: Record<string, number> = {
+  '30th Celebrations': 2,
+  '30th Celebration': 2,
+  'Mega Evolution Series': 4,
+  'Legends: Z-A': 6,
+  'Pokémon TCG Pocket': 8,
   'Scarlet & Violet': 10,
   'Sword & Shield': 20,
   'Sun & Moon': 30,
@@ -54,6 +63,10 @@ function cleanSeriesString(rawSeries: string): string {
   }
 
   // Canonical remapping for known variants from APIs
+  if (lower.includes('30th') || lower.includes('30th celebration') || lower.includes('30th anniversary')) return '30th Celebrations';
+  if (lower.includes('mega') || lower.startsWith('me')) return 'Mega Evolution Series';
+  if (lower.includes('pocket') || lower === 'tcgp' || lower === 'b1' || lower === 'b2') return 'Pokémon TCG Pocket';
+  if (lower.includes('legends: z-a') || lower.includes('legends z-a') || lower === 'za' || lower === 'laz') return 'Legends: Z-A';
   if (lower.includes('scarlet') || lower.includes('violet') || lower === 'sv') return 'Scarlet & Violet';
   if (lower.includes('sword') || lower.includes('shield') || lower === 'swsh') return 'Sword & Shield';
   if (lower.includes('sun') || lower.includes('moon') || lower === 'sm') return 'Sun & Moon';
@@ -81,6 +94,55 @@ export function normalizeSeries(set: any): string {
 
   const idLower = String(set.id || '').toLowerCase();
   const nameLower = String(set.name || '').toLowerCase();
+
+  // 0. 30th Anniversary & Celebrations sets (Latest!)
+  if (
+    idLower === '30th' ||
+    idLower === '30th-c' ||
+    idLower.startsWith('30th') ||
+    nameLower.includes('30th celebration') ||
+    nameLower.includes('30th classic') ||
+    nameLower.includes('30th anniversary')
+  ) {
+    return '30th Celebrations';
+  }
+
+  // Mega Evolution Series
+  if (
+    idLower.startsWith('me0') ||
+    idLower.startsWith('me') ||
+    nameLower.includes('mega evolution') ||
+    nameLower.includes('phantasmal flames') ||
+    nameLower.includes('ascended heroes') ||
+    nameLower.includes('perfect order') ||
+    nameLower.includes('chaos rising') ||
+    nameLower.includes('pitch black')
+  ) {
+    return 'Mega Evolution Series';
+  }
+
+  // Pokémon TCG Pocket
+  if (
+    idLower.startsWith('b1') ||
+    idLower.startsWith('b2') ||
+    idLower.startsWith('tcgp') ||
+    nameLower.includes('genetic apex') ||
+    nameLower.includes('mythical island') ||
+    nameLower.includes('space-time smackdown') ||
+    nameLower.includes('triumphant light')
+  ) {
+    return 'Pokémon TCG Pocket';
+  }
+
+  // Legends: Z-A
+  if (
+    idLower.startsWith('za') ||
+    idLower.startsWith('laz') ||
+    nameLower.includes('legends: z-a') ||
+    nameLower.includes('legends za')
+  ) {
+    return 'Legends: Z-A';
+  }
 
   // 1. Check if the set object explicitly brings a valid series field from the API
   const rawApiSeries =
@@ -302,7 +364,19 @@ export function normalizeSetName(set: any): string {
   const id = String(set.id || '').toLowerCase();
   const rawName = String(set.name || '').trim();
 
-  // Known set name cleanups for base sets
+  // Known set name cleanups for base sets and new expansions
+  if (id === '30th') return '30th Celebration';
+  if (id === '30th-c') return '30th Classic Collection';
+  if (id === 'me01') return 'Mega Evolution';
+  if (id === 'me02') return 'Phantasmal Flames';
+  if (id === 'me02.5') return 'Ascended Heroes';
+  if (id === 'me03') return 'Perfect Order';
+  if (id === 'me04') return 'Chaos Rising';
+  if (id === 'me05') return 'Pitch Black';
+  if (id === 'b1') return 'Genetic Apex';
+  if (id === 'b1a') return 'Mythical Island';
+  if (id === 'b2') return 'Space-Time Smackdown';
+  if (id === 'b2a') return 'Triumphant Light';
   if (id === 'sv1' || id === 'sv01') return 'Scarlet & Violet Base';
   if (id === 'swsh1' || id === 'swsh01') return 'Sword & Shield Base';
   if (id === 'sm1' || id === 'sm01') return 'Sun & Moon Base';
@@ -339,6 +413,21 @@ export function normalizeSetName(set: any): string {
  * Known canonical release dates for major sets (used when API omits releaseDate)
  */
 export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
+  // 30th Anniversary & Celebrations
+  '30th': '2026-02-27',
+  '30th-c': '2026-02-27',
+  // Mega Evolution Series
+  'me01': '2025-09-19',
+  'me02': '2025-11-14',
+  'me02.5': '2026-01-23',
+  'me03': '2026-03-27',
+  'me04': '2026-05-22',
+  'me05': '2026-07-24',
+  // Pokémon TCG Pocket
+  'b1': '2024-10-30',
+  'b1a': '2024-12-16',
+  'b2': '2025-01-30',
+  'b2a': '2025-02-28',
   // Scarlet & Violet
   'sv01': '2023-03-31',
   'sv02': '2023-06-09',
@@ -490,6 +579,12 @@ export function getSetOrderWeight(set: any): number {
 
   // Known hardcoded sequence weights (ensures 1st set introduced in expansion is #1)
   const knownSeq: Record<string, number> = {
+    // 30th Celebrations
+    '30th': 1, '30th-c': 2,
+    // Mega Evolution
+    'me01': 1, 'me02': 2, 'me02.5': 3, 'me03': 4, 'me04': 5, 'me05': 6,
+    // Pokémon TCG Pocket
+    'b1': 1, 'b1a': 2, 'b2': 3, 'b2a': 4,
     // Base
     'base1': 1, 'base2': 2, 'base3': 3, 'base4': 4, 'base5': 5, 'gym1': 6, 'gym2': 7, 'basep': 990,
     // Neo

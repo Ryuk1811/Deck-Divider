@@ -4,6 +4,45 @@ import { renderDirectoryPage } from './routes/directoryRenderer.js';
 
 export const DEFAULT_OG_IMAGE = `https://deckdivider.app/og-image.png?v=${BUILD_HASH}`;
 
+const STANDARD_BRAND = {
+  '@type': 'Brand',
+  name: 'DECK / divider'
+};
+
+const STANDARD_SHIPPING_DETAILS = {
+  '@type': 'OfferShippingDetails',
+  shippingRate: {
+    '@type': 'MonetaryAmount',
+    value: '0.00',
+    currency: 'USD'
+  },
+  shippingDestination: {
+    '@type': 'DefinedRegion',
+    addressCountry: 'US'
+  },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    handlingTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 0,
+      unitCode: 'DAY'
+    },
+    transitTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 0,
+      unitCode: 'DAY'
+    }
+  }
+};
+
+const STANDARD_MERCHANT_RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'US',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+};
+
 export interface RenderResult {
   title: string;
   metaTags: string;
@@ -1215,12 +1254,20 @@ export async function renderSsrRoute(
             name: pageTitle,
             description: pageDesc,
             url: canonicalUrl,
+            image: DEFAULT_OG_IMAGE,
+            brand: STANDARD_BRAND,
+            sku: 'DD-PSA-CALC',
             applicationCategory: 'FinanceApplication',
             operatingSystem: 'All',
             offers: {
               '@type': 'Offer',
-              price: '0',
-              priceCurrency: 'USD'
+              price: '0.00',
+              priceCurrency: 'USD',
+              availability: 'https://schema.org/InStock',
+              url: canonicalUrl,
+              priceValidUntil: '2027-12-31',
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
             },
             featureList: [
               'Expected Value (EV) calculation modeling PSA 10, 9, and 8 probabilities',
@@ -1426,12 +1473,20 @@ export async function renderSsrRoute(
             name: pageTitle,
             description: pageDesc,
             url: canonicalUrl,
+            image: DEFAULT_OG_IMAGE,
+            brand: STANDARD_BRAND,
+            sku: 'DD-LEGALITY-CHECKER',
             applicationCategory: 'UtilitiesApplication',
             operatingSystem: 'All',
             offers: {
               '@type': 'Offer',
-              price: '0',
-              priceCurrency: 'USD'
+              price: '0.00',
+              priceCurrency: 'USD',
+              availability: 'https://schema.org/InStock',
+              url: canonicalUrl,
+              priceValidUntil: '2027-12-31',
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
             },
             featureList: [
               'Official 2026 Standard regulation mark validator (H, I, J legal; G rotated)',
@@ -1759,8 +1814,22 @@ export async function renderSsrRoute(
           '@type': 'SoftwareApplication',
           '@id': `${canonicalOrigin}/#software`,
           name: 'DECK / divider',
+          url: canonicalOrigin,
+          image: DEFAULT_OG_IMAGE,
+          brand: STANDARD_BRAND,
+          sku: 'DD-COMMUNITY-2026',
           operatingSystem: 'All (Web, iOS, Android, PWA)',
           applicationCategory: 'UtilitiesApplication, EntertainmentApplication',
+          offers: {
+            '@type': 'Offer',
+            price: '0.00',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+            url: `${canonicalOrigin}/pricing`,
+            priceValidUntil: '2027-12-31',
+            shippingDetails: STANDARD_SHIPPING_DETAILS,
+            hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+          },
           aggregateRating: {
             '@type': 'AggregateRating',
             ratingValue: '4.7',
@@ -2312,6 +2381,10 @@ export async function renderSsrRoute(
         {
           '@type': 'SoftwareApplication',
           name: 'DECK / divider',
+          url: canonicalUrl,
+          image: DEFAULT_OG_IMAGE,
+          brand: STANDARD_BRAND,
+          sku: 'DD-MEMBERSHIP-TIERS',
           applicationCategory: 'UtilityApplication, EntertainmentApplication',
           operatingSystem: 'Web, iOS, Android',
           offers: {
@@ -2320,6 +2393,11 @@ export async function renderSsrRoute(
             lowPrice: '0',
             highPrice: '44',
             offerCount: 5,
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl,
+            priceValidUntil: '2027-12-31',
+            shippingDetails: STANDARD_SHIPPING_DETAILS,
+            hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
             offers: [
               {
                 '@type': 'Offer',
@@ -2327,6 +2405,11 @@ export async function renderSsrRoute(
                 price: '0',
                 priceCurrency: 'USD',
                 description: 'Essential collection tracking and basic deckbuilder.',
+                availability: 'https://schema.org/InStock',
+                url: canonicalUrl,
+                priceValidUntil: '2027-12-31',
+                shippingDetails: STANDARD_SHIPPING_DETAILS,
+                hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
               },
               {
                 '@type': 'Offer',
@@ -2334,6 +2417,11 @@ export async function renderSsrRoute(
                 price: '11',
                 priceCurrency: 'USD',
                 description: 'For active players building competitive decks and logging grades.',
+                availability: 'https://schema.org/InStock',
+                url: canonicalUrl,
+                priceValidUntil: '2027-12-31',
+                shippingDetails: STANDARD_SHIPPING_DETAILS,
+                hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
               },
               {
                 '@type': 'Offer',
@@ -2341,6 +2429,11 @@ export async function renderSsrRoute(
                 price: '22',
                 priceCurrency: 'USD',
                 description: 'Expanded capacity for serious binder completists and public sharing.',
+                availability: 'https://schema.org/InStock',
+                url: canonicalUrl,
+                priceValidUntil: '2027-12-31',
+                shippingDetails: STANDARD_SHIPPING_DETAILS,
+                hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
               },
               {
                 '@type': 'Offer',
@@ -2348,6 +2441,11 @@ export async function renderSsrRoute(
                 price: '33',
                 priceCurrency: 'USD',
                 description: 'Championship 60-card tournament decks, sealed vault, and alert tools.',
+                availability: 'https://schema.org/InStock',
+                url: canonicalUrl,
+                priceValidUntil: '2027-12-31',
+                shippingDetails: STANDARD_SHIPPING_DETAILS,
+                hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
               },
               {
                 '@type': 'Offer',
@@ -2355,6 +2453,11 @@ export async function renderSsrRoute(
                 price: '44',
                 priceCurrency: 'USD',
                 description: 'Institutional-grade high-net-worth portfolio vault with unlimited headroom.',
+                availability: 'https://schema.org/InStock',
+                url: canonicalUrl,
+                priceValidUntil: '2027-12-31',
+                shippingDetails: STANDARD_SHIPPING_DETAILS,
+                hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
               },
             ],
           },
@@ -2930,6 +3033,8 @@ export async function renderSsrRoute(
         name: 'DECK / divider',
         url: 'https://deckdivider.app',
         image: 'https://deckdivider.app/og-image.png?v=2',
+        brand: STANDARD_BRAND,
+        sku: 'DD-SOFTWARE-2026',
         applicationCategory: 'UtilityApplication, EntertainmentApplication',
         operatingSystem: 'Web, iOS, Android',
         description: pageDesc,
@@ -2942,6 +3047,11 @@ export async function renderSsrRoute(
           lowPrice: '0',
           highPrice: '44',
           offerCount: 5,
+          availability: 'https://schema.org/InStock',
+          url: 'https://deckdivider.app/pricing',
+          priceValidUntil: '2027-12-31',
+          shippingDetails: STANDARD_SHIPPING_DETAILS,
+          hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
         },
         aggregateRating: {
           '@type': 'AggregateRating',

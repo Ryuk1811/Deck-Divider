@@ -11,6 +11,7 @@ import {
 } from './indexedDB';
 import { CardSet, PokemonCard, EnergyType } from '../types';
 import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
+import { addDynamicCardsToSearchEngine, TCGdexCard } from './searchEngine';
 
 export interface SyncProgressState {
   isSyncing: boolean;
@@ -37,17 +38,21 @@ function notifySyncListeners(state: SyncProgressState) {
 // Helper to format image URLs
 function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): string {
   if (!imageStr) return 'https://images.pokemontcg.io/cardback.png';
-  if (imageStr.includes('pokemontcg.io')) {
-    if (quality === 'high' && !imageStr.includes('_hires.png') && imageStr.endsWith('.png')) {
-      return imageStr.replace('.png', '_hires.png');
-    }
-    if (quality === 'low' && imageStr.includes('_hires.png')) {
-      return imageStr.replace('_hires.png', '.png');
-    }
-    return imageStr;
+  let url = String(imageStr).trim();
+  if (!url.startsWith('http') && url.startsWith('/')) {
+    url = `https://assets.tcgdex.net${url}`;
   }
-  if (imageStr.includes('/high.') || imageStr.includes('/low.')) return imageStr;
-  const clean = imageStr.replace(/\.(png|webp|jpg)$/i, '');
+  if (url.includes('pokemontcg.io')) {
+    if (quality === 'high' && !url.includes('_hires.png') && url.endsWith('.png')) {
+      return url.replace('.png', '_hires.png');
+    }
+    if (quality === 'low' && url.includes('_hires.png')) {
+      return url.replace('_hires.png', '.png');
+    }
+    return url;
+  }
+  if (url.includes('/high.') || url.includes('/low.')) return url;
+  const clean = url.replace(/\.(png|webp|jpg|avif)$/i, '');
   return `${clean}/${quality}.webp`;
 }
 
@@ -142,15 +147,17 @@ export function mapTCGdexCard(card: any): PokemonCard {
 }
 
 // 1. Get Expansions (IndexedDB -> Server Proxy API -> TCGdex Direct )
-export async function getExpansionsCatalog(): Promise<CardSet[]> {
-  const cached = await idbGetAllExpansions();
-  if (cached && cached.length > 10) {
-    refreshExpansionsInBackground();
-    return sortSetsChronologically(cached.map(normalizeSet));
+export async function getExpansionsCatalog(forceRefresh: boolean = false): Promise<CardSet[]> {
+  if (!forceRefresh) {
+    const cached = await idbGetAllExpansions();
+    if (cached && cached.length > 10) {
+      refreshExpansionsInBackground();
+      return sortSetsChronologically(cached.map(normalizeSet));
+    }
   }
 
   try {
-    const res = await fetch('/api/tcg/expansions');
+    const res = await fetch(`/api/tcg/expansions${forceRefresh ? '?refresh=true' : ''}`);
     if (res.ok) {
       const rawSets = await res.json();
       if (Array.isArray(rawSets) && rawSets.length > 0) {
@@ -171,7 +178,12 @@ export async function getExpansionsCatalog(): Promise<CardSet[]> {
     }
   } catch (err) {}
 
-  return [];
+  const fallbackCached = await idbGetAllExpansions();
+  return fallbackCached ? sortSetsChronologically(fallbackCached.map(normalizeSet)) : [];
+}
+
+export async function forceRefreshExpansions(): Promise<CardSet[]> {
+  return getExpansionsCatalog(true);
 }
 
 async function refreshExpansionsInBackground() {
@@ -180,8 +192,12 @@ async function refreshExpansionsInBackground() {
     if (res.ok) {
       const rawSets = await res.json();
       if (Array.isArray(rawSets) && rawSets.length > 0) {
-        const mappedSets = rawSets.map(mapTCGdexSet);
-        await idbSaveExpansions(mappedSets);
+        const mappedSets = sortSetsChronologically(rawSets.map(mapTCGdexSet));
+        const currentCount = await idbGetExpansionCount();
+        if (mappedSets.length !== currentCount) {
+          await idbSaveExpansions(mappedSets);
+          window.dispatchEvent(new CustomEvent('deckdivider:catalog-updated', { detail: { sets: mappedSets } }));
+        }
       }
     }
   } catch (e) {}
@@ -189,13 +205,16 @@ async function refreshExpansionsInBackground() {
 
 // 2. Get Cards By Set (IndexedDB -> Server Proxy -> TCGdex Direct -> Fallback)
 export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]> {
-  const cachedCards = await idbGetCardsBySet(setId);
+  const cleanId = String(setId || '').trim();
+  if (!cleanId) return [];
+
+  const cachedCards = await idbGetCardsBySet(cleanId);
   if (cachedCards && cachedCards.length > 0) {
     return cachedCards;
   }
 
   try {
-    const proxyRes = await fetch(`/api/tcg/sets/${encodeURIComponent(setId)}`);
+    const proxyRes = await fetch(`/api/tcg/sets/${encodeURIComponent(cleanId)}`);
     if (proxyRes.ok) {
       const setDetail = await proxyRes.json();
       if (setDetail && Array.isArray(setDetail.cards)) {
@@ -203,7 +222,7 @@ export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]
           mapTCGdexCard({
             ...c,
             set: {
-              id: setDetail.id,
+              id: setDetail.id || cleanId,
               name: setDetail.name,
               series: setDetail.series,
               cardCount: setDetail.cardCount,
@@ -213,13 +232,34 @@ export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]
           })
         );
         await idbSaveCards(mappedCards);
+        addDynamicCardsToSearchEngine(
+          mappedCards.map((c) => ({
+            id: c.id,
+            localId: c.number,
+            name: c.name,
+            hp: c.hp,
+            types: c.types as string[],
+            rarity: c.rarity,
+            illustrator: c.artist,
+            image: c.images?.small || c.images?.large,
+            category: c.category,
+            stage: c.stage,
+            set: {
+              id: c.set.id,
+              name: c.set.name,
+              logo: c.set.logoUrl,
+              symbol: c.set.symbolUrl,
+              cardCount: { official: c.set.printedTotal || 0, total: c.set.total || 0 },
+            },
+          }))
+        );
         return mappedCards;
       }
     }
   } catch (e) {}
 
   try {
-    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`);
+    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(cleanId)}`);
     if (res.ok) {
       const setDetail = await res.json();
       if (setDetail && Array.isArray(setDetail.cards)) {
@@ -227,7 +267,7 @@ export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]
           mapTCGdexCard({
             ...c,
             set: {
-              id: setDetail.id,
+              id: setDetail.id || cleanId,
               name: setDetail.name,
               series: setDetail.series,
               cardCount: setDetail.cardCount,
@@ -237,6 +277,27 @@ export async function getCardsBySetCatalog(setId: string): Promise<PokemonCard[]
           })
         );
         await idbSaveCards(mappedCards);
+        addDynamicCardsToSearchEngine(
+          mappedCards.map((c) => ({
+            id: c.id,
+            localId: c.number,
+            name: c.name,
+            hp: c.hp,
+            types: c.types as string[],
+            rarity: c.rarity,
+            illustrator: c.artist,
+            image: c.images?.small || c.images?.large,
+            category: c.category,
+            stage: c.stage,
+            set: {
+              id: c.set.id,
+              name: c.set.name,
+              logo: c.set.logoUrl,
+              symbol: c.set.symbolUrl,
+              cardCount: { official: c.set.printedTotal || 0, total: c.set.total || 0 },
+            },
+          }))
+        );
         return mappedCards;
       }
     }
@@ -275,14 +336,39 @@ export async function getCardDetailCatalog(cardId: string): Promise<PokemonCard 
   return cached || null;
 }
 
-// 4. Background Lazy Loading Catalog Sync (Non-blocking & Loop-Free)
+// 4. Background Lazy Loading Catalog Sync & Automated Dynamic Spooling
 export async function startFullCatalogBackgroundSync() {
   const meta = await idbGetSyncMeta();
   if (meta.isSyncing) return;
 
   try {
+    const currentExpCount = await idbGetExpansionCount();
+    const currentCardCount = await idbGetCardCount();
+    await idbUpdateSyncMeta({ isSyncing: true, message: 'Syncing expansions catalog...' });
+    notifySyncListeners({
+      isSyncing: true,
+      progress: 10,
+      message: 'Syncing expansions catalog...',
+      cardCount: currentCardCount,
+      expansionCount: currentExpCount,
+    });
+
     const expansions = await getExpansionsCatalog();
     await idbSaveExpansions(expansions);
+
+    // Spool top 8 newest sets non-blockingly into local cache
+    const prioritySets = expansions.slice(0, 8);
+    for (let i = 0; i < prioritySets.length; i++) {
+      const s = prioritySets[i];
+      if (s && s.id) {
+        try {
+          const cached = await idbGetCardsBySet(s.id);
+          if (!cached || cached.length === 0) {
+            await getCardsBySetCatalog(s.id);
+          }
+        } catch (err) {}
+      }
+    }
 
     const expCount = await idbGetExpansionCount();
     const cardCount = await idbGetCardCount();
@@ -293,17 +379,33 @@ export async function startFullCatalogBackgroundSync() {
       lastSyncedAt: Date.now(),
       cardCount,
       expansionCount: expCount,
-      message: 'Expansion library ready',
+      message: 'Expansion library updated',
     });
 
     notifySyncListeners({
       isSyncing: false,
       progress: 100,
-      message: 'Expansion library ready',
+      message: 'Expansion library updated',
       cardCount,
       expansionCount: expCount,
     });
   } catch (err: any) {
     await idbUpdateSyncMeta({ isSyncing: false });
+    const fallbackExpCount = await idbGetExpansionCount();
+    const fallbackCardCount = await idbGetCardCount();
+    notifySyncListeners({
+      isSyncing: false,
+      progress: 100,
+      message: 'Library active',
+      cardCount: fallbackCardCount,
+      expansionCount: fallbackExpCount,
+    });
   }
+}
+
+// Client-side auto-update metronome (Polls every 15 minutes for new sets)
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    refreshExpansionsInBackground();
+  }, 15 * 60 * 1000);
 }

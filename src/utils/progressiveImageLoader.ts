@@ -25,6 +25,18 @@ let isQueueProcessing = false;
 
 // Set mappings between pokemontcg.io and tcgdex path formats
 const SET_PATH_MAPPINGS: Record<string, { tcgdexSeries?: string; tcgdexSet?: string; pokemontcgSet?: string }> = {
+  '30th': { tcgdexSeries: 'me', tcgdexSet: '30th', pokemontcgSet: '30th' },
+  '30th-c': { tcgdexSeries: 'me', tcgdexSet: '30th-c', pokemontcgSet: '30th-c' },
+  me01: { tcgdexSeries: 'me', tcgdexSet: 'me01', pokemontcgSet: 'me01' },
+  me02: { tcgdexSeries: 'me', tcgdexSet: 'me02', pokemontcgSet: 'me02' },
+  'me02.5': { tcgdexSeries: 'me', tcgdexSet: 'me02.5', pokemontcgSet: 'me02.5' },
+  me03: { tcgdexSeries: 'me', tcgdexSet: 'me03', pokemontcgSet: 'me03' },
+  me04: { tcgdexSeries: 'me', tcgdexSet: 'me04', pokemontcgSet: 'me04' },
+  me05: { tcgdexSeries: 'me', tcgdexSet: 'me05', pokemontcgSet: 'me05' },
+  b1: { tcgdexSeries: 'tcgp', tcgdexSet: 'B1', pokemontcgSet: 'b1' },
+  b1a: { tcgdexSeries: 'tcgp', tcgdexSet: 'B1a', pokemontcgSet: 'b1a' },
+  b2: { tcgdexSeries: 'tcgp', tcgdexSet: 'B2', pokemontcgSet: 'b2' },
+  b2a: { tcgdexSeries: 'tcgp', tcgdexSet: 'B2a', pokemontcgSet: 'b2a' },
   sv3pt5: { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
   'sv03.5': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
   '151': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
@@ -83,7 +95,19 @@ export function getOptimizedCardImageCandidates(
   // 1. WebP / AVIF modern compressed candidates from TCGDex CDN if set and card number exist
   if (cleanSet && paddedNum) {
     const mapping = SET_PATH_MAPPINGS[cleanSet];
-    const tSeries = mapping?.tcgdexSeries || (cleanSet.startsWith('sv') ? 'sv' : cleanSet.startsWith('swsh') ? 'swsh' : undefined);
+    const tSeries =
+      mapping?.tcgdexSeries ||
+      (cleanSet.startsWith('30th') || cleanSet.startsWith('me')
+        ? 'me'
+        : cleanSet.startsWith('b1') || cleanSet.startsWith('b2') || cleanSet.startsWith('tcgp')
+        ? 'tcgp'
+        : cleanSet.startsWith('za')
+        ? 'za'
+        : cleanSet.startsWith('sv')
+        ? 'sv'
+        : cleanSet.startsWith('swsh')
+        ? 'swsh'
+        : undefined);
     const tSet = mapping?.tcgdexSet || cleanSet;
 
     if (tSeries && tSet) {

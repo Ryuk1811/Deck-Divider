@@ -2,6 +2,47 @@
  * Centralized Schema.org Structured Data Generators for SEO, GEO, and AI Discovery
  */
 
+export const STANDARD_BRAND = {
+  '@type': 'Brand',
+  name: 'DECK / divider'
+};
+
+export const STANDARD_IMAGE = 'https://deckdivider.app/og-image.png?v=2';
+
+export const STANDARD_SHIPPING_DETAILS = {
+  '@type': 'OfferShippingDetails',
+  shippingRate: {
+    '@type': 'MonetaryAmount',
+    value: '0.00',
+    currency: 'USD'
+  },
+  shippingDestination: {
+    '@type': 'DefinedRegion',
+    addressCountry: 'US'
+  },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    handlingTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 0,
+      unitCode: 'DAY'
+    },
+    transitTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 0,
+      unitCode: 'DAY'
+    }
+  }
+};
+
+export const STANDARD_MERCHANT_RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'US',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+};
+
 export const getBaseOrganizationSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -9,6 +50,7 @@ export const getBaseOrganizationSchema = () => ({
   name: 'DECK / divider',
   url: 'https://deckdivider.app',
   logo: 'https://deckdivider.app/logo.png',
+  image: STANDARD_IMAGE,
   email: 'deckdivider@outlook.com',
   description: 'Institutional-grade Pokémon TCG portfolio tracker, graded slab vault, and tournament deck studio.',
   sameAs: [
@@ -66,10 +108,26 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
 
   if (stats && stats.total > 0) {
     schema['@graph'].push({
-      '@type': 'Product',
-      '@id': 'https://deckdivider.app/#product',
+      '@type': 'SoftwareApplication',
+      '@id': 'https://deckdivider.app/#software',
       name: 'DECK / divider',
+      url: 'https://deckdivider.app',
+      image: STANDARD_IMAGE,
+      brand: STANDARD_BRAND,
+      sku: 'DD-COMMUNITY-2026',
       description: 'Pokémon TCG card checklist, 60-card PTCGL deck builder, and slab tracker.',
+      applicationCategory: 'UtilitiesApplication, EntertainmentApplication',
+      operatingSystem: 'All (Web, iOS, Android, PWA)',
+      offers: {
+        '@type': 'Offer',
+        price: '0.00',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: 'https://deckdivider.app/pricing',
+        priceValidUntil: '2027-12-31',
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      },
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: stats.average.toFixed(1),
@@ -134,6 +192,10 @@ export const getHomepageSchema = () => ({
       '@type': 'SoftwareApplication',
       '@id': 'https://deckdivider.app/#software',
       name: 'DECK / divider',
+      url: 'https://deckdivider.app',
+      image: STANDARD_IMAGE,
+      brand: STANDARD_BRAND,
+      sku: 'DD-SOFTWARE-2026',
       operatingSystem: 'Any (Web App, PWA, iOS, Android, Desktop)',
       applicationCategory: 'FinanceApplication, UtilitiesApplication, EntertainmentApplication',
       applicationSubCategory: 'Pokémon TCG Collection Management & Deck Studio',
@@ -141,6 +203,11 @@ export const getHomepageSchema = () => ({
         '@type': 'Offer',
         price: '0.00',
         priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: 'https://deckdivider.app/pricing',
+        priceValidUntil: '2027-12-31',
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
         description: 'Free tier with unlimited local storage, master set checklists, and tournament deck builder.'
       },
       sameAs: [
@@ -240,8 +307,21 @@ export const getPsaCalculatorSchema = () => ({
       name: 'Pokémon Card PSA Grade ROI Calculator',
       description: 'Interactive Expected Value (EV) and grading profitability calculator for PSA, BGS, and CGC slabs.',
       url: 'https://deckdivider.app/tools/psa-grade-calculator',
+      image: STANDARD_IMAGE,
+      brand: STANDARD_BRAND,
+      sku: 'DD-PSA-CALC',
       applicationCategory: 'FinanceApplication',
-      operatingSystem: 'All'
+      operatingSystem: 'All',
+      offers: {
+        '@type': 'Offer',
+        price: '0.00',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: 'https://deckdivider.app/tools/psa-grade-calculator',
+        priceValidUntil: '2027-12-31',
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      }
     },
     {
       '@type': 'HowTo',
@@ -279,8 +359,21 @@ export const getDeckLegalityCheckerSchema = () => ({
   name: 'Pokémon TCG Deck Legality & Regulation Mark Checker',
   description: 'Instant 60-card tournament decklist validator for Standard rotation marks (H, I, J), Expanded card limits, and PTCGL export compatibility.',
   url: 'https://deckdivider.app/tools/deck-legality-checker',
+  image: STANDARD_IMAGE,
+  brand: STANDARD_BRAND,
+  sku: 'DD-LEGALITY-CHECKER',
   applicationCategory: 'UtilitiesApplication',
-  operatingSystem: 'All'
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0.00',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+    url: 'https://deckdivider.app/tools/deck-legality-checker',
+    priceValidUntil: '2027-12-31',
+    shippingDetails: STANDARD_SHIPPING_DETAILS,
+    hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+  }
 });
 
 export const getAppComparisonsSchema = () => ({
@@ -411,24 +504,39 @@ export const getHowItWorksSchema = () => ({
 
 export const getPricingSchema = () => ({
   '@context': 'https://schema.org',
-  '@type': 'Product',
+  '@type': 'SoftwareApplication',
   name: 'DECK / divider Membership Tiers',
   description: 'Pricing options for DECK / divider: Starter (Free forever offline), Trainer, and Champion tiers.',
   url: 'https://deckdivider.app/pricing',
+  image: STANDARD_IMAGE,
+  brand: STANDARD_BRAND,
+  sku: 'DD-MEMBERSHIP-TIERS',
+  applicationCategory: 'UtilitiesApplication, FinanceApplication',
+  operatingSystem: 'All',
   offers: [
     {
       '@type': 'Offer',
       name: 'Starter (Free)',
       price: '0.00',
       priceCurrency: 'USD',
-      description: 'Full offline binder, master set tracking, and 60-card tournament deck builder.'
+      description: 'Full offline binder, master set tracking, and 60-card tournament deck builder.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
     },
     {
       '@type': 'Offer',
       name: 'Champion (Pro)',
       price: '4.99',
       priceCurrency: 'USD',
-      description: 'Encrypted cloud sync, unlimited sealed vault, and real-time portfolio market alerts.'
+      description: 'Encrypted cloud sync, unlimited sealed vault, and real-time portfolio market alerts.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
     }
   ]
 });
@@ -478,14 +586,19 @@ export const getPublicDeckSchema = (
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'Product',
+    '@type': 'ItemPage',
     name: `${name} — Pokémon TCG 60-Card Tournament Deck`,
     description: `Complete 60-card tournament decklist (${count || 60} cards) with legality validation and 1-click PTCGL export.`,
     url: isObj && nameOrDeck.id ? `https://deckdivider.app/deck/${nameOrDeck.id}` : 'https://deckdivider.app/decks',
-    offers: value ? {
-      '@type': 'Offer',
-      price: value.toFixed(2),
-      priceCurrency: 'USD'
+    mainEntity: {
+      '@type': 'ItemList',
+      name: `${name} Card Roster`,
+      numberOfItems: count || 60
+    },
+    about: value ? {
+      '@type': 'Thing',
+      name: 'Estimated Deck Market Value',
+      description: `$${Number(value).toFixed(2)} based on verified TCGplayer market prices`
     } : undefined
   };
 };

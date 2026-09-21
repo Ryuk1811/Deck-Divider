@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -76,6 +77,9 @@ async function startServer() {
 
   // Trust reverse proxy headers (Cloud Run / Nginx)
   app.set('trust proxy', 1);
+
+  // Gzip/Brotli Response Compression
+  app.use(compression());
 
   // JSON and URL-encoded body parser
   app.use(express.json());
@@ -915,7 +919,8 @@ async function startServer() {
   // TCG Companion Proxy Routes
   app.get('/api/tcg/expansions', async (req, res) => {
     try {
-      const sets = await getExpansions();
+      const force = req.query.refresh === 'true' || req.query.force === 'true';
+      const sets = await getExpansions(force);
       res.json(sets);
     } catch (err: any) {
       res.status(500).json({ error: 'Internal Server Error' });

@@ -13,6 +13,16 @@ let allDocsData: TCGdexCard[] = [...FALLBACK_CARDS];
 let isIndexing = false;
 let initPromise: Promise<void> | null = null;
 
+function yieldToMainThread(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => resolve(), { timeout: 100 });
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
+}
+
 function setupMiniSearch(data: TCGdexCard[]) {
   const ms = new MiniSearch<TCGdexCard>({
     fields: ['name', 'types', 'rarity', 'illustrator', 'localId', 'set.name', 'category', 'stage'],
@@ -29,10 +39,23 @@ function setupMiniSearch(data: TCGdexCard[]) {
   return ms;
 }
 
-// Pre-initialize synchronously with fallback cards so search and sets are ready instantly
-if (!miniSearch) {
-  miniSearch = setupMiniSearch(allDocsData);
-}
+// Dynamic card spooling ingestion into in-memory search index
+export const addDynamicCardsToSearchEngine = (newCards: TCGdexCard[]) => {
+  if (!newCards || newCards.length === 0) return;
+  const existingIds = new Set(allDocsData.map(c => c.id));
+  const toAdd = newCards.filter(c => c && c.id && !existingIds.has(c.id));
+  if (toAdd.length === 0) return;
+
+  allDocsData = [...allDocsData, ...toAdd];
+  if (miniSearch) {
+    try {
+      miniSearch.addAll(toAdd);
+    } catch (e) {
+      // In case of any duplicate key collision
+      miniSearch = setupMiniSearch(allDocsData);
+    }
+  }
+};
 
 export const initSearchEngine = async (): Promise<void> => {
   if (initPromise) return initPromise;
@@ -58,6 +81,7 @@ export const initSearchEngine = async (): Promise<void> => {
 
       if (data && data.length > 0) {
         allDocsData = data;
+        await yieldToMainThread();
         miniSearch = setupMiniSearch(data);
       }
 
@@ -74,6 +98,7 @@ export const initSearchEngine = async (): Promise<void> => {
             const fetchedCards: TCGdexCard[] = json?.data?.cards || [];
             if (fetchedCards && fetchedCards.length > 0) {
               allDocsData = fetchedCards;
+              await yieldToMainThread();
               miniSearch = setupMiniSearch(fetchedCards);
               if (hasIDB) { try { set(CACHE_KEY, fetchedCards).catch(() => {}); } catch(e) {}
               try { set(CACHE_TIME_KEY, now).catch(() => {}); } catch(e) {} }

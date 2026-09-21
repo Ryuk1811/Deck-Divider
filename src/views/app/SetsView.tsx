@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown } from 'lucide-react';
+import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown, RefreshCw, Sparkles } from 'lucide-react';
 import { CardSet, PokemonCard, Deck, DisplayCurrency } from '../../types';
 import { HolographicCard } from '../../components/ui/HolographicCard';
-import { getCardsBySetCatalog, getExpansionsCatalog } from '../../lib/dataSyncEngine';
+import { getCardsBySetCatalog, getExpansionsCatalog, forceRefreshExpansions } from '../../lib/dataSyncEngine';
 import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically } from '../../utils/setCategorizer';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
 
@@ -32,10 +32,11 @@ export const SetsView: React.FC<SetsViewProps> = ({
   const [loadedCardsMap, setLoadedCardsMap] = useState<Record<string, PokemonCard[]>>({});
   const [setCards, setSetCards] = useState<PokemonCard[]>([]);
   const [isLoadingSetCards, setIsLoadingSetCards] = useState(false);
+  const [isRefreshingCatalog, setIsRefreshingCatalog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(SET_PAGE_SIZE);
 
-  // Fetch all expansions on mount
+  // Fetch all expansions on mount and listen to dynamic updates
   useEffect(() => {
     getExpansionsCatalog().then((expansions) => {
       const formatted: CardSet[] = sortSetsChronologically(expansions.map(normalizeSet));
@@ -46,7 +47,33 @@ export const SetsView: React.FC<SetsViewProps> = ({
     }).catch((err) => {
       console.warn('SetsView getExpansionsCatalog warning:', err);
     });
+
+    const handleCatalogUpdate = (e: Event) => {
+      const custom = e as CustomEvent<{ sets: CardSet[] }>;
+      if (custom?.detail?.sets && custom.detail.sets.length > 0) {
+        const formatted = sortSetsChronologically(custom.detail.sets.map(normalizeSet));
+        setAllExpansions(formatted);
+      }
+    };
+
+    window.addEventListener('deckdivider:catalog-updated', handleCatalogUpdate);
+    return () => window.removeEventListener('deckdivider:catalog-updated', handleCatalogUpdate);
   }, []);
+
+  const handleManualRefresh = async () => {
+    setIsRefreshingCatalog(true);
+    try {
+      const refreshed = await forceRefreshExpansions();
+      if (refreshed && refreshed.length > 0) {
+        const formatted = sortSetsChronologically(refreshed.map(normalizeSet));
+        setAllExpansions(formatted);
+      }
+    } catch (e) {
+      console.error('Failed to manually refresh expansions:', e);
+    } finally {
+      setIsRefreshingCatalog(false);
+    }
+  };
 
   const activeSet = allExpansions.find((s) => s.id === selectedSetId) || allExpansions[0];
 
@@ -125,23 +152,41 @@ export const SetsView: React.FC<SetsViewProps> = ({
       {/* EXPANSIONS HEADER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-6">
         <div>
-          <h2 className="font-heading font-bold text-2xl text-[#0F172A]">
-            Complete TCG Expansion Library
-          </h2>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="font-heading font-bold text-2xl text-[#0F172A]">
+              Complete TCG Expansion Library
+            </h2>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Auto-Sync Live
+            </span>
+          </div>
           <p className="font-mono text-xs text-[#64748B]">
-            Explore all {allExpansions.length} official Pokémon TCG expansion sets from 1999 to Present.
+            Explore {allExpansions.length} official Pokémon TCG expansion sets from 1999 to 30th Celebrations & beyond.
           </p>
         </div>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#DC143C]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search expansion sets..."
-            className="w-full pl-9 pr-4 py-2.5 glass-slab font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-all shadow-xs"
-          />
+        <div className="flex items-center gap-2.5 w-full md:w-auto">
+          <div className="relative flex-grow md:w-80">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#DC143C]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search expansion sets (e.g., 30th, 151)..."
+              className="w-full pl-9 pr-4 py-2.5 glass-slab font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-all shadow-xs"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleManualRefresh}
+            disabled={isRefreshingCatalog}
+            title="Check for newly released sets and cards"
+            className="p-2.5 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C] text-[#475569] hover:text-[#DC143C] rounded-lg transition-all shadow-xs flex items-center justify-center cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshingCatalog ? 'animate-spin text-[#DC143C]' : ''}`} />
+          </button>
         </div>
       </div>
 

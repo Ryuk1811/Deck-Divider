@@ -41,10 +41,51 @@ export const HighIntentToolsView: React.FC = () => {
           applicationCategory: 'UtilitiesApplication',
           operatingSystem: 'All',
           url: 'https://deckdivider.app/tools/deck-legality-checker',
+          image: 'https://deckdivider.app/og-image.png?v=2',
+          brand: {
+            '@type': 'Brand',
+            name: 'DECK / divider'
+          },
+          sku: 'DD-LEGALITY-CHECKER',
           offers: {
             '@type': 'Offer',
-            price: '0',
+            price: '0.00',
             priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+            url: 'https://deckdivider.app/tools/deck-legality-checker',
+            priceValidUntil: '2027-12-31',
+            shippingDetails: {
+              '@type': 'OfferShippingDetails',
+              shippingRate: {
+                '@type': 'MonetaryAmount',
+                value: '0.00',
+                currency: 'USD'
+              },
+              shippingDestination: {
+                '@type': 'DefinedRegion',
+                addressCountry: 'US'
+              },
+              deliveryTime: {
+                '@type': 'ShippingDeliveryTime',
+                handlingTime: {
+                  '@type': 'QuantitativeValue',
+                  minValue: 0,
+                  maxValue: 0,
+                  unitCode: 'DAY'
+                },
+                transitTime: {
+                  '@type': 'QuantitativeValue',
+                  minValue: 0,
+                  maxValue: 0,
+                  unitCode: 'DAY'
+                }
+              }
+            },
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: 'US',
+              returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+            }
           },
         },
       });
@@ -61,10 +102,51 @@ export const HighIntentToolsView: React.FC = () => {
           applicationCategory: 'FinanceApplication',
           operatingSystem: 'All',
           url: 'https://deckdivider.app/tools/psa-grade-calculator',
+          image: 'https://deckdivider.app/og-image.png?v=2',
+          brand: {
+            '@type': 'Brand',
+            name: 'DECK / divider'
+          },
+          sku: 'DD-PSA-CALC',
           offers: {
             '@type': 'Offer',
-            price: '0',
+            price: '0.00',
             priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+            url: 'https://deckdivider.app/tools/psa-grade-calculator',
+            priceValidUntil: '2027-12-31',
+            shippingDetails: {
+              '@type': 'OfferShippingDetails',
+              shippingRate: {
+                '@type': 'MonetaryAmount',
+                value: '0.00',
+                currency: 'USD'
+              },
+              shippingDestination: {
+                '@type': 'DefinedRegion',
+                addressCountry: 'US'
+              },
+              deliveryTime: {
+                '@type': 'ShippingDeliveryTime',
+                handlingTime: {
+                  '@type': 'QuantitativeValue',
+                  minValue: 0,
+                  maxValue: 0,
+                  unitCode: 'DAY'
+                },
+                transitTime: {
+                  '@type': 'QuantitativeValue',
+                  minValue: 0,
+                  maxValue: 0,
+                  unitCode: 'DAY'
+                }
+              }
+            },
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: 'US',
+              returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+            }
           },
         },
       });

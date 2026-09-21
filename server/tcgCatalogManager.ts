@@ -92,6 +92,8 @@ let syncProgress = {
 let memoryExpansionsCache: TCGSet[] | null = null;
 let memoryCardsSummaryCache: TCGCardSummary[] | null = null;
 const memoryCardDetailCache = new Map<string, any>();
+let lastExpansionsFetchTime = 0;
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 Hour
 
 // Helper to normalize card types: Steel -> Metal, Electric -> Lightning in internal structures if needed, but display-level conversion handles user view
 function normalizeCardTypes(card: any) {
@@ -107,18 +109,27 @@ function normalizeCardTypes(card: any) {
   return copy;
 }
 
-// 1. Fetch & Cache Expansions (Sets)
-export async function getExpansions(): Promise<TCGSet[]> {
-  if (memoryExpansionsCache && memoryExpansionsCache.length > 0) {
+// 1. Fetch & Cache Expansions (Sets) with Automatic Dynamic Spooling & Auto-Update
+export async function getExpansions(forceRefresh: boolean = false): Promise<TCGSet[]> {
+  const now = Date.now();
+  const cacheFile = path.join(CACHE_DIR, 'expansions.json');
+
+  if (!forceRefresh && memoryExpansionsCache && memoryExpansionsCache.length > 0 && (now - lastExpansionsFetchTime < CACHE_TTL_MS)) {
     return memoryExpansionsCache;
   }
 
-  const cacheFile = path.join(CACHE_DIR, 'expansions.json');
-  if (fs.existsSync(cacheFile)) {
+  if (!forceRefresh && !memoryExpansionsCache && fs.existsSync(cacheFile)) {
     try {
+      const stats = fs.statSync(cacheFile);
+      const isFresh = now - stats.mtimeMs < CACHE_TTL_MS;
       const data = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
       if (Array.isArray(data) && data.length > 0) {
         memoryExpansionsCache = data;
+        lastExpansionsFetchTime = stats.mtimeMs;
+        if (!isFresh) {
+          // Asynchronously refresh in background if cache is older than TTL
+          refreshExpansionsInBackground();
+        }
         return data;
       }
     } catch (e) {
@@ -127,21 +138,73 @@ export async function getExpansions(): Promise<TCGSet[]> {
   }
 
   try {
-    const res = await fetch('https://api.tcgdex.net/v2/en/sets');
+    const res = await fetch('https://api.tcgdex.net/v2/en/sets', { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`TCGdex API error: ${res.statusText}`);
     const sets: TCGSet[] = await res.json();
     
-    // Sort by release date / id descending
+    // Sort by release date / id descending (newest sets first)
     sets.sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || ''));
     
     memoryExpansionsCache = sets;
+    lastExpansionsFetchTime = Date.now();
     fs.writeFileSync(cacheFile, JSON.stringify(sets, null, 2));
+
+    // Dynamic auto-spooling: trigger background pre-caching of newest sets
+    spoolLatestSetsInBackground(sets.slice(0, 15));
+
     return sets;
   } catch (err) {
     console.error('Failed to fetch expansions from TCGdex:', err);
     return memoryExpansionsCache || [];
   }
 }
+
+// Background non-blocking expansion updater
+async function refreshExpansionsInBackground() {
+  try {
+    const res = await fetch('https://api.tcgdex.net/v2/en/sets', { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      const sets: TCGSet[] = await res.json();
+      sets.sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || ''));
+      memoryExpansionsCache = sets;
+      lastExpansionsFetchTime = Date.now();
+      const cacheFile = path.join(CACHE_DIR, 'expansions.json');
+      fs.writeFileSync(cacheFile, JSON.stringify(sets, null, 2));
+      spoolLatestSetsInBackground(sets.slice(0, 15));
+    }
+  } catch (e) {}
+}
+
+// Spool card lists for latest sets in background
+async function spoolLatestSetsInBackground(targetSets: TCGSet[]) {
+  for (const set of targetSets) {
+    if (!set?.id) continue;
+    const safeFileId = set.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const cacheFile = path.join(CACHE_DIR, `set_${safeFileId}.json`);
+    if (!fs.existsSync(cacheFile)) {
+      try {
+        const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(set.id)}`, { signal: AbortSignal.timeout(6000) });
+        if (res.ok) {
+          const detail = await res.json();
+          if (detail && Array.isArray(detail.cards)) {
+            fs.writeFileSync(cacheFile, JSON.stringify(detail, null, 2));
+          }
+        }
+      } catch (err) {}
+      await new Promise((r) => setTimeout(r, 100));
+    }
+  }
+}
+
+// Automated Periodic Server Metronome (Runs every 30 minutes to auto-poll for new sets)
+setInterval(() => {
+  refreshExpansionsInBackground();
+}, 30 * 60 * 1000);
+
+// Initial bootstrap kick on module load
+setTimeout(() => {
+  refreshExpansionsInBackground();
+}, 2000);
 
 // 2. Get All Cards Summary
 export async function getAllCardsSummary(): Promise<TCGCardSummary[]> {
