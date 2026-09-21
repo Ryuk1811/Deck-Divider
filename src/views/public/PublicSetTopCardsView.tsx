@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, Layers, Sparkles } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Layers, Sparkles, Share2, Check } from 'lucide-react';
 import { CardSet, PokemonCard } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -16,6 +16,27 @@ export const PublicSetTopCardsView: React.FC = () => {
   const [set, setSet] = useState<CardSet | null>(null);
   const [topCards, setTopCards] = useState<PokemonCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleCopyLink = async () => {
+    try {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy top cards link:', err);
+    }
+  };
 
   useEffect(() => {
     if (!setId) return;
@@ -52,7 +73,9 @@ export const PublicSetTopCardsView: React.FC = () => {
         title: `Top 20 Most Expensive Cards in ${set.name} (${set.series}) | DECK / divider`,
         description: `Discover the top chase cards and highest-value pulls from ${set.name} (${set.series}). Live TCGplayer market valuations, rarities, and card numbers.`,
         canonicalPath: `/set/${set.id}/top-cards`,
-        ogImage: set.logoUrl || set.symbolUrl || 'https://deckdivider.app/og-image.png',
+        ogImage: set
+          ? `https://deckdivider.app/api/og/set/${set.id}.png?title=${encodeURIComponent('Top Chase Cards - ' + set.name)}&series=${encodeURIComponent(set.series || 'Pokémon TCG')}&count=${topCards.length}`
+          : 'https://deckdivider.app/og-image.png',
         jsonLd: {
           '@context': 'https://schema.org',
           '@type': 'ItemList',
@@ -138,6 +161,17 @@ export const PublicSetTopCardsView: React.FC = () => {
                 <p className="text-[#64748B] text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                   The top chase cards and highest-value pulls from the {set.series} expansion, updated with live market data.
                 </p>
+                <div className="mt-4 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center gap-1.5 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-4 py-1.5 rounded-full text-xs font-mono font-bold transition-colors shadow-2xs cursor-pointer"
+                    title="Share link to top chase cards"
+                  >
+                    {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
+                    <span>{copiedLink ? 'Copied' : 'Share'}</span>
+                  </button>
+                </div>
               </div>
 
               <GeoExtractableBlock

@@ -27,7 +27,10 @@ import {
   TrendingUp,
   Check,
   Clock,
-  Copy
+  Copy,
+  ChevronLeft,
+  ChevronRight,
+  Search
 } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -63,7 +66,10 @@ export const PublicSocialsView: React.FC = () => {
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'newest' | 'rating' | 'likes'>('newest');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 20;
 
   // Form State
   const [showFormModal, setShowFormModal] = useState(false);
@@ -118,6 +124,14 @@ export const PublicSocialsView: React.FC = () => {
       .filter(r => {
         if (selectedCategory !== 'all' && r.category !== selectedCategory) return false;
         if (selectedRatingFilter !== 'all' && Math.round(r.rating) !== selectedRatingFilter) return false;
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchAuthor = r.authorName.toLowerCase().includes(q);
+          const matchTitle = (r.title || '').toLowerCase().includes(q);
+          const matchComment = r.comment.toLowerCase().includes(q);
+          const matchRole = (r.userRole || '').toLowerCase().includes(q);
+          if (!matchAuthor && !matchTitle && !matchComment && !matchRole) return false;
+        }
         return true;
       })
       .sort((a, b) => {
@@ -129,7 +143,18 @@ export const PublicSocialsView: React.FC = () => {
         }
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
-  }, [reviews, selectedCategory, selectedRatingFilter, sortBy]);
+  }, [reviews, selectedCategory, selectedRatingFilter, searchQuery, sortBy]);
+
+  // Reset to page 1 on filter/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedRatingFilter, searchQuery, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize));
+  const paginatedReviews = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredReviews.slice(start, start + pageSize);
+  }, [filteredReviews, currentPage, pageSize]);
 
   const handleLike = (reviewId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -529,36 +554,125 @@ export const PublicSocialsView: React.FC = () => {
             </div>
 
             {/* Featured Directory & Platform Badges */}
-            <div className="mt-8 pt-5 pb-5 px-6 border border-[#E2E8F0] bg-white rounded-2xl flex flex-wrap items-center justify-center sm:justify-start gap-6 shadow-2xs">
-              <span className="text-xs font-mono font-bold text-[#64748B] uppercase tracking-wider">
-                Featured On &amp; Directory Badges:
-              </span>
-              <div className="flex flex-wrap items-center gap-6">
-                <a
-                  href="https://neeed.directory"
-                  target="_blank"
-                  rel="noopener"
-                  className="hover:scale-[1.03] transition-transform inline-block"
-                >
-                  <img
-                    src="https://neeed.directory/badges/neeed-badge-light.svg"
-                    alt="Featured on neeed.directory"
-                    width="139"
-                    className="h-10 w-auto object-contain"
-                  />
-                </a>
+            <div className="mt-10 pt-6 border-t border-[#E2E8F0] space-y-5 select-none">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#64748B] uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]"></span>
+                <span>Featured In &amp; Verified Directory Badges</span>
+              </div>
+
+              {/* Grid of original badges with uniform sizing & proportions */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 sm:gap-6 lg:gap-8 items-center justify-items-center w-full">
+                {/* 1. Product Hunt */}
                 <a
                   href="https://www.producthunt.com/products/deck-divider?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deck-divider-2"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:scale-[1.03] transition-transform inline-block"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Product Hunt"
                 >
                   <img
                     src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&amp;theme=light&amp;t=1789911020614"
-                    alt="Deck Divider - Track your Pokémon cards, slabs, and decks in one place | Product Hunt"
+                    alt="Deck Divider on Product Hunt"
+                    loading="lazy"
+                    decoding="async"
                     width="250"
                     height="54"
-                    className="h-10 w-auto object-contain"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 2. Neeed Directory */}
+                <a
+                  href="https://neeed.directory"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Neeed Directory"
+                >
+                  <img
+                    src="https://neeed.directory/badges/neeed-badge-light.svg"
+                    alt="Deck Divider on neeed.directory"
+                    loading="lazy"
+                    decoding="async"
+                    width="139"
+                    height="32"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 3. Findly.tools */}
+                <a
+                  href="https://findly.tools/deck-divider?utm_source=deck-divider"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Findly.tools"
+                >
+                  <img
+                    src="https://findly.tools/badges/findly-tools-badge-light.svg"
+                    alt="Deck Divider on Findly.tools"
+                    loading="lazy"
+                    decoding="async"
+                    width="175"
+                    height="55"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 4. Smol Launch */}
+                <a
+                  href="https://smollaunch.com"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Smol Launch"
+                >
+                  <img
+                    src="https://smollaunch.com/badges/featured.svg"
+                    alt="Deck Divider on Smol Launch"
+                    loading="lazy"
+                    decoding="async"
+                    width="250"
+                    height="60"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 5. NxGn Tools */}
+                <a
+                  href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Find Deck Divider on NxGn Tools"
+                >
+                  <img
+                    src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON"
+                    alt="Find Deck Divider on NxGn Tools"
+                    loading="lazy"
+                    decoding="async"
+                    width="160"
+                    height="32"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 6. Super Launch */}
+                <a
+                  href="https://super-launch.app"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Super Launch"
+                >
+                  <img
+                    src="https://super-launch.app/badge/badge_transparent.svg"
+                    alt="Deck Divider on Super Launch"
+                    loading="lazy"
+                    decoding="async"
+                    width="200"
+                    height="54"
+                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
                   />
                 </a>
               </div>
@@ -643,9 +757,9 @@ export const PublicSocialsView: React.FC = () => {
             </div>
 
             {/* Filter & Sort Bar */}
-            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 mb-6 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-              {/* Category Chips */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 mb-6 shadow-xs flex flex-col gap-4">
+              {/* Top row: Category Chips */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                 <span className="text-xs font-mono text-[#94A3B8] flex items-center gap-1 pl-1">
                   <Filter className="w-3.5 h-3.5" />
                   Category:
@@ -675,26 +789,58 @@ export const PublicSocialsView: React.FC = () => {
                 ))}
               </div>
 
-              {/* Sort Dropdown & Rating Clear */}
-              <div className="flex items-center gap-3 self-end md:self-auto">
-                {selectedRatingFilter !== 'all' && (
-                  <button
-                    onClick={() => setSelectedRatingFilter('all')}
-                    className="text-xs font-mono text-[#DC143C] hover:underline"
-                  >
-                    Clear {selectedRatingFilter}★ filter
-                  </button>
-                )}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-mono font-semibold text-[#0F172A] py-1.5 px-3 focus:outline-none focus:border-[#DC143C] cursor-pointer"
-                >
-                  <option value="newest">Most Recent</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="likes">Most Helpful</option>
-                </select>
+              {/* Bottom row: Search + Rating Clear + Sort */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-[#F1F5F9]">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="w-3.5 h-3.5 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search 1,000+ reviews by keyword, deck, trainer..."
+                    className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C]"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] hover:text-[#0F172A]"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-3">
+                  {selectedRatingFilter !== 'all' && (
+                    <button
+                      onClick={() => setSelectedRatingFilter('all')}
+                      className="text-xs font-mono text-[#DC143C] hover:underline"
+                    >
+                      Clear {selectedRatingFilter}★ filter
+                    </button>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-[#94A3B8] hidden sm:inline">Sort:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs font-mono font-semibold text-[#0F172A] py-1.5 px-3 focus:outline-none focus:border-[#DC143C] cursor-pointer"
+                    >
+                      <option value="newest">Most Recent</option>
+                      <option value="rating">Highest Rated</option>
+                      <option value="likes">Most Helpful</option>
+                    </select>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* Results count indicator */}
+            <div className="flex items-center justify-between text-xs font-mono text-[#64748B] mb-4 px-1">
+              <span>Showing {paginatedReviews.length} of {filteredReviews.length} reviews</span>
+              {totalPages > 1 && (
+                <span>Page {currentPage} of {totalPages}</span>
+              )}
             </div>
 
             {/* Reviews Feed */}
@@ -706,13 +852,13 @@ export const PublicSocialsView: React.FC = () => {
               <div className="bg-white border border-[#E2E8F0] rounded-2xl p-12 text-center shadow-xs">
                 <MessageCircle className="w-12 h-12 text-[#94A3B8] mx-auto mb-3" />
                 <h4 className="text-lg font-bold text-[#0F172A] font-heading mb-1">
-                  {selectedCategory !== 'all' || selectedRatingFilter !== 'all'
-                    ? 'No Reviews in this Filter'
+                  {selectedCategory !== 'all' || selectedRatingFilter !== 'all' || searchQuery
+                    ? 'No Reviews Match Your Filter'
                     : 'No Community Reviews Yet'}
                 </h4>
                 <p className="text-xs text-[#64748B] mb-4">
-                  {selectedCategory !== 'all' || selectedRatingFilter !== 'all'
-                    ? 'Try selecting a different category or rating filter.'
+                  {selectedCategory !== 'all' || selectedRatingFilter !== 'all' || searchQuery
+                    ? 'Try broadening your search term, clearing category filters, or selecting all star ratings.'
                     : 'Be the first Pokémon TCG trainer to share your thoughts, rating, or feature request!'}
                 </p>
                 <button
@@ -724,103 +870,160 @@ export const PublicSocialsView: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredReviews.map((rev) => {
-                  const isLiked = likedReviewsMap[rev.id] || false;
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {paginatedReviews.map((rev) => {
+                    const isLiked = likedReviewsMap[rev.id] || false;
 
-                  return (
-                    <div
-                      key={rev.id}
-                      className="bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-6 transition-all duration-200 hover:shadow-sm flex flex-col justify-between"
-                    >
-                      <div>
-                        {/* Review Top Meta */}
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs font-mono shadow-2xs ${
-                              rev.isAnonymous 
-                                ? 'bg-[#F1F5F9] text-[#64748B]' 
-                                : 'bg-[#DC143C]/10 text-[#DC143C] border border-[#DC143C]/20'
-                            }`}>
-                              {rev.isAnonymous ? <UserX className="w-4 h-4" /> : rev.authorName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-sm font-bold text-[#0F172A] font-heading">
-                                  {rev.authorName}
-                                </span>
-                                {rev.isVerified && (
-                                  <span title="Verified Trainer" className="inline-flex items-center">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                                  </span>
-                                )}
+                    return (
+                      <div
+                        key={rev.id}
+                        className="bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-6 transition-all duration-200 hover:shadow-sm flex flex-col justify-between"
+                      >
+                        <div>
+                          {/* Review Top Meta */}
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2.5">
+                              <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs font-mono shadow-2xs ${
+                                rev.isAnonymous 
+                                  ? 'bg-[#F1F5F9] text-[#64748B]' 
+                                  : 'bg-[#DC143C]/10 text-[#DC143C] border border-[#DC143C]/20'
+                              }`}>
+                                {rev.isAnonymous ? <UserX className="w-4 h-4" /> : rev.authorName.charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-[11px] font-mono text-[#94A3B8]">
-                                {rev.userRole || (rev.isAnonymous ? 'Anonymous Trainer' : 'Collector')}
-                              </span>
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-sm font-bold text-[#0F172A] font-heading">
+                                    {rev.authorName}
+                                  </span>
+                                  {rev.isVerified && (
+                                    <span title="Verified Trainer" className="inline-flex items-center">
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[11px] font-mono text-[#94A3B8]">
+                                  {rev.userRole || (rev.isAnonymous ? 'Anonymous Trainer' : 'Collector')}
+                                </span>
+                              </div>
                             </div>
+
+                            <span className="text-[11px] font-mono text-[#94A3B8]">
+                              {new Date(rev.createdAt).toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
                           </div>
 
+                          {/* Stars & Category Tag */}
+                          <div className="flex items-center justify-between gap-2 mb-3">
+                            <div className="flex items-center gap-0.5">
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <Star
+                                  key={s}
+                                  className={`w-4 h-4 ${
+                                    s <= rev.rating
+                                      ? 'text-amber-500 fill-amber-500'
+                                      : 'text-[#E2E8F0]'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#F8FAFC] text-[#64748B] border border-[#E2E8F0]">
+                              {rev.category}
+                            </span>
+                          </div>
+
+                          {/* Title & Body */}
+                          {rev.title && (
+                            <h4 className="text-sm font-bold text-[#0F172A] font-heading mb-1.5">
+                              {rev.title}
+                            </h4>
+                          )}
+                          <p className="text-xs text-[#475569] leading-relaxed font-sans mb-4 whitespace-pre-line">
+                            {rev.comment}
+                          </p>
+                        </div>
+
+                        {/* Helpful Button */}
+                        <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
                           <span className="text-[11px] font-mono text-[#94A3B8]">
-                            {new Date(rev.createdAt).toLocaleDateString(undefined, {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                            {rev.isAnonymous ? 'Posted anonymously' : 'Verified Community Feedback'}
                           </span>
+                          <button
+                            onClick={(e) => handleLike(rev.id, e)}
+                            className={`inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-1 rounded-lg border transition-all ${
+                              isLiked
+                                ? 'bg-[#DC143C]/10 border-[#DC143C]/30 text-[#DC143C]'
+                                : 'bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
+                            }`}
+                          >
+                            <ThumbsUp className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#DC143C]' : ''}`} />
+                            <span>Helpful ({rev.likesCount || 0})</span>
+                          </button>
                         </div>
-
-                        {/* Stars & Category Tag */}
-                        <div className="flex items-center justify-between gap-2 mb-3">
-                          <div className="flex items-center gap-0.5">
-                            {[1, 2, 3, 4, 5].map((s) => (
-                              <Star
-                                key={s}
-                                className={`w-4 h-4 ${
-                                  s <= rev.rating
-                                    ? 'text-amber-500 fill-amber-500'
-                                    : 'text-[#E2E8F0]'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#F8FAFC] text-[#64748B] border border-[#E2E8F0]">
-                            {rev.category}
-                          </span>
-                        </div>
-
-                        {/* Title & Body */}
-                        {rev.title && (
-                          <h4 className="text-sm font-bold text-[#0F172A] font-heading mb-1.5">
-                            {rev.title}
-                          </h4>
-                        )}
-                        <p className="text-xs text-[#475569] leading-relaxed font-sans mb-4 whitespace-pre-line">
-                          {rev.comment}
-                        </p>
                       </div>
+                    );
+                  })}
+                </div>
 
-                      {/* Helpful Button */}
-                      <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
-                        <span className="text-[11px] font-mono text-[#94A3B8]">
-                          {rev.isAnonymous ? 'Posted anonymously' : 'Verified Community Feedback'}
-                        </span>
-                        <button
-                          onClick={(e) => handleLike(rev.id, e)}
-                          className={`inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-1 rounded-lg border transition-all ${
-                            isLiked
-                              ? 'bg-[#DC143C]/10 border-[#DC143C]/30 text-[#DC143C]'
-                              : 'bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
-                          }`}
-                        >
-                          <ThumbsUp className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#DC143C]' : ''}`} />
-                          <span>Helpful ({rev.likesCount || 0})</span>
-                        </button>
-                      </div>
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => {
+                        setCurrentPage(p => Math.max(1, p - 1));
+                        document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] text-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F8FAFC] text-xs font-mono font-bold flex items-center gap-1 shadow-2xs"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Previous
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum = i + 1;
+                        if (totalPages > 5 && currentPage > 3) {
+                          pageNum = currentPage - 3 + i;
+                          if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => {
+                              setCurrentPage(pageNum);
+                              document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className={`w-9 h-9 rounded-xl text-xs font-mono font-bold transition-all ${
+                              currentPage === pageNum
+                                ? 'bg-[#DC143C] text-white shadow-2xs'
+                                : 'bg-white border border-[#CBD5E1] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+
+                    <button
+                      onClick={() => {
+                        setCurrentPage(p => Math.min(totalPages, p + 1));
+                        document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] text-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F8FAFC] text-xs font-mono font-bold flex items-center gap-1 shadow-2xs"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </section>
 

@@ -47,8 +47,9 @@ export const CommunityLeaderboardView: React.FC = () => {
     setTimeout(() => setCopiedDeckId(null), 2000);
   };
 
-  const badgeMarkdown = `[![Tracked with DECK / divider](https://deckdivider.app/badge/verified.svg)](https://deckdivider.app/portfolio/${collectorIdInput || 'demo'})`;
-  const badgeHtml = `<a href="https://deckdivider.app/portfolio/${collectorIdInput || 'demo'}" target="_blank" rel="noopener noreferrer"><img src="https://deckdivider.app/badge/verified.svg" alt="Tracked on DECK / divider" /></a>`;
+  const badgeMarkdown = `[![Tracked with DECK / divider](https://deckdivider.app/api/badge/collector/${collectorIdInput || 'demo'}.svg)](https://deckdivider.app/portfolio/${collectorIdInput || 'demo'}?utm_source=embed_badge&utm_medium=markdown_embed)`;
+  const badgeHtml = `<a href="https://deckdivider.app/portfolio/${collectorIdInput || 'demo'}?utm_source=embed_badge&utm_medium=html_embed" target="_blank" rel="noopener" title="Verified Pokémon TCG Collection on DECK / divider"><img src="https://deckdivider.app/api/badge/collector/${collectorIdInput || 'demo'}.svg" alt="Tracked on DECK / divider" width="340" height="74" loading="lazy" decoding="async" /></a>`;
+  const badgeBBCode = `[url=https://deckdivider.app/portfolio/${collectorIdInput || 'demo'}?utm_source=embed_badge&utm_medium=forum_bbcode][img]https://deckdivider.app/api/badge/collector/${collectorIdInput || 'demo'}.svg[/img][/url]`;
 
   const copyBadgeText = (text: string, format: string) => {
     navigator.clipboard.writeText(text);
@@ -461,6 +462,22 @@ export const CommunityLeaderboardView: React.FC = () => {
                   </div>
                   <pre className="bg-[#F8FAFC] p-3 rounded-xl text-xs font-mono text-[#0F172A] overflow-x-auto border border-[#E2E8F0]">
                     {badgeHtml}
+                  </pre>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs text-[#64748B] font-mono mb-2">
+                    <span className="flex items-center gap-1.5"><Code2 className="w-3.5 h-3.5" /> BBCode (PokéBeach, PokéGym, TCG Forums)</span>
+                    <button
+                      onClick={() => copyBadgeText(badgeBBCode, 'bbcode')}
+                      className="text-[#DC143C] hover:underline flex items-center gap-1 font-bold"
+                    >
+                      {badgeCopiedFormat === 'bbcode' ? <Check className="w-3 h-3 text-[#16A34A]" /> : <Copy className="w-3 h-3" />}
+                      {badgeCopiedFormat === 'bbcode' ? 'Copied' : 'Copy Code'}
+                    </button>
+                  </div>
+                  <pre className="bg-[#F8FAFC] p-3 rounded-xl text-xs font-mono text-[#0F172A] overflow-x-auto border border-[#E2E8F0]">
+                    {badgeBBCode}
                   </pre>
                 </div>
               </div>

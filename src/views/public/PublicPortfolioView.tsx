@@ -10,7 +10,10 @@ import {
   Activity,
   AlertTriangle,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Code2,
+  Share2,
+  Check,
 } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -23,6 +26,7 @@ import { encodeDeckToUrlParam } from '../../utils/deckUrlEncoder';
 import { CardImage } from '../../components/ui/CardImage';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { getPublicPortfolioSchema } from '../../components/seo/schemaData';
+import { EmbedBadgeModal } from '../../components/modals/EmbedBadgeModal';
 
 export const PublicPortfolioView: React.FC = () => {
   const { shareId } = useParams<{ shareId: string }>();
@@ -30,7 +34,29 @@ export const PublicPortfolioView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<SharedPortfolioSnapshot | null>(null);
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [activeTab, setActiveTab] = useState<'collection' | 'decks' | 'sealed' | 'lists'>('collection');
+
+  const handleCopyLink = async () => {
+    try {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy public link:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -246,6 +272,7 @@ export const PublicPortfolioView: React.FC = () => {
         title={`${snapshot.profile?.displayName || 'Collector'}'s Portfolio & Vault | DECK / divider`}
         description={`Public collection showcase for ${snapshot.profile?.displayName || 'Collector'}. Features ${allCardsList.length} cards, ${decksList.length} decks, sealed booster boxes, and live TCGplayer market NAV valuation.`}
         canonicalPath={`/portfolio/${shareId || 'showcase'}`}
+        ogImage={`https://deckdivider.app/api/og/portfolio/${shareId || 'showcase'}.png?title=${encodeURIComponent(snapshot.profile?.displayName || 'Collector')}&cards=${allCardsList.length}&value=${Math.round(totalValuation)}`}
         keywords={[
           'pokemon card portfolio',
           'pokemon collection showcase',
@@ -268,9 +295,29 @@ export const PublicPortfolioView: React.FC = () => {
             </Link>
             <DeckDividerBrand size="sm" showLogo={true} />
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#16A34A] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse"></span>
-            <span>PUBLIC SHOWCASE</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-lg shadow-2xs transition-all cursor-pointer"
+              title="Copy link to public portfolio"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
+              <span>{copiedLink ? 'Copied' : 'Share'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowEmbedModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-lg shadow-2xs transition-all cursor-pointer"
+              title="Embed live portfolio badge"
+            >
+              <Code2 className="w-3.5 h-3.5 text-[#64748B]" />
+              <span>Embed Badge</span>
+            </button>
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#16A34A] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+              <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse"></span>
+              <span>PUBLIC SHOWCASE</span>
+            </div>
           </div>
         </div>
       </header>
@@ -492,6 +539,22 @@ export const PublicPortfolioView: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {snapshot && (
+        <EmbedBadgeModal
+          isOpen={showEmbedModal}
+          onClose={() => setShowEmbedModal(false)}
+          options={{
+            type: 'portfolio',
+            idOrSlug: shareId || 'collector',
+            title: `${snapshot.profile?.displayName || 'Collector'}'s Vault`,
+            subtitle: `${allCardsList.length} Cards • ${decksList.length} Decks`,
+            count: allCardsList.length,
+            value: Math.round(totalValuation),
+            currency: currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$',
+          }}
+        />
+      )}
     </div>
   );
 };

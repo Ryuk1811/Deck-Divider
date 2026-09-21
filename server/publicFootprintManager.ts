@@ -39,9 +39,16 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/terms', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/security', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/formats', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/format/standard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/format/standard', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
   { path: '/format/expanded', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/format/glc', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
+  { path: '/format/glc', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/format/unlimited', lastmod: BUILD_DATE, priority: '0.65', changefreq: 'weekly' },
+  { path: '/format/retro-2010', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
+  { path: '/format/retro-2004', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
+  { path: '/socials', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
+  { path: '/portfolios', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
+  { path: '/tools/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tools/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
 ];
 
 // 2. Tournament Decks & Archetypes (Singular)
@@ -134,8 +141,26 @@ export async function getAllPublicUrls(): Promise<string[]> {
 
 export async function generateUnifiedSitemapXml(): Promise<string> {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-  
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+  xml += `        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`;
+  xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9\n`;
+  xml += `        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n`;
+
+  // 1. Specialized Segmented Sub-Sitemaps at the very top of the major sitemap
+  const splits = [
+    { path: '/sitemap-index.xml', priority: '1.0', changefreq: 'daily' },
+    { path: '/sitemap-core.xml', priority: '0.95', changefreq: 'daily' },
+    { path: '/sitemap-sets.xml', priority: '0.95', changefreq: 'daily' },
+    { path: '/sitemap-formats.xml', priority: '0.90', changefreq: 'weekly' },
+    { path: '/sitemap-portfolios.xml', priority: '0.85', changefreq: 'daily' },
+    { path: '/sitemap-compare.xml', priority: '0.85', changefreq: 'weekly' },
+  ];
+
+  splits.forEach(split => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}${split.path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>${split.changefreq}</changefreq>\n    <priority>${split.priority}</priority>\n  </url>\n`;
+  });
+
+  // 2. Comprehensive coverage of all canonical app routes
   CORE_PAGES.forEach(page => {
     xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}${page.path}</loc>\n    <lastmod>${page.lastmod}</lastmod>\n    <changefreq>${page.changefreq || 'weekly'}</changefreq>\n    <priority>${page.priority || '0.5'}</priority>\n  </url>\n`;
   });
@@ -163,11 +188,102 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
         if (set && set.id) {
           xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
           xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/top-cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/checklist</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
         }
       });
     }
   } catch(e) {}
   
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generateSitemapIndexXml(): string {
+  const subSitemaps = [
+    '/sitemap.xml',
+    '/sitemap-core.xml',
+    '/sitemap-sets.xml',
+    '/sitemap-formats.xml',
+    '/sitemap-portfolios.xml',
+    '/sitemap-compare.xml',
+  ];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  subSitemaps.forEach(path => {
+    xml += `  <sitemap>\n    <loc>${CANONICAL_ORIGIN}${path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </sitemap>\n`;
+  });
+  xml += `</sitemapindex>`;
+  return xml;
+}
+
+export function generateCoreSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  CORE_PAGES.forEach(page => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}${page.path}</loc>\n    <lastmod>${page.lastmod}</lastmod>\n    <changefreq>${page.changefreq || 'weekly'}</changefreq>\n    <priority>${page.priority || '0.8'}</priority>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
+  return xml;
+}
+
+export async function generateSetsSitemapXml(): Promise<string> {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/sets</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
+
+  try {
+    const sets = await getExpansions();
+    if (sets && sets.length > 0) {
+      sets.forEach(set => {
+        if (set && set.id) {
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/top-cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.75</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/checklist</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.75</priority>\n  </url>\n`;
+        }
+      });
+    }
+  } catch(e) {}
+
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generateFormatsSitemapXml(): string {
+  const formats = [
+    { path: '/formats', priority: '0.9' },
+    { path: '/format/standard', priority: '0.9' },
+    { path: '/format/expanded', priority: '0.8' },
+    { path: '/format/glc', priority: '0.85' },
+    { path: '/format/unlimited', priority: '0.65' },
+    { path: '/format/retro-2010', priority: '0.6' },
+    { path: '/format/retro-2004', priority: '0.6' },
+  ];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  formats.forEach(f => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}${f.path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${f.priority}</priority>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generatePortfoliosSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/portfolios</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generateCompareSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/compare</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  COMPETITOR_SLUGS.forEach(slug => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/compare/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  });
   xml += `</urlset>`;
   return xml;
 }

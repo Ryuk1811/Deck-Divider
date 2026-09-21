@@ -57,11 +57,18 @@ import {
 import {
   BUILD_HASH,
   generateUnifiedSitemapXml,
+  generateSitemapIndexXml,
+  generateCoreSitemapXml,
+  generateSetsSitemapXml,
+  generateFormatsSitemapXml,
+  generatePortfoliosSitemapXml,
+  generateCompareSitemapXml,
   generateRssFeedXml,
   generateLlmsTxt,
   generateLlmsFullTxt,
   generateRobotsTxt
 } from './server/publicFootprintManager.js';
+import { generateOgImageSvg, generateOgImagePng } from './server/ogImageGenerator.js';
 
 async function startServer() {
   const app = express();
@@ -796,7 +803,7 @@ async function startServer() {
     res.send(generateRobotsTxt());
   });
 
-  // Unified Master XML Sitemap
+  // Unified Master XML Sitemap (Covers the entire app first and points to all splits)
   app.get('/sitemap.xml', async (req, res) => {
     try {
       if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
@@ -813,16 +820,56 @@ async function startServer() {
     }
   });
 
-  // 301 Permanent Redirects from legacy split sub-sitemaps to the unified sitemap.xml
+  // Sitemap Index (<sitemapindex>)
+  app.get('/sitemap-index.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateSitemapIndexXml());
+  });
+
+  // Split Sub-Sitemaps
+  app.get('/sitemap-core.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateCoreSitemapXml());
+  });
+
+  app.get('/sitemap-sets.xml', async (req, res) => {
+    try {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+      const xml = await generateSetsSitemapXml();
+      res.send(xml);
+    } catch (e) {
+      res.status(500).send('Error generating sets sitemap');
+    }
+  });
+
+  app.get('/sitemap-formats.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateFormatsSitemapXml());
+  });
+
+  app.get('/sitemap-portfolios.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generatePortfoliosSitemapXml());
+  });
+
+  app.get('/sitemap-compare.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateCompareSitemapXml());
+  });
+
+  // Redirects from legacy/secondary aliases
   app.get([
     '/sitemap-main.xml',
-    '/sitemap-sets.xml',
     '/sitemap-topcards.xml',
     '/sitemap-decks.xml',
-    '/sitemap-compare.xml',
     '/sitemap-best.xml',
-    '/sitemap-tools.xml',
-    '/sitemap-portfolios.xml'
+    '/sitemap-tools.xml'
   ], (req, res) => {
     res.redirect(301, '/sitemap.xml');
   });
@@ -946,8 +993,223 @@ async function startServer() {
     res.json(status);
   });
 
+  // Programmatic Embed Badge SVG Generation Endpoint
+  app.get(['/api/badge/:type/:id', '/api/badge/:type/:id.svg'], (req, res) => {
+    const type = (req.params.type || 'deck').toLowerCase();
+    const rawId = req.params.id || 'showcase';
+    const id = rawId.replace(/\.svg$/, '');
+    const theme = req.query.theme === 'dark' ? 'dark' : 'light';
+    
+    const escapeX = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const title = (req.query.title as string) || (type === 'deck' ? 'Tournament Deck' : type === 'set' ? 'Pokémon Set' : 'Collector Showcase');
+    const subtitle = (req.query.subtitle as string) || 'Verified on DECK / divider';
+    const metric = (req.query.metric as string) || 'Verified';
+
+    const isDark = theme === 'dark';
+    const bgColor = isDark ? '#0F172A' : '#FFFFFF';
+    const borderColor = isDark ? '#334155' : '#E2E8F0';
+    const titleColor = isDark ? '#F8FAFC' : '#0F172A';
+    const subColor = isDark ? '#94A3B8' : '#64748B';
+    const brandColor = '#DC143C';
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="340" height="74" viewBox="0 0 340 74" fill="none">
+  <rect width="340" height="74" rx="14" fill="${bgColor}" stroke="${borderColor}" stroke-width="1"/>
+  <circle cx="28" cy="37" r="14" fill="${brandColor}" fill-opacity="0.1"/>
+  <circle cx="28" cy="37" r="6" fill="${brandColor}"/>
+  <text x="52" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="${titleColor}">${escapeX(title)}</text>
+  <text x="52" y="49" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="${subColor}">${escapeX(subtitle)}</text>
+  <rect x="238" y="24" width="88" height="26" rx="6" fill="${isDark ? '#1E293B' : '#F1F5F9'}"/>
+  <text x="282" y="41" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700" fill="${brandColor}">${escapeX(metric)}</text>
+</svg>`;
+
+    res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+    res.send(svg);
+  });
+
+  // Automated Social Sharing Preview (OG Image) Service Endpoints
+  app.get(['/api/og', '/api/og.png', '/api/og.svg', '/api/og/image'], async (req, res) => {
+    try {
+      const type = ((req.query.type as string) || 'general').toLowerCase() as any;
+      const title = (req.query.title as string) || (type === 'deck' ? 'Tournament Deck' : type === 'set' ? 'Pokémon Expansion' : 'DECK / divider');
+      const subtitle = (req.query.subtitle as string) || undefined;
+      const badge = (req.query.badge as string) || undefined;
+      const metric1Label = (req.query.m1Label as string) || undefined;
+      const metric1Value = (req.query.count as string) || (req.query.m1Value as string) || undefined;
+      const metric2Label = (req.query.m2Label as string) || undefined;
+      const metric2Value = (req.query.value as string) || (req.query.m2Value as string) || undefined;
+      const metric3Label = (req.query.m3Label as string) || undefined;
+      const metric3Value = (req.query.m3Value as string) || (req.query.status as string) || undefined;
+      const colorHex = (req.query.color as string) || undefined;
+
+      const isSvg = req.path.endsWith('.svg') || req.query.format === 'svg';
+      const options = {
+        type,
+        title,
+        subtitle,
+        badge,
+        metric1Label,
+        metric1Value,
+        metric2Label,
+        metric2Value,
+        metric3Label,
+        metric3Value,
+        colorHex,
+      };
+
+      if (isSvg) {
+        const svg = generateOgImageSvg(options);
+        res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+        return res.send(svg);
+      }
+
+      const png = await generateOgImagePng(options);
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+      return res.send(png);
+    } catch (err) {
+      console.error('OG Image Generation Error:', err);
+      res.status(500).send('Error generating OG image');
+    }
+  });
+
+  // Dedicated Route for Deck OG Images: /api/og/deck/:id.png or /api/og/deck/:id
+  app.get(['/api/og/deck/:id', '/api/og/deck/:id.png', '/api/og/deck/:id.svg'], async (req, res) => {
+    try {
+      const rawId = req.params.id || 'shared-deck';
+      const id = rawId.replace(/\.(png|svg)$/, '');
+      const isSvg = req.path.endsWith('.svg') || req.query.format === 'svg';
+
+      let title = (req.query.title as string) || '';
+      let count = (req.query.count as string) || '60 Cards';
+      let value = (req.query.value as string) ? `$${req.query.value}` : 'Live Sync';
+
+      if (!title) {
+        title = id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+
+      const options = {
+        type: 'deck' as const,
+        title: title || 'Pokémon Tournament Deck',
+        subtitle: 'Play! Pokémon Standard Legal • 60-Card Tournament Roster',
+        badge: '60-CARD TOURNAMENT ROSTER',
+        metric1Label: 'TOTAL CARDS',
+        metric1Value: count.includes('Card') ? count : `${count} Cards`,
+        metric2Label: 'MARKET VALUE',
+        metric2Value: value.startsWith('$') ? value : `$${value}`,
+        metric3Label: 'FORMAT LEGALITY',
+        metric3Value: 'Standard Legal',
+      };
+
+      if (isSvg) {
+        const svg = generateOgImageSvg(options);
+        res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+        return res.send(svg);
+      }
+
+      const png = await generateOgImagePng(options);
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+      return res.send(png);
+    } catch (err) {
+      console.error('Deck OG Image error:', err);
+      res.status(500).send('Error generating deck OG image');
+    }
+  });
+
+  // Dedicated Route for Set OG Images: /api/og/set/:id.png or /api/og/set/:id
+  app.get(['/api/og/set/:id', '/api/og/set/:id.png', '/api/og/set/:id.svg'], async (req, res) => {
+    try {
+      const rawId = req.params.id || 'expansion';
+      const id = rawId.replace(/\.(png|svg)$/, '').toLowerCase();
+      const isSvg = req.path.endsWith('.svg') || req.query.format === 'svg';
+
+      let title = (req.query.title as string) || '';
+      let series = (req.query.series as string) || 'Pokémon TCG';
+      let count = (req.query.count as string) || 'Checklist';
+
+      if (!title) {
+        title = `${id.toUpperCase()} Expansion`;
+      }
+
+      const options = {
+        type: 'set' as const,
+        title,
+        subtitle: `${series} Expansion • Live TCGplayer Market Prices`,
+        badge: 'SET CHECKLIST & PRICES',
+        metric1Label: 'TOTAL CARDS',
+        metric1Value: count.toString().includes('Card') ? count : `${count} Cards`,
+        metric2Label: 'TCGPLAYER',
+        metric2Value: 'Live Market',
+        metric3Label: 'SERIES',
+        metric3Value: series,
+      };
+
+      if (isSvg) {
+        const svg = generateOgImageSvg(options);
+        res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+        return res.send(svg);
+      }
+
+      const png = await generateOgImagePng(options);
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+      return res.send(png);
+    } catch (err) {
+      console.error('Set OG Image error:', err);
+      res.status(500).send('Error generating set OG image');
+    }
+  });
+
+  // Dedicated Route for Portfolio OG Images: /api/og/portfolio/:id.png
+  app.get(['/api/og/portfolio/:id', '/api/og/portfolio/:id.png', '/api/og/portfolio/:id.svg'], async (req, res) => {
+    try {
+      const rawId = req.params.id || 'showcase';
+      const id = rawId.replace(/\.(png|svg)$/, '');
+      const isSvg = req.path.endsWith('.svg') || req.query.format === 'svg';
+
+      let title = (req.query.title as string) || (req.query.name as string) || 'Collector';
+      let cardsCount = (req.query.cards as string) || 'Vault Collection';
+      let val = (req.query.value as string) || 'Live NAV';
+
+      const options = {
+        type: 'portfolio' as const,
+        title: `${title}'s Vault`,
+        subtitle: 'Verified Pokémon TCG Collection Showcase & Graded Slab Vault',
+        badge: 'VERIFIED PORTFOLIO VAULT',
+        metric1Label: 'VAULT CARDS',
+        metric1Value: cardsCount.includes('Card') ? cardsCount : `${cardsCount} Cards`,
+        metric2Label: 'PORTFOLIO NAV',
+        metric2Value: val.startsWith('$') ? val : `$${val}`,
+        metric3Label: 'COLLECTOR STATUS',
+        metric3Value: 'Public Showcase',
+      };
+
+      if (isSvg) {
+        const svg = generateOgImageSvg(options);
+        res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+        return res.send(svg);
+      }
+
+      const png = await generateOgImagePng(options);
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+      return res.send(png);
+    } catch (err) {
+      console.error('Portfolio OG Image error:', err);
+      res.status(500).send('Error generating portfolio OG image');
+    }
+  });
+
   const { certRoutes } = await import('./server/routes/certRoutes.js');
   app.use('/api/v1/cert', certRoutes);
+
+  const { badgeRouter } = await import('./server/routes/badgeRoutes.js');
+  app.use('/api/badge', badgeRouter);
 
   app.get('/api/config/credentials', async (req, res) => {
     try {

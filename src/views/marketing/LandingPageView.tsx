@@ -10,6 +10,7 @@ import { SearchMockup } from '../../components/landing/mockups/SearchMockup';
 import { ListsMockup } from '../../components/landing/mockups/ListsMockup';
 import { SealedVaultMockup } from '../../components/landing/mockups/SealedVaultMockup';
 import { CollectorSocialProofSection } from '../../components/landing/CollectorSocialProofSection';
+import { VerifiedReviewsStrip } from '../../components/common/VerifiedReviewsStrip';
 import { PricingHeroSection } from '../../components/landing/PricingHeroSection';
 import { LandingFaqAndBlogs } from '../../components/landing/LandingFaqAndBlogs';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -362,6 +363,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           onOpenAuth={onOpenAuth}
           onEnterApp={onEnterApp}
         />
+
+        {/* Top Verified Reviews Strip */}
+        <section className="py-12 bg-white border-y border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <VerifiedReviewsStrip maxItems={3} showStatsHeader={true} />
+          </div>
+        </section>
 
         {/* Section 03 Header Line: Platform Philosophy */}
         <SectionHeaderLine

@@ -14,6 +14,8 @@ import {
   Swords,
   Grid,
   Table,
+  Code2,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Deck, PortfolioCardEntry, PokemonCard } from '../../types';
 import { decodeUrlParamToDeck, encodeDeckToUrlParam } from '../../utils/deckUrlEncoder';
@@ -22,6 +24,7 @@ import { idbGetUserDecks } from '../../lib/indexedDB';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { CardImage } from '../../components/ui/CardImage';
 import { QuickLookModal } from '../../components/modals/QuickLookModal';
+import { EmbedBadgeModal } from '../../components/modals/EmbedBadgeModal';
 import { DeckDividerBrand } from '../../components/ui/DeckDividerBrand';
 import { formatCurrency } from '../../utils/formatters';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
@@ -44,13 +47,16 @@ export function updateDeckDocumentMeta(deck: Deck | null, deckId?: string) {
   const seo = generateDeckSeoMetadata(deck, deckId);
   const deckName = deck?.name || 'Shared Pokémon TCG Deck';
   const count = deck?.entries?.reduce((acc, c) => acc + (c.quantity || 1), 0) || 60;
+  const ogImg = deck
+    ? `https://deckdivider.app/api/og/deck/${deck.id || deckId || 'deck'}.png?title=${encodeURIComponent(deckName)}&count=${count}`
+    : 'https://deckdivider.app/og-image.png?v=2';
 
   updateDocumentMetaTags({
     title: seo.title,
     description: seo.description,
     canonicalPath: seo.canonicalPath,
     keywords: seo.keywords,
-    ogImage: 'https://deckdivider.app/og-image.png?v=2',
+    ogImage: ogImg,
     jsonLd: deck ? {
       '@context': 'https://schema.org',
       '@type': 'ItemPage',
@@ -114,6 +120,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
   const [viewMode, setViewMode] = useState<'binder' | 'table'>('binder');
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedPtcgl, setCopiedPtcgl] = useState(false);
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [quickLookCard, setQuickLookCard] = useState<PokemonCard | null>(null);
   
   // Hydrate card data with search engine
@@ -379,6 +386,15 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                 {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
                 <span>{copiedLink ? 'Copied' : 'Share'}</span>
               </button>
+              <button
+                type="button"
+                onClick={() => setShowEmbedModal(true)}
+                className="h-9 px-3 text-xs font-mono font-bold rounded-lg border border-[#E2E8F0] hover:border-[#CBD5E1] bg-white text-[#0F172A] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                title="Embed live badge on your website or forum"
+              >
+                <Code2 className="w-3.5 h-3.5 text-[#64748B]" />
+                <span>Embed</span>
+              </button>
             </div>
           </div>
 
@@ -500,6 +516,22 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
           onClose={() => setQuickLookCard(null)}
           onNavigateCard={setQuickLookCard}
           currency={activeCurrency as any}
+        />
+      )}
+
+      {deck && (
+        <EmbedBadgeModal
+          isOpen={showEmbedModal}
+          onClose={() => setShowEmbedModal(false)}
+          options={{
+            type: 'deck',
+            idOrSlug: deck.id || deckId || 'deck',
+            title: deck.name || 'Competitive Deck',
+            subtitle: `${totalCardsCount} Cards • Standard Legal`,
+            count: totalCardsCount,
+            value: Math.round(stats.totalValue),
+            currency: activeCurrency === 'EUR' ? '€' : activeCurrency === 'GBP' ? '£' : '$',
+          }}
         />
       )}
 

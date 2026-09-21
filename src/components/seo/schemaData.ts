@@ -14,7 +14,13 @@ export const getBaseOrganizationSchema = () => ({
   sameAs: [
     'https://www.reddit.com/r/DeckDivider/',
     'https://www.instagram.com/deckdivider/',
-    'https://x.com/DeckDivider'
+    'https://x.com/DeckDivider',
+    'https://www.producthunt.com/products/deck-divider',
+    'https://neeed.directory',
+    'https://findly.tools/deck-divider',
+    'https://smollaunch.com',
+    'https://www.nxgntools.com/tools/deck-divider',
+    'https://super-launch.app'
   ],
   knowsAbout: [
     'Pokémon Trading Card Game',
@@ -42,7 +48,18 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
         about: {
           '@type': 'Organization',
           '@id': 'https://deckdivider.app/#organization'
-        }
+        },
+        significantLink: [
+          'https://www.reddit.com/r/DeckDivider/',
+          'https://www.instagram.com/deckdivider/',
+          'https://x.com/DeckDivider',
+          'https://www.producthunt.com/products/deck-divider',
+          'https://neeed.directory',
+          'https://findly.tools/deck-divider',
+          'https://smollaunch.com',
+          'https://www.nxgntools.com/tools/deck-divider',
+          'https://super-launch.app'
+        ]
       }
     ]
   };
@@ -81,6 +98,19 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
   return schema;
 };
 
+export const getBreadcrumbListSchema = (
+  items: Array<{ name: string; url: string }>
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: item.url.startsWith('http') ? item.url : `https://deckdivider.app${item.url}`
+  }))
+});
+
 export const getHomepageSchema = () => ({
   '@context': 'https://schema.org',
   '@graph': [
@@ -105,13 +135,30 @@ export const getHomepageSchema = () => ({
       '@id': 'https://deckdivider.app/#software',
       name: 'DECK / divider',
       operatingSystem: 'Any (Web App, PWA, iOS, Android, Desktop)',
-      applicationCategory: 'FinanceApplication, UtilitiesApplication',
+      applicationCategory: 'FinanceApplication, UtilitiesApplication, EntertainmentApplication',
+      applicationSubCategory: 'Pokémon TCG Collection Management & Deck Studio',
       offers: {
         '@type': 'Offer',
         price: '0.00',
         priceCurrency: 'USD',
         description: 'Free tier with unlimited local storage, master set checklists, and tournament deck builder.'
       },
+      sameAs: [
+        'https://www.producthunt.com/products/deck-divider',
+        'https://neeed.directory',
+        'https://findly.tools/deck-divider',
+        'https://smollaunch.com',
+        'https://www.nxgntools.com/tools/deck-divider',
+        'https://super-launch.app'
+      ],
+      award: [
+        'Featured on Product Hunt',
+        'Featured on Neeed Directory',
+        'Featured on Findly.tools',
+        'Featured on Smol Launch',
+        'Featured on NxGn Tools',
+        'Featured on Super Launch'
+      ],
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.9',

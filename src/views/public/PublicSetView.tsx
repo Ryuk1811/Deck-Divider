@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check } from 'lucide-react';
 import { CardSet, PokemonCard } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -23,7 +23,9 @@ export function updateSetDocumentMeta(set: CardSet | null, cards: PokemonCard[] 
     description: seo.description,
     canonicalPath: seo.canonicalPath,
     keywords: seo.keywords,
-    ogImage: set?.logoUrl || set?.symbolUrl || 'https://deckdivider.app/og-image.png?v=2',
+    ogImage: set
+      ? `https://deckdivider.app/api/og/set/${set.id}.png?title=${encodeURIComponent(set.name)}&series=${encodeURIComponent(set.series || 'Pokémon TCG')}&count=${set.total || cards.length}`
+      : 'https://deckdivider.app/og-image.png?v=2',
     jsonLd: set ? {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
@@ -45,6 +47,27 @@ export const PublicSetView: React.FC = () => {
   const [cards, setCards] = useState<PokemonCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleCopyLink = async () => {
+    try {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy set link:', err);
+    }
+  };
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1;
 
@@ -110,7 +133,11 @@ export const PublicSetView: React.FC = () => {
         title={seoMetadata.title}
         description={seoMetadata.description}
         canonicalPath={seoMetadata.canonicalPath}
-        ogImage={set?.logoUrl || set?.symbolUrl || 'https://deckdivider.app/og-image.png?v=2'}
+        ogImage={
+          set
+            ? `https://deckdivider.app/api/og/set/${set.id}.png?title=${encodeURIComponent(set.name)}&series=${encodeURIComponent(set.series || 'Pokémon TCG')}&count=${set.total || cards.length}`
+            : 'https://deckdivider.app/og-image.png?v=2'
+        }
         keywords={seoMetadata.keywords}
         schema={
           set
@@ -179,6 +206,15 @@ export const PublicSetView: React.FC = () => {
                       <TrendingUp className="w-3.5 h-3.5" />
                       Top 20 Chase Cards
                     </Link>
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className="inline-flex items-center gap-1.5 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-3.5 py-1 rounded-full text-xs font-mono font-bold transition-colors shadow-2xs cursor-pointer"
+                      title="Share link to set checklist"
+                    >
+                      {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
+                      <span>{copiedLink ? 'Copied' : 'Share'}</span>
+                    </button>
                   </div>
                 </div>
               </div>
