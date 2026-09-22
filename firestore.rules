@@ -61,10 +61,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if (isAuthenticated() && (isOwner(userId) || isSuperUser())) || (resource != null && (resource.data.isPublicProfile == true || resource.data.isPublic == true));
       allow create: if isAuthenticated() && isOwner(userId) && 
-        (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser());
+        (!request.resource.data.keys().hasAny(['isSuperUser', 'role', 'isAdmin', 'tier', 'subscriptionPlan', 'plan']) || isSuperUser());
       allow update: if isAuthenticated() && (
         isSuperUser() || 
-        (isOwner(userId) && (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser()))
+        (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isSuperUser', 'role', 'isAdmin', 'tier', 'subscriptionPlan', 'plan']))
       );
       allow delete: if isSuperUser();
 
@@ -98,16 +98,10 @@ service cloud.firestore {
       }
     }
     
-    // Subscriptions collection: owner can read & create initial record, superuser has full access
+    // Subscriptions collection: strictly read-only for users; server Admin SDK & SuperUser manage billing records
     match /subscriptions/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isSuperUser());
-      allow create: if isAuthenticated() && isOwner(userId) && 
-        (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser());
-      allow update: if isAuthenticated() && (
-        isSuperUser() || 
-        (isOwner(userId) && (!('isSuperUser' in request.resource.data) || request.resource.data.isSuperUser != true || isSuperUser()))
-      );
-      allow delete: if isSuperUser();
+      allow write: if isSuperUser();
     }
     
     match /decks/{deckId} {

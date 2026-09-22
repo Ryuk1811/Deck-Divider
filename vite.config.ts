@@ -15,15 +15,28 @@ export default defineConfig(() => {
       target: 'es2022',
       cssCodeSplit: true,
       sourcemap: false,
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 2000,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-framework': ['react', 'react-dom', 'react-router-dom'],
-            'vendor-motion': ['motion'],
-            'vendor-icons': ['lucide-react'],
-            'vendor-search': ['minisearch', 'idb-keyval', 'idb'],
-            'vendor-charts': ['recharts'],
+          manualChunks(id) {
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
+              return 'vendor-framework';
+            }
+            if (id.includes('node_modules/firebase/') || id.includes('node_modules/@firebase/')) {
+              return 'vendor-firebase';
+            }
+            if (id.includes('node_modules/motion/') || id.includes('node_modules/framer-motion/')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('node_modules/lucide-react/')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('node_modules/minisearch/') || id.includes('node_modules/idb/') || id.includes('node_modules/idb-keyval/')) {
+              return 'vendor-search';
+            }
+            if (id.includes('node_modules/recharts/')) {
+              return 'vendor-charts';
+            }
           },
         },
       },

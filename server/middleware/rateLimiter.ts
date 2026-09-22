@@ -11,6 +11,7 @@ function createMemoryRateLimiter(options: {
   message: { error: string; [key: string]: any };
 }) {
   const hits = new Map<string, RateLimitRecord>();
+  const MAX_ENTRIES = 25000; // Guard against memory exhaustion
 
   // Cleanup expired buckets every 2 minutes
   setInterval(() => {
@@ -23,11 +24,16 @@ function createMemoryRateLimiter(options: {
   }, 120000).unref?.();
 
   return (req: Request, res: Response, next: NextFunction): void => {
-    const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || '127.0.0.1';
+    const ip = req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || '127.0.0.1';
     const now = Date.now();
     const existing = hits.get(ip);
 
     if (!existing || now > existing.resetTime) {
+      if (hits.size >= MAX_ENTRIES) {
+        // Evict oldest entries if map grows too large under DDoS
+        const keysToDelete = Array.from(hits.keys()).slice(0, 5000);
+        keysToDelete.forEach(k => hits.delete(k));
+      }
       hits.set(ip, {
         count: 1,
         resetTime: now + options.windowMs,

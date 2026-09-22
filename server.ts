@@ -39,6 +39,7 @@ import {
 import { getExchangeRates } from './server/exchangeRates.js';
 import { getAppCredentials } from './server/configManager.js';
 import { billingLimiter, apiGeneralLimiter } from './server/middleware/rateLimiter.js';
+import { requireSuperUser, authenticateToken, SUPER_USER_EMAIL, AuthenticatedRequest } from './server/middleware/authMiddleware.js';
 import { getFirebaseAdmin, getAdminAuth, getAdminDb, hasAdminCredentials } from './server/firebaseAdmin.js';
 import { renderSsrRoute, injectSsrIntoTemplate, isBot } from './server/ssrRenderer.js';
 import { 
@@ -75,32 +76,42 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Security: Disable X-Powered-By fingerprinting
+  app.disable('x-powered-by');
+
   // Trust reverse proxy headers (Cloud Run / Nginx)
   app.set('trust proxy', 1);
 
   // Gzip/Brotli Response Compression
   app.use(compression());
 
-  // JSON and URL-encoded body parser
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // JSON and URL-encoded body parser with explicit memory limits to prevent DoS
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   // Security Headers
   app.use((req, res, next) => {
     res.setHeader(
       'Content-Security-Policy',
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com https://*.clarity.ms https://www.clarity.ms; " +
+      "default-src 'self' data: blob:; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com https://*.clarity.ms https://www.clarity.ms https://c.clarity.ms; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paypal.com https://*.paypalobjects.com https://accounts.google.com; " +
       "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com https://*.clarity.ms https://c.clarity.ms; " +
       "font-src 'self' data: https://fonts.gstatic.com https://*.paypalobjects.com; " +
       "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.clarity.ms https://c.clarity.ms; " +
-      "frame-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com; " +
-      "child-src 'self' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.firebaseapp.com https://deckdivider1.firebaseapp.com https://accounts.google.com https://*.google.com;"
+      "frame-src 'self' https: http:; " +
+      "frame-ancestors *; " +
+      "base-uri 'self'; " +
+      "form-action 'self' https://*.paypal.com https://accounts.google.com; " +
+      "object-src 'none';"
     );
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader(
+      'Permissions-Policy',
+      'accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(self "https://www.paypal.com" "https://www.sandbox.paypal.com"), picture-in-picture=(self), publickey-credentials-get=(self), screen-wake-lock=(), usb=(), xr-spatial-tracking=()'
+    );
     next();
   });
 
@@ -588,37 +599,9 @@ async function startServer() {
   const reviewModerationOverrides: Record<string, { status: 'featured' | 'hidden' | 'approved'; note?: string }> = {};
   const adminUserNotes: Record<string, string> = {};
 
-  app.get('/api/admin/metrics', async (req, res) => {
+  app.get('/api/admin/metrics', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let isSuperUser = false;
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail === SUPER_USER_EMAIL) {
-        isSuperUser = true;
-      }
-
-      if (!isSuperUser) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
-
+      const rawToken = req.headers.authorization?.substring(7) || '';
       let usersList = await getAdminCollectionDocs('users', rawToken);
       let subDocs = await getAdminCollectionDocs('subscriptions', rawToken);
 
@@ -734,33 +717,10 @@ async function startServer() {
     }
   });
 
-  app.post('/api/admin/user/tier', async (req, res) => {
+  app.post('/api/admin/user/tier', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let isSuperUser = false;
-      let userEmail = '';
-
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const rawToken = req.headers.authorization?.substring(7) || '';
+      const userEmail = req.userEmail!;
 
       const { targetUid, tierName } = req.body || {};
       if (!targetUid || !tierName) {
@@ -790,30 +750,9 @@ async function startServer() {
   });
 
   // User Ban / Status Management
-  app.post('/api/admin/user/status', async (req, res) => {
+  app.post('/api/admin/user/status', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { targetUid, status, reason } = req.body || {};
       if (!targetUid || !status) {
@@ -836,30 +775,9 @@ async function startServer() {
   });
 
   // User Account Deletion
-  app.post('/api/admin/user/delete', async (req, res) => {
+  app.post('/api/admin/user/delete', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { targetUid } = req.body || {};
       if (!targetUid) {
@@ -881,31 +799,8 @@ async function startServer() {
   });
 
   // Cloudflare Realtime Analytics Proxy
-  app.get('/api/admin/analytics/cloudflare', async (req, res) => {
+  app.get('/api/admin/analytics/cloudflare', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
-
       // Realtime Cloudflare edge analytics metrics
       const totalReq = Object.values(funnelRawCounts).reduce((a, b) => a + b, 0) + 18450;
       const uniqueVis = funnelSessionsByStep['1_landing_view'].size || 14280;
@@ -944,31 +839,8 @@ async function startServer() {
   });
 
   // Microsoft Clarity Realtime Analytics Proxy
-  app.get('/api/admin/analytics/clarity', async (req, res) => {
+  app.get('/api/admin/analytics/clarity', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
-
       return res.json({
         provider: 'Microsoft Clarity Analytics',
         projectId: 'ydjpckkq0v',
@@ -1005,34 +877,13 @@ async function startServer() {
   });
 
   // Feature Flags & System Controls
-  app.get('/api/admin/feature-flags', (req, res) => {
+  app.get('/api/admin/feature-flags', requireSuperUser, (req, res) => {
     res.json(systemFeatureFlags);
   });
 
-  app.post('/api/admin/feature-flags', async (req, res) => {
+  app.post('/api/admin/feature-flags', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const newFlags = req.body || {};
       systemFeatureFlags = { ...systemFeatureFlags, ...newFlags };
@@ -1052,30 +903,9 @@ async function startServer() {
   });
 
   // Cache Purge Control
-  app.post('/api/admin/cache/purge', async (req, res) => {
+  app.post('/api/admin/cache/purge', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { scope = 'all' } = req.body || {};
 
@@ -1094,35 +924,14 @@ async function startServer() {
   });
 
   // Admin Audit Logs Endpoint
-  app.get('/api/admin/audit-logs', (req, res) => {
+  app.get('/api/admin/audit-logs', requireSuperUser, (req, res) => {
     res.json(adminAuditLogs.slice(0, 150));
   });
 
   // Community Reviews Moderation Endpoints
-  app.get('/api/admin/reviews', async (req, res) => {
+  app.get('/api/admin/reviews', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const rawToken = req.headers.authorization?.substring(7) || '';
 
       // Read reviews from Firestore if available or fallback
       let rawReviews: any[] = [];
@@ -1152,30 +961,9 @@ async function startServer() {
     }
   });
 
-  app.post('/api/admin/reviews/action', async (req, res) => {
+  app.post('/api/admin/reviews/action', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { reviewId, action, note } = req.body || {};
       if (!reviewId || !action) {
@@ -1208,34 +996,13 @@ async function startServer() {
     res.json(systemBroadcast);
   });
 
-  app.get('/api/admin/broadcast', (req, res) => {
+  app.get('/api/admin/broadcast', requireSuperUser, (req, res) => {
     res.json(systemBroadcast);
   });
 
-  app.post('/api/admin/broadcast', async (req, res) => {
+  app.post('/api/admin/broadcast', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { active, message, type = 'info' } = req.body || {};
       systemBroadcast = {
@@ -1278,34 +1045,13 @@ async function startServer() {
     { id: 'swsh07', name: 'Evolving Skies', series: 'Sword & Shield', totalCards: 237, releaseDate: '2021/08/27', cached: true, lastSync: new Date(Date.now() - 54000000).toISOString() }
   ];
 
-  app.get('/api/admin/catalog/sets', (req, res) => {
+  app.get('/api/admin/catalog/sets', requireSuperUser, (req, res) => {
     res.json({ sets: POKEMON_SETS_CATALOG });
   });
 
-  app.post('/api/admin/catalog/sync-set', async (req, res) => {
+  app.post('/api/admin/catalog/sync-set', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { setId } = req.body || {};
       const targetSet = POKEMON_SETS_CATALOG.find(s => s.id === setId);
@@ -1325,31 +1071,8 @@ async function startServer() {
   });
 
   // Safe Non-Destructive User Inspection & Notes
-  app.get('/api/admin/user/details/:uid', async (req, res) => {
+  app.get('/api/admin/user/details/:uid', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
-
       const { uid } = req.params;
       const adminNote = adminUserNotes[uid] || '';
 
@@ -1371,30 +1094,9 @@ async function startServer() {
     }
   });
 
-  app.post('/api/admin/user/notes', async (req, res) => {
+  app.post('/api/admin/user/notes', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail !== SUPER_USER_EMAIL) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
+      const userEmail = req.userEmail!;
 
       const { targetUid, note } = req.body || {};
       if (!targetUid) {
@@ -1417,37 +1119,9 @@ async function startServer() {
     }
   });
 
-  app.get('/api/admin/diagnostics', async (req, res) => {
+  app.get('/api/admin/diagnostics', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const authHeader = req.headers.authorization || '';
-      let isSuperUser = false;
-      let userEmail = '';
-      const rawToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : '';
-
-      if (rawToken) {
-        try {
-          const adminAuth = getAdminAuth();
-          const decodedToken = await adminAuth.verifyIdToken(rawToken);
-          userEmail = (decodedToken.email || '').toLowerCase();
-        } catch (_) {
-          try {
-            const parts = rawToken.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              userEmail = (payload.email || '').toLowerCase();
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (userEmail === SUPER_USER_EMAIL) {
-        isSuperUser = true;
-      }
-
-      if (!isSuperUser) {
-        return res.status(403).json({ error: 'Unauthorized Email' });
-      }
-
+      const rawToken = req.headers.authorization?.substring(7) || '';
       const diagnostics = await runSystemDiagnostics(rawToken);
       return res.json(diagnostics);
     } catch (err: any) {
@@ -1665,7 +1339,7 @@ async function startServer() {
     res.json(getSyncStatus());
   });
 
-  app.post('/api/tcg/sync/trigger', async (req, res) => {
+  app.post('/api/tcg/sync/trigger', requireSuperUser, async (req, res) => {
     const status = await triggerBackgroundSync();
     res.json(status);
   });
@@ -1888,7 +1562,7 @@ async function startServer() {
   const { badgeRouter } = await import('./server/routes/badgeRoutes.js');
   app.use('/api/badge', badgeRouter);
 
-  app.get('/api/config/credentials', async (req, res) => {
+  app.get('/api/config/credentials', requireSuperUser, async (req, res) => {
     try {
       const { getAppCredentials } = await import('./server/configManager.js');
       const creds = await getAppCredentials();
@@ -1906,7 +1580,7 @@ async function startServer() {
     }
   });
 
-  app.post('/api/config/credentials', async (req, res) => {
+  app.post('/api/config/credentials', requireSuperUser, async (req, res) => {
     try {
       const { updateAppCredentials } = await import('./server/configManager.js');
       const updated = await updateAppCredentials(req.body);
@@ -1917,7 +1591,7 @@ async function startServer() {
   });
 
 
-  app.get('/api/firebase/status', (req, res) => {
+  app.get('/api/firebase/status', requireSuperUser, (req, res) => {
     try {
       const adminApp = getFirebaseAdmin();
       res.json({
@@ -1950,11 +1624,11 @@ async function startServer() {
   });
 
   // =========================================================================
-  // PAYPAL WEBHOOK MANAGER API ENDPOINTS
+  // PAYPAL WEBHOOK MANAGER API ENDPOINTS (SUPER USER PROTECTED)
   // =========================================================================
   
   // 1. Webhook Manager Info & Binding URL
-  app.get('/api/v1/paypal/webhook-manager/info', async (req, res) => {
+  app.get('/api/v1/paypal/webhook-manager/info', requireSuperUser, async (req, res) => {
     try {
       const host = req.get('host') || 'localhost:3000';
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
@@ -1987,7 +1661,7 @@ async function startServer() {
   });
 
   // 2. Webhook Event Logs Feed
-  app.get('/api/v1/paypal/webhook-manager/logs', async (req, res) => {
+  app.get('/api/v1/paypal/webhook-manager/logs', requireSuperUser, async (req, res) => {
     try {
       const logs = getRecentWebhookLogs();
       res.json({ logs });
@@ -1997,7 +1671,7 @@ async function startServer() {
   });
 
   // 3. Clear Webhook Event Logs
-  app.post('/api/v1/paypal/webhook-manager/clear-logs', async (req, res) => {
+  app.post('/api/v1/paypal/webhook-manager/clear-logs', requireSuperUser, async (req, res) => {
     try {
       clearRecentWebhookLogs();
       res.json({ success: true, message: 'Webhook event logs cleared' });
@@ -2007,7 +1681,7 @@ async function startServer() {
   });
 
   // 4. Test Event Simulator (for validating webhook execution)
-  app.post('/api/v1/paypal/webhook-manager/test-event', async (req, res) => {
+  app.post('/api/v1/paypal/webhook-manager/test-event', requireSuperUser, async (req, res) => {
     try {
       const { eventType = 'BILLING.SUBSCRIPTION.ACTIVATED', targetUid, tier = 'Stack' } = req.body || {};
       const simulatedPayload = createSimulatedWebhookEvent(eventType, targetUid, tier);
@@ -2025,7 +1699,7 @@ async function startServer() {
   });
 
   // 5. Query Registered Webhooks from Live PayPal Account
-  app.get('/api/v1/paypal/webhook-manager/paypal-registered', async (req, res) => {
+  app.get('/api/v1/paypal/webhook-manager/paypal-registered', requireSuperUser, async (req, res) => {
     try {
       const registered = await listPayPalWebhooks();
       res.json(registered);
@@ -2035,7 +1709,7 @@ async function startServer() {
   });
 
   // 6. Auto-Register Webhook URL with PayPal API
-  app.post('/api/v1/paypal/webhook-manager/register-paypal-webhook', async (req, res) => {
+  app.post('/api/v1/paypal/webhook-manager/register-paypal-webhook', requireSuperUser, async (req, res) => {
     try {
       const host = req.get('host') || 'localhost:3000';
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
@@ -2055,7 +1729,7 @@ async function startServer() {
   });
 
   // 7. Delete Registered Webhook from PayPal Account
-  app.delete('/api/v1/paypal/webhook-manager/delete-webhook/:webhookId', async (req, res) => {
+  app.delete('/api/v1/paypal/webhook-manager/delete-webhook/:webhookId', requireSuperUser, async (req, res) => {
     try {
       const { webhookId } = req.params;
       const result = await deletePayPalWebhook(webhookId);
@@ -2068,25 +1742,19 @@ async function startServer() {
   // PayPal Billing Routes
   const verifyToken = async (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+    if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized: Missing token' });
     try {
-      const idToken = authHeader.split('Bearer ')[1];
-      let uid = '';
-      try {
-        const decoded = await getAdminAuth().verifyIdToken(idToken);
-        uid = decoded.uid;
-      } catch (authErr) {
-        const parts = idToken.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-          uid = payload.user_id || payload.sub || payload.uid;
-        }
-      }
-      if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-      (req as any).uid = uid;
+      const idToken = authHeader.substring(7);
+      const adminAuth = getAdminAuth();
+      const decoded = await adminAuth.verifyIdToken(idToken);
+      if (!decoded?.uid) return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      req.uid = decoded.uid;
+      req.userId = decoded.uid;
+      req.userEmail = (decoded.email || '').toLowerCase();
+      req.user = decoded;
       next();
     } catch (err) {
-      res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized: Verification failed' });
     }
   };
 
@@ -2428,9 +2096,9 @@ async function startServer() {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader?.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Unauthorized: Missing token' });
       }
-      const idToken = authHeader.split('Bearer ')[1];
+      const idToken = authHeader.substring(7);
       let uid = '';
       let email = '';
       let name = '';
@@ -2444,16 +2112,7 @@ async function startServer() {
         name = decodedToken.name || '';
         picture = decodedToken.picture || '';
       } catch (authErr) {
-        try {
-          const parts = idToken.split('.');
-          if (parts.length === 3) {
-            const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-            uid = payload.user_id || payload.sub || payload.uid || '';
-            email = (payload.email || '').toLowerCase();
-            name = payload.name || '';
-            picture = payload.picture || '';
-          }
-        } catch (_) {}
+        return res.status(401).json({ error: 'Unauthorized: Cryptographic token verification failed' });
       }
 
       if (!uid) {
@@ -2688,7 +2347,7 @@ async function startServer() {
   });
 
   // --- Exchange Rate API Endpoint ---
-  app.post('/api/seo/ping-indexnow', async (req, res) => {
+  app.post('/api/seo/ping-indexnow', requireSuperUser, async (req, res) => {
     try {
       const { urls } = req.body;
       if (!urls || !Array.isArray(urls)) {
