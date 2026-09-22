@@ -265,11 +265,22 @@ export async function idbSaveUserDecks(decks: Deck[], userId: string = 'guest_us
 }
 
 export async function idbGetUserDecks(userId: string = 'guest_user'): Promise<Deck[]> {
-  const encrypted = await getEncryptedItem<Deck[]>('user_decks', userId);
-  if (encrypted && Array.isArray(encrypted)) {
-    return encrypted;
+  try {
+    const encrypted = await getEncryptedItem<Deck[]>('user_decks', userId);
+    if (encrypted && Array.isArray(encrypted) && encrypted.length > 0) {
+      return encrypted;
+    }
+  } catch (e) {
+    console.warn('[IDB] Encrypted vault decks read warning, falling back to direct store:', e);
   }
-  // Return empty collection if user has no saved decks (no cross-account leakage)
+
+  // Resilient secondary fallback: read directly from userDecks store
+  const directDecks = await execDB(async (db) => db.getAll('userDecks'), []);
+  if (directDecks && directDecks.length > 0) {
+    // Re-seed encrypted vault asynchronously to self-heal
+    setEncryptedItem('user_decks', directDecks, userId).catch(() => {});
+    return directDecks;
+  }
   return [];
 }
 
@@ -286,9 +297,19 @@ export async function idbSaveUserPortfolio(items: PortfolioCardEntry[], userId: 
 }
 
 export async function idbGetUserPortfolio(userId: string = 'guest_user'): Promise<PortfolioCardEntry[]> {
-  const encrypted = await getEncryptedItem<PortfolioCardEntry[]>('user_portfolio', userId);
-  if (encrypted && Array.isArray(encrypted)) {
-    return encrypted;
+  try {
+    const encrypted = await getEncryptedItem<PortfolioCardEntry[]>('user_portfolio', userId);
+    if (encrypted && Array.isArray(encrypted) && encrypted.length > 0) {
+      return encrypted;
+    }
+  } catch (e) {
+    console.warn('[IDB] Encrypted vault portfolio read warning, falling back to direct store:', e);
+  }
+
+  const directPortfolio = await execDB(async (db) => db.getAll('userPortfolio'), []);
+  if (directPortfolio && directPortfolio.length > 0) {
+    setEncryptedItem('user_portfolio', directPortfolio, userId).catch(() => {});
+    return directPortfolio;
   }
   return [];
 }
@@ -306,9 +327,19 @@ export async function idbSaveSealedVault(items: PortfolioSealedEntry[], userId: 
 }
 
 export async function idbGetSealedVault(userId: string = 'guest_user'): Promise<PortfolioSealedEntry[]> {
-  const encrypted = await getEncryptedItem<PortfolioSealedEntry[]>('sealed_vault', userId);
-  if (encrypted && Array.isArray(encrypted)) {
-    return encrypted;
+  try {
+    const encrypted = await getEncryptedItem<PortfolioSealedEntry[]>('sealed_vault', userId);
+    if (encrypted && Array.isArray(encrypted) && encrypted.length > 0) {
+      return encrypted;
+    }
+  } catch (e) {
+    console.warn('[IDB] Encrypted vault sealed read warning, falling back to direct store:', e);
+  }
+
+  const directSealed = await execDB(async (db) => db.getAll('sealedVault'), []);
+  if (directSealed && directSealed.length > 0) {
+    setEncryptedItem('sealed_vault', directSealed, userId).catch(() => {});
+    return directSealed;
   }
   return [];
 }
@@ -326,9 +357,19 @@ export async function idbSaveCustomLists(lists: CustomList[], userId: string = '
 }
 
 export async function idbGetCustomLists(userId: string = 'guest_user'): Promise<CustomList[]> {
-  const encrypted = await getEncryptedItem<CustomList[]>('custom_lists', userId);
-  if (encrypted && Array.isArray(encrypted)) {
-    return encrypted;
+  try {
+    const encrypted = await getEncryptedItem<CustomList[]>('custom_lists', userId);
+    if (encrypted && Array.isArray(encrypted) && encrypted.length > 0) {
+      return encrypted;
+    }
+  } catch (e) {
+    console.warn('[IDB] Encrypted vault lists read warning, falling back to direct store:', e);
+  }
+
+  const directLists = await execDB(async (db) => db.getAll('customLists'), []);
+  if (directLists && directLists.length > 0) {
+    setEncryptedItem('custom_lists', directLists, userId).catch(() => {});
+    return directLists;
   }
   return [];
 }

@@ -414,6 +414,10 @@ export default function App() {
   const [snapshotMetrics, setSnapshotMetrics] = useState<{ rawSize: number; byteSize: number; compressionRatio: string } | null>(null);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
 
+  // Guards against race conditions and accidental blank collection overwrites during startup or deployment
+  const isDataInitializedRef = React.useRef(false);
+  const hasKnownRemoteDataRef = React.useRef(false);
+
   // Maintain a stable stateRef to prevent saveCompressedCloudSnapshot from changing reference on every state update
   const stateRef = React.useRef({
     decks,
@@ -469,6 +473,28 @@ export default function App() {
         : rawDecks;
       const sanitizedLists = curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
       const sanitizedSealed = curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
+
+      // SAFETY GUARD 1: Never write snapshots if initial data load from cloud/IDB is still running
+      if (curUser && !isDataInitializedRef.current) {
+        console.warn('[SyncGuard] Blocked cloud snapshot overwrite: initial load still running.');
+        return;
+      }
+
+      // SAFETY GUARD 2: Never allow an accidental blank collection overwrite to wipe out existing user collections
+      if (
+        curUser &&
+        hasKnownRemoteDataRef.current &&
+        sanitizedDecks.length === 0 &&
+        sanitizedLists.length === 0 &&
+        sanitizedSealed.length === 0
+      ) {
+        console.warn('[SyncGuard] Blocked accidental empty-state wipeout of populated account.');
+        return;
+      }
+
+      if (sanitizedDecks.length > 0 || sanitizedLists.length > 0 || sanitizedSealed.length > 0) {
+        hasKnownRemoteDataRef.current = true;
+      }
 
       const stateToCompress = {
         version: 2,
@@ -598,6 +624,8 @@ export default function App() {
     const activeUid = user?.uid || 'guest_user';
 
     const initializeAppState = async () => {
+      isDataInitializedRef.current = false;
+
       // If logging in with a real user account, immediately flush any leftover guest mode storage
       if (user) {
         try {
@@ -611,11 +639,13 @@ export default function App() {
         } catch (e) {}
       }
 
-      // Reset collection state to prevent state bleed between user accounts
-      setDecks([]);
-      setCustomLists([]);
-      setSealedEntries([]);
-      setSoldEntries([]);
+      // Only reset collection state if transitioning to unauthenticated guest mode
+      if (!user) {
+        setDecks([]);
+        setCustomLists([]);
+        setSealedEntries([]);
+        setSoldEntries([]);
+      }
 
       try {
         const [savedDecks, savedLists, savedSealed] = await Promise.all([
@@ -627,6 +657,10 @@ export default function App() {
         let currentDecks = savedDecks || [];
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
+
+        if (currentDecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
+          hasKnownRemoteDataRef.current = true;
+        }
 
         // If authenticated, check Firestore snapshot AND query subcollections to guarantee cross-device persistence
         if (user) {
@@ -644,6 +678,13 @@ export default function App() {
               });
 
               remoteSnapshotState = await unpackUserSnapshot(docData);
+              if (
+                (remoteSnapshotState?.decks?.length || 0) > 0 ||
+                (remoteSnapshotState?.customLists?.length || 0) > 0 ||
+                (remoteSnapshotState?.sealedEntries?.length || 0) > 0
+              ) {
+                hasKnownRemoteDataRef.current = true;
+              }
             }
 
             // Subcollection multi-tier query fallback (guarantees items added on mobile/desktop exist across devices)
@@ -665,6 +706,10 @@ export default function App() {
             const subDecks = subDecksSnap && !subDecksSnap.empty ? (subDecksSnap.docs.map((d) => d.data() as Deck)) : [];
             const subLists = subListsSnap && !subListsSnap.empty ? (subListsSnap.docs.map((d) => d.data() as CustomList)) : [];
             const subSealed = subSealedSnap && !subSealedSnap.empty ? (subSealedSnap.docs.map((d) => d.data() as PortfolioSealedEntry)) : [];
+
+            if (subDecks.length > 0 || subLists.length > 0 || subSealed.length > 0) {
+              hasKnownRemoteDataRef.current = true;
+            }
 
             // Combine remote snapshot and remote subcollections first
             const remoteConsolidated = reconcileFullCollectionState(
@@ -702,7 +747,7 @@ export default function App() {
               setSoldEntries(reconciled.soldEntries);
             }
           } catch (cloudErr) {
-            console.warn('Snapshot/Subcollection cloud fetch warning:', cloudErr);
+            console.warn('Snapshot/Subcollection cloud fetch warning (preserving local offline state):', cloudErr);
           }
 
           // Strict user account purification: eliminate all mock/showcase/sample data from user accounts
@@ -726,12 +771,14 @@ export default function App() {
             idbSaveSealedVault(currentSealed, user.uid),
           ]);
 
-          // Immediately sync back unified consolidated snapshot to Cloud
-          await saveCompressedCloudSnapshot({
-            decks: currentDecks,
-            customLists: currentLists,
-            sealedEntries: currentSealed,
-          });
+          // Only sync back if there is actual content, preventing race condition overwrite
+          if (currentDecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
+            await saveCompressedCloudSnapshot({
+              decks: currentDecks,
+              customLists: currentLists,
+              sealedEntries: currentSealed,
+            });
+          }
         }
 
         // Filter out any mock items from accounts to guarantee a clean zero-state
@@ -748,10 +795,10 @@ export default function App() {
         setCustomLists(sanitizedLists);
         setSealedEntries(sanitizedSealed);
       } catch (err) {
-        console.error('Data initialization error:', err);
-        setDecks([]);
-        setCustomLists([]);
-        setSealedEntries([]);
+        console.error('Data initialization error (retaining existing data):', err);
+        // Do NOT wipe out decks/lists on error! Fallback to existing memory or IDB
+      } finally {
+        isDataInitializedRef.current = true;
       }
     };
 
@@ -822,6 +869,7 @@ export default function App() {
       return;
     }
     if (!user) return;
+    if (!isDataInitializedRef.current) return; // CRITICAL: NEVER auto-save during initial boot or account sync!
 
     const timer = setTimeout(() => {
       saveCompressedCloudSnapshot();
