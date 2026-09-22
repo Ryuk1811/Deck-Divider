@@ -57,6 +57,7 @@ import {
   CartesianGrid 
 } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
+import { formatSetReleaseDate } from '../../utils/setCategorizer';
 
 const SUPER_USER_EMAIL = 'gurutvamurdia@gmail.com';
 
@@ -1582,7 +1583,7 @@ export const AdminDashboardView: React.FC = () => {
                         </td>
                         <td className="py-3.5 px-4 font-mono text-slate-600">{set.series}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-700">{set.totalCards} cards</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-500">{set.releaseDate}</td>
+                        <td className="py-3.5 px-4 font-mono text-slate-500">{formatSetReleaseDate(set.releaseDate)}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-500 text-[11px]">
                           {new Date(set.lastSync).toLocaleTimeString()}
                         </td>

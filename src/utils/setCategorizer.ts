@@ -410,6 +410,82 @@ export function normalizeSetName(set: any): string {
 }
 
 /**
+ * Safely formats any set release date into a clean, human-readable date string.
+ * Supports: 'YYYY-MM-DD', 'YYYY/MM/DD', timestamps, or ISO dates.
+ * Output: e.g. 'Nov 8, 2024' or 'Jan 9, 1999'.
+ */
+export function formatSetReleaseDate(dateInput?: string | number | null): string {
+  if (!dateInput) return 'Official Release';
+
+  const rawStr = String(dateInput).trim();
+  if (!rawStr || rawStr === 'undefined' || rawStr === 'null' || rawStr === 'NaN') {
+    return 'Official Release';
+  }
+
+  // If already cleanly formatted like "Nov 8, 2024" or "Sep 2023"
+  if (/^[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4}$/.test(rawStr) || /^[A-Za-z]{3,9}\s+\d{4}$/.test(rawStr)) {
+    return rawStr;
+  }
+
+  // Handle standard YYYY-MM-DD or YYYY/MM/DD
+  const match = rawStr.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (match) {
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
+    const d = new Date(Date.UTC(year, month, day));
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    }
+  }
+
+  // Handle YYYY-MM
+  const monthMatch = rawStr.match(/^(\d{4})[-/](\d{1,2})$/);
+  if (monthMatch) {
+    const year = parseInt(monthMatch[1], 10);
+    const month = parseInt(monthMatch[2], 10) - 1;
+    const d = new Date(Date.UTC(year, month, 1));
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    }
+  }
+
+  // Handle purely numeric timestamp (e.g. 1735689600000 or 1735689600)
+  if (/^\d{10,13}$/.test(rawStr)) {
+    const ts = parseInt(rawStr, 10);
+    const d = new Date(ts > 10000000000 ? ts : ts * 1000);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+  }
+
+  // Handle generic Date parsing
+  const d = new Date(rawStr);
+  if (!isNaN(d.getTime()) && d.getFullYear() >= 1996 && d.getFullYear() <= 2040) {
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+
+  return rawStr;
+}
+
+/**
  * Known canonical release dates for major sets (used when API omits releaseDate)
  */
 export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
@@ -424,32 +500,54 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'me04': '2026-05-22',
   'me05': '2026-07-24',
   // Pokémon TCG Pocket
+  'tcgp': '2024-10-30',
+  'a1': '2024-10-30',
+  'a1a': '2024-12-16',
+  'a2': '2025-01-30',
+  'a2a': '2025-02-28',
   'b1': '2024-10-30',
   'b1a': '2024-12-16',
   'b2': '2025-01-30',
   'b2a': '2025-02-28',
   // Scarlet & Violet
+  'svp': '2023-01-06',
+  'sve': '2023-03-31',
+  'mfb': '2023-09-29',
   'sv01': '2023-03-31',
+  'sv1': '2023-03-31',
   'sv02': '2023-06-09',
+  'sv2': '2023-06-09',
   'sv03': '2023-08-11',
+  'sv3': '2023-08-11',
   'sv03.5': '2023-09-22',
+  'sv3.5': '2023-09-22',
   'sv3pt5': '2023-09-22',
   'sv04': '2023-11-03',
+  'sv4': '2023-11-03',
   'sv04.5': '2024-01-26',
+  'sv4.5': '2024-01-26',
   'sv4pt5': '2024-01-26',
   'sv05': '2024-03-22',
+  'sv5': '2024-03-22',
   'sv06': '2024-05-24',
+  'sv6': '2024-05-24',
   'sv06.5': '2024-08-02',
+  'sv6.5': '2024-08-02',
   'sv6pt5': '2024-08-02',
   'sv07': '2024-09-13',
+  'sv7': '2024-09-13',
   'sv08': '2024-11-08',
+  'sv8': '2024-11-08',
   'sv08.5': '2025-01-17',
+  'sv8.5': '2025-01-17',
   'sv8pt5': '2025-01-17',
   'sv09': '2025-03-28',
+  'sv9': '2025-03-28',
   'sv10': '2025-05-23',
   'sv10.5w': '2025-07-18',
   'sv10.5b': '2025-07-18',
   // Sword & Shield
+  'swshp': '2019-11-15',
   'swsh1': '2020-02-07',
   'swsh2': '2020-05-01',
   'swsh3': '2020-08-14',
@@ -458,20 +556,29 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'swsh4': '2020-11-13',
   'swsh4.5': '2021-02-19',
   'swsh4pt5': '2021-02-19',
+  'swsh4.5sv': '2021-02-19',
   'swsh5': '2021-03-19',
   'swsh6': '2021-06-18',
   'swsh7': '2021-08-27',
   'cel25': '2021-10-08',
+  'cel25c': '2021-10-08',
+  'cel25cc': '2021-10-08',
   'swsh8': '2021-11-12',
   'swsh9': '2022-02-25',
+  'swsh9tg': '2022-02-25',
   'swsh10': '2022-05-27',
+  'swsh10tg': '2022-05-27',
   'swsh10.5': '2022-07-01',
   'swsh10pt5': '2022-07-01',
   'swsh11': '2022-09-09',
+  'swsh11tg': '2022-09-09',
   'swsh12': '2022-11-11',
+  'swsh12tg': '2022-11-11',
   'swsh12.5': '2023-01-20',
   'swsh12pt5': '2023-01-20',
+  'swsh12.5gg': '2023-01-20',
   // Sun & Moon
+  'smp': '2016-11-18',
   'sm1': '2017-02-03',
   'sm2': '2017-05-05',
   'sm3': '2017-08-04',
@@ -490,8 +597,11 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'sm11': '2019-08-02',
   'sm11.5': '2019-08-23',
   'sm11pt5': '2019-08-23',
+  'sma': '2019-08-23',
   'sm12': '2019-11-01',
   // XY
+  'xyp': '2013-10-12',
+  'xy0': '2013-11-08',
   'xy1': '2014-02-05',
   'xy2': '2014-05-07',
   'xy3': '2014-08-13',
@@ -508,6 +618,7 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'xy11': '2016-08-03',
   'xy12': '2016-11-02',
   // Black & White
+  'bwp': '2011-04-25',
   'bw1': '2011-04-25',
   'bw2': '2011-08-31',
   'bw3': '2011-11-16',
@@ -521,12 +632,14 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'bw10': '2013-08-14',
   'bw11': '2013-11-06',
   // HeartGold & SoulSilver
+  'hgp': '2010-02-10',
   'hgss1': '2010-02-10',
   'hgss2': '2010-05-12',
   'hgss3': '2010-08-18',
   'hgss4': '2010-11-03',
   'col1': '2011-02-09',
   // Diamond & Pearl / Platinum
+  'dpp': '2007-05-23',
   'dp1': '2007-05-23',
   'dp2': '2007-08-22',
   'dp3': '2007-11-07',
@@ -539,6 +652,7 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'pl3': '2009-08-19',
   'pl4': '2009-11-04',
   // EX Series
+  'np': '2003-06-18',
   'ex1': '2003-06-18',
   'ex2': '2003-09-18',
   'ex3': '2003-11-24',
@@ -555,19 +669,43 @@ export const KNOWN_SET_RELEASE_DATES: Record<string, string> = {
   'ex14': '2006-08-30',
   'ex15': '2006-11-08',
   'ex16': '2007-02-14',
+  // E-Card Series
+  'ecard1': '2002-09-15',
+  'ecard2': '2003-01-15',
+  'ecard3': '2003-05-12',
+  // Legendary Collection
+  'lc': '2002-05-24',
   // Neo Series
   'neo1': '2000-12-16',
   'neo2': '2001-06-01',
+  'si1': '2001-07-31',
   'neo3': '2001-09-21',
   'neo4': '2002-02-28',
-  // Base Series
+  // Base & Gym Series
   'base1': '1999-01-09',
   'base2': '1999-06-16',
+  'basep': '1999-07-01',
+  'wp': '1999-09-01',
   'base3': '1999-10-10',
   'base4': '2000-02-24',
   'base5': '2000-04-24',
   'gym1': '2000-08-14',
   'gym2': '2000-10-16',
+  'miscp': '2000-01-01',
+  'jumbo': '2000-01-01',
+  // POP Series
+  'pop1': '2004-09-01',
+  'pop2': '2005-08-01',
+  'pop3': '2006-04-01',
+  'pop4': '2006-08-01',
+  'pop5': '2007-03-01',
+  'pop6': '2007-09-01',
+  'pop7': '2008-03-01',
+  'pop8': '2008-09-01',
+  'pop9': '2009-03-01',
+  // Trainer Kits
+  'tk1': '2004-09-01',
+  'tk2': '2006-03-01',
 };
 
 /**
@@ -699,10 +837,14 @@ export function normalizeSet(set: any): CardSet {
   }
 
   // 3. Accurate Release Date lookup
-  let releaseDate = set.releaseDate;
-  if (!releaseDate || releaseDate === '2024-01-01') {
-    releaseDate = KNOWN_SET_RELEASE_DATES[idClean] || set.releaseDate || '2024-01-01';
+  let rawDate = set.releaseDate;
+  if (!rawDate || rawDate === '2024-01-01' || rawDate === 'undefined' || rawDate === 'null') {
+    rawDate = KNOWN_SET_RELEASE_DATES[idClean] || KNOWN_SET_RELEASE_DATES[String(set.id || '')] || set.releaseDate;
   }
+  if (!rawDate) {
+    rawDate = KNOWN_SET_RELEASE_DATES[idClean] || '2023-01-01';
+  }
+  const releaseDate = formatSetReleaseDate(rawDate);
 
   return {
     id: String(set.id || 'unknown'),
@@ -729,7 +871,11 @@ export function getSeriesWeight(seriesName: string, sets: CardSet[] = []): numbe
   const seriesSets = sets.filter((s) => s.series === seriesName);
   if (seriesSets.length > 0) {
     const maxYear = Math.max(
-      ...seriesSets.map((s) => (s.releaseDate ? parseInt(s.releaseDate.substring(0, 4), 10) : 2020))
+      ...seriesSets.map((s) => {
+        if (!s.releaseDate) return 2020;
+        const parsed = new Date(s.releaseDate);
+        return !isNaN(parsed.getTime()) ? parsed.getFullYear() : 2020;
+      })
     );
     // If released in 2026 or later, rank higher than Scarlet & Violet (weight < 10)
     return Math.max(0, 2030 - maxYear);
@@ -786,6 +932,12 @@ export function sortSetsChronologically(sets: CardSet[]): CardSet[] {
     const orderB = getSetOrderWeight(b);
     if (orderA !== orderB) {
       return orderA - orderB;
+    }
+
+    const timeA = new Date(a.releaseDate || '1990-01-01').getTime() || 0;
+    const timeB = new Date(b.releaseDate || '1990-01-01').getTime() || 0;
+    if (timeA !== timeB) {
+      return timeA - timeB;
     }
 
     const dateA = a.releaseDate || '1990-01-01';

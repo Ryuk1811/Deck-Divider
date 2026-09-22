@@ -5,7 +5,7 @@ import { CardSet } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { getExpansionsCatalog } from '../../lib/dataSyncEngine';
-import { getDynamicSeriesCategories, sortSetsChronologically, normalizeSet } from '../../utils/setCategorizer';
+import { getDynamicSeriesCategories, sortSetsChronologically, normalizeSet, formatSetReleaseDate } from '../../utils/setCategorizer';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { getSetsDirectorySchema } from '../../components/seo/schemaData';
 
@@ -178,7 +178,7 @@ export const PublicSetsDirectoryView: React.FC = () => {
                             </h3>
                             <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-mono mt-1.5">
                               <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
-                              <span>{set.releaseDate}</span>
+                              <span>{formatSetReleaseDate(set.releaseDate)}</span>
                             </div>
                           </div>
                           

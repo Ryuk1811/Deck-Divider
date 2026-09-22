@@ -1,8 +1,4 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { Browser } from 'puppeteer';
-
-puppeteer.use(StealthPlugin());
+import puppeteer, { type Browser } from 'puppeteer';
 
 let globalBrowser: Browser | null = null;
 

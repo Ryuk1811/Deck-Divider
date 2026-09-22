@@ -9,6 +9,7 @@ import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEn
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { getSetDetailSchema } from '../../components/seo/schemaData';
 import { generateSetSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
+import { formatSetReleaseDate } from '../../utils/setCategorizer';
 
 const PAGE_SIZE = 60;
 
@@ -141,7 +142,7 @@ export const PublicSetView: React.FC = () => {
         keywords={seoMetadata.keywords}
         schema={
           set
-            ? getSetDetailSchema(set.name, set.id, set.total || cards.length, set.releaseDate || '2024')
+            ? getSetDetailSchema(set.name, set.id, set.total || cards.length, formatSetReleaseDate(set.releaseDate))
             : undefined
         }
       />
@@ -194,7 +195,7 @@ export const PublicSetView: React.FC = () => {
                     </span>
                     <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
                       <Calendar className="w-3.5 h-3.5 text-[#64748B]" />
-                      {set.releaseDate}
+                      {formatSetReleaseDate(set.releaseDate)}
                     </span>
                     <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
                       {set.printedTotal} Cards (Total: {set.total})

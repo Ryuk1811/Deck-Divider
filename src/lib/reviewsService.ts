@@ -48,8 +48,19 @@ function saveLocalReview(review: CommunityReview): void {
 export async function getCommunityReviews(): Promise<CommunityReview[]> {
   const localItems = getLocalSubmittedReviews();
   
+  let apiReviews: CommunityReview[] = [];
+  try {
+    const apiRes = await fetch('/api/reviews');
+    if (apiRes.ok) {
+      const data = await apiRes.json();
+      if (Array.isArray(data.reviews)) {
+        apiReviews = data.reviews;
+      }
+    }
+  } catch (_) {}
+
   if (!db) {
-    const merged = [...localItems, ...SEED_COMMUNITY_REVIEWS];
+    const merged = [...localItems, ...apiReviews, ...SEED_COMMUNITY_REVIEWS];
     const seen = new Set<string>();
     return merged.filter(item => {
       if (seen.has(item.id)) return false;
@@ -82,7 +93,7 @@ export async function getCommunityReviews(): Promise<CommunityReview[]> {
       });
     });
 
-    const allCombined = [...localItems, ...firestoreReviews, ...SEED_COMMUNITY_REVIEWS];
+    const allCombined = [...localItems, ...firestoreReviews, ...apiReviews, ...SEED_COMMUNITY_REVIEWS];
     const seen = new Set<string>();
     const unique = allCombined.filter(item => {
       if (seen.has(item.id)) return false;
@@ -91,9 +102,14 @@ export async function getCommunityReviews(): Promise<CommunityReview[]> {
     });
 
     return unique.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  } catch (err) {
-    console.warn('Firestore query failed, falling back to local and seeds:', err);
-    return [...localItems, ...SEED_COMMUNITY_REVIEWS];
+  } catch (_) {
+    const merged = [...localItems, ...apiReviews, ...SEED_COMMUNITY_REVIEWS];
+    const seen = new Set<string>();
+    return merged.filter(item => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
   }
 }
 
@@ -140,14 +156,12 @@ export function subscribeToReviews(onUpdate: (reviews: CommunityReview[]) => voi
       });
 
       onUpdate(unique.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-    }, (error) => {
-      console.warn('Reviews real-time snapshot error:', error);
+    }, () => {
       getCommunityReviews().then(onUpdate);
     });
 
     return unsubscribe;
-  } catch (err) {
-    console.warn('Could not setup real-time listener, falling back to static fetch:', err);
+  } catch (_) {
     getCommunityReviews().then(onUpdate);
     return () => {};
   }

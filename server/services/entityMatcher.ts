@@ -1,7 +1,3 @@
-import { pipeline } from '@xenova/transformers';
-
-let extractor: any = null;
-
 const CACHED_CARDS = [
   { id: '1', canonical_card_name: 'Charizard VMAX', set_name: 'Shining Fates' },
   { id: '2', canonical_card_name: 'Pikachu ex', set_name: 'Surging Sparks' },
@@ -12,62 +8,46 @@ const CACHED_CARDS = [
   { id: '7', canonical_card_name: 'Rayquaza VMAX', set_name: 'Evolving Skies' },
 ];
 
-async function getExtractor() {
-  if (!extractor) {
-    try {
-      extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
-    } catch (err) {
-      console.warn("Feature extraction pipeline initialization warning:", err);
-    }
-  }
-  return extractor;
+function tokenize(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 1)
+  );
 }
 
-function cosineSimilarity(vecA: number[], vecB: number[]): number {
-  let dotProduct = 0.0;
-  let normA = 0.0;
-  let normB = 0.0;
-  for (let i = 0; i < vecA.length; i++) {
-    dotProduct += vecA[i] * vecB[i];
-    normA += vecA[i] * vecA[i];
-    normB += vecB[i] * vecB[i];
+function calculateJaccardSimilarity(tokensA: Set<string>, tokensB: Set<string>): number {
+  if (tokensA.size === 0 || tokensB.size === 0) return 0;
+  let intersection = 0;
+  for (const t of tokensA) {
+    if (tokensB.has(t)) intersection++;
   }
-  if (normA === 0 || normB === 0) return 0;
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  const union = tokensA.size + tokensB.size - intersection;
+  return union === 0 ? 0 : intersection / union;
 }
 
 export async function matchCardEntity(scrapedTitle: string, canonicalList = CACHED_CARDS) {
-  try {
-    const embedder = await getExtractor();
-    
-    if (embedder) {
-      const targetOutput = await embedder(scrapedTitle, { pooling: 'mean', normalize: true });
-      const targetVector = Array.from(targetOutput.data) as number[];
+  const queryTokens = tokenize(scrapedTitle);
+  let bestMatch = null;
+  let highestScore = -1;
 
-      let bestMatch = null;
-      let highestScore = -1;
-
-      for (const card of canonicalList) {
-        const cardString = `${card.canonical_card_name} ${card.set_name}`;
-        const cardOutput = await embedder(cardString, { pooling: 'mean', normalize: true });
-        const cardVector = Array.from(cardOutput.data) as number[];
-        
-        const score = cosineSimilarity(targetVector, cardVector);
-        if (score > highestScore) {
-          highestScore = score;
-          bestMatch = card;
-        }
-      }
-
-      if (highestScore > 0.65 && bestMatch) {
-        return {
-          ...bestMatch,
-          similarityScore: Number(highestScore.toFixed(3))
-        };
-      }
+  for (const card of canonicalList) {
+    const cardString = `${card.canonical_card_name} ${card.set_name}`;
+    const cardTokens = tokenize(cardString);
+    const score = calculateJaccardSimilarity(queryTokens, cardTokens);
+    if (score > highestScore) {
+      highestScore = score;
+      bestMatch = card;
     }
-  } catch (err) {
-    console.warn("Entity matcher ONNX fallback active:", err);
+  }
+
+  if (highestScore > 0.4 && bestMatch) {
+    return {
+      ...bestMatch,
+      similarityScore: Number(highestScore.toFixed(3))
+    };
   }
 
   // Fallback: Construct canonical entity directly from scraped card title

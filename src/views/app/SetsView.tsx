@@ -3,7 +3,7 @@ import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown, RefreshCw, Sparkl
 import { CardSet, PokemonCard, Deck, DisplayCurrency } from '../../types';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getCardsBySetCatalog, getExpansionsCatalog, forceRefreshExpansions } from '../../lib/dataSyncEngine';
-import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically } from '../../utils/setCategorizer';
+import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically, formatSetReleaseDate } from '../../utils/setCategorizer';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
 
 interface SetsViewProps {
@@ -248,7 +248,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
                           {s.name}
                         </h3>
                         <p className="font-mono text-[11px] text-[#64748B]">
-                          {s.series} {s.releaseDate ? `• ${s.releaseDate}` : ''}
+                          {s.series} {s.releaseDate ? `• ${formatSetReleaseDate(s.releaseDate)}` : ''}
                         </p>
                       </div>
                     </div>
