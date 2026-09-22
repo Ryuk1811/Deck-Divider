@@ -1,6 +1,7 @@
 import React from 'react';
 import { Target, Shield, Compass, Sparkles, Database, Users } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getCommunityReviews } from '../../lib/reviewsService';
 
 export const PlatformPhilosophySection: React.FC = () => {
   return (
@@ -70,26 +71,45 @@ export const PlatformPhilosophySection: React.FC = () => {
 };
 
 const UserCountColumn: React.FC = () => {
-  const [count, setCount] = React.useState<number>(14280);
+  const [actualUserCount, setActualUserCount] = React.useState<number>(14280);
+  const [reviewsCount, setReviewsCount] = React.useState<number>(1000);
 
   React.useEffect(() => {
     let isMounted = true;
+
+    // 1. Fetch real actual users count from API
     fetch('/api/stats/users')
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (isMounted && d && typeof d.count === 'number' && !isNaN(d.count)) {
-          setCount(d.count);
+        if (isMounted && d) {
+          if (typeof d.realCount === 'number' && !isNaN(d.realCount)) {
+            setActualUserCount(d.realCount);
+          } else if (typeof d.count === 'number' && !isNaN(d.count)) {
+            setActualUserCount(d.count);
+          }
         }
       })
       .catch(() => {
         // Safe fallback already provided
       });
+
+    // 2. Fetch total reviews count dynamically
+    getCommunityReviews()
+      .then((revs) => {
+        if (isMounted && revs && revs.length > 0) {
+          setReviewsCount(revs.length);
+        }
+      })
+      .catch(() => {
+        // Safe fallback to 1,000 base reviews
+      });
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const displayCount = typeof count === 'number' && !isNaN(count) ? count : 14280;
+  const totalUsers = actualUserCount + reviewsCount;
 
   return (
     <div className="space-y-3">
@@ -100,7 +120,7 @@ const UserCountColumn: React.FC = () => {
         Current Users
       </h4>
       <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-        Join <strong className="text-slate-900">{displayCount.toLocaleString()}</strong> active collectors and players already tracking their portfolios and building meta-ready decks on the platform.
+        Join <strong className="text-slate-900">{totalUsers.toLocaleString()}</strong> active collectors and players already tracking their portfolios and building meta-ready decks on the platform.
       </p>
     </div>
   );
