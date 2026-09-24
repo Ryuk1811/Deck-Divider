@@ -1,0 +1,7 @@
+# DECK / divider Security Policy (RFC 9116)
+Contact: mailto:deckdivider@outlook.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://deckdivider.app/.well-known/security.txt
+Policy: https://deckdivider.app/security
+Acknowledgments: https://deckdivider.app/about

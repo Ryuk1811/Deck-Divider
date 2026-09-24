@@ -1,27 +1,7 @@
+# DECK / divider Security Policy (RFC 9116)
 Contact: mailto:deckdivider@outlook.com
-Contact: https://deckdivider.app/contact
 Expires: 2027-12-31T23:59:59.000Z
-Acknowledgments: https://deckdivider.app/hall-of-fame
 Preferred-Languages: en
 Canonical: https://deckdivider.app/.well-known/security.txt
-Policy: https://deckdivider.app/privacy
-
-# Introduction
-Deck Divider takes the security of our collectors and players seriously. 
-We appreciate the efforts of security researchers in helping to keep our platform secure.
-If you believe you have discovered a vulnerability in Deck Divider, we ask that you responsibly disclose it to us.
-
-# Guidelines
-* Please do not access or modify data belonging to other users.
-* Please avoid performing actions that might degrade the performance or availability of our services (e.g., DoS, DDoS).
-* Please avoid using automated scanners without our prior consent.
-* Please do not exfiltrate data from our systems or exploit the vulnerability beyond what is necessary to demonstrate it.
-
-# In-Scope
-* https://deckdivider.app
-* All subdomains of deckdivider.app
-
-# Out-of-Scope
-* Third-party services or infrastructure (e.g., Firebase, Google Cloud, Pokemon TCG API, TCGdex, TCGplayer).
-* Phishing or social engineering.
-* Volumetric / Denial of Service attacks.
+Policy: https://deckdivider.app/security
+Acknowledgments: https://deckdivider.app/about

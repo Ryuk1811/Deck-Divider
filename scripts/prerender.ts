@@ -29,13 +29,28 @@ async function prerenderAllRoutes() {
       'icon-192.png',
       'icon-google-192.png',
       'icon-512.png',
-      'logo.png'
+      'logo.png',
+      'security.txt',
+      '_headers'
     ];
     for (const icon of iconFiles) {
       const srcPath = path.resolve(process.cwd(), 'public', icon);
       const destPath = path.join(distDir, icon);
       if (fs.existsSync(srcPath)) {
         fs.copyFileSync(srcPath, destPath);
+      }
+    }
+
+    // Sync .well-known folder
+    const srcWellKnown = path.resolve(process.cwd(), 'public', '.well-known');
+    const destWellKnown = path.join(distDir, '.well-known');
+    if (fs.existsSync(srcWellKnown)) {
+      if (!fs.existsSync(destWellKnown)) {
+        fs.mkdirSync(destWellKnown, { recursive: true });
+      }
+      const files = fs.readdirSync(srcWellKnown);
+      for (const file of files) {
+        fs.copyFileSync(path.join(srcWellKnown, file), path.join(destWellKnown, file));
       }
     }
   } catch (e) {

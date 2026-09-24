@@ -97,12 +97,12 @@ async function startServer() {
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self' data: blob:; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com https://*.clarity.ms https://www.clarity.ms https://c.clarity.ms; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://apis.google.com https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://accounts.google.com https://*.clarity.ms https://www.clarity.ms https://c.clarity.ms https://challenges.cloudflare.com; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paypal.com https://*.paypalobjects.com https://accounts.google.com; " +
       "img-src 'self' data: blob: https: https://assets.tcgdex.net https://images.pokemontcg.io https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.paypalobjects.com https://paypalobjects.com https://*.paypal.com https://paypal.com https://*.googleusercontent.com https://*.clarity.ms https://c.clarity.ms; " +
       "font-src 'self' data: https://fonts.gstatic.com https://*.paypalobjects.com; " +
-      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.clarity.ms https://c.clarity.ms; " +
-      "frame-src 'self' https: http:; " +
+      "connect-src 'self' ws: wss: https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://api.tcgdex.net https://api.pokemontcg.io https://open.er-api.com https://v6.exchangerate-api.com https://*.paypal.com https://paypal.com https://*.paypalobjects.com https://paypalobjects.com https://*.clarity.ms https://c.clarity.ms https://challenges.cloudflare.com; " +
+      "frame-src 'self' https: http: https://challenges.cloudflare.com; " +
       "frame-ancestors *; " +
       "base-uri 'self'; " +
       "form-action 'self' https://*.paypal.com https://accounts.google.com; " +
@@ -110,12 +110,32 @@ async function startServer() {
     );
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     res.setHeader(
       'Permissions-Policy',
       'accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(self "https://www.paypal.com" "https://www.sandbox.paypal.com"), picture-in-picture=(self), publickey-credentials-get=(self), screen-wake-lock=(), usb=(), xr-spatial-tracking=()'
     );
     next();
+  });
+
+  // RFC 9116 security.txt endpoints
+  const securityTxtBody = [
+    '# DECK / divider Security Policy (RFC 9116)',
+    'Contact: mailto:deckdivider@outlook.com',
+    'Expires: 2027-12-31T23:59:59.000Z',
+    'Preferred-Languages: en',
+    'Canonical: https://deckdivider.app/.well-known/security.txt',
+    'Policy: https://deckdivider.app/security',
+    'Acknowledgments: https://deckdivider.app/about',
+    ''
+  ].join('\n');
+
+  app.get(['/.well-known/security.txt', '/security.txt'], (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(securityTxtBody);
   });
 
   // API Routes

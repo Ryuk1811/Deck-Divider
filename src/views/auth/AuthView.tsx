@@ -14,6 +14,7 @@ import { validateEmailAddress } from '../../lib/emailValidator';
 import { trackAuthView, trackSignupSubmit, trackSignupSuccess, trackLoginSuccess } from '../../lib/analytics';
 import { Loader2 } from 'lucide-react';
 import { DeckDividerBrand } from '../../components/ui/DeckDividerBrand';
+import { TurnstileWidget } from '../../components/common/TurnstileWidget';
 
 export function AuthView({ 
   onBack,
@@ -31,6 +32,7 @@ export function AuthView({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Track auth page view on mount & flush any residual guest flags
   useEffect(() => {
@@ -297,6 +299,12 @@ export function AuthView({
               <p className="text-[11px] text-[#DC143C] font-semibold leading-relaxed">{error}</p>
             </div>
           )}
+
+          {/* Cloudflare Turnstile Bot Verification (No Secrets Required) */}
+          <TurnstileWidget
+            onVerify={(token) => setTurnstileToken(token)}
+            className="my-1"
+          />
 
           <button
             type="submit"
