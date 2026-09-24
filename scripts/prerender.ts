@@ -58,6 +58,9 @@ async function prerenderAllRoutes() {
   // Aligning entirely with the Phase 1 React Router rewrite (Singular domains)
   const publicRoutes: Array<{ route: string; outputPath: string }> = [
     { route: '/', outputPath: path.join(distDir, 'index.html') },
+    { route: '/cards', outputPath: path.join(distDir, 'cards', 'index.html') },
+    { route: '/expansions', outputPath: path.join(distDir, 'expansions', 'index.html') },
+    { route: '/expansions/sets', outputPath: path.join(distDir, 'expansions', 'sets', 'index.html') },
     { route: '/directory', outputPath: path.join(distDir, 'directory', 'index.html') },
     { route: '/directory/sets-index', outputPath: path.join(distDir, 'directory', 'sets-index', 'index.html') },
     { route: '/directory/decks-index', outputPath: path.join(distDir, 'directory', 'decks-index', 'index.html') },
@@ -70,9 +73,10 @@ async function prerenderAllRoutes() {
     { route: '/how-it-works', outputPath: path.join(distDir, 'how-it-works', 'index.html') },
     { route: '/privacy', outputPath: path.join(distDir, 'privacy', 'index.html') },
     { route: '/terms', outputPath: path.join(distDir, 'terms', 'index.html') },
+    { route: '/security', outputPath: path.join(distDir, 'security', 'index.html') },
     { route: '/contact', outputPath: path.join(distDir, 'contact', 'index.html') },
     { route: '/faq', outputPath: path.join(distDir, 'faq', 'index.html') },
-    
+    { route: '/socials', outputPath: path.join(distDir, 'socials', 'index.html') },
     { route: '/changelog', outputPath: path.join(distDir, 'changelog', 'index.html') },
     
     // Formats & Legality

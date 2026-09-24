@@ -396,7 +396,7 @@ export interface SearchFilters {
   legality?: 'standard' | 'expanded';
   priceMin?: number;
   priceMax?: number;
-  sortBy: 'price-desc' | 'price-asc' | 'name' | 'set' | 'hp';
+  sortBy: 'price-desc' | 'price-asc' | 'name' | 'name-desc' | 'set' | 'hp' | 'number';
 }
 
 export interface RecentActivityItem {

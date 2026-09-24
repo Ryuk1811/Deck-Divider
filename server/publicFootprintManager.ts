@@ -19,17 +19,20 @@ export interface RouteEntry {
 // 1. Core Platform & Directory Pages (Aligned with Phase 1 rewrite)
 export const CORE_PAGES: RouteEntry[] = [
   { path: '/', lastmod: BUILD_DATE, priority: '1.0', changefreq: 'daily' },
+  { path: '/cards', lastmod: BUILD_DATE, priority: '1.0', changefreq: 'daily' },
+  { path: '/expansions', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
+  { path: '/expansions/sets', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'daily' },
+  { path: '/sets', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
   { path: '/directory', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'daily' },
   { path: '/directory/sets-index', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/directory/decks-index', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/directory/slabs-index', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/directory/glossary', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/pricing', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
-  { path: '/sets', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'daily' },
-  { path: '/compare', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/best', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/tools', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/changelog', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'weekly' },
+  { path: '/changelog', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
+  { path: '/compare', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/best', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tools', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
   { path: '/leaderboard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/about', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/how-it-works', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'monthly' },
@@ -202,10 +205,13 @@ export function generateSitemapIndexXml(): string {
   const subSitemaps = [
     '/sitemap.xml',
     '/sitemap-core.xml',
+    '/sitemap-cards.xml',
     '/sitemap-sets.xml',
+    '/sitemap-tools.xml',
     '/sitemap-formats.xml',
-    '/sitemap-portfolios.xml',
+    '/sitemap-changelog.xml',
     '/sitemap-compare.xml',
+    '/sitemap-portfolios.xml',
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -214,6 +220,40 @@ export function generateSitemapIndexXml(): string {
     xml += `  <sitemap>\n    <loc>${CANONICAL_ORIGIN}${path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </sitemap>\n`;
   });
   xml += `</sitemapindex>`;
+  return xml;
+}
+
+export function generateCardsSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Charizard</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Pikachu</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Mewtwo</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Lugia</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generateToolsSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  TOOL_SLUGS.forEach(slug => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
+  return xml;
+}
+
+export function generateChangelogSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.58</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.57</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.56</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  xml += `</urlset>`;
   return xml;
 }
 
@@ -404,6 +444,10 @@ export function generateRobotsTxt(): string {
 
 User-agent: *
 Allow: /
+Allow: /cards
+Allow: /expansions
+Allow: /expansions/sets
+Allow: /sets
 Allow: /directory/
 Allow: /set/
 Allow: /deck/
@@ -413,11 +457,21 @@ Allow: /best/
 Allow: /tools/
 Allow: /tool/
 Allow: /formats/
+Allow: /format/
 Allow: /pricing
 Allow: /about
+Allow: /how-it-works
 Allow: /faq
+Allow: /contact
+Allow: /leaderboard
 Allow: /changelog
 Allow: /sitemap.xml
+Allow: /sitemap-index.xml
+Allow: /sitemap-cards.xml
+Allow: /sitemap-sets.xml
+Allow: /sitemap-tools.xml
+Allow: /sitemap-formats.xml
+Allow: /sitemap-changelog.xml
 Allow: /feed.xml
 Allow: /llms.txt
 Allow: /llms-full.txt
@@ -455,9 +509,12 @@ Allow: /
 
 # Sitemaps & Feeds
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
-# RSS: ${CANONICAL_ORIGIN}/feed.xml
-# LLMs: ${CANONICAL_ORIGIN}/llms.txt
-# Keywords: ${CANONICAL_ORIGIN}/llms-keywords.txt
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-index.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-cards.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-sets.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-tools.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-formats.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-changelog.xml
 `;
 }
 
@@ -467,6 +524,16 @@ export async function writeAllFootprintFiles(targetDir: string) {
   }
 
   const unifiedSitemap = await generateUnifiedSitemapXml();
+  const sitemapIndex = generateSitemapIndexXml();
+  const coreSitemap = generateCoreSitemapXml();
+  const cardsSitemap = generateCardsSitemapXml();
+  const setsSitemap = await generateSetsSitemapXml();
+  const toolsSitemap = generateToolsSitemapXml();
+  const formatsSitemap = generateFormatsSitemapXml();
+  const changelogSitemap = generateChangelogSitemapXml();
+  const compareSitemap = generateCompareSitemapXml();
+  const portfoliosSitemap = generatePortfoliosSitemapXml();
+
   const rssFeed = generateRssFeedXml();
   const llms = generateLlmsTxt();
   const llmsFull = await generateLlmsFullTxt();
@@ -474,7 +541,19 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const searchMatrix = generateSearchMatrixJson();
   const robots = generateRobotsTxt();
 
+  // Write Main & Segmented Sitemaps
   fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), unifiedSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-index.xml'), sitemapIndex, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-core.xml'), coreSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-cards.xml'), cardsSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-sets.xml'), setsSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-tools.xml'), toolsSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-formats.xml'), formatsSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-changelog.xml'), changelogSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-compare.xml'), compareSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-portfolios.xml'), portfoliosSitemap, 'utf-8');
+
+  // Feeds & AI Crawler specifications
   fs.writeFileSync(path.join(targetDir, 'feed.xml'), rssFeed, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'rss.xml'), rssFeed, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms.txt'), llms, 'utf-8');
@@ -486,7 +565,7 @@ export async function writeAllFootprintFiles(targetDir: string) {
   // IndexNow verification key file
   fs.writeFileSync(path.join(targetDir, '7392abcd.txt'), '7392abcd', 'utf-8');
 
-  // Cloudflare Pages 301 redirects for legacy sitemaps and paths (matching the Phase 1 App.tsx refactor)
+  // Cloudflare Pages 301 redirects for legacy paths (clean, no sitemap conflicts)
   const redirectsContent = `
 /decks/:id /deck/:id 301
 /portfolios/:id /portfolio/:id 301
@@ -498,15 +577,11 @@ export async function writeAllFootprintFiles(targetDir: string) {
 /media-kit /about 301
 /community /leaderboard 301
 /sitemap-main.xml /sitemap.xml 301
-/sitemap-sets.xml /sitemap.xml 301
-/sitemap-topcards.xml /sitemap.xml 301
+/sitemap-topcards.xml /sitemap-sets.xml 301
 /sitemap-decks.xml /sitemap.xml 301
-/sitemap-compare.xml /sitemap.xml 301
-/sitemap-best.xml /sitemap.xml 301
-/sitemap-tools.xml /sitemap.xml 301
-/sitemap-portfolios.xml /sitemap.xml 301
+/sitemap-best.xml /sitemap-compare.xml 301
 `.trim();
   fs.writeFileSync(path.join(targetDir, '_redirects'), redirectsContent, 'utf-8');
 
-  console.log(`[PublicFootprint] ✓ Successfully generated titanium footprint in ${targetDir}`);
+  console.log(`[PublicFootprint] ✓ Successfully generated titanium footprint with all sub-sitemaps in ${targetDir}`);
 }

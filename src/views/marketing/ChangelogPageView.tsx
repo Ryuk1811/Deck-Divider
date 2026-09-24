@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { 
   Sparkles, 
   Layers, 
@@ -10,16 +11,22 @@ import {
   ArrowRight, 
   CheckCircle2, 
   Calculator, 
-  Flame, 
+  Search, 
+  ExternalLink,
+  SlidersHorizontal,
+  ChevronRight,
+  Database,
   RefreshCw,
-  Lock,
-  Search,
-  ExternalLink
+  FileCode2,
+  Terminal,
+  Activity
 } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
+import { ALL_RELEASES, ReleaseEntry } from '../../data/changelogHistory';
 
 interface ChangelogPageViewProps {
   onOpenAuth: () => void;
@@ -28,310 +35,297 @@ interface ChangelogPageViewProps {
   displayCurrency?: DisplayCurrency;
 }
 
-interface ReleaseEntry {
-  version: string;
-  date: string;
-  badge: string;
-  badgeColor: string;
-  title: string;
-  summary: string;
-  highlights: {
-    category: string;
-    items: string[];
-  }[];
-}
-
 export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
   onOpenAuth,
   onNavigateHome,
   onNavigateAbout,
   displayCurrency = 'USD',
 }) => {
-  const releases: ReleaseEntry[] = [
-    {
-      version: 'v2.5.0',
-      date: 'September 2026',
-      badge: 'Latest Release',
-      badgeColor: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-      title: '2026 Standard Rotation & High-Intent SEO Architecture',
-      summary: 'Comprehensive platform update implementing the official 2026 Pokémon TCG Standard rotation rules, canonical /tools/ URL restructuring, and dedicated crawler-ready SSR documents.',
-      highlights: [
-        {
-          category: 'Tournament Legality & Deck Studio',
-          items: [
-            'Enforced 2026 Standard rotation: Regulation Marks H, I, and J are legal; Regulation Mark G has rotated to Expanded format.',
-            'ACE SPEC single-card deck limit and Radiant Pokémon restrictions strictly validated with instant visual alerts.',
-            'Updated PTCGL (Pokémon TCG Live) export parser to ensure 100% compatibility with the latest client version.',
-            'Direct legality status badges on all card detail views with rotation countdown indicators.'
-          ]
-        },
-        {
-          category: 'Routing & SEO Infrastructure',
-          items: [
-            'Unified tools routing under canonical /tools/psa-grade-calculator and /tools/deck-legality-checker paths.',
-            'Eliminated 301 redirect loops for crawlers and edge bots, achieving instant HTTP 200 responses.',
-            'Deployed high-intent semantic HTML server-side rendering (SSR) documents for search indexing.',
-            'Integrated structured FAQPage and WebApplication schema markup on all tool endpoints.'
-          ]
-        }
-      ]
-    },
-    {
-      version: 'v2.4.0',
-      date: 'August 2026',
-      badge: 'Security & Cloud',
-      badgeColor: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-      title: 'Zero-Knowledge AES-GCM Encryption & Conflict-Free Cloud Sync',
-      summary: 'Pro users now benefit from end-to-end encrypted cloud vault synchronization with zero-knowledge architecture, ensuring card collections and tournament decks remain private.',
-      highlights: [
-        {
-          category: 'Data Privacy & Vault Protection',
-          items: [
-            'Added client-side AES-GCM 256-bit encryption for all cloud portfolio snapshots.',
-            'Implemented automated SHA-256 integrity verification across local IndexedDB and cloud storage.',
-            'One-click encrypted backup exports and instant cross-device snapshot restore.',
-            'Zero data siphoning guarantee: unencrypted card counts and financial balances never touch external servers.'
-          ]
-        }
-      ]
-    },
-    {
-      version: 'v2.3.0',
-      date: 'June 2026',
-      badge: 'Grading & Analytics',
-      badgeColor: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-      title: 'PSA, BGS & CGC Subgrade Tracking with Live Multi-Currency Engine',
-      summary: 'Introduced comprehensive slab certification logging with individual subgrades, historical grade multipliers, and real-time currency conversion across 15+ global currencies.',
-      highlights: [
-        {
-          category: 'Slab Registry & Expected Value (EV)',
-          items: [
-            'Beckett BGS quad-subgrade tracking: Centering, Corners, Edges, and Surface breakdown.',
-            'Grading Expected Value (EV) calculator modeling break-even submission costs against PSA 10/9 market premiums.',
-            'Live currency exchange engine supporting USD, EUR, GBP, JPY, CAD, and AUD with automated rate refreshes.'
-          ]
-        }
-      ]
-    },
-    {
-      version: 'v2.2.0',
-      date: 'April 2026',
-      badge: 'Master Sets',
-      badgeColor: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-      title: 'Scarlet & Violet Master Set Trackers & 1-Click PTCGL Export',
-      summary: 'Deep binder tracking for modern collector chases including Master Ball Holos, Special Illustration Rares, and competitive tournament decklists.',
-      highlights: [
-        {
-          category: 'Collection Management',
-          items: [
-            'Visual binder checklists supporting Regular, Reverse Holo, Pokeball Holo, Masterball Holo, and Secret Illustration Rares.',
-            'Instant 1-click export to Pokémon TCG Live clipboard format.',
-            'Automatic set completion percentage analytics with remaining cost estimation.'
-          ]
-        }
-      ]
-    },
-    {
-      version: 'v2.1.0',
-      date: 'February 2026',
-      badge: 'Core Engine',
-      badgeColor: 'bg-slate-500/10 text-slate-600 border-slate-500/20',
-      title: 'Sub-15ms Orama Vector Search & Offline Catalog Architecture',
-      summary: 'Overhauled the local search index with an embedded in-memory database, delivering instant search across 15,000+ cards even without an active internet connection.',
-      highlights: [
-        {
-          category: 'Performance & Offline Mode',
-          items: [
-            'In-memory inverted index yielding sub-15ms query times across card names, abilities, and attacks.',
-            'Offline-first IndexedDB persistence: manage your binder and build decks anywhere.',
-            'Automated background catalog updates with differential delta patching.'
-          ]
-        }
-      ]
-    }
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string>('All');
 
+  const tags = ['All', 'Major', 'Catalog', 'Tools', 'SEO', 'Tournament', 'Performance', 'Security'];
+
+  const filteredReleases = useMemo(() => {
+    return ALL_RELEASES.filter((rel) => {
+      const matchesTag = selectedTag === 'All' || rel.tag === selectedTag;
+      if (!matchesTag) return false;
+
+      if (!searchQuery.trim()) return true;
+
+      const q = searchQuery.toLowerCase();
+      const inTitle = rel.title.toLowerCase().includes(q);
+      const inVersion = rel.version.toLowerCase().includes(q);
+      const inSummary = rel.summary.toLowerCase().includes(q);
+      const inIteration = `iteration ${rel.iteration}`.includes(q) || `${rel.iteration}` === q;
+      const inHighlights = rel.highlights.some(h => 
+        h.category.toLowerCase().includes(q) || 
+        h.items.some(item => item.toLowerCase().includes(q))
+      );
+
+      return inTitle || inVersion || inSummary || inIteration || inHighlights;
+    });
+  }, [searchQuery, selectedTag]);
+
+  // JSON-LD Schema for SoftwareApplication + ItemList of Releases
   const changelogSchema = {
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Platform Changelog & Release Notes | DECK / divider',
-    description: 'Chronological release log of DECK / divider updates: Pokémon TCG 2026 format rotation, PSA grading calculations, AES-256 cloud vault encryption, and performance improvements.',
-    url: 'https://deckdivider.app/changelog',
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: 'https://deckdivider.app/'
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Changelog',
-          item: 'https://deckdivider.app/changelog'
-        }
-      ]
+    '@type': 'SoftwareApplication',
+    'name': 'DECK / divider',
+    'operatingSystem': 'Web, iOS, Android',
+    'applicationCategory': 'UtilitiesApplication',
+    'softwareVersion': '1.58',
+    'releaseNotes': 'https://deckdivider.app/changelog',
+    'description': 'Continuous release log and iteration history of DECK / divider from v1.01 to the landmark 58th release v1.58.',
+    'offers': {
+      '@type': 'Offer',
+      'price': '0',
+      'priceCurrency': 'USD'
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-rose-500 selection:text-white">
+    <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Platform Changelog & Release Notes | DECK / divider"
-        description="Official release history of DECK / divider: 2026 Pokémon Standard rotation updates, PSA grading ROI calculators, AES-GCM vault security, and deck studio improvements."
+        title="Changelog & Platform Iterations (v1.01 – v1.58) — DECK / divider"
+        description="Comprehensive changelog tracking all 58 product iterations of DECK / divider. Explore feature releases from v1.01 Genesis to v1.58 Universal Page Web Mesh and priority indexing."
         canonicalPath="/changelog"
+        keywords={[
+          'pokemon card changelog',
+          'deck divider release notes',
+          'tcg platform updates',
+          'iteration 58',
+          'v1.58 release',
+          'pokemon card catalogue updates',
+          'ptcgl export updates'
+        ]}
         schema={changelogSchema}
       />
 
-      <LandingNav
-        onOpenAuth={onOpenAuth}
-      />
+      <LandingNav onOpenAuth={onOpenAuth} />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <GeoBreadcrumbs
-          items={[
-            { label: 'Home', path: '/' },
-            { label: 'Changelog', path: '/changelog' }
-          ]}
-        />
+      <main className="flex-1 pt-24 pb-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumbs */}
+          <GeoBreadcrumbs
+            items={[
+              { label: 'Home', path: '/' },
+              { label: 'Changelog (58 Iterations)', path: '/changelog' }
+            ]}
+          />
 
-        {/* Hero Section */}
-        <div className="mt-8 mb-12 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold uppercase tracking-wider mb-4">
-            <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
-            Continuous Development
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-            Platform Changelog &amp; Release Notes
-          </h1>
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
-            Stay updated with every enhancement, tournament legality adjustment, slab valuation tool, and security upgrade released on DECK / divider.
-          </p>
-        </div>
-
-        {/* Quick Summary Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16">
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
-              <Flame className="w-5 h-5" />
+          {/* Hero Header */}
+          <div className="text-center max-w-3xl mx-auto mt-6 mb-12">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/60 shadow-xs mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+              <span>Current Release: Version 1.58 (58th Iteration)</span>
+              <span className="text-blue-300">•</span>
+              <span className="font-mono text-emerald-600">All 58 Versions Archived</span>
             </div>
-            <div className="text-2xl font-bold text-slate-900 mb-1">2026 Standard</div>
-            <div className="text-xs text-slate-500 leading-normal">
-              Regulation Marks H, I, J active; Mark G officially rotated out.
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
-              <Lock className="w-5 h-5" />
-            </div>
-            <div className="text-2xl font-bold text-slate-900 mb-1">AES-256 Vault</div>
-            <div className="text-xs text-slate-500 leading-normal">
-              Zero-knowledge client-side encrypted cloud backup and sync.
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
-              <Calculator className="w-5 h-5" />
-            </div>
-            <div className="text-2xl font-bold text-slate-900 mb-1">PSA / BGS EV</div>
-            <div className="text-xs text-slate-500 leading-normal">
-              Expected value grading profitability and break-even calculators.
-            </div>
-          </div>
-        </div>
-
-        {/* Release Timeline */}
-        <div className="relative border-l-2 border-slate-200 pl-6 sm:pl-8 ml-3 sm:ml-4 space-y-12 mb-16">
-          {releases.map((release, idx) => (
-            <motion.article 
-              key={release.version}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08 }}
-              className="relative"
-            >
-              {/* Timeline Marker */}
-              <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-5 h-5 rounded-full border-4 border-slate-50 bg-rose-600 shadow-xs" />
-
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-xs hover:border-slate-300 transition-colors">
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
-                      {release.version}
-                    </span>
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${release.badgeColor}`}>
-                      {release.badge}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{release.date}</span>
-                  </div>
-                </div>
-
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3">
-                  {release.title}
-                </h2>
-
-                <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                  {release.summary}
-                </p>
-
-                <div className="space-y-6 pt-4 border-t border-slate-100">
-                  {release.highlights.map((highlight, hIdx) => (
-                    <div key={hIdx}>
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                        {highlight.category}
-                      </h3>
-                      <ul className="space-y-2.5">
-                        {highlight.items.map((item, iIdx) => (
-                          <li key={iIdx} className="flex items-start gap-2.5 text-sm text-slate-700 leading-normal">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-
-        {/* Direct Action Card */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-xl font-bold mb-2">Ready to test the latest features?</h3>
-            <p className="text-sm text-slate-300 max-w-lg">
-              Experience the 2026 deck legality validator, model PSA grading break-even values, or start tracking your collection with offline privacy.
+            
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+              Platform Engineering & Iteration Log
+            </h1>
+            
+            <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+              Every single deployment, architectural enhancement, card engine upgrade, and rule validation improvement from <span className="font-semibold text-slate-900">v1.01 Genesis</span> to the <span className="font-semibold text-blue-600">58th Iteration (v1.58)</span>.
             </p>
+
+            {/* Quick Metrics Bar */}
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs text-left">
+              <div className="p-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Total Iterations</span>
+                <span className="text-2xl font-black text-slate-900 font-mono">58</span>
+              </div>
+              <div className="p-2 border-l border-slate-100">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Active Release</span>
+                <span className="text-2xl font-black text-blue-600 font-mono">v1.58</span>
+              </div>
+              <div className="p-2 border-l border-slate-100">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Public Page Web</span>
+                <span className="text-2xl font-black text-emerald-600 font-mono">100% Crawlable</span>
+              </div>
+              <div className="p-2 border-l border-slate-100">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Sitemap Priority</span>
+                <span className="text-2xl font-black text-indigo-600 font-mono">1.0 Max</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={onOpenAuth}
-              className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm transition-colors shadow-sm"
-            >
-              Get Started Free
-            </button>
-            <a
-              href="/tools"
-              className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-colors border border-white/10"
-            >
-              Explore Tools
-            </a>
+
+          {/* Search & Filter Toolbar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs mb-10 sticky top-20 z-20 backdrop-blur-md bg-white/95">
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+              {/* Search Bar */}
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search 58 releases, features, cards..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-900 placeholder:text-slate-400"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* Tag Filters */}
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
+                {tags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+                      selectedTag === tag
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                    }`}
+                  >
+                    {tag} {tag === 'All' ? `(${ALL_RELEASES.length})` : ''}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Results Count indicator */}
+            {(searchQuery || selectedTag !== 'All') && (
+              <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Showing {filteredReleases.length} of {ALL_RELEASES.length} releases</span>
+                <button
+                  onClick={() => { setSearchQuery(''); setSelectedTag('All'); }}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Reset filters
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Timeline of 58 Releases */}
+          <div className="relative border-l-2 border-slate-200/80 ml-3 sm:ml-6 space-y-10">
+            {filteredReleases.length === 0 ? (
+              <div className="pl-6 py-12 text-center bg-white rounded-2xl border border-slate-200/80">
+                <Search className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+                <h3 className="font-semibold text-slate-800 text-base">No matching release iterations found</h3>
+                <p className="text-xs text-slate-500 mt-1">Try refining your search keyword or clearing the tag filter.</p>
+                <button
+                  onClick={() => { setSearchQuery(''); setSelectedTag('All'); }}
+                  className="mt-4 px-4 py-2 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100"
+                >
+                  View All 58 Iterations
+                </button>
+              </div>
+            ) : (
+              filteredReleases.map((rel) => {
+                const isLatest = rel.iteration === 58;
+                return (
+                  <div
+                    key={rel.version}
+                    id={rel.version}
+                    className="relative pl-6 sm:pl-10 group"
+                  >
+                    {/* Timeline Node Icon */}
+                    <div className={`absolute -left-[17px] top-1.5 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+                      isLatest
+                        ? 'bg-blue-600 border-white shadow-md text-white ring-4 ring-blue-100'
+                        : 'bg-white border-slate-300 text-slate-500 group-hover:border-blue-400 group-hover:text-blue-600'
+                    }`}>
+                      {isLatest ? (
+                        <Sparkles className="w-4 h-4" />
+                      ) : (
+                        <span className="text-[10px] font-bold font-mono">{rel.iteration}</span>
+                      )}
+                    </div>
+
+                    {/* Release Card */}
+                    <div className={`rounded-2xl border transition-all ${
+                      isLatest 
+                        ? 'bg-white border-blue-200/80 shadow-md ring-1 ring-blue-500/10' 
+                        : 'bg-white/90 border-slate-200/80 hover:border-slate-300 shadow-xs'
+                    } p-6 sm:p-7`}>
+                      {/* Header Row */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border font-mono ${rel.badgeColor}`}>
+                            {rel.version}
+                          </span>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                            Iteration #{rel.iteration}
+                          </span>
+                          <span className="text-xs text-slate-400 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {rel.date}
+                          </span>
+                        </div>
+
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded">
+                          {rel.tag}
+                        </span>
+                      </div>
+
+                      {/* Title & Summary */}
+                      <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight mb-2">
+                        {rel.title}
+                      </h2>
+                      <p className="text-sm text-slate-600 leading-relaxed mb-6">
+                        {rel.summary}
+                      </p>
+
+                      {/* Highlights */}
+                      <div className="space-y-4 pt-4 border-t border-slate-100">
+                        {rel.highlights.map((highlight, hIdx) => (
+                          <div key={hIdx}>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2 mb-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                              {highlight.category}
+                            </h3>
+                            <ul className="space-y-1.5 pl-3.5">
+                              {highlight.items.map((item, iIdx) => (
+                                <li key={iIdx} className="text-xs sm:text-sm text-slate-600 flex items-start gap-2">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-1" />
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Related Links if any */}
+                      {rel.relatedUrls && rel.relatedUrls.length > 0 && (
+                        <div className="mt-5 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                          <span className="text-[11px] font-medium text-slate-400">Jump to feature:</span>
+                          {rel.relatedUrls.map((link, lIdx) => (
+                            <Link
+                              key={lIdx}
+                              to={link.url}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50/70 hover:bg-blue-100/70 px-2 py-1 rounded-md transition-colors"
+                            >
+                              <span>{link.label}</span>
+                              <ChevronRight className="w-3 h-3" />
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </main>
 
-      <LandingFooter
-        onOpenAuth={onOpenAuth}
-        displayCurrency={displayCurrency}
-      />
+      {/* Universal Page Web Interlinking Section */}
+      <PublicInterlinkMesh currentPath="/changelog" />
+
+      <LandingFooter />
     </div>
   );
 };

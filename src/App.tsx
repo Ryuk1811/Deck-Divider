@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation, Link, useParams, useSearchParams } from 'react-router-dom';
 import {
   AccountTier,
   DisplayCurrency,
@@ -26,6 +26,7 @@ import {
   Zap,
   Menu,
   Search,
+  Loader2,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import { initSnapshotMetronome, recordSnapshotCompleted } from './utils/cloudSnapshotMetronome';
@@ -33,50 +34,10 @@ import { queueCardsForProgressivePrewarm } from './utils/progressiveImageLoader'
 import { Sidebar, ActiveTab } from './components/ui/Sidebar';
 import { DeckDividerBrand, DeckDividersIcon } from './components/ui/DeckDividerBrand';
 import { CommandPalette } from './components/ui/CommandPalette';
-import { CardDetailModal } from './components/modals/CardDetailModal';
-import { QuickLookModal } from './components/modals/QuickLookModal';
-import { LimitReachedModal } from './components/modals/LimitReachedModal';
-import { GuestLimitModal } from './components/modals/GuestLimitModal';
-import { PayPalSubscriptionModal } from './components/modals/PayPalSubscriptionModal';
-import { PayPalSuccessModal } from './components/modals/PayPalSuccessModal';
-import { PayPalCancelModal } from './components/modals/PayPalCancelModal';
 import { PagesDropdown } from './components/ui/PagesDropdown';
 import { MobileBottomNav } from './components/ui/MobileBottomNav';
 import { MobileTopBar } from './components/ui/MobileTopBar';
 
-import { CollectionView } from './views/app/CollectionView';
-import { MetricsView } from './views/app/MetricsView';
-import { DecksView } from './views/app/DecksView';
-import { SearchView } from './views/app/SearchView';
-import { SetsView } from './views/app/SetsView';
-import { PublicSetsDirectoryView } from './views/public/PublicSetsDirectoryView';
-import { PublicSetView } from './views/public/PublicSetView';
-import { PublicSetTopCardsView } from './views/public/PublicSetTopCardsView';
-import { PublicSocialsView } from './views/public/PublicSocialsView';
-import { FormatLegalityDirectoryView } from './views/public/FormatLegalityDirectoryView';
-import { FormatLegalityView } from './views/public/FormatLegalityView';
-import { CompetitorComparisonView } from './views/marketing/CompetitorComparisonView';
-import { CommunityLeaderboardView } from './views/public/CommunityLeaderboardView';
-import { BestOfGuidesView } from './views/marketing/BestOfGuidesView';
-import { HighIntentToolsView } from './views/public/HighIntentToolsView';
-import { ListsView } from './views/app/ListsView';
-import { SettingsView } from './views/app/SettingsView';
-import { AuthView } from './views/auth/AuthView';
-import { LandingPageView } from './views/marketing/LandingPageView';
-import { AboutPageView } from './views/marketing/AboutPageView';
-import { HowItWorksPageView } from './views/marketing/HowItWorksPageView';
-import { PrivacyPolicyView } from './views/legal/PrivacyPolicyView';
-import { TermsOfServiceView } from './views/legal/TermsOfServiceView';
-import { PricingPageView } from './views/marketing/PricingPageView';
-import { FaqPageView } from './views/marketing/FaqPageView';
-import { ChangelogPageView } from './views/marketing/ChangelogPageView';
-import { NotFoundView } from './views/app/NotFoundView';
-import { AdminDashboardView } from './views/admin/AdminDashboardView';
-import { 
-  ContactPageView, 
-  SecurityPageView 
-} from './views/legal/AdditionalPages';
-import { AnalyticsFunnelModal } from './components/modals/AnalyticsFunnelModal';
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
 import { SealedPortfolioManager } from './components/app/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
@@ -88,7 +49,6 @@ import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
 import { reconcileFullCollectionState } from './lib/syncDeduplicationEngine';
-import { BackupRecoveryModal } from './components/modals/BackupRecoveryModal';
 import {
   generateShowcaseDecks,
   generateShowcaseSealed,
@@ -98,14 +58,64 @@ import {
   isMockCustomList,
   isMockSealedEntry,
 } from './lib/showcaseSeeder';
-import { Loader2 } from 'lucide-react';
 import { db, auth, handleFirestoreError, OperationType } from './lib/firebase';
 import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
-import { PublicDeckView } from './views/public/PublicDeckView';
-import { useParams, useSearchParams } from 'react-router-dom';
 
-import { PublicPortfolioView } from './views/public/PublicPortfolioView';
+// Lazy-loaded Views for ultra-fast PageSpeed (sub-90KB initial entrypoint)
+const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
+const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
+const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
+const SearchView = lazy(() => import('./views/app/SearchView').then(m => ({ default: m.SearchView })));
+const SetsView = lazy(() => import('./views/app/SetsView').then(m => ({ default: m.SetsView })));
+const PublicCardsCatalogueView = lazy(() => import('./views/public/PublicCardsCatalogueView').then(m => ({ default: m.PublicCardsCatalogueView })));
+const PublicExpansionsAndSetsView = lazy(() => import('./views/public/PublicExpansionsAndSetsView').then(m => ({ default: m.PublicExpansionsAndSetsView })));
+const PublicSetView = lazy(() => import('./views/public/PublicSetView').then(m => ({ default: m.PublicSetView })));
+const PublicSetTopCardsView = lazy(() => import('./views/public/PublicSetTopCardsView').then(m => ({ default: m.PublicSetTopCardsView })));
+const PublicSocialsView = lazy(() => import('./views/public/PublicSocialsView').then(m => ({ default: m.PublicSocialsView })));
+const FormatLegalityDirectoryView = lazy(() => import('./views/public/FormatLegalityDirectoryView').then(m => ({ default: m.FormatLegalityDirectoryView })));
+const FormatLegalityView = lazy(() => import('./views/public/FormatLegalityView').then(m => ({ default: m.FormatLegalityView })));
+const CompetitorComparisonView = lazy(() => import('./views/marketing/CompetitorComparisonView').then(m => ({ default: m.CompetitorComparisonView })));
+const CommunityLeaderboardView = lazy(() => import('./views/public/CommunityLeaderboardView').then(m => ({ default: m.CommunityLeaderboardView })));
+const BestOfGuidesView = lazy(() => import('./views/marketing/BestOfGuidesView').then(m => ({ default: m.BestOfGuidesView })));
+const HighIntentToolsView = lazy(() => import('./views/public/HighIntentToolsView').then(m => ({ default: m.HighIntentToolsView })));
+const ListsView = lazy(() => import('./views/app/ListsView').then(m => ({ default: m.ListsView })));
+const SettingsView = lazy(() => import('./views/app/SettingsView').then(m => ({ default: m.SettingsView })));
+const AuthView = lazy(() => import('./views/auth/AuthView').then(m => ({ default: m.AuthView })));
+const LandingPageView = lazy(() => import('./views/marketing/LandingPageView').then(m => ({ default: m.LandingPageView })));
+const AboutPageView = lazy(() => import('./views/marketing/AboutPageView').then(m => ({ default: m.AboutPageView })));
+const HowItWorksPageView = lazy(() => import('./views/marketing/HowItWorksPageView').then(m => ({ default: m.HowItWorksPageView })));
+const PrivacyPolicyView = lazy(() => import('./views/legal/PrivacyPolicyView').then(m => ({ default: m.PrivacyPolicyView })));
+const TermsOfServiceView = lazy(() => import('./views/legal/TermsOfServiceView').then(m => ({ default: m.TermsOfServiceView })));
+const PricingPageView = lazy(() => import('./views/marketing/PricingPageView').then(m => ({ default: m.PricingPageView })));
+const FaqPageView = lazy(() => import('./views/marketing/FaqPageView').then(m => ({ default: m.FaqPageView })));
+const ChangelogPageView = lazy(() => import('./views/marketing/ChangelogPageView').then(m => ({ default: m.ChangelogPageView })));
+const NotFoundView = lazy(() => import('./views/app/NotFoundView').then(m => ({ default: m.NotFoundView })));
+const AdminDashboardView = lazy(() => import('./views/admin/AdminDashboardView').then(m => ({ default: m.AdminDashboardView })));
+const ContactPageView = lazy(() => import('./views/legal/AdditionalPages').then(m => ({ default: m.ContactPageView })));
+const SecurityPageView = lazy(() => import('./views/legal/AdditionalPages').then(m => ({ default: m.SecurityPageView })));
+const PublicDeckView = lazy(() => import('./views/public/PublicDeckView').then(m => ({ default: m.PublicDeckView })));
+const PublicPortfolioView = lazy(() => import('./views/public/PublicPortfolioView').then(m => ({ default: m.PublicPortfolioView })));
+
+// Lazy-loaded Modals
+const CardDetailModal = lazy(() => import('./components/modals/CardDetailModal').then(m => ({ default: m.CardDetailModal })));
+const QuickLookModal = lazy(() => import('./components/modals/QuickLookModal').then(m => ({ default: m.QuickLookModal })));
+const LimitReachedModal = lazy(() => import('./components/modals/LimitReachedModal').then(m => ({ default: m.LimitReachedModal })));
+const GuestLimitModal = lazy(() => import('./components/modals/GuestLimitModal').then(m => ({ default: m.GuestLimitModal })));
+const PayPalSubscriptionModal = lazy(() => import('./components/modals/PayPalSubscriptionModal').then(m => ({ default: m.PayPalSubscriptionModal })));
+const PayPalSuccessModal = lazy(() => import('./components/modals/PayPalSuccessModal').then(m => ({ default: m.PayPalSuccessModal })));
+const PayPalCancelModal = lazy(() => import('./components/modals/PayPalCancelModal').then(m => ({ default: m.PayPalCancelModal })));
+const AnalyticsFunnelModal = lazy(() => import('./components/modals/AnalyticsFunnelModal').then(m => ({ default: m.AnalyticsFunnelModal })));
+const BackupRecoveryModal = lazy(() => import('./components/modals/BackupRecoveryModal').then(m => ({ default: m.BackupRecoveryModal })));
+
+const RouteLoadingFallback = () => (
+  <div className="min-h-[60vh] w-full flex items-center justify-center py-24 bg-dot-grid bg-[#F8FAFC]">
+    <div className="flex flex-col items-center gap-3">
+      <DeckDividerBrand size="sm" showLogo={false} />
+      <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+    </div>
+  </div>
+);
 
 const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayCurrency: string, setDisplayCurrency: (c: string) => void }) => {
   const { deckId } = useParams<{ deckId: string }>();
@@ -1787,50 +1797,51 @@ export default function App() {
 
   return (
     <>
-      <Routes>
-        {/* === CORE MARKETING === */}
-        <Route
-          path="/"
-          element={
-            authLoading ? (
-              <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
-                <div className="flex flex-col items-center gap-3">
-                  <DeckDividerBrand size="md" showLogo={true} />
-                  <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Routes>
+          {/* === CORE MARKETING === */}
+          <Route
+            path="/"
+            element={
+              authLoading ? (
+                <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
+                  <div className="flex flex-col items-center gap-3">
+                    <DeckDividerBrand size="md" showLogo={true} />
+                    <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+                  </div>
                 </div>
-              </div>
-            ) : user && !location.search.includes('landing=true') ? (
-              <Navigate to="/app" replace />
-            ) : (
-              <LandingPageView
-                onEnterApp={() => {
-                  if (user) {
-                    navigate('/app');
-                  } else {
-                    handleOpenAuth();
-                  }
-                }}
-                onOpenAuth={handleOpenAuth}
-                onNavigateAbout={() => navigate('/about')}
-                onNavigateHowItWorks={() => navigate('/how-it-works')}
-                onSelectTier={(tier) => {
-                  if (user) {
-                    if (tier !== 'Starter') {
-                      setPaypalModalTier(tier);
+              ) : user && !location.search.includes('landing=true') ? (
+                <Navigate to="/app" replace />
+              ) : (
+                <LandingPageView
+                  onEnterApp={() => {
+                    if (user) {
+                      navigate('/app');
+                    } else {
+                      handleOpenAuth();
                     }
-                    navigate('/app');
-                  } else {
-                    handleOpenAuth();
-                  }
-                }}
-                currentTier={currentTier}
-                displayCurrency={displayCurrency}
-                onSelectCurrency={setDisplayCurrency}
-                user={user}
-              />
-            )
-          }
-        />
+                  }}
+                  onOpenAuth={handleOpenAuth}
+                  onNavigateAbout={() => navigate('/about')}
+                  onNavigateHowItWorks={() => navigate('/how-it-works')}
+                  onSelectTier={(tier) => {
+                    if (user) {
+                      if (tier !== 'Starter') {
+                        setPaypalModalTier(tier);
+                      }
+                      navigate('/app');
+                    } else {
+                      handleOpenAuth();
+                    }
+                  }}
+                  currentTier={currentTier}
+                  displayCurrency={displayCurrency}
+                  onSelectCurrency={setDisplayCurrency}
+                  user={user}
+                />
+              )
+            }
+          />
         <Route path="/about" element={<AboutPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} displayCurrency={displayCurrency} />} />
         <Route path="/how-it-works" element={<HowItWorksPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
         <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
@@ -1843,7 +1854,11 @@ export default function App() {
         <Route path="/security" element={<SecurityPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
 
         {/* === PUBLIC DIRECTORIES === */}
-        <Route path="/sets" element={<PublicSetsDirectoryView />} />
+        <Route path="/cards" element={<PublicCardsCatalogueView />} />
+        <Route path="/Cards" element={<PublicCardsCatalogueView />} />
+        <Route path="/expansions" element={<PublicExpansionsAndSetsView />} />
+        <Route path="/expansions/sets" element={<PublicExpansionsAndSetsView />} />
+        <Route path="/sets" element={<PublicExpansionsAndSetsView />} />
         <Route path="/formats" element={<FormatLegalityDirectoryView />} />
         <Route path="/compare" element={<CompetitorComparisonView />} />
         <Route path="/best" element={<BestOfGuidesView />} />
@@ -1863,6 +1878,7 @@ export default function App() {
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
 
         {/* === ALIASES FOR LEGACY & PLURALS === */}
+        <Route path="/expansions/:setId" element={<PublicSetView />} />
         <Route path="/formats/:formatId" element={<FormatLegalityView />} />
         <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
         <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
@@ -1883,9 +1899,11 @@ export default function App() {
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<NotFoundView />} />
       </Routes>
+    </Suspense>
 
       {/* Global Modals & Overlays */}
-      <CommandPalette
+      <Suspense fallback={null}>
+        <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
         cards={effectiveCards}
@@ -2003,6 +2021,7 @@ export default function App() {
         onRestoreState={handleRestoreState}
         onTriggerNewBackup={() => saveCompressedCloudSnapshot()}
       />
+    </Suspense>
     </>
   );
 }

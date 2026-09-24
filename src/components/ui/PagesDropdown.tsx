@@ -105,12 +105,27 @@ export const ALL_PAGES: PageItem[] = [
 
   // Community & Sets
   {
+    name: 'Public Card Catalogue',
+    path: '/cards',
+    category: 'Community',
+    icon: Search,
+    description: 'Search cards with attributes, attacks, and legalities',
+    badge: 'New',
+  },
+  {
+    name: 'Expansions & Sets Directory',
+    path: '/expansions',
+    category: 'Community',
+    icon: Boxes,
+    description: 'All 148+ official Pokémon TCG expansions & checklists',
+    badge: '148+ Sets',
+  },
+  {
     name: 'Socials & Trainer Reviews',
     path: '/socials',
     category: 'Community',
     icon: Sparkles,
     description: 'Official Discord, X, YouTube & trainer review ratings',
-    badge: 'New',
   },
   {
     name: 'Collector Leaderboard',
@@ -119,14 +134,6 @@ export const ALL_PAGES: PageItem[] = [
     icon: Trophy,
     description: 'Top verified portfolios and meta decks',
     badge: 'Public',
-  },
-  {
-    name: 'Expansions & Sets Directory',
-    path: '/sets',
-    category: 'Community',
-    icon: Boxes,
-    description: 'All 148+ official Pokémon TCG expansions',
-    badge: '148+ Sets',
   },
   {
     name: 'Format Legality Directory',
@@ -335,6 +342,16 @@ export const PagesDropdown: React.FC<PagesDropdownProps> = ({
     }
     if (page.path === '/?landing=true') {
       return location.pathname === '/' && location.search.includes('landing=true');
+    }
+    if (page.path === '/expansions') {
+      return (
+        location.pathname === '/expansions' ||
+        location.pathname === '/expansions/sets' ||
+        location.pathname === '/sets'
+      );
+    }
+    if (page.path === '/cards') {
+      return location.pathname.toLowerCase() === '/cards';
     }
     return location.pathname === page.path;
   };

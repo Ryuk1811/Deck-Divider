@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 
 interface TermsOfServiceViewProps {
   onOpenAuth: () => void;
@@ -126,6 +127,8 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
           </p>
         </motion.div>
       </main>
+
+      <PublicInterlinkMesh currentPath="/terms" />
 
       <LandingFooter />
     </div>

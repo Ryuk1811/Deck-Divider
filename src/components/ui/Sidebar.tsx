@@ -12,10 +12,6 @@ import {
   LogIn,
   TrendingUp,
   Package,
-  ChevronRight,
-  ChevronLeft,
-  PanelLeftClose,
-  PanelLeftOpen,
   X,
   ShieldCheck,
   Globe,
@@ -155,36 +151,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* 1. Header Section - Height exactly h-16 to perfectly align inline with Top Bar */}
-        <div className={`h-16 flex items-center justify-between border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
+        <div className={`h-16 flex items-center justify-center border-b border-[#E2E8F0] flex-shrink-0 bg-[#F8FAFC] ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {!isCollapsed ? (
-            <div className="w-full flex items-center justify-between gap-2">
+            <div className="w-full flex items-center min-w-0" title="Click to collapse sidebar">
               <DeckDividerBrand
                 size="sm"
                 collapsed={false}
                 showLogo={false}
-                fullWidth={false}
+                fullWidth={true}
                 onClick={handleToggleCollapse}
-                className="cursor-pointer"
+                className="cursor-pointer w-full"
               />
-              {/* Mobile Explicit Close Button inside Drawer */}
-              <button
-                type="button"
-                onClick={() => setIsMobileOpen(false)}
-                className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-200 active:bg-slate-300 transition-colors cursor-pointer"
-                title="Close Menu"
-                aria-label="Close Navigation Drawer"
-              >
-                <X className="w-5 h-5 text-slate-700" />
-              </button>
             </div>
           ) : (
-            <div className="w-full flex items-center justify-center">
+            <div className="w-full flex flex-col items-center justify-center" title="Click to expand sidebar">
               <DeckDividerBrand
                 size="sm"
                 collapsed={true}
                 showLogo={false}
                 fullWidth={true}
-                onClick={() => setIsCollapsed(false)}
+                onClick={handleToggleCollapse}
                 className="cursor-pointer flex items-center justify-center w-full"
               />
             </div>

@@ -61,8 +61,11 @@ import {
   generateUnifiedSitemapXml,
   generateSitemapIndexXml,
   generateCoreSitemapXml,
+  generateCardsSitemapXml,
   generateSetsSitemapXml,
+  generateToolsSitemapXml,
   generateFormatsSitemapXml,
+  generateChangelogSitemapXml,
   generatePortfoliosSitemapXml,
   generateCompareSitemapXml,
   generateRssFeedXml,
@@ -1196,6 +1199,24 @@ async function startServer() {
     res.send(generateCoreSitemapXml());
   });
 
+  app.get('/sitemap-cards.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateCardsSitemapXml());
+  });
+
+  app.get('/sitemap-tools.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateToolsSitemapXml());
+  });
+
+  app.get('/sitemap-changelog.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateChangelogSitemapXml());
+  });
+
   app.get('/sitemap-sets.xml', async (req, res) => {
     try {
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
@@ -1230,8 +1251,7 @@ async function startServer() {
     '/sitemap-main.xml',
     '/sitemap-topcards.xml',
     '/sitemap-decks.xml',
-    '/sitemap-best.xml',
-    '/sitemap-tools.xml'
+    '/sitemap-best.xml'
   ], (req, res) => {
     res.redirect(301, '/sitemap.xml');
   });

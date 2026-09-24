@@ -19,6 +19,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getPsaCalculatorSchema, getDeckLegalityCheckerSchema } from '../../components/seo/schemaData';
 
 export const HighIntentToolsView: React.FC = () => {
@@ -693,6 +694,8 @@ export const HighIntentToolsView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={toolId ? `/tools/${toolId}` : '/tools'} />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

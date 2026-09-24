@@ -8,6 +8,7 @@ import { HeroFluidMotionCanvas } from '../../components/landing/HeroFluidMotionC
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getAboutPageSchema } from '../../components/seo/schemaData';
 
 interface AboutPageViewProps {
@@ -366,6 +367,9 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
           </div>
         </section>
       </main>
+
+      {/* Universal Page Web Cross-Linking */}
+      <PublicInterlinkMesh currentPath="/about" />
 
       {/* Shared Footer */}
       <LandingFooter

@@ -7,6 +7,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEngine';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetDetailSchema } from '../../components/seo/schemaData';
 import { generateSetSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
 import { formatSetReleaseDate } from '../../utils/setCategorizer';
@@ -356,6 +357,8 @@ export const PublicSetView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={setId ? `/set/${setId}` : '/sets'} />
 
       <LandingFooter />
     </div>

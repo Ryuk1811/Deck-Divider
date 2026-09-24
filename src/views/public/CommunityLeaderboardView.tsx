@@ -17,6 +17,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getCommunityLeaderboardSchema } from '../../components/seo/schemaData';
 
 interface PublicCollector {
@@ -527,6 +528,8 @@ export const CommunityLeaderboardView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath="/leaderboard" />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

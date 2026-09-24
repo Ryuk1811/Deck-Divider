@@ -20,6 +20,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFaqPageSchema } from '../../components/seo/schemaData';
 
 interface FaqPageViewProps {
@@ -407,6 +408,8 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
           </button>
         </section>
       </main>
+
+      <PublicInterlinkMesh currentPath="/faq" />
 
       <LandingFooter
         onEnterApp={onEnterApp || onOpenAuth}

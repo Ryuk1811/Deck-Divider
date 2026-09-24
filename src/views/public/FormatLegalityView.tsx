@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { formats } from './FormatLegalityDirectoryView';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFormatLegalitySchema } from '../../components/seo/schemaData';
 
 export const FormatLegalityView: React.FC = () => {
@@ -181,6 +182,8 @@ export const FormatLegalityView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={formatId ? `/format/${formatId}` : '/formats'} />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

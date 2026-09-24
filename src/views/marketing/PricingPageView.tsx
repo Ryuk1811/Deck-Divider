@@ -7,6 +7,7 @@ import { LandingMotionDirectorate } from '../../components/landing/LandingMotion
 import { AccountTier, DisplayCurrency, TIER_LIMITS } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getPricingSchema } from '../../components/seo/schemaData';
 
 interface PricingPageViewProps {
@@ -494,6 +495,8 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
           </div>
         </section>
       </main>
+
+      <PublicInterlinkMesh currentPath="/pricing" />
 
       <LandingFooter
         onEnterApp={onEnterApp || onOpenAuth}

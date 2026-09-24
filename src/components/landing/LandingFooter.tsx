@@ -224,11 +224,20 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               </li>
               <li>
                 <Link
-                  to="/sets"
+                  to="/cards"
                   className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  All Expansions
+                  Public Card Catalogue
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/expansions"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                  Expansions &amp; Sets Directory
                 </Link>
               </li>
               <li>
@@ -368,6 +377,15 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Contact &amp; Support
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/changelog"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  Changelog (58 Iterations)
                 </Link>
               </li>
             </ul>

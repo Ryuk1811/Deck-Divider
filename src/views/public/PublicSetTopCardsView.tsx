@@ -7,6 +7,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEngine';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetTopCardsSchema } from '../../components/seo/schemaData';
 
 export const PublicSetTopCardsView: React.FC = () => {
@@ -256,6 +257,8 @@ export const PublicSetTopCardsView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={setId ? `/set/${setId}/top-cards` : '/sets'} />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

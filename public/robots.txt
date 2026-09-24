@@ -1,9 +1,13 @@
 # Titanium Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
-# Generated: 2026-09-22T09:21:56.020Z
+# Generated: 2026-09-24T15:46:56.897Z
 
 User-agent: *
 Allow: /
+Allow: /cards
+Allow: /expansions
+Allow: /expansions/sets
+Allow: /sets
 Allow: /directory/
 Allow: /set/
 Allow: /deck/
@@ -13,11 +17,21 @@ Allow: /best/
 Allow: /tools/
 Allow: /tool/
 Allow: /formats/
+Allow: /format/
 Allow: /pricing
 Allow: /about
+Allow: /how-it-works
 Allow: /faq
+Allow: /contact
+Allow: /leaderboard
 Allow: /changelog
 Allow: /sitemap.xml
+Allow: /sitemap-index.xml
+Allow: /sitemap-cards.xml
+Allow: /sitemap-sets.xml
+Allow: /sitemap-tools.xml
+Allow: /sitemap-formats.xml
+Allow: /sitemap-changelog.xml
 Allow: /feed.xml
 Allow: /llms.txt
 Allow: /llms-full.txt
@@ -55,6 +69,9 @@ Allow: /
 
 # Sitemaps & Feeds
 Sitemap: https://deckdivider.app/sitemap.xml
-# RSS: https://deckdivider.app/feed.xml
-# LLMs: https://deckdivider.app/llms.txt
-# Keywords: https://deckdivider.app/llms-keywords.txt
+Sitemap: https://deckdivider.app/sitemap-index.xml
+Sitemap: https://deckdivider.app/sitemap-cards.xml
+Sitemap: https://deckdivider.app/sitemap-sets.xml
+Sitemap: https://deckdivider.app/sitemap-tools.xml
+Sitemap: https://deckdivider.app/sitemap-formats.xml
+Sitemap: https://deckdivider.app/sitemap-changelog.xml

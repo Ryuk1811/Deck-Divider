@@ -17,6 +17,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, updatePageSeo } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getBestOfGuideSchema } from '../../components/seo/schemaData';
 
 interface GuideItem {
@@ -618,6 +619,8 @@ export const BestOfGuidesView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={slug ? `/best/${slug}` : '/best'} />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

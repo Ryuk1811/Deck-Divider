@@ -4,6 +4,7 @@ import { Shield, ArrowRight, Swords, Layers, Sparkles } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFormatLegalitySchema } from '../../components/seo/schemaData';
 
 export const formats = [
@@ -135,6 +136,8 @@ export const FormatLegalityDirectoryView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath="/formats" />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}

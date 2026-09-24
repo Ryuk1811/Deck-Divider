@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 
 interface PrivacyPolicyViewProps {
   onOpenAuth: () => void;
@@ -118,6 +119,8 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({
           </p>
         </motion.div>
       </main>
+
+      <PublicInterlinkMesh currentPath="/privacy" />
 
       <LandingFooter />
     </div>

@@ -4,6 +4,7 @@ import { ArrowRight, Check, X, Shield, Zap, Award, ExternalLink, HelpCircle, Che
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getAppComparisonsSchema } from '../../components/seo/schemaData';
 
 export type Competitor = {
@@ -556,6 +557,8 @@ export const CompetitorComparisonView: React.FC = () => {
 
         </div>
       </main>
+
+      <PublicInterlinkMesh currentPath={competitorId ? `/compare/${competitorId}` : '/compare'} />
 
       <LandingFooter 
         onEnterApp={() => navigate('/app')}
