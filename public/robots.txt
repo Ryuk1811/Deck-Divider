@@ -1,6 +1,6 @@
 # Titanium Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
-# Generated: 2026-09-24T15:46:56.897Z
+# Generated: 2026-09-24T16:08:47.106Z
 
 User-agent: *
 Allow: /
