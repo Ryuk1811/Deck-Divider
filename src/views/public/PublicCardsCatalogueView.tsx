@@ -22,6 +22,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { PublicCardDetailModal } from '../../components/modals/PublicCardDetailModal';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { initSearchEngine, searchCards, mapToPokemonCard } from '../../lib/searchEngine';
 import { getExpansionsCatalog } from '../../lib/dataSyncEngine';
@@ -298,6 +299,9 @@ export const PublicCardsCatalogueView: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* PTC Collectibles Partner Offer */}
+          <PtcPartnerBanner />
 
           {/* Main Search Input bar (Exact In-App Glass Slab) */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 glass-slab shadow-md">

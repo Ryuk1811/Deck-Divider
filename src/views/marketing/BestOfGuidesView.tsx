@@ -17,6 +17,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, updatePageSeo } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getBestOfGuideSchema } from '../../components/seo/schemaData';
 
@@ -446,6 +447,11 @@ export const BestOfGuidesView: React.FC = () => {
             <p className="text-base sm:text-lg text-[#64748B] leading-relaxed">
               An in-depth, hands-on comparison of the premier tools and software available for the Pokémon Trading Card Game community.
             </p>
+          </div>
+
+          {/* PTC Collectibles Partner Perk */}
+          <div className="mb-6">
+            <PtcPartnerBanner />
           </div>
 
           {/* Quick Nav Pill Tabs */}

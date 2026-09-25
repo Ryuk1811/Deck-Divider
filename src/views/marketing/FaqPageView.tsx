@@ -20,6 +20,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFaqPageSchema } from '../../components/seo/schemaData';
 
@@ -215,6 +216,9 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
             Everything you need to know about tracking your cards, evaluating PSA/BGS slabs, building tournament-ready decks, and securing your collection.
           </motion.p>
         </section>
+
+        {/* PTC Collectibles Partner Offer */}
+        <PtcPartnerBanner />
 
         <GeoExtractableBlock
           heading="Frequently Asked Questions: Key Facts & Platform Overview"

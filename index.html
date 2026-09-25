@@ -87,7 +87,8 @@
             "https://findly.tools/deck-divider",
             "https://smollaunch.com",
             "https://www.nxgntools.com/tools/deck-divider",
-            "https://super-launch.app"
+            "https://super-launch.app",
+            "https://www.foundrlist.com/product/deckdivider"
           ],
           "description": "Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players."
         },
@@ -130,7 +131,8 @@
             "https://findly.tools/deck-divider",
             "https://smollaunch.com",
             "https://www.nxgntools.com/tools/deck-divider",
-            "https://super-launch.app"
+            "https://super-launch.app",
+            "https://www.foundrlist.com/product/deckdivider"
           ],
           "award": [
             "Featured on Product Hunt",
@@ -138,7 +140,8 @@
             "Featured on Findly.tools",
             "Featured on Smol Launch",
             "Featured on NxGn Tools",
-            "Featured on Super Launch"
+            "Featured on Super Launch",
+            "Featured on FoundrList"
           ],
           "aggregateRating": {
             "@type": "AggregateRating",
@@ -147,6 +150,38 @@
             "bestRating": "5",
             "worstRating": "1"
           },
+          "review": [
+            {
+              "@type": "Review",
+              "@id": "https://deckdivider.app/#review-1",
+              "itemReviewed": { "@id": "https://deckdivider.app/#software" },
+              "name": "Verified Collector Review",
+              "author": { "@type": "Person", "name": "Alex Thorne (KantoCards)" },
+              "datePublished": "2026-09-18",
+              "reviewBody": "Hands down the cleanest PTCGL deck export workflow and slab tracker available.",
+              "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1" }
+            },
+            {
+              "@type": "Review",
+              "@id": "https://deckdivider.app/#review-2",
+              "itemReviewed": { "@id": "https://deckdivider.app/#software" },
+              "name": "Slab Collector Review",
+              "author": { "@type": "Person", "name": "Marcus V. (SlabTrader99)" },
+              "datePublished": "2026-09-17",
+              "reviewBody": "PSA & CGC cert lookup is lightning fast. Managing over 180 slabs is effortless.",
+              "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1" }
+            },
+            {
+              "@type": "Review",
+              "@id": "https://deckdivider.app/#review-3",
+              "itemReviewed": { "@id": "https://deckdivider.app/#software" },
+              "name": "Master Set Collector Review",
+              "author": { "@type": "Person", "name": "Elena Rostova" },
+              "datePublished": "2026-09-16",
+              "reviewBody": "The reverse holo checklist for 151 and Paldean Fates saved my sanity.",
+              "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1" }
+            }
+          ],
           "offers": {
             "@type": "AggregateOffer",
             "priceCurrency": "USD",
@@ -251,9 +286,16 @@
   <body class="bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-[#FFF0F3] selection:text-[#DC143C]">
     <div id="root">
       <div id="app-initial-shell" style="min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:#F8FAFC;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0.95;">
-          <div style="font-weight:800;font-size:20px;letter-spacing:-0.5px;color:#0F172A;">
-            DECK <span style="color:#DC143C;">/</span> divider
+        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;opacity:0.98;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img src="/logo.png?v=11" alt="DECK / divider Logo" width="40" height="40" style="width:40px;height:40px;object-fit:contain;display:block;" />
+            <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+              <div style="background:#000000;border-radius:7px;padding:6px 14px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
+                <span style="color:#FFFFFF;font-family:system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:14px;">DECK</span>
+                <span style="color:#DC143C;font-family:monospace;font-weight:700;margin:0 6px;font-size:16px;">/</span>
+                <span style="color:#DC143C;font-family:system-ui,-apple-system,sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:lowercase;font-size:14px;">divider</span>
+              </div>
+            </div>
           </div>
           <div style="width:22px;height:22px;border:2.5px solid #E2E8F0;border-top-color:#DC143C;border-radius:50%;animation:dd-spin 0.8s linear infinite;"></div>
         </div>

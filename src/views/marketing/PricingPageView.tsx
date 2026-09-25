@@ -7,6 +7,7 @@ import { LandingMotionDirectorate } from '../../components/landing/LandingMotion
 import { AccountTier, DisplayCurrency, TIER_LIMITS } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getPricingSchema } from '../../components/seo/schemaData';
 
@@ -208,6 +209,9 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
             Start with our generous free Starter plan and scale as your collection grows. Live market valuations, 60-card tournament tools, and PSA slab tracking.
           </motion.p>
         </section>
+
+        {/* PTC Collectibles Partner Offer */}
+        <PtcPartnerBanner />
 
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock

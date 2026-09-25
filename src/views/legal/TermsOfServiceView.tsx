@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 
 interface TermsOfServiceViewProps {
@@ -76,6 +77,9 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             Effective Date: August 30, 2026
           </motion.p>
         </section>
+
+        {/* PTC Collectibles Partner Offer */}
+        <PtcPartnerBanner />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

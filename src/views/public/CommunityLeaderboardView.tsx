@@ -17,6 +17,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getCommunityLeaderboardSchema } from '../../components/seo/schemaData';
 
@@ -98,6 +99,11 @@ export const CommunityLeaderboardView: React.FC = () => {
             <p className="text-base sm:text-lg text-[#64748B] max-w-3xl mx-auto">
               Explore verified high-net-worth collections, tournament-winning 60-card decklists, and the most actively tracked holy grails on DECK / divider.
             </p>
+          </div>
+
+          {/* PTC Collectibles Partner Offer */}
+          <div className="mb-8">
+            <PtcPartnerBanner />
           </div>
 
           <GeoExtractableBlock

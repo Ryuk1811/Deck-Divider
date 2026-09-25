@@ -4,6 +4,7 @@ import { ArrowRight, Check, X, Shield, Zap, Award, ExternalLink, HelpCircle, Che
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getAppComparisonsSchema } from '../../components/seo/schemaData';
 
@@ -251,6 +252,11 @@ export const CompetitorComparisonView: React.FC = () => {
               </p>
             </div>
 
+            {/* PTC Collectibles Partner Perk */}
+            <div className="mb-6">
+              <PtcPartnerBanner />
+            </div>
+
             <GeoExtractableBlock
               className="mb-12"
               heading="Quick Verdict: Which Pokémon Card Tracker Should You Use in 2026?"
@@ -429,6 +435,11 @@ export const CompetitorComparisonView: React.FC = () => {
             <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto">
               Wondering whether DECK / divider or {competitor.name} is the best choice for your Pokémon card collection? Here is the definitive feature and pricing benchmark.
             </p>
+          </div>
+
+          {/* PTC Collectibles Partner Perk */}
+          <div className="mb-6">
+            <PtcPartnerBanner />
           </div>
 
           {/* Answer-First Quick Verdict Box (Optimized for AI Overviews & Snippets) */}

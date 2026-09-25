@@ -28,6 +28,7 @@ import { EmbedBadgeModal } from '../../components/modals/EmbedBadgeModal';
 import { DeckDividerBrand } from '../../components/ui/DeckDividerBrand';
 import { formatCurrency } from '../../utils/formatters';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { getPublicDeckSchema } from '../../components/seo/schemaData';
 import { generateDeckSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
 
@@ -337,6 +338,10 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
             { label: 'PTCGL Ready', value: 'Instant Text Export' },
           ]}
         />
+
+        {/* PTC Collectibles Partner Offer */}
+        <PtcPartnerBanner context="decks" />
+
         {/* Deck Header Info */}
         <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-5">
           {/* Header Row: Title & Function Buttons */}

@@ -4,6 +4,7 @@ import { Shield, ArrowRight, Swords, Layers, Sparkles } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFormatLegalitySchema } from '../../components/seo/schemaData';
 
@@ -69,6 +70,11 @@ export const FormatLegalityDirectoryView: React.FC = () => {
             <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto">
               Understand the rules, rotation schedules, and legal card pools for every major competitive and community format in the Pokémon Trading Card Game.
             </p>
+          </div>
+
+          {/* PTC Collectibles Partner Perk */}
+          <div className="mb-6">
+            <PtcPartnerBanner />
           </div>
 
           <GeoExtractableBlock

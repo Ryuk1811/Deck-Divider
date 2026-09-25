@@ -93,6 +93,8 @@ async function prerenderAllRoutes() {
     { route: '/faq', outputPath: path.join(distDir, 'faq', 'index.html') },
     { route: '/socials', outputPath: path.join(distDir, 'socials', 'index.html') },
     { route: '/changelog', outputPath: path.join(distDir, 'changelog', 'index.html') },
+    { route: '/partners/ptc-collectibles', outputPath: path.join(distDir, 'partners', 'ptc-collectibles', 'index.html') },
+    { route: '/partners', outputPath: path.join(distDir, 'partners', 'index.html') },
     
     // Formats & Legality
     { route: '/formats', outputPath: path.join(distDir, 'formats', 'index.html') },

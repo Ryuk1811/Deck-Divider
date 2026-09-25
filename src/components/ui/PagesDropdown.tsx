@@ -228,6 +228,14 @@ export const ALL_PAGES: PageItem[] = [
     description: 'Answers on pricing data, imports, and security',
   },
   {
+    name: 'PTC Collectibles Partner Perk',
+    path: '/partners/ptc-collectibles',
+    category: 'Platform',
+    icon: Sparkles,
+    description: 'Exclusive 5%+ discount code on booster boxes & singles',
+    badge: '5% Off',
+  },
+  {
     name: 'Privacy Policy',
     path: '/privacy',
     category: 'Platform',

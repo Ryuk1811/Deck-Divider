@@ -19,6 +19,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getPsaCalculatorSchema, getDeckLegalityCheckerSchema } from '../../components/seo/schemaData';
 
@@ -258,6 +259,11 @@ export const HighIntentToolsView: React.FC = () => {
               <ShieldAlert className="w-4 h-4" />
               Regulation Mark &amp; Legality Checker
             </Link>
+          </div>
+
+          {/* PTC Collectibles Partner Offer */}
+          <div className="mb-8">
+            <PtcPartnerBanner />
           </div>
 
           <GeoExtractableBlock

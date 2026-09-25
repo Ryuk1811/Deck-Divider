@@ -89,6 +89,7 @@ export const PublicInterlinkMesh: React.FC<PublicInterlinkMeshProps> = ({
         { path: '/pricing', label: 'Transparent Tiered Pricing', badge: 'Plans' },
         { path: '/how-it-works', label: 'Architecture & How It Works', badge: 'Guide' },
         { path: '/about', label: 'Mission & Engineering Standards', badge: 'About' },
+        { path: '/partners/ptc-collectibles', label: 'PTC Collectibles Partner Perk (5% Off)', badge: 'Partner' },
       ],
     },
     {

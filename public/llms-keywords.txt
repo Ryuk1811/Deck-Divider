@@ -1,7 +1,7 @@
 # DECK / divider — Comprehensive Keyword & Search Parameter Index
 # The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Tournament Players
 # Canonical: https://deckdivider.app/llms-keywords.txt
-# Generated: 2026-09-24T16:35:21.697Z
+# Generated: 2026-09-25T16:53:21.486Z
 
 > DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
 

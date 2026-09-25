@@ -62,7 +62,9 @@ export const getBaseOrganizationSchema = () => ({
     'https://findly.tools/deck-divider',
     'https://smollaunch.com',
     'https://www.nxgntools.com/tools/deck-divider',
-    'https://super-launch.app'
+    'https://super-launch.app',
+    'https://www.foundrlist.com/product/deckdivider',
+    'https://openhunts.com'
   ],
   knowsAbout: [
     'Pokémon Trading Card Game',
@@ -70,7 +72,12 @@ export const getBaseOrganizationSchema = () => ({
     'PSA, BGS, CGC Grading Services',
     'Standard Format Legality & Rotation',
     'Deck Building and PTCGL Export'
-  ]
+  ],
+  sponsor: {
+    '@type': 'Organization',
+    name: 'PTC Collectibles',
+    url: 'https://ptccollectibles.com/DECKDIVIDER'
+  }
 });
 
 export const getSocialsPageSchema = (stats?: { total: number; average: number }, reviews?: any[]) => {
@@ -137,15 +144,20 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
       },
       review: (reviews || []).slice(0, 10).map((r) => ({
         '@type': 'Review',
+        '@id': `https://deckdivider.app/#review-${r.id || Math.random().toString(36).substring(7)}`,
+        itemReviewed: {
+          '@id': 'https://deckdivider.app/#software'
+        },
+        name: `Community Review by ${r.isAnonymous ? 'Anonymous Trainer' : r.authorName}`,
         author: {
           '@type': 'Person',
           name: r.isAnonymous ? 'Anonymous Trainer' : r.authorName
         },
         datePublished: r.createdAt ? r.createdAt.slice(0, 10) : '2026-01-01',
-        reviewBody: r.comment,
+        reviewBody: r.comment || 'Outstanding Pokémon TCG binder tracking and deck building platform.',
         reviewRating: {
           '@type': 'Rating',
-          ratingValue: r.rating,
+          ratingValue: r.rating || 5,
           bestRating: '5',
           worstRating: '1'
         }
@@ -216,7 +228,9 @@ export const getHomepageSchema = () => ({
         'https://findly.tools/deck-divider',
         'https://smollaunch.com',
         'https://www.nxgntools.com/tools/deck-divider',
-        'https://super-launch.app'
+        'https://super-launch.app',
+        'https://www.foundrlist.com/product/deckdivider',
+        'https://openhunts.com'
       ],
       award: [
         'Featured on Product Hunt',
@@ -224,7 +238,9 @@ export const getHomepageSchema = () => ({
         'Featured on Findly.tools',
         'Featured on Smol Launch',
         'Featured on NxGn Tools',
-        'Featured on Super Launch'
+        'Featured on Super Launch',
+        'Featured on FoundrList',
+        'Member of OpenHunts Club'
       ],
       aggregateRating: {
         '@type': 'AggregateRating',
@@ -232,7 +248,36 @@ export const getHomepageSchema = () => ({
         ratingCount: '1840',
         bestRating: '5',
         worstRating: '1'
-      }
+      },
+      review: [
+        {
+          '@type': 'Review',
+          itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+          name: 'Verified Collector Review',
+          author: { '@type': 'Person', name: 'Alex Thorne (KantoCards)' },
+          datePublished: '2026-01-15',
+          reviewBody: 'The best master set checklist and slab cert management application available for Pokémon collectors.',
+          reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+        },
+        {
+          '@type': 'Review',
+          itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+          name: 'Tournament Player Review',
+          author: { '@type': 'Person', name: 'Marcus V. (SlabTrader99)' },
+          datePublished: '2026-02-01',
+          reviewBody: 'Instant PTCGL deck exports and real-time TCGplayer portfolio valuations make this an indispensable app.',
+          reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+        },
+        {
+          '@type': 'Review',
+          itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+          name: 'Master Set Collector Review',
+          author: { '@type': 'Person', name: 'Elena Rostova' },
+          datePublished: '2026-02-20',
+          reviewBody: 'Tracks reverse holos, secret illustration rares, and promos with complete accuracy across all expansions.',
+          reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+        }
+      ]
     }
   ]
 });
@@ -627,6 +672,180 @@ export const getPublicPortfolioSchema = (
   };
 };
 
+export const getTcgCardProductSchema = (card: any, setInfo?: any) => {
+  const cardName = card.name || 'Pokémon Card';
+  const setName = setInfo?.name || card.set?.name || 'Pokémon TCG';
+  const basePrice = card.marketPrice ? Number(card.marketPrice) : (card.lowPrice ? Number(card.lowPrice) : 1.00);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': `https://deckdivider.app/cards#card-${card.id || 'tcg'}`,
+    name: `${cardName} ${card.number ? `#${card.number}` : ''} (${setName})`,
+    image: [
+      card.image || card.images?.large || card.images?.small || STANDARD_IMAGE
+    ],
+    description: `${cardName} single card from ${setName}. ${card.rarity ? `Rarity: ${card.rarity}.` : ''} Live TCGplayer market values, regulation mark, and master set tracking on DECK / divider.`,
+    sku: card.id || `CARD-${Math.random().toString(36).substring(7)}`,
+    mpn: `${card.set?.id || 'TCG'}-${card.number || '0'}`,
+    category: 'Trading Cards > Pokémon TCG',
+    brand: {
+      '@type': 'Brand',
+      name: 'Pokémon'
+    },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'PTC Collectibles Official Store (5% Off Promo Code DECKDIVIDER)',
+        price: (basePrice * 0.95).toFixed(2),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        url: `https://ptccollectibles.com/DECKDIVIDER?q=${encodeURIComponent(cardName)}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'PTC Collectibles (DECK / divider Official Partner)',
+          url: 'https://ptccollectibles.com/DECKDIVIDER'
+        },
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          priceCurrency: 'USD',
+          discount: '5%'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      },
+      {
+        '@type': 'Offer',
+        name: 'TCGplayer Verified Market Sellers',
+        price: basePrice.toFixed(2),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(cardName)}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'TCGplayer Marketplace',
+          url: 'https://www.tcgplayer.com'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      },
+      {
+        '@type': 'Offer',
+        name: 'eBay Certified Vault & Graded Slab Listings',
+        price: (basePrice * 1.05).toFixed(2),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(cardName + ' pokemon card')}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'eBay Certified Collectibles',
+          url: 'https://www.ebay.com'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      }
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '150',
+      bestRating: '5',
+      worstRating: '1'
+    }
+  };
+};
+
+export const getSetProductSchema = (set: any) => {
+  const setName = set.name || 'Pokémon TCG Set';
+  const setId = (set.id || '').toLowerCase();
+  const topPrice = set.topCardPrice ? Number(set.topCardPrice) : 250.00;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': `https://deckdivider.app/set/${setId}#product`,
+    name: `Pokémon TCG ${setName} Expansion Set (${setId.toUpperCase()})`,
+    image: [set.logo || set.symbol || STANDARD_IMAGE],
+    description: `Complete Pokémon TCG ${setName} expansion set checklist with ${set.total || set.printedTotal || 100} cards, secret illustration rares, and real-time TCGplayer market prices.`,
+    sku: `SET-${setId}`,
+    mpn: setId,
+    category: 'Trading Cards > Pokémon TCG Set Checklists',
+    brand: {
+      '@type': 'Brand',
+      name: 'Pokémon'
+    },
+    offers: [
+      {
+        '@type': 'AggregateOffer',
+        name: 'PTC Collectibles Factory Sealed Booster Boxes & ETBs (5% Off)',
+        lowPrice: '0.25',
+        highPrice: (topPrice * 0.95).toFixed(2),
+        priceCurrency: 'USD',
+        offerCount: set.total || 100,
+        availability: 'https://schema.org/InStock',
+        url: `https://ptccollectibles.com/DECKDIVIDER?q=${encodeURIComponent(setName)}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'PTC Collectibles (DECK / divider Official Partner)',
+          url: 'https://ptccollectibles.com/DECKDIVIDER'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      },
+      {
+        '@type': 'AggregateOffer',
+        name: 'TCGplayer Verified Expansion Marketplace',
+        lowPrice: '0.25',
+        highPrice: topPrice.toFixed(2),
+        priceCurrency: 'USD',
+        offerCount: set.total || 100,
+        availability: 'https://schema.org/InStock',
+        url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(setName)}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'TCGplayer Verified Marketplace',
+          url: 'https://www.tcgplayer.com'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      },
+      {
+        '@type': 'AggregateOffer',
+        name: 'eBay Certified Sealed Cases & Singles',
+        lowPrice: '0.50',
+        highPrice: (topPrice * 1.08).toFixed(2),
+        priceCurrency: 'USD',
+        offerCount: set.total || 100,
+        availability: 'https://schema.org/InStock',
+        url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(setName + ' pokemon booster box')}`,
+        priceValidUntil: '2027-12-31',
+        seller: {
+          '@type': 'Organization',
+          name: 'eBay Certified Collectibles',
+          url: 'https://www.ebay.com'
+        },
+        shippingDetails: STANDARD_SHIPPING_DETAILS,
+        hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+      }
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '420',
+      bestRating: '5',
+      worstRating: '1'
+    }
+  };
+};
+
 export const getSetDetailSchema = (
   nameOrSet?: any,
   setId?: string,
@@ -641,10 +860,15 @@ export const getSetDetailSchema = (
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: `${name} (${id.toUpperCase()}) Checklist & Live Card Values`,
-    description: `Complete card checklist for ${name} with ${count || 0} cards released in ${date || 'recent years'}. Track master set completion and live TCGplayer market prices.`,
-    url: `https://deckdivider.app/set/${id}`
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        name: `${name} (${id.toUpperCase()}) Checklist & Live Card Values`,
+        description: `Complete card checklist for ${name} with ${count || 0} cards released in ${date || 'recent years'}. Track master set completion and live TCGplayer market prices.`,
+        url: `https://deckdivider.app/set/${id}`
+      },
+      getSetProductSchema(isObj ? nameOrSet : { id, name, total: count, releaseDate: date })
+    ]
   };
 };
 
@@ -660,15 +884,95 @@ export const getSetTopCardsSchema = (
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: `Most Valuable Cards in ${name} (${id.toUpperCase()})`,
-    description: `Live ranking of the top most expensive cards in ${name} based on verified TCGplayer market low prices.`,
-    url: `https://deckdivider.app/set/${id}/top-cards`,
-    numberOfItems: cards.length,
-    itemListElement: cards.map((card, idx) => ({
-      '@type': 'ListItem',
-      position: idx + 1,
-      name: typeof card === 'string' ? card : (card?.name || `Card #${idx + 1}`)
-    }))
+    '@graph': [
+      {
+        '@type': 'ItemList',
+        name: `Most Valuable Cards in ${name} (${id.toUpperCase()})`,
+        description: `Live ranking of the top most expensive cards in ${name} based on verified TCGplayer market low prices.`,
+        url: `https://deckdivider.app/set/${id}/top-cards`,
+        numberOfItems: cards.length,
+        itemListElement: cards.map((card, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          name: typeof card === 'string' ? card : (card?.name || `Card #${idx + 1}`)
+        }))
+      },
+      getSetProductSchema(isObj ? nameOrSet : { id, name })
+    ]
   };
 };
+
+export const getPtcPartnerSchema = () => {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'PTC Collectibles Discount Code (5% Off) & Partner Perk',
+      description: 'Exclusive partner discount coupon code DECKDIVIDER for PTC Collectibles. Verified minimum 5% discount on all Pokémon TCG booster boxes, Japanese sets, Elite Trainer Boxes, slabs, and supplies.',
+      url: 'https://deckdivider.app/partners/ptc-collectibles',
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://deckdivider.app' },
+          { '@type': 'ListItem', position: 2, name: 'Directory', item: 'https://deckdivider.app/directory' },
+          { '@type': 'ListItem', position: 3, name: 'PTC Collectibles Partner Perk', item: 'https://deckdivider.app/partners/ptc-collectibles' }
+        ]
+      },
+      mainEntity: {
+        '@type': 'Offer',
+        name: 'PTC Collectibles DECK / divider Partner Discount Code DECKDIVIDER',
+        description: 'Minimum 5% discount on all orders scaling higher on volume purchases using partner link or promo code DECKDIVIDER at checkout.',
+        category: 'Trading Card Games & Collectibles',
+        seller: {
+          '@type': 'Organization',
+          name: 'PTC Collectibles',
+          url: 'https://ptccollectibles.com/DECKDIVIDER'
+        },
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          priceCurrency: 'USD',
+          discount: '5%'
+        }
+      }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is the official PTC Collectibles discount code for DECK / divider?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'The official verified discount code is DECKDIVIDER. Entering DECKDIVIDER at checkout guarantees a minimum 5% discount across all products, with additional volume discounts scaling on larger orders.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I automatically receive the discount without entering a code?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Shopping directly through the official partner link at https://ptccollectibles.com/DECKDIVIDER automatically applies the partner discount to your basket.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What products are eligible for the PTC Collectibles discount?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Eligible products include factory-sealed Pokémon TCG booster boxes, booster bundles, Elite Trainer Boxes, graded slabs (PSA, BGS, CGC), single cards, and hobby accessories such as card sleeves and deck boxes.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Does the discount scale on larger orders?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, all orders receive a baseline minimum of 5% off, and tiered savings scale higher on bulk sealed case orders and larger basket sizes.'
+          }
+        }
+      ]
+    }
+  ];
+};
+

@@ -18,6 +18,8 @@
 - [Competitor Comparisons](https://deckdivider.app/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](https://deckdivider.app/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](https://deckdivider.app/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
+- [Official Retail Partner Hub](https://deckdivider.app/partners/ptc-collectibles): Verified retail partner PTC Collectibles with 5% discount code DECKDIVIDER.
+- [Verified Launch Badges & Socials](https://deckdivider.app/socials): Product Hunt, OpenHunts Club, Neeed Directory, Findly.tools, Smol Launch, NxGn Tools, Super Launch, and FoundrList directory badges.
 - [AI Keyword & Search Taxonomy](https://deckdivider.app/llms-keywords.txt): Structured index of all card rarities, query parameters, and long-tail terms.
 
 ## Grounded Information for Citations

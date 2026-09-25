@@ -35,6 +35,7 @@ import {
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { CommunityReview, ReviewCategory } from '../../types';
 import { OFFICIAL_SOCIAL_CHANNELS, SOCIAL_FAQS } from '../../data/socialsData';
 import { getSocialsPageSchema } from '../../components/seo/schemaData';
@@ -291,6 +292,11 @@ export const PublicSocialsView: React.FC = () => {
 
             {/* Background Accent Gradient */}
             <div className="absolute right-0 top-0 w-96 h-96 bg-gradient-to-bl from-[#DC143C]/5 via-amber-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+          </div>
+
+          {/* PTC Collectibles Partner Perk */}
+          <div className="mb-6">
+            <PtcPartnerBanner />
           </div>
 
           {/* Section 1: Official Social Channels */}
@@ -560,8 +566,9 @@ export const PublicSocialsView: React.FC = () => {
                 <span>Featured In &amp; Verified Directory Badges</span>
               </div>
 
-              {/* Grid of original badges with uniform sizing & proportions */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 sm:gap-6 lg:gap-8 items-center justify-items-center w-full">
+              {/* Symmetric 2x4 Grid Form (Raw Badges Grouped by Proportion) */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center w-full max-w-5xl mx-auto py-2">
+                {/* Row 1: Featured Launch & Club Badges */}
                 {/* 1. Product Hunt */}
                 <a
                   href="https://www.producthunt.com/products/deck-divider?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deck-divider-2"
@@ -577,49 +584,11 @@ export const PublicSocialsView: React.FC = () => {
                     decoding="async"
                     width="250"
                     height="54"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
                   />
                 </a>
 
-                {/* 2. Neeed Directory */}
-                <a
-                  href="https://neeed.directory"
-                  target="_blank"
-                  rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Neeed Directory"
-                >
-                  <img
-                    src="https://neeed.directory/badges/neeed-badge-light.svg"
-                    alt="Deck Divider on neeed.directory"
-                    loading="lazy"
-                    decoding="async"
-                    width="139"
-                    height="32"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
-                </a>
-
-                {/* 3. Findly.tools */}
-                <a
-                  href="https://findly.tools/deck-divider?utm_source=deck-divider"
-                  target="_blank"
-                  rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Findly.tools"
-                >
-                  <img
-                    src="https://findly.tools/badges/findly-tools-badge-light.svg"
-                    alt="Deck Divider on Findly.tools"
-                    loading="lazy"
-                    decoding="async"
-                    width="175"
-                    height="55"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
-                </a>
-
-                {/* 4. Smol Launch */}
+                {/* 2. Smol Launch */}
                 <a
                   href="https://smollaunch.com"
                   target="_blank"
@@ -634,30 +603,11 @@ export const PublicSocialsView: React.FC = () => {
                     decoding="async"
                     width="250"
                     height="60"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
                   />
                 </a>
 
-                {/* 5. NxGn Tools */}
-                <a
-                  href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider"
-                  target="_blank"
-                  rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Find Deck Divider on NxGn Tools"
-                >
-                  <img
-                    src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON"
-                    alt="Find Deck Divider on NxGn Tools"
-                    loading="lazy"
-                    decoding="async"
-                    width="160"
-                    height="32"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
-                </a>
-
-                {/* 6. Super Launch */}
+                {/* 3. Super Launch */}
                 <a
                   href="https://super-launch.app"
                   target="_blank"
@@ -672,7 +622,103 @@ export const PublicSocialsView: React.FC = () => {
                     decoding="async"
                     width="200"
                     height="54"
-                    className="h-10 sm:h-11 w-auto max-w-full object-contain pointer-events-none"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 4. OpenHunts Club */}
+                <a
+                  href="https://openhunts.com"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="OpenHunts Club"
+                >
+                  <img
+                    src="https://cdn.openhunts.com/badges/club.webp"
+                    alt="OpenHunts Club Member"
+                    loading="lazy"
+                    decoding="async"
+                    width="486"
+                    height="105"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* Row 2: Verified Tool & Directory Badges */}
+                {/* 5. Neeed Directory */}
+                <a
+                  href="https://neeed.directory"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Neeed Directory"
+                >
+                  <img
+                    src="https://neeed.directory/badges/neeed-badge-light.svg"
+                    alt="Deck Divider on neeed.directory"
+                    loading="lazy"
+                    decoding="async"
+                    width="139"
+                    height="32"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 6. Findly.tools */}
+                <a
+                  href="https://findly.tools/deck-divider?utm_source=deck-divider"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Deck Divider on Findly.tools"
+                >
+                  <img
+                    src="https://findly.tools/badges/findly-tools-badge-light.svg"
+                    alt="Deck Divider on Findly.tools"
+                    loading="lazy"
+                    decoding="async"
+                    width="175"
+                    height="55"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 7. NxGn Tools */}
+                <a
+                  href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="Find Deck Divider on NxGn Tools"
+                >
+                  <img
+                    src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON"
+                    alt="Find Deck Divider on NxGn Tools"
+                    loading="lazy"
+                    decoding="async"
+                    width="160"
+                    height="32"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </a>
+
+                {/* 8. FoundrList */}
+                <a
+                  href="https://www.foundrlist.com/product/deckdivider?utm_source=badge&amp;utm_medium=embed"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
+                  title="DECK / divider Featured on FoundrList"
+                >
+                  <img
+                    src="https://www.foundrlist.com/api/badge/deckdivider"
+                    alt="Featured on FoundrList"
+                    loading="lazy"
+                    decoding="async"
+                    width="150"
+                    height="48"
+                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
                   />
                 </a>
               </div>

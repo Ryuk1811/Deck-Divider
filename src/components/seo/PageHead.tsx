@@ -144,7 +144,7 @@ export const GeoBreadcrumbs: React.FC<{ items: BreadcrumbItem[] }> = ({ items })
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
-            <li key={item.path} className="flex items-center gap-1">
+            <li key={`${item.path}-${item.label}-${index}`} className="flex items-center gap-1">
               <ChevronRight className="w-3 h-3 text-slate-400" />
               {isLast ? (
                 <span className="text-[#0F172A] font-semibold" aria-current="page">

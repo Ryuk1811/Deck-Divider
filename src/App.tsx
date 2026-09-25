@@ -90,6 +90,7 @@ const TermsOfServiceView = lazy(() => import('./views/legal/TermsOfServiceView')
 const PricingPageView = lazy(() => import('./views/marketing/PricingPageView').then(m => ({ default: m.PricingPageView })));
 const FaqPageView = lazy(() => import('./views/marketing/FaqPageView').then(m => ({ default: m.FaqPageView })));
 const ChangelogPageView = lazy(() => import('./views/marketing/ChangelogPageView').then(m => ({ default: m.ChangelogPageView })));
+const PtcPartnerHubView = lazy(() => import('./views/marketing/PtcPartnerHubView').then(m => ({ default: m.PtcPartnerHubView })));
 const NotFoundView = lazy(() => import('./views/app/NotFoundView').then(m => ({ default: m.NotFoundView })));
 const AdminDashboardView = lazy(() => import('./views/admin/AdminDashboardView').then(m => ({ default: m.AdminDashboardView })));
 const ContactPageView = lazy(() => import('./views/legal/AdditionalPages').then(m => ({ default: m.ContactPageView })));
@@ -1847,6 +1848,9 @@ export default function App() {
         <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
         <Route path="/faq" element={<FaqPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} displayCurrency={displayCurrency} user={user} />} />
         <Route path="/contact" element={<ContactPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/partners/ptc-collectibles" element={<PtcPartnerHubView />} />
+        <Route path="/partner/ptc-collectibles" element={<PtcPartnerHubView />} />
+        <Route path="/partners" element={<PtcPartnerHubView />} />
 
         {/* === LEGAL & TRUST === */}
         <Route path="/privacy" element={<PrivacyPolicyView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />

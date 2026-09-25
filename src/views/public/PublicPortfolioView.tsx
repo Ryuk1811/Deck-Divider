@@ -25,6 +25,7 @@ import { decodeUrlParamToPortfolio } from '../../utils/portfolioUrlEncoder';
 import { encodeDeckToUrlParam } from '../../utils/deckUrlEncoder';
 import { CardImage } from '../../components/ui/CardImage';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { getPublicPortfolioSchema } from '../../components/seo/schemaData';
 import { EmbedBadgeModal } from '../../components/modals/EmbedBadgeModal';
 
@@ -344,6 +345,11 @@ export const PublicPortfolioView: React.FC = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* PTC Collectibles Partner Offer */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6">
+        <PtcPartnerBanner />
       </div>
 
       {/* Main Content */}

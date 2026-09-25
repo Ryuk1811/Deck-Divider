@@ -8,6 +8,7 @@ import { HeroFluidMotionCanvas } from '../../components/landing/HeroFluidMotionC
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getHowItWorksSchema } from '../../components/seo/schemaData';
 
@@ -197,6 +198,9 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
             </motion.p>
           </div>
         </section>
+
+        {/* PTC Collectibles Partner Offer */}
+        <PtcPartnerBanner />
 
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock

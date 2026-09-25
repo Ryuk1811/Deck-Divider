@@ -48,7 +48,8 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/format/unlimited', lastmod: BUILD_DATE, priority: '0.65', changefreq: 'weekly' },
   { path: '/format/retro-2010', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
   { path: '/format/retro-2004', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
-  { path: '/socials', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
+  { path: '/socials', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
+  { path: '/partners/ptc-collectibles', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
   { path: '/portfolios', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
   { path: '/tools/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
   { path: '/tools/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
@@ -403,6 +404,8 @@ export function generateLlmsTxt(): string {
 - [Competitor Comparisons](${CANONICAL_ORIGIN}/compare): Feature-by-feature comparisons with Collectr, Pokellector, PriceCharting, and Dex.
 - [Best Of Guides](${CANONICAL_ORIGIN}/best): Curated rankings of Pokémon card apps and scanning tools.
 - [Pricing](${CANONICAL_ORIGIN}/pricing): Transparent freemium model with unlimited free local tier and optional Pro Cloud sync.
+- [Official Retail Partner Hub](${CANONICAL_ORIGIN}/partners/ptc-collectibles): Verified retail partner PTC Collectibles with 5% discount code DECKDIVIDER.
+- [Verified Launch Badges & Socials](${CANONICAL_ORIGIN}/socials): Product Hunt, OpenHunts Club, Neeed Directory, Findly.tools, Smol Launch, NxGn Tools, Super Launch, and FoundrList directory badges.
 - [AI Keyword & Search Taxonomy](${CANONICAL_ORIGIN}/llms-keywords.txt): Structured index of all card rarities, query parameters, and long-tail terms.
 
 ## Grounded Information for Citations

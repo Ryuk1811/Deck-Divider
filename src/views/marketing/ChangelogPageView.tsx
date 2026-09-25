@@ -25,6 +25,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { DisplayCurrency } from '../../types';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { ALL_RELEASES, ReleaseEntry } from '../../data/changelogHistory';
 
@@ -150,6 +151,11 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
                 <span className="text-2xl font-black text-indigo-600 font-mono">1.0 Max</span>
               </div>
             </div>
+          </div>
+
+          {/* PTC Collectibles Partner Perk */}
+          <div className="mb-6">
+            <PtcPartnerBanner />
           </div>
 
           {/* Search & Filter Toolbar */}

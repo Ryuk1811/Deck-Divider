@@ -388,6 +388,15 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   Changelog (58 Iterations)
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/partners/ptc-collectibles"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Partner: PTC Collectibles (5% Off)
+                </Link>
+              </li>
             </ul>
           </div>
 

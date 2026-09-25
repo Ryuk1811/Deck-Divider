@@ -5,6 +5,7 @@
 import { KEYWORD_CLUSTERS, GLOSSARY_TERMS, SEARCH_PARAMETERS } from '../keywordCatalogManager.js';
 import { getExpansions } from '../tcgCatalogManager.js';
 import { DECK_SLUGS, COMPETITOR_SLUGS } from '../publicFootprintManager.js';
+import { renderSsrBrand } from '../ssrRenderer.js';
 
 const CANONICAL_ORIGIN = 'https://deckdivider.app';
 const OG_IMAGE_URL = 'https://deckdivider.app/og-image.png?v=2';
@@ -68,9 +69,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#DC143C;text-decoration:none;font-weight:700;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>
@@ -193,9 +192,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#64748B;text-decoration:none;font-weight:500;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#DC143C;text-decoration:none;font-weight:700;">Sets</a>
@@ -292,9 +289,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#64748B;text-decoration:none;font-weight:500;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>
@@ -374,9 +369,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#64748B;text-decoration:none;font-weight:500;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>
@@ -484,9 +477,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#64748B;text-decoration:none;font-weight:500;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>

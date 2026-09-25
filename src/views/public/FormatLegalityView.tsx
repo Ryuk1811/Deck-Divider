@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { formats } from './FormatLegalityDirectoryView';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getFormatLegalitySchema } from '../../components/seo/schemaData';
 
@@ -84,6 +85,11 @@ export const FormatLegalityView: React.FC = () => {
             <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto">
               {format.description}
             </p>
+          </div>
+
+          {/* PTC Collectibles Partner Offer */}
+          <div className="mb-8">
+            <PtcPartnerBanner context="format" />
           </div>
 
           <GeoExtractableBlock

@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 
 const easeCurve = [0.16, 1, 0.3, 1] as const;
@@ -59,6 +60,10 @@ const PageTemplate = ({
           {title}
         </motion.h1>
       </section>
+
+      {/* PTC Collectibles Partner Offer */}
+      <PtcPartnerBanner />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

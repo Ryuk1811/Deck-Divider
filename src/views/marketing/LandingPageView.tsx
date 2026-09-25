@@ -20,6 +20,7 @@ import { AccountTier, DisplayCurrency } from '../../types';
 
 import { LandingFeatureGrid } from '../../components/landing/LandingFeatureGrid';
 import { SectionHeaderLine } from '../../components/landing/SectionHeaderLine';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PlatformPhilosophySection } from '../../components/landing/PlatformPhilosophySection';
 import { LandingPrivacyPolicySection } from '../../components/landing/LandingPrivacyPolicySection';
 import { LandingSocialsSection } from '../../components/landing/LandingSocialsSection';
@@ -141,6 +142,11 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             onImportCustomCards={onImportCustomCards}
             onSelectCard={onSelectCard}
           />
+        </div>
+
+        {/* PTC Collectibles Official Partner Perk */}
+        <div className="w-full py-2">
+          <PtcPartnerBanner />
         </div>
 
         {/* Section 01 Header Line: Summary */}

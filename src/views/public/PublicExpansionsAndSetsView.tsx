@@ -18,6 +18,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { PublicCardDetailModal } from '../../components/modals/PublicCardDetailModal';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import {
   getCardsBySetCatalog,
@@ -251,6 +252,9 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
               </Link>
             </div>
           </div>
+
+          {/* PTC Collectibles Partner Offer */}
+          <PtcPartnerBanner />
 
           {/* SERIES FILTER PILLS (Exact In-App Series Pills) */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">

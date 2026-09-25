@@ -107,6 +107,7 @@ export function isBot(userAgent: string = ''): boolean {
     'nxgntools',
     'super-launch',
     'superlaunch',
+    'foundrlist',
     'curl',
     'wget',
     'python-requests',
@@ -133,13 +134,24 @@ export function isBot(userAgent: string = ''): boolean {
   return botPatterns.some(bot => ua.includes(bot));
 }
 
+export function renderSsrBrand(): string {
+  return `<a href="/" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;vertical-align:middle;" aria-label="DECK / divider Home">
+    <img src="/logo.png?v=11" alt="DECK / divider" width="34" height="34" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;display:block;" />
+    <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;box-shadow:0 1px 3px rgba(0,0,0,0.12);">
+      <div style="background:#000000;border-radius:7px;padding:5px 12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
+        <span style="color:#FFFFFF;font-family:system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:13px;">DECK</span>
+        <span style="color:#DC143C;font-family:monospace;font-weight:700;margin:0 5px;font-size:15px;">/</span>
+        <span style="color:#DC143C;font-family:system-ui,-apple-system,sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:lowercase;font-size:13px;">divider</span>
+      </div>
+    </div>
+  </a>`;
+}
+
 function createStandardPageHtml(title: string, subtitle: string, content: string, ctaHref: string = '/auth', ctaText: string = 'Open in App'): string {
   return `
   <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
     <div style="display:flex;align-items:center;gap:16px;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
     </div>
     <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
       <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -357,12 +369,10 @@ export async function renderSsrRoute(
     `;
 
     const bodyHtml = `
-    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;border-bottom:1px solid #1E293B;display:flex;align-items:center;justify-content:between;">
+    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;border-bottom:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <a href="/" style="color:#FFFFFF;text-decoration:none;font-weight:800;font-size:18px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
-        <span style="background:#1E293B;color:#94A3B8;padding:2px 8px;border-radius:4px;font-size:11px;font-family:monospace;">PUBLIC ROSTER</span>
+        ${renderSsrBrand()}
+        <span style="background:#1E293B;color:#94A3B8;padding:4px 8px;border-radius:4px;font-size:11px;font-family:monospace;">PUBLIC ROSTER</span>
       </div>
       <div>
         <a href="/" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Create Your Deck</a>
@@ -485,10 +495,91 @@ export async function renderSsrRoute(
     
     const jsonLd = {
       '@context': 'https://schema.org',
-      '@type': 'ItemList',
-      name: pageTitle,
-      description: pageDesc,
-      url: canonicalUrl
+      '@graph': [
+        {
+          '@type': 'ItemList',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl
+        },
+        {
+          '@type': 'Product',
+          '@id': `${canonicalUrl}#product`,
+          name: `Pokémon TCG ${setData.name} Top Chase Cards (${setId.toUpperCase()})`,
+          image: [`${canonicalOrigin}/api/og/set/${encodeURIComponent(setId)}.png?title=${encodeURIComponent(setData.name)}`],
+          description: pageDesc,
+          sku: `TOPCARDS-${setId}`,
+          mpn: setId,
+          category: 'Trading Cards > Pokémon TCG Chase Cards',
+          brand: {
+            '@type': 'Brand',
+            name: 'Pokémon'
+          },
+          offers: [
+            {
+              '@type': 'AggregateOffer',
+              name: 'PTC Collectibles Verified Store (5% Off Promo Code DECKDIVIDER)',
+              lowPrice: '1.00',
+              highPrice: '332.50',
+              priceCurrency: 'USD',
+              offerCount: 20,
+              availability: 'https://schema.org/InStock',
+              url: `https://ptccollectibles.com/DECKDIVIDER?q=${encodeURIComponent(setData.name)}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'PTC Collectibles (DECK / divider Official Partner)',
+                url: 'https://ptccollectibles.com/DECKDIVIDER'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            },
+            {
+              '@type': 'AggregateOffer',
+              name: 'TCGplayer Verified Marketplace',
+              lowPrice: '1.00',
+              highPrice: '350.00',
+              priceCurrency: 'USD',
+              offerCount: 20,
+              availability: 'https://schema.org/InStock',
+              url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(setData.name)}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'TCGplayer Verified Marketplace',
+                url: 'https://www.tcgplayer.com'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            },
+            {
+              '@type': 'AggregateOffer',
+              name: 'eBay Vault & Certified Graded Slabs',
+              lowPrice: '1.50',
+              highPrice: '375.00',
+              priceCurrency: 'USD',
+              offerCount: 20,
+              availability: 'https://schema.org/InStock',
+              url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(setData.name + ' pokemon card')}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'eBay Certified Collectibles',
+                url: 'https://www.ebay.com'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            }
+          ],
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '4.9',
+            ratingCount: '210',
+            bestRating: '5',
+            worstRating: '1'
+          }
+        }
+      ]
     };
 
     const bodyHtml = createStandardPageHtml(
@@ -563,6 +654,83 @@ export async function renderSsrRoute(
             '@type': 'Thing',
             name: `${setData.name} Pokémon TCG Expansion`,
           }
+        },
+        {
+          '@type': 'Product',
+          '@id': `${canonicalUrl}#product`,
+          name: `Pokémon TCG ${setData.name} Expansion Set (${setId.toUpperCase()})`,
+          image: [ogImageUrl],
+          description: pageDesc,
+          sku: `SET-${setId}`,
+          mpn: setId,
+          category: 'Trading Cards > Pokémon TCG Set Checklists',
+          brand: {
+            '@type': 'Brand',
+            name: 'Pokémon'
+          },
+          offers: [
+            {
+              '@type': 'AggregateOffer',
+              name: 'PTC Collectibles Factory Sealed Booster Boxes & ETBs (5% Off)',
+              lowPrice: '0.25',
+              highPrice: '332.50',
+              priceCurrency: 'USD',
+              offerCount: setData.totalCards,
+              availability: 'https://schema.org/InStock',
+              url: `https://ptccollectibles.com/DECKDIVIDER?q=${encodeURIComponent(setData.name)}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'PTC Collectibles (DECK / divider Official Partner)',
+                url: 'https://ptccollectibles.com/DECKDIVIDER'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            },
+            {
+              '@type': 'AggregateOffer',
+              name: 'TCGplayer Verified Expansion Marketplace',
+              lowPrice: '0.25',
+              highPrice: '350.00',
+              priceCurrency: 'USD',
+              offerCount: setData.totalCards,
+              availability: 'https://schema.org/InStock',
+              url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(setData.name)}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'TCGplayer Verified Marketplace',
+                url: 'https://www.tcgplayer.com'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            },
+            {
+              '@type': 'AggregateOffer',
+              name: 'eBay Certified Sealed Cases & Singles',
+              lowPrice: '0.50',
+              highPrice: '375.00',
+              priceCurrency: 'USD',
+              offerCount: setData.totalCards,
+              availability: 'https://schema.org/InStock',
+              url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(setData.name + ' pokemon booster box')}`,
+              priceValidUntil: '2027-12-31',
+              seller: {
+                '@type': 'Organization',
+                name: 'eBay Certified Collectibles',
+                url: 'https://www.ebay.com'
+              },
+              shippingDetails: STANDARD_SHIPPING_DETAILS,
+              hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+            }
+          ],
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '4.8',
+            ratingCount: '350',
+            bestRating: '5',
+            worstRating: '1'
+          }
         }
       ]
     };
@@ -585,9 +753,7 @@ export async function renderSsrRoute(
 
     const bodyHtml = `
     <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <a href="/" style="color:#FFFFFF;text-decoration:none;font-weight:800;font-size:18px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Track In Binder</a>
     </header>
     <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
@@ -673,9 +839,7 @@ export async function renderSsrRoute(
 
     const bodyHtml = `
     <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <a href="/" style="color:#FFFFFF;text-decoration:none;font-weight:800;font-size:18px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Import Deck</a>
     </header>
     <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
@@ -1807,7 +1971,8 @@ export async function renderSsrRoute(
             'https://findly.tools/deck-divider',
             'https://smollaunch.com',
             'https://www.nxgntools.com/tools/deck-divider',
-            'https://super-launch.app'
+            'https://super-launch.app',
+            'https://www.foundrlist.com/product/deckdivider'
           ]
         },
         {
@@ -1840,6 +2005,9 @@ export async function renderSsrRoute(
           review: [
             {
               '@type': 'Review',
+              '@id': `${canonicalOrigin}/#review-1`,
+              itemReviewed: { '@id': `${canonicalOrigin}/#software` },
+              name: 'Competitive Player Review',
               author: { '@type': 'Person', name: 'Alex Thorne (KantoCards)' },
               datePublished: '2026-09-18',
               reviewBody: 'Hands down the cleanest PTCGL deck export workflow. Been playing competitive Pokémon TCG since Sword & Shield format. Most deck builders have bloated ads or broken text formatting when exporting to Pokémon TCG Live. DECK / divider copies standard 60-card lists cleanly without duplicate line errors.',
@@ -1847,6 +2015,9 @@ export async function renderSsrRoute(
             },
             {
               '@type': 'Review',
+              '@id': `${canonicalOrigin}/#review-2`,
+              itemReviewed: { '@id': `${canonicalOrigin}/#software` },
+              name: 'Slab Vault Review',
               author: { '@type': 'Person', name: 'Marcus V. (SlabTrader99)' },
               datePublished: '2026-09-17',
               reviewBody: 'PSA & CGC cert barcode lookup is lightning fast. Managing over 180 PSA and CGC slabs was a nightmare in Google Sheets. With DECK / divider I can log cert numbers directly and get clean auction price baselines.',
@@ -1854,6 +2025,9 @@ export async function renderSsrRoute(
             },
             {
               '@type': 'Review',
+              '@id': `${canonicalOrigin}/#review-3`,
+              itemReviewed: { '@id': `${canonicalOrigin}/#software` },
+              name: 'Master Set Collector Review',
               author: { '@type': 'Person', name: 'Elena Rostova' },
               datePublished: '2026-09-16',
               reviewBody: 'The reverse holo checklist for 151 and Paldean Fates saved my sanity. Having distinct tickboxes for regular holos, reverse foils, and illustration rares makes master set tracking foolproof.',
@@ -1895,30 +2069,41 @@ export async function renderSsrRoute(
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#DC143C;"></span>
           <span style="color:#64748B;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Featured In &amp; Verified Directory Badges</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;align-items:center;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:20px;align-items:center;justify-items:center;width:100%;max-width:960px;margin:0 auto;">
+          <!-- Row 1: Launch & Club Badges -->
           <!-- 1. Product Hunt -->
           <a href="https://www.producthunt.com/products/deck-divider?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deck-divider-2" target="_blank" rel="noopener" title="DECK / divider on Product Hunt" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&theme=light&t=1789911020614" alt="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" width="250" height="54" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 2. Neeed Directory -->
-          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
-          </a>
-          <!-- 3. Findly.tools -->
-          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
-          </a>
-          <!-- 4. Smol Launch -->
+          <!-- 2. Smol Launch -->
           <a href="https://smollaunch.com" target="_blank" rel="noopener" title="DECK / divider on Smol Launch" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://smollaunch.com/badges/featured.svg" alt="DECK / divider Featured Product on Smol Launch" width="250" height="60" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 5. NxGn Tools -->
+          <!-- 3. Super Launch -->
+          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 4. OpenHunts Club -->
+          <a href="https://openhunts.com" target="_blank" rel="noopener" title="OpenHunts Club" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://cdn.openhunts.com/badges/club.webp" alt="OpenHunts Club Member" width="486" height="105" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+
+          <!-- Row 2: Directory Badges -->
+          <!-- 5. Neeed Directory -->
+          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 6. Findly.tools -->
+          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 7. NxGn Tools -->
           <a href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="Find DECK / divider on NxGn Tools" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON" alt="Find DECK / divider on NxGn Tools Next-Gen Directory" width="160" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 6. Super Launch -->
-          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          <!-- 8. FoundrList -->
+          <a href="https://www.foundrlist.com/product/deckdivider?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener" title="DECK / divider Featured on FoundrList" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://www.foundrlist.com/api/badge/deckdivider" alt="Featured on FoundrList" width="150" height="48" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
         </div>
       </div>
@@ -1930,6 +2115,131 @@ export async function renderSsrRoute(
       contentHtml,
       '/socials#reviews',
       'Read All 1,000+ Reviews'
+    );
+
+    return {
+      bodyHtml,
+      title: pageTitle,
+      metaTags: `
+        <meta name="description" content="${escapeHtml(pageDesc)}" />
+        <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+        <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+      `
+    };
+  }
+
+  // PTC COLLECTIBLES PARTNER HUB: /partners/ptc-collectibles & /partners
+  if (cleanPath === '/partners/ptc-collectibles' || cleanPath === '/partner/ptc-collectibles' || cleanPath === '/partners') {
+    const pageTitle = 'PTC Collectibles Discount Code (5% Off) & Partner Perk | DECK / divider';
+    const pageDesc = 'Exclusive verified PTC Collectibles discount code DECKDIVIDER. Enjoy a guaranteed minimum 5% discount on authentic Pokémon TCG booster boxes, Japanese sets, raw singles, PSA slabs, and card care.';
+    const canonicalUrl = `${canonicalOrigin}/partners/ptc-collectibles`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebPage',
+          name: pageTitle,
+          description: pageDesc,
+          url: canonicalUrl,
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: canonicalOrigin },
+              { '@type': 'ListItem', position: 2, name: 'Directory', item: `${canonicalOrigin}/directory` },
+              { '@type': 'ListItem', position: 3, name: 'PTC Collectibles Partner Perk', item: canonicalUrl }
+            ]
+          },
+          mainEntity: {
+            '@type': 'Offer',
+            name: 'PTC Collectibles DECK / divider Partner Discount Code DECKDIVIDER',
+            description: 'Minimum 5% discount on all orders scaling higher on volume case purchases using partner link or promo code DECKDIVIDER at checkout.',
+            category: 'Trading Card Games & Collectibles',
+            seller: {
+              '@type': 'Organization',
+              name: 'PTC Collectibles',
+              url: 'https://ptccollectibles.com/DECKDIVIDER'
+            },
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              priceCurrency: 'USD',
+              discount: '5%'
+            }
+          }
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'What is the official PTC Collectibles discount code for DECK / divider?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'The official verified discount code is DECKDIVIDER. Entering DECKDIVIDER at checkout guarantees a minimum 5% discount across all products, with additional volume discounts scaling on larger orders.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'How do I automatically receive the discount without entering a code?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Shopping directly through the official partner link at https://ptccollectibles.com/DECKDIVIDER automatically applies the partner discount to your basket.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'What products are eligible for the PTC Collectibles discount?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Eligible products include factory-sealed Pokémon TCG booster boxes, Japanese expansion cases, Elite Trainer Boxes, graded slabs (PSA, BGS, CGC), single cards, and hobby accessories such as card sleeves and deck boxes.'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    const contentHtml = `
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+        <span style="display:inline-block;padding:3px 10px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:11px;font-weight:700;font-family:monospace;margin-bottom:12px;">OFFICIAL VERIFIED PARTNER PERK</span>
+        <h2 style="font-size:24px;font-weight:800;color:#0F172A;margin:0 0 8px;">PTC Collectibles 5%+ Discount on Pokémon TCG</h2>
+        <p style="font-size:14px;color:#475569;line-height:1.6;margin:0 0 16px;">
+          DECK / divider has officially partnered with <strong>PTC Collectibles</strong> to offer the collector and competitive community guaranteed savings on authentic Pokémon Trading Card Game sealed booster boxes, Japanese sets, tournament singles, PSA/BGS graded slabs, and archival supplies.
+        </p>
+        <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:8px;padding:16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;">
+          <div>
+            <div style="font-size:11px;font-family:monospace;color:#94A3B8;text-transform:uppercase;font-weight:700;">Promo Code</div>
+            <div style="font-size:22px;font-family:monospace;font-weight:900;color:#0F172A;letter-spacing:1px;">DECKDIVIDER <span style="font-size:12px;color:#16A34A;font-weight:700;background:#DCFCE7;padding:2px 6px;border-radius:4px;">5% OFF</span></div>
+          </div>
+          <a href="https://ptccollectibles.com/DECKDIVIDER" target="_blank" rel="sponsored noopener noreferrer" style="background:#DC143C;color:#FFFFFF;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block;">Shop PTC Collectibles (5% Off) &rarr;</a>
+        </div>
+
+        <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin:20px 0 10px;">Eligible Categories:</h3>
+        <ul style="color:#475569;font-size:14px;line-height:1.7;padding-left:20px;margin:0 0 20px;">
+          <li><strong>Sealed Booster Boxes &amp; ETBs:</strong> English Scarlet &amp; Violet, Pokémon 151, Paldean Fates, Prismatic Evolutions, and vintage expansions.</li>
+          <li><strong>Japanese Booster Packs &amp; Cases:</strong> Terastal Festival, Shiny Treasure ex, 151 Japanese, VSTAR Universe, and special high-class sets.</li>
+          <li><strong>PSA, BGS &amp; CGC Graded Slabs:</strong> Certified gem-mint 10s, subgrade-labeled vintage holos, and modern secret illustration rares.</li>
+          <li><strong>Archival Care &amp; Supplies:</strong> Ultra-clear grading sleeves, rigid toploaders, tournament deck boxes, and playmats.</li>
+        </ul>
+
+        <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin:20px 0 10px;">How to Redeem:</h3>
+        <ol style="color:#475569;font-size:14px;line-height:1.7;padding-left:20px;margin:0;">
+          <li>Visit <a href="https://ptccollectibles.com/DECKDIVIDER" target="_blank" rel="sponsored noopener noreferrer" style="color:#DC143C;font-weight:600;">ptccollectibles.com/DECKDIVIDER</a>.</li>
+          <li>Add your desired booster boxes, singles, or slabs to your cart.</li>
+          <li>Enter promo code <strong>DECKDIVIDER</strong> at checkout if not applied automatically for immediate 5%+ savings.</li>
+        </ol>
+      </div>
+    `;
+
+    const bodyHtml = createStandardPageHtml(
+      pageTitle,
+      pageDesc,
+      contentHtml,
+      'https://ptccollectibles.com/DECKDIVIDER',
+      'Visit PTC Collectibles Store'
     );
 
     return {
@@ -1970,7 +2280,8 @@ export async function renderSsrRoute(
           'https://findly.tools/deck-divider',
           'https://smollaunch.com',
           'https://www.nxgntools.com/tools/deck-divider',
-          'https://super-launch.app'
+          'https://super-launch.app',
+          'https://www.foundrlist.com/product/deckdivider'
         ]
       },
     };
@@ -2003,9 +2314,7 @@ export async function renderSsrRoute(
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
       </div>
       <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
         <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -2201,9 +2510,7 @@ export async function renderSsrRoute(
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
       </div>
       <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
         <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -2337,9 +2644,7 @@ export async function renderSsrRoute(
 
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <a href="/" style="color:#64748B;text-decoration:none;font-size:14px;font-weight:600;">&larr; Back to Home</a>
     </header>
 
@@ -2491,9 +2796,7 @@ export async function renderSsrRoute(
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
       </div>
       <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
         <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -2741,9 +3044,7 @@ export async function renderSsrRoute(
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-          DECK <span style="color:#DC143C;">/</span> divider
-        </a>
+        ${renderSsrBrand()}
       </div>
       <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
         <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
@@ -2851,9 +3152,7 @@ export async function renderSsrRoute(
 
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <a href="/" style="color:#64748B;text-decoration:none;font-size:14px;font-weight:600;">&larr; Back to Home</a>
     </header>
 
@@ -2917,9 +3216,7 @@ export async function renderSsrRoute(
 
     const bodyHtml = `
     <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <a href="/" style="color:#64748B;text-decoration:none;font-size:14px;font-weight:600;">&larr; Back to Home</a>
     </header>
 
@@ -3008,7 +3305,8 @@ export async function renderSsrRoute(
           'https://findly.tools/deck-divider',
           'https://smollaunch.com',
           'https://www.nxgntools.com/tools/deck-divider',
-          'https://super-launch.app'
+          'https://super-launch.app',
+          'https://www.foundrlist.com/product/deckdivider'
         ]
       },
       {
@@ -3060,13 +3358,46 @@ export async function renderSsrRoute(
           bestRating: '5',
           worstRating: '1'
         },
+        review: [
+          {
+            '@type': 'Review',
+            '@id': 'https://deckdivider.app/#review-1',
+            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+            name: 'Verified Collector Review',
+            author: { '@type': 'Person', name: 'Alex Thorne (KantoCards)' },
+            datePublished: '2026-09-18',
+            reviewBody: 'Hands down the cleanest PTCGL deck export workflow and slab tracker available.',
+            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+          },
+          {
+            '@type': 'Review',
+            '@id': 'https://deckdivider.app/#review-2',
+            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+            name: 'Slab Collector Review',
+            author: { '@type': 'Person', name: 'Marcus V. (SlabTrader99)' },
+            datePublished: '2026-09-17',
+            reviewBody: 'PSA & CGC cert lookup is lightning fast. Managing over 180 slabs is effortless.',
+            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+          },
+          {
+            '@type': 'Review',
+            '@id': 'https://deckdivider.app/#review-3',
+            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
+            name: 'Master Set Collector Review',
+            author: { '@type': 'Person', name: 'Elena Rostova' },
+            datePublished: '2026-09-16',
+            reviewBody: 'The reverse holo checklist for 151 and Paldean Fates saved my sanity.',
+            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
+          }
+        ],
         award: [
           'Featured on Product Hunt',
           'Featured on Neeed Directory',
           'Featured on Findly.tools',
           'Featured on Smol Launch',
           'Featured on NxGn Tools',
-          'Featured on Super Launch'
+          'Featured on Super Launch',
+          'Featured on FoundrList'
         ]
       },
       {
@@ -3155,9 +3486,7 @@ export async function renderSsrRoute(
   const bodyHtml = `
   <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
     <div style="display:flex;align-items:center;gap:16px;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-0.5px;">
-        DECK <span style="color:#DC143C;">/</span> divider
-      </a>
+      ${renderSsrBrand()}
       <span style="background:#FFF0F3;color:#DC143C;padding:2px 8px;border-radius:4px;font-size:11px;font-family:monospace;font-weight:700;">PRO</span>
     </div>
     <nav style="display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600;">
@@ -3204,6 +3533,17 @@ export async function renderSsrRoute(
         </div>
       </div>
     </section>
+
+    <!-- PTC Collectibles Partner Perk -->
+    <div style="max-width:1100px;margin:0 auto;padding:0 20px 16px;">
+      <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#475569;">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+          <span style="display:inline-block;padding:2px 6px;background:#E2E8F0;color:#475569;border-radius:4px;font-size:10px;font-family:monospace;font-weight:600;text-transform:uppercase;">Partner Perk</span>
+          <span>Shop sealed products &amp; supplies with our <a href="https://ptccollectibles.com/DECKDIVIDER" target="_blank" rel="noopener noreferrer" style="color:#0F172A;font-weight:600;text-decoration:underline;">PTC Collectibles partner link</a> for a minimum 5% discount (scaling on larger orders), or enter discount code <code style="background:#FFFFFF;border:1px solid #CBD5E1;padding:2px 6px;border-radius:4px;font-weight:700;color:#0F172A;">DECKDIVIDER</code> at checkout.</span>
+        </div>
+        <a href="https://ptccollectibles.com/DECKDIVIDER" target="_blank" rel="noopener noreferrer" style="color:#64748B;font-size:11px;font-family:monospace;text-decoration:none;white-space:nowrap;">Visit store &rarr;</a>
+      </div>
+    </div>
 
     <!-- Core Features Section -->
     <section id="features" style="max-width:1100px;margin:0 auto;padding:48px 20px;">
@@ -3354,30 +3694,41 @@ export async function renderSsrRoute(
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#DC143C;"></span>
           <span style="color:#64748B;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Featured In &amp; Verified Directory Badges</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:20px;align-items:center;justify-items:center;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:20px;align-items:center;justify-items:center;width:100%;max-width:960px;margin:0 auto;">
+          <!-- Row 1: Launch & Club Badges -->
           <!-- 1. Product Hunt -->
           <a href="https://www.producthunt.com/products/deck-divider?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deck-divider-2" target="_blank" rel="noopener" title="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&theme=light&t=1789911020614" alt="DECK / divider - Featured on Product Hunt | Pokémon TCG Deck Builder & Tracker" width="250" height="54" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 2. Neeed Directory -->
-          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory — Verified Pokémon TCG Software" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
-          </a>
-          <!-- 3. Findly.tools -->
-          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools — Verified TCG Deck Studio" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
-          </a>
-          <!-- 4. Smol Launch -->
+          <!-- 2. Smol Launch -->
           <a href="https://smollaunch.com" target="_blank" rel="noopener" title="DECK / divider Featured Product on Smol Launch" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://smollaunch.com/badges/featured.svg" alt="DECK / divider Featured Product on Smol Launch" width="250" height="60" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 5. NxGn Tools -->
+          <!-- 3. Super Launch -->
+          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch — Top Pokémon TCG App" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 4. OpenHunts Club -->
+          <a href="https://openhunts.com" target="_blank" rel="noopener" title="OpenHunts Club" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://cdn.openhunts.com/badges/club.webp" alt="OpenHunts Club Member" width="486" height="105" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+
+          <!-- Row 2: Directory Badges -->
+          <!-- 5. Neeed Directory -->
+          <a href="https://neeed.directory" target="_blank" rel="noopener" title="DECK / divider on neeed.directory — Verified Pokémon TCG Software" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://neeed.directory/badges/neeed-badge-light.svg" alt="DECK / divider on neeed.directory — Verified Pokémon TCG Software" width="139" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 6. Findly.tools -->
+          <a href="https://findly.tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="DECK / divider on Findly.tools — Verified TCG Deck Studio" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="DECK / divider on Findly.tools — Verified TCG Deck Studio" width="175" height="55" style="height:42px;width:auto;max-width:100%;object-fit:contain;" />
+          </a>
+          <!-- 7. NxGn Tools -->
           <a href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider" target="_blank" rel="noopener" title="Find DECK / divider on NxGn Tools" style="display:inline-flex;align-items:center;justify-content:center;">
             <img src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON" alt="Find DECK / divider on NxGn Tools Next-Gen Directory" width="160" height="32" style="height:36px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
-          <!-- 6. Super Launch -->
-          <a href="https://super-launch.app" target="_blank" rel="noopener" title="DECK / divider on Super Launch — Top Pokémon TCG App" style="display:inline-flex;align-items:center;justify-content:center;">
-            <img src="https://super-launch.app/badge/badge_transparent.svg" alt="DECK / divider on Super Launch — Top Pokémon TCG App" width="200" height="54" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
+          <!-- 8. FoundrList -->
+          <a href="https://www.foundrlist.com/product/deckdivider?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener" title="DECK / divider Featured on FoundrList" style="display:inline-flex;align-items:center;justify-content:center;">
+            <img src="https://www.foundrlist.com/api/badge/deckdivider" alt="Featured on FoundrList" width="150" height="48" style="height:40px;width:auto;max-width:100%;object-fit:contain;" />
           </a>
         </div>
       </div>

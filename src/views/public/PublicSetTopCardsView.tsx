@@ -7,6 +7,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEngine';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetTopCardsSchema } from '../../components/seo/schemaData';
 
@@ -173,6 +174,11 @@ export const PublicSetTopCardsView: React.FC = () => {
                     <span>{copiedLink ? 'Copied' : 'Share'}</span>
                   </button>
                 </div>
+              </div>
+
+              {/* PTC Collectibles Partner Offer */}
+              <div className="mb-8">
+                <PtcPartnerBanner context="set" queryParam={set.name} />
               </div>
 
               <GeoExtractableBlock

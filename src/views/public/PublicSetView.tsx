@@ -7,6 +7,7 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEngine';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
+import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetDetailSchema } from '../../components/seo/schemaData';
 import { generateSetSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
@@ -219,6 +220,11 @@ export const PublicSetView: React.FC = () => {
                     </button>
                   </div>
                 </div>
+              </div>
+
+              {/* PTC Collectibles Partner Offer */}
+              <div className="mb-6">
+                <PtcPartnerBanner context="set" queryParam={set.name} />
               </div>
 
               <GeoExtractableBlock

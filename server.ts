@@ -111,8 +111,10 @@ async function startServer() {
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Origin-Agent-Cluster', '?1');
     res.setHeader(
       'Permissions-Policy',
       'accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(self "https://www.paypal.com" "https://www.sandbox.paypal.com"), picture-in-picture=(self), publickey-credentials-get=(self), screen-wake-lock=(), usb=(), xr-spatial-tracking=()'
@@ -2620,6 +2622,19 @@ async function startServer() {
   }
 
   Sentry.setupExpressErrorHandler(app);
+
+  // Safe global error handler: never leak internal stack traces or database info
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[Unhandled Express Error]', err?.message || err);
+    if (res.headersSent) {
+      return next(err);
+    }
+    const status = typeof err?.status === 'number' && err.status >= 400 && err.status < 600 ? err.status : 500;
+    res.status(status).json({
+      error: status === 404 ? 'Not Found' : 'An internal error occurred. Please try again.',
+      timestamp: new Date().toISOString(),
+    });
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`[Deck Divider Express Server] Running on http://0.0.0.0:${PORT}`);
