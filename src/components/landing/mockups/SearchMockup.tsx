@@ -19,7 +19,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
       type: 'Fire',
       hp: 330,
       price: '$245.50',
-      image: 'https://images.pokemontcg.io/sv3pt5/199_hires.png',
+      image: 'https://images.pokemontcg.io/sv3pt5/199.png',
     },
     {
       name: 'Charizard ex',
@@ -29,7 +29,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
       type: 'Darkness',
       hp: 330,
       price: '$68.00',
-      image: 'https://images.pokemontcg.io/sv3/223_hires.png',
+      image: 'https://images.pokemontcg.io/sv3/223.png',
     },
     {
       name: 'Radiant Charizard',
@@ -39,7 +39,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
       type: 'Fire',
       hp: 160,
       price: '$8.50',
-      image: 'https://images.pokemontcg.io/swsh12pt5/20_hires.png',
+      image: 'https://images.pokemontcg.io/swsh12pt5/20.png',
     },
   ];
 

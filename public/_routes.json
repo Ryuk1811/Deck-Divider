@@ -19,6 +19,10 @@
     "/feed.xml",
     "/rss.xml",
     "/llms*.txt",
+    "/ai-catalog.json",
+    "/ard.json",
+    "/search-matrix.json",
+    "/.well-known/*",
     "/_headers",
     "/_redirects",
     "/200.html"

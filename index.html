@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder</title>
     <meta name="description" content="Track your Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks, complete master sets, and view real-time collection values in 15+ currencies." />
     <meta name="robots" content="index, follow" />
@@ -40,24 +40,31 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=11" />
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-precomposed.png?v=11" />
     <link rel="manifest" href="/manifest.json?v=11" />
-    <link rel="preload" as="image" href="/logo.png?v=11" type="image/png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/logo-48.webp" type="image/webp" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
-    </noscript>
+    <link rel="preconnect" href="https://assets.tcgdex.net" crossorigin>
+    <link rel="preconnect" href="https://images.pokemontcg.io" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap">
     <script type="text/javascript">
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "ydjpckkq0v");
-        }, 2500);
-      });
+      function initClarity() {
+        if (window._clarityLoaded) return;
+        window._clarityLoaded = true;
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "ydjpckkq0v");
+      }
+      if ('requestIdleCallback' in window) {
+        window.addEventListener('load', function() {
+          requestIdleCallback(function() { setTimeout(initClarity, 3500); }, { timeout: 7000 });
+        });
+      } else {
+        window.addEventListener('load', function() {
+          setTimeout(initClarity, 4000);
+        });
+      }
     </script>
     <script type="application/ld+json">
     {
@@ -285,24 +292,43 @@
   </head>
   <body class="bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-[#FFF0F3] selection:text-[#DC143C]">
     <div id="root">
-      <div id="app-initial-shell" style="min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:#F8FAFC;font-family:'Space Grotesk',system-ui,sans-serif;color:#0F172A;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;opacity:0.98;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <img src="/logo.png?v=11" alt="DECK / divider Logo" width="40" height="40" style="width:40px;height:40px;object-fit:contain;display:block;" />
-            <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-              <div style="background:#000000;border-radius:7px;padding:6px 14px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
-                <span style="color:#FFFFFF;font-family:system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:14px;">DECK</span>
-                <span style="color:#DC143C;font-family:monospace;font-weight:700;margin:0 6px;font-size:16px;">/</span>
-                <span style="color:#DC143C;font-family:system-ui,-apple-system,sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:lowercase;font-size:14px;">divider</span>
+      <div id="app-initial-shell" style="min-height:100vh;width:100%;display:flex;flex-direction:column;background:#F8FAFC;font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;color:#0F172A;">
+        <header style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;width:100%;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <picture>
+              <source srcset="/logo-48.webp" type="image/webp" />
+              <img src="/logo-48.webp" alt="DECK / divider Logo" width="34" height="34" style="width:34px;height:34px;object-fit:contain;display:block;" />
+            </picture>
+            <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;">
+              <div style="background:#000000;border-radius:7px;padding:5px 12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
+                <span style="color:#FFFFFF;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:13px;">DECK</span>
+                <span style="color:#DC143C;font-family:monospace;font-weight:700;margin:0 5px;font-size:15px;">/</span>
+                <span style="color:#DC143C;font-weight:600;letter-spacing:0.08em;text-transform:lowercase;font-size:13px;">divider</span>
               </div>
             </div>
           </div>
-          <div style="width:22px;height:22px;border:2.5px solid #E2E8F0;border-top-color:#DC143C;border-radius:50%;animation:dd-spin 0.8s linear infinite;"></div>
-        </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;">Sign In</a>
+          </div>
+        </header>
+
+        <main style="max-width:1100px;margin:0 auto;padding:48px 16px;text-align:center;width:100%;flex:1;">
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #E2E8F0;color:#DC143C;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#DC143C;"></span>
+            <span>POKÉMON TCG COLLECTION TRACKER &amp; DECK STUDIO</span>
+          </div>
+          <h1 style="font-size:clamp(32px, 6vw, 68px);font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 16px;color:#0F172A;">
+            Grade it. Price it. Play it.
+          </h1>
+          <p style="font-size:clamp(14px, 2.5vw, 18px);color:#475569;max-width:780px;margin:0 auto 24px;line-height:1.6;">
+            Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL. Connect with the global community of collectors and players, analyze meta trends in real-time, and manage your entire sealed portfolio securely.
+          </p>
+          <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+            <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">Start Your Collection</a>
+            <a href="/how-it-works" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">How It Works</a>
+          </div>
+        </main>
       </div>
-      <style>
-        @keyframes dd-spin { to { transform: rotate(360deg); } }
-      </style>
     </div>
     <!-- Crawler-visible verified launch directories & reciprocal backlink anchors -->
     <footer id="verified-directories-anchor-hub" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">

@@ -100,12 +100,12 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <Layers className="w-3.5 h-3.5 text-[#DC143C]" />
               <span>Workspace</span>
             </div>
-            <ul className="space-y-2.5 font-medium">
+            <ul className="space-y-1 sm:space-y-2 font-medium">
               <li>
                 <a
                   href="/#collection"
                   onClick={handleHashNav('collection')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Raw &amp; Graded Slabs
@@ -115,7 +115,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <a
                   href="/#decks"
                   onClick={handleHashNav('decks')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   60-Card Deck Builder
@@ -125,7 +125,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <a
                   href="/#master-sets"
                   onClick={handleHashNav('master-sets')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Master Set Checklists
@@ -135,7 +135,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <a
                   href="/#search"
                   onClick={handleHashNav('search')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Card Database Search
@@ -145,7 +145,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <a
                   href="/#lists"
                   onClick={handleHashNav('lists')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Wishlists &amp; Binders
@@ -155,7 +155,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <a
                   href="/#sealed-vault"
                   onClick={handleHashNav('sealed-vault')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Sealed Collection
@@ -170,11 +170,11 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <Users className="w-3.5 h-3.5 text-indigo-500" />
               <span>Community</span>
             </div>
-            <ul className="space-y-2.5 font-medium">
+            <ul className="space-y-1 sm:space-y-2 font-medium">
               <li>
                 <Link
                   to="/socials"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Socials &amp; Reviews
@@ -185,7 +185,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   href="https://www.reddit.com/r/DeckDivider/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-600 hover:text-[#FF4500] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#FF4500] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FF4500]"></span>
                   Reddit: r/DeckDivider
@@ -196,7 +196,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   href="https://www.instagram.com/deckdivider/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-600 hover:text-[#E1306C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#E1306C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E1306C]"></span>
                   Instagram: @deckdivider
@@ -207,7 +207,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   href="https://x.com/DeckDivider"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-slate-900 transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-900"></span>
                   𝕏 / Twitter: @DeckDivider
@@ -216,7 +216,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/leaderboard"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Collector Leaderboard
@@ -225,7 +225,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/cards"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Public Card Catalogue
@@ -234,7 +234,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/expansions"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Expansions &amp; Sets Directory
@@ -243,7 +243,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/formats"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Format Legality
@@ -252,7 +252,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/format/standard"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Standard Format Hub
@@ -267,11 +267,11 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <BookOpen className="w-3.5 h-3.5 text-amber-500" />
               <span>Guides &amp; Tools</span>
             </div>
-            <ul className="space-y-2.5 font-medium">
+            <ul className="space-y-1 sm:space-y-2 font-medium">
               <li>
                 <Link
                   to="/best/pokemon-card-trackers"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Best Card Trackers
@@ -280,7 +280,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/best/slab-scanners"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Graded Slab Scanners
@@ -289,7 +289,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/best/deck-builders"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Deck Builders Ranked
@@ -298,7 +298,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/compare"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   App Comparisons
@@ -307,7 +307,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/tools/psa-grade-calculator"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   PSA Grade Calculator
@@ -316,7 +316,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/tools/deck-legality-checker"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Format Legality Checker
@@ -331,11 +331,11 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <Compass className="w-3.5 h-3.5 text-sky-500" />
               <span>Platform</span>
             </div>
-            <ul className="space-y-2.5 font-medium">
+            <ul className="space-y-1 sm:space-y-2 font-medium">
               <li>
                 <Link
                   to="/about"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   About
@@ -344,7 +344,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/how-it-works"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   How It Works
@@ -354,7 +354,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <Link
                   to="/pricing"
                   onClick={handleHashNav('pricing')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Pricing
@@ -364,7 +364,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                 <Link
                   to="/faq"
                   onClick={handleHashNav('faq-and-insights')}
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   FAQ
@@ -373,7 +373,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/contact"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Contact &amp; Support
@@ -382,7 +382,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/changelog"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                   Changelog (58 Iterations)
@@ -391,7 +391,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/partners/ptc-collectibles"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   Partner: PTC Collectibles (5% Off)
@@ -406,11 +406,11 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               <span>Trust &amp; Legal</span>
             </div>
-            <ul className="space-y-2.5 font-medium">
+            <ul className="space-y-1 sm:space-y-2 font-medium">
               <li>
                 <Link
                   to="/privacy"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Privacy Policy
@@ -419,7 +419,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/terms"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Terms of Service
@@ -428,7 +428,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <li>
                 <Link
                   to="/security"
-                  className="text-slate-600 hover:text-[#DC143C] transition-colors flex items-center gap-1.5"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                   Security

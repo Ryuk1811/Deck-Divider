@@ -39,7 +39,6 @@ import { MobileBottomNav } from './components/ui/MobileBottomNav';
 import { MobileTopBar } from './components/ui/MobileTopBar';
 
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
-import { SealedPortfolioManager } from './components/app/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
@@ -63,6 +62,7 @@ import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 
 // Lazy-loaded Views for ultra-fast PageSpeed (sub-90KB initial entrypoint)
+const SealedPortfolioManager = lazy(() => import('./components/app/SealedPortfolioManager').then(m => ({ default: m.SealedPortfolioManager })));
 const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
 const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
 const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
@@ -194,18 +194,38 @@ export default function App() {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    initSearchEngine()
-      .then(() => setEngineReady(true))
-      .catch((err) => console.warn('initSearchEngine non-fatal warning:', err));
-    getExpansionsCatalog()
-      .then((sets) => {
-        if (sets && sets.length > 0) setLiveSets(sets);
-      })
-      .catch((err) => console.warn('getExpansionsCatalog non-fatal warning:', err));
-    startFullCatalogBackgroundSync().catch((err) =>
-      console.warn('startFullCatalogBackgroundSync non-fatal warning:', err)
-    );
-  }, []);
+    const isPublicMarketingRoute = 
+      location.pathname === '/' || 
+      location.pathname === '/about' || 
+      location.pathname === '/how-it-works' || 
+      location.pathname === '/pricing' || 
+      location.pathname === '/faq' || 
+      location.pathname === '/socials' || 
+      location.pathname === '/privacy' || 
+      location.pathname === '/terms';
+
+    const runSync = () => {
+      initSearchEngine()
+        .then(() => setEngineReady(true))
+        .catch((err) => console.warn('initSearchEngine non-fatal warning:', err));
+      getExpansionsCatalog()
+        .then((sets) => {
+          if (sets && sets.length > 0) setLiveSets(sets);
+        })
+        .catch((err) => console.warn('getExpansionsCatalog non-fatal warning:', err));
+      startFullCatalogBackgroundSync().catch((err) =>
+        console.warn('startFullCatalogBackgroundSync non-fatal warning:', err)
+      );
+    };
+
+    if (isPublicMarketingRoute) {
+      // Defer catalog download and index generation until well after initial paint & hydration
+      const timer = setTimeout(runSync, 4500);
+      return () => clearTimeout(timer);
+    } else {
+      runSync();
+    }
+  }, [location.pathname]);
 
   const allCards = React.useMemo(
     () => (engineReady ? searchCards({}).slice(0, 300).map(mapToPokemonCard) : []),
@@ -1776,9 +1796,9 @@ export default function App() {
           {/* Authenticated Workspace Footer Disclaimer */}
           <footer className="mt-auto pt-8 pb-6 border-t border-slate-200 text-center flex flex-col items-center gap-3">
             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
-              <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
+              <Link to="/privacy" className="hover:text-slate-800 transition-colors py-2 px-1 inline-flex items-center min-h-[40px]">Privacy Policy</Link>
               <span className="text-slate-300">•</span>
-              <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
+              <Link to="/terms" className="hover:text-slate-800 transition-colors py-2 px-1 inline-flex items-center min-h-[40px]">Terms of Service</Link>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-400 max-w-2xl text-center">
               DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
@@ -1804,14 +1824,7 @@ export default function App() {
           <Route
             path="/"
             element={
-              authLoading ? (
-                <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
-                  <div className="flex flex-col items-center gap-3">
-                    <DeckDividerBrand size="md" showLogo={true} />
-                    <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
-                  </div>
-                </div>
-              ) : user && !location.search.includes('landing=true') ? (
+              user && !location.search.includes('landing=true') ? (
                 <Navigate to="/app" replace />
               ) : (
                 <LandingPageView

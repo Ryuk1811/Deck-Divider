@@ -136,7 +136,10 @@ export function isBot(userAgent: string = ''): boolean {
 
 export function renderSsrBrand(): string {
   return `<a href="/" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;vertical-align:middle;" aria-label="DECK / divider Home">
-    <img src="/logo.png?v=11" alt="DECK / divider" width="34" height="34" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;display:block;" />
+    <picture>
+      <source srcset="/logo-48.webp" type="image/webp" />
+      <img src="/logo-48.webp" alt="DECK / divider" width="34" height="34" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;display:block;" />
+    </picture>
     <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;box-shadow:0 1px 3px rgba(0,0,0,0.12);">
       <div style="background:#000000;border-radius:7px;padding:5px 12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
         <span style="color:#FFFFFF;font-family:system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:13px;">DECK</span>
@@ -176,14 +179,14 @@ function createStandardPageHtml(title: string, subtitle: string, content: string
   </main>
   <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
     <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Collection Tracker, Slab Registry &amp; Deckbuilder</p>
-    <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
-      <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About</a>
-      <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
-      <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a>
-      <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
-      <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
-      <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+    <div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Home</a>
+      <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">About</a>
+      <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Pricing</a>
+      <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">FAQ</a>
+      <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Privacy Policy</a>
+      <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Terms of Service</a>
+      <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Sign In</a>
     </div>
     <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; 2026 DECK / divider. All rights reserved.</p>
   </footer>
@@ -3501,15 +3504,15 @@ export async function renderSsrRoute(
   <main style="font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
     <!-- Hero Section -->
     <section style="max-width:1100px;margin:0 auto;padding:64px 20px 48px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
-      <h1 style="font-size:52px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 24px;color:#0F172A;">
-        The Binder Tracker, Slab Registry, and Deckbuilder for Pokémon TCG Collectors
+      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG COLLECTION TRACKER &amp; DECK STUDIO</span>
+      <h1 style="font-size:56px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 20px;color:#0F172A;">
+        Grade it. Price it. Play it.
       </h1>
-      <p style="font-size:20px;color:#64748B;max-width:820px;margin:0 auto 36px;line-height:1.5;">
-        Live TCGplayer price comps, 60-card tournament deck legality, PSA/BGS/CGC subgrade certification tracking, and master set checklists in 15+ currencies. Zero ads.
+      <p style="font-size:18px;color:#475569;max-width:820px;margin:0 auto 32px;line-height:1.6;">
+        Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL. Connect with the global community of collectors and players, analyze meta trends in real-time, and manage your entire sealed portfolio securely.
       </p>
       <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
-        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);">Launch App Free</a>
+        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);">Start Your Collection</a>
         <a href="/how-it-works" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;">Explore Workflow</a>
       </div>
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import {
   Database,
   Zap,
@@ -24,8 +23,6 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
   onOpenAuth,
   onEnterApp,
 }) => {
-  const easeCurve = [0.16, 1, 0.3, 1] as const;
-
   const primaryMetrics = [
     {
       stat: '18,400+',
@@ -103,12 +100,8 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
         {/* 4 Primary Tangible Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
           {primaryMetrics.map((item, idx) => (
-            <motion.div
+            <div
               key={idx}
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.06, ease: easeCurve }}
               className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between"
             >
               <div className="flex items-center justify-between mb-3">
@@ -130,19 +123,15 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
                   {item.sub}
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Core Capabilities Breakdown Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 max-w-6xl mx-auto">
           {coreCapabilities.map((cap, idx) => (
-            <motion.div
+            <div
               key={idx}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.08, ease: easeCurve }}
               className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-3"
             >
               <div className="space-y-2.5">
@@ -163,7 +152,7 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
                   {cap.desc}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 

@@ -56,7 +56,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/sv3pt5/199.png',
-        large: 'https://images.pokemontcg.io/sv3pt5/199_hires.png',
+        large: 'https://images.pokemontcg.io/sv3pt5/199.png',
       },
     },
     condition: 'NM',
@@ -104,7 +104,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/swsh7/215.png',
-        large: 'https://images.pokemontcg.io/swsh7/215_hires.png',
+        large: 'https://images.pokemontcg.io/swsh7/215.png',
       },
     },
     condition: 'NM',
@@ -156,7 +156,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/svp/085.png',
-        large: 'https://images.pokemontcg.io/svp/085_hires.png',
+        large: 'https://images.pokemontcg.io/svp/085.png',
       },
     },
     condition: 'NM',
@@ -202,7 +202,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/swsh8/271.png',
-        large: 'https://images.pokemontcg.io/swsh8/271_hires.png',
+        large: 'https://images.pokemontcg.io/swsh8/271.png',
       },
     },
     condition: 'NM',
@@ -248,7 +248,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/swsh11/186.png',
-        large: 'https://images.pokemontcg.io/swsh11/186_hires.png',
+        large: 'https://images.pokemontcg.io/swsh11/186.png',
       },
     },
     condition: 'NM',
@@ -291,7 +291,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/swsh12/186.png',
-        large: 'https://images.pokemontcg.io/swsh12/186_hires.png',
+        large: 'https://images.pokemontcg.io/swsh12/186.png',
       },
     },
     condition: 'NM',
@@ -334,7 +334,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/sv4pt5/232.png',
-        large: 'https://images.pokemontcg.io/sv4pt5/232_hires.png',
+        large: 'https://images.pokemontcg.io/sv4pt5/232.png',
       },
     },
     condition: 'NM',
@@ -380,7 +380,7 @@ export const STARTER_SAMPLE_CARDS: SampleCardItem[] = [
       },
       images: {
         small: 'https://images.pokemontcg.io/sv3pt5/200.png',
-        large: 'https://images.pokemontcg.io/sv3pt5/200_hires.png',
+        large: 'https://images.pokemontcg.io/sv3pt5/200.png',
       },
     },
     condition: 'NM',

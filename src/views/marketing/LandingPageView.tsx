@@ -1,31 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { trackLandingView, trackCtaClick } from '../../lib/analytics';
 import { HeroWideSection } from '../../components/landing/HeroWideSection';
 import { ZigZagSection } from '../../components/landing/ZigZagSection';
-import { CollectionMockup } from '../../components/landing/mockups/CollectionMockup';
-import { MetricsMockup } from '../../components/landing/mockups/MetricsMockup';
-import { DecksMockup } from '../../components/landing/mockups/DecksMockup';
-import { SetsMockup } from '../../components/landing/mockups/SetsMockup';
-import { SearchMockup } from '../../components/landing/mockups/SearchMockup';
-import { ListsMockup } from '../../components/landing/mockups/ListsMockup';
-import { SealedVaultMockup } from '../../components/landing/mockups/SealedVaultMockup';
-import { CollectorSocialProofSection } from '../../components/landing/CollectorSocialProofSection';
-import { VerifiedReviewsStrip } from '../../components/common/VerifiedReviewsStrip';
-import { PricingHeroSection } from '../../components/landing/PricingHeroSection';
-import { LandingFaqAndBlogs } from '../../components/landing/LandingFaqAndBlogs';
-import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { AccountTier, DisplayCurrency } from '../../types';
-
-import { LandingFeatureGrid } from '../../components/landing/LandingFeatureGrid';
 import { SectionHeaderLine } from '../../components/landing/SectionHeaderLine';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
-import { PlatformPhilosophySection } from '../../components/landing/PlatformPhilosophySection';
-import { LandingPrivacyPolicySection } from '../../components/landing/LandingPrivacyPolicySection';
-import { LandingSocialsSection } from '../../components/landing/LandingSocialsSection';
 import { PageHead } from '../../components/seo/PageHead';
 import { getHomepageSchema } from '../../components/seo/schemaData';
+
+// Lazy load below-the-fold interactive mockups and marketing panels for instant initial paint
+const CollectionMockup = lazy(() => import('../../components/landing/mockups/CollectionMockup').then(m => ({ default: m.CollectionMockup })));
+const MetricsMockup = lazy(() => import('../../components/landing/mockups/MetricsMockup').then(m => ({ default: m.MetricsMockup })));
+const DecksMockup = lazy(() => import('../../components/landing/mockups/DecksMockup').then(m => ({ default: m.DecksMockup })));
+const SetsMockup = lazy(() => import('../../components/landing/mockups/SetsMockup').then(m => ({ default: m.SetsMockup })));
+const SearchMockup = lazy(() => import('../../components/landing/mockups/SearchMockup').then(m => ({ default: m.SearchMockup })));
+const ListsMockup = lazy(() => import('../../components/landing/mockups/ListsMockup').then(m => ({ default: m.ListsMockup })));
+const SealedVaultMockup = lazy(() => import('../../components/landing/mockups/SealedVaultMockup').then(m => ({ default: m.SealedVaultMockup })));
+
+const LandingFeatureGrid = lazy(() => import('../../components/landing/LandingFeatureGrid').then(m => ({ default: m.LandingFeatureGrid })));
+const CollectorSocialProofSection = lazy(() => import('../../components/landing/CollectorSocialProofSection').then(m => ({ default: m.CollectorSocialProofSection })));
+const VerifiedReviewsStrip = lazy(() => import('../../components/common/VerifiedReviewsStrip').then(m => ({ default: m.VerifiedReviewsStrip })));
+const PlatformPhilosophySection = lazy(() => import('../../components/landing/PlatformPhilosophySection').then(m => ({ default: m.PlatformPhilosophySection })));
+const PricingHeroSection = lazy(() => import('../../components/landing/PricingHeroSection').then(m => ({ default: m.PricingHeroSection })));
+const LandingFaqAndBlogs = lazy(() => import('../../components/landing/LandingFaqAndBlogs').then(m => ({ default: m.LandingFaqAndBlogs })));
+const LandingPrivacyPolicySection = lazy(() => import('../../components/landing/LandingPrivacyPolicySection').then(m => ({ default: m.LandingPrivacyPolicySection })));
+const LandingSocialsSection = lazy(() => import('../../components/landing/LandingSocialsSection').then(m => ({ default: m.LandingSocialsSection })));
+const LandingFooter = lazy(() => import('../../components/landing/LandingFooter').then(m => ({ default: m.LandingFooter })));
 
 interface LandingPageViewProps {
   onOpenAuth: () => void;
@@ -158,8 +160,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           subtitle="A quick synthesis of all core modules and capabilities before diving deep into each workflow."
         />
 
-        {/* Feature Discoverability Grid (Summary of features & propositions) */}
-        <LandingFeatureGrid />
+        <Suspense fallback={<div className="w-full py-8 text-center text-slate-300 font-mono text-xs">Loading studio modules...</div>}>
+          {/* Feature Discoverability Grid (Summary of features & propositions) */}
+          <LandingFeatureGrid />
 
         {/* Section 02 Header Line: Features */}
         <SectionHeaderLine
@@ -433,18 +436,21 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
         />
+        </Suspense>
       </main>
 
-      {/* Socials & Badges Strip */}
-      <LandingSocialsSection />
+      <Suspense fallback={null}>
+        {/* Socials & Badges Strip */}
+        <LandingSocialsSection />
 
-      {/* 6. Page Footer */}
-      <LandingFooter
-        onEnterApp={onEnterApp}
-        onOpenAuth={onOpenAuth}
-        onNavigateSection={handleNavClick}
-        displayCurrency={displayCurrency}
-      />
+        {/* 6. Page Footer */}
+        <LandingFooter
+          onEnterApp={onEnterApp}
+          onOpenAuth={onOpenAuth}
+          onNavigateSection={handleNavClick}
+          displayCurrency={displayCurrency}
+        />
+      </Suspense>
     </div>
   );
 };

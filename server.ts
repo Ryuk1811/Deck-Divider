@@ -71,8 +71,11 @@ import {
   generateRssFeedXml,
   generateLlmsTxt,
   generateLlmsFullTxt,
+  generateAiCatalogJson,
+  generateArdJson,
   generateRobotsTxt
 } from './server/publicFootprintManager.js';
+import { generateSearchMatrixJson } from './server/keywordCatalogManager.js';
 import { generateOgImageSvg, generateOgImagePng } from './server/ogImageGenerator.js';
 
 async function startServer() {
@@ -1314,6 +1317,40 @@ async function startServer() {
       console.error('Error generating llms-full.txt', err);
       res.status(500).send('Error generating llms-full.txt');
     }
+  });
+
+  // Agent Resource Discovery (ARD) Specification: ai-catalog.json & ard.json
+  app.get(['/ai-catalog.json', '/.well-known/ai-catalog.json'], (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateAiCatalogJson());
+  });
+
+  app.get(['/ard.json', '/.well-known/ard.json'], (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateArdJson());
+  });
+
+  app.get('/search-matrix.json', (req, res) => {
+    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
+      return res.status(304).end();
+    }
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', `"${BUILD_HASH}"`);
+    res.send(generateSearchMatrixJson());
   });
 
   // TCG Companion Proxy Routes

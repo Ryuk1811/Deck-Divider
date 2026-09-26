@@ -11,17 +11,17 @@ export const DecksMockup: React.FC<DecksMockupProps> = ({ currency = 'USD' }) =>
   const [selectedTab, setSelectedTab] = useState<'all' | 'pokemon' | 'trainers' | 'energy'>('all');
 
   const deckCards = [
-    { name: 'Charizard ex', count: 3, type: 'pokemon', num: '199/165', image: 'https://images.pokemontcg.io/sv3pt5/199_hires.png' },
-    { name: 'Charmander', count: 4, type: 'pokemon', num: '004/165', image: 'https://images.pokemontcg.io/sv3pt5/4_hires.png' },
-    { name: 'Pidgeot ex', count: 2, type: 'pokemon', num: '164/197', image: 'https://images.pokemontcg.io/sv3/164_hires.png' },
-    { name: 'Pidgey', count: 2, type: 'pokemon', num: '162/197', image: 'https://images.pokemontcg.io/sv3/162_hires.png' },
-    { name: 'Radiant Charizard', count: 1, type: 'pokemon', num: '020/159', image: 'https://images.pokemontcg.io/swsh12pt5/20_hires.png' },
-    { name: 'Rotom V', count: 1, type: 'pokemon', num: '058/196', image: 'https://images.pokemontcg.io/swsh11/58_hires.png' },
-    { name: 'Rare Candy', count: 4, type: 'trainers', num: '191/198', image: 'https://images.pokemontcg.io/sv1/191_hires.png' },
-    { name: "Boss's Orders", count: 3, type: 'trainers', num: '172/193', image: 'https://images.pokemontcg.io/sv2/172_hires.png' },
-    { name: "Professor's Research", count: 4, type: 'trainers', num: '189/198', image: 'https://images.pokemontcg.io/sv1/189_hires.png' },
-    { name: 'Ultra Ball', count: 4, type: 'trainers', num: '196/198', image: 'https://images.pokemontcg.io/sv1/196_hires.png' },
-    { name: 'Fire Energy (Basic)', count: 6, type: 'energy', num: '002/SVE', image: 'https://images.pokemontcg.io/sve/2_hires.png' },
+    { name: 'Charizard ex', count: 3, type: 'pokemon', num: '199/165', image: 'https://images.pokemontcg.io/sv3pt5/199.png' },
+    { name: 'Charmander', count: 4, type: 'pokemon', num: '004/165', image: 'https://images.pokemontcg.io/sv3pt5/4.png' },
+    { name: 'Pidgeot ex', count: 2, type: 'pokemon', num: '164/197', image: 'https://images.pokemontcg.io/sv3/164.png' },
+    { name: 'Pidgey', count: 2, type: 'pokemon', num: '162/197', image: 'https://images.pokemontcg.io/sv3/162.png' },
+    { name: 'Radiant Charizard', count: 1, type: 'pokemon', num: '020/159', image: 'https://images.pokemontcg.io/swsh12pt5/20.png' },
+    { name: 'Rotom V', count: 1, type: 'pokemon', num: '058/196', image: 'https://images.pokemontcg.io/swsh11/58.png' },
+    { name: 'Rare Candy', count: 4, type: 'trainers', num: '191/198', image: 'https://images.pokemontcg.io/sv1/191.png' },
+    { name: "Boss's Orders", count: 3, type: 'trainers', num: '172/193', image: 'https://images.pokemontcg.io/sv2/172.png' },
+    { name: "Professor's Research", count: 4, type: 'trainers', num: '189/198', image: 'https://images.pokemontcg.io/sv1/189.png' },
+    { name: 'Ultra Ball', count: 4, type: 'trainers', num: '196/198', image: 'https://images.pokemontcg.io/sv1/196.png' },
+    { name: 'Fire Energy (Basic)', count: 6, type: 'energy', num: '002/SVE', image: 'https://images.pokemontcg.io/sve/2.png' },
   ];
 
   const filteredCards = deckCards.filter((c) => {

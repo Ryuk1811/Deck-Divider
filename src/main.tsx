@@ -1,7 +1,6 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './lib/AuthContext';
@@ -27,33 +26,35 @@ if (typeof window !== 'undefined') {
 
   window.addEventListener('unhandledrejection', (event) => {
     if (isIgnorableLifecycleError(event.reason)) {
-      console.warn('Caught and prevented unhandled database lifecycle/iframe restriction:', event.reason);
       event.preventDefault();
     }
   });
 
   window.addEventListener('error', (event) => {
     if (isIgnorableLifecycleError(event.error || event.message)) {
-      console.warn('Caught and prevented window error / database lifecycle notice:', event.message);
       event.preventDefault();
     }
   });
 }
 
+// Dynamic Sentry initialization to avoid blocking critical bundle
 if (import.meta.env.VITE_SENTRY_DSN) {
-  Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-  });
+  import('@sentry/react').then((Sentry) => {
+    Sentry.init({
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      integrations: [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration(),
+      ],
+      tracesSampleRate: 1.0,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
+    });
+  }).catch(() => {});
 }
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!;
+const appTree = (
   <StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
@@ -62,5 +63,7 @@ createRoot(document.getElementById('root')!).render(
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
-  </StrictMode>,
+  </StrictMode>
 );
+
+createRoot(rootElement).render(appTree);

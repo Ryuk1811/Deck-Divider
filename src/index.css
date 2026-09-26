@@ -42,7 +42,7 @@
   }
 
   body {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #F8FAFC;
     background-image: radial-gradient(rgba(148, 163, 184, 0.45) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
@@ -479,11 +479,62 @@
   animation: pulse-sync 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Zero-JS GPU-Accelerated Floating Animations for Landing Page */
+@keyframes dd-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes dd-laser-sweep {
+  0% { transform: translateX(-150%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+@keyframes dd-slab-left {
+  0%, 100% { transform: translateY(0px) rotate(-7deg); }
+  50% { transform: translateY(-8px) rotate(-5deg); }
+}
+@keyframes dd-slab-mid {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(6px) rotate(1.5deg); }
+}
+@keyframes dd-slab-right {
+  0%, 100% { transform: translateY(0px) rotate(7deg); }
+  50% { transform: translateY(-6px) rotate(9deg); }
+}
+@keyframes dd-glare-pan {
+  0%, 100% { transform: translate(-10%, -10%); }
+  50% { transform: translate(10%, 10%); }
+}
+
+.animate-dd-float {
+  animation: dd-float 5s ease-in-out infinite;
+}
+.animate-dd-sweep {
+  animation: dd-laser-sweep 3.2s ease-in-out infinite;
+}
+.animate-dd-slab-left {
+  animation: dd-slab-left 5.5s ease-in-out infinite;
+}
+.animate-dd-slab-mid {
+  animation: dd-slab-mid 6s ease-in-out infinite;
+}
+.animate-dd-slab-right {
+  animation: dd-slab-right 5.8s ease-in-out infinite;
+}
+.animate-dd-glare {
+  animation: dd-glare-pan 7s ease-in-out infinite;
+}
+
 /* Reduced motion preference override */
 @media (prefers-reduced-motion: reduce) {
   .animate-holo-idle,
   .skeleton-shimmer,
-  .animate-sync-pulse {
+  .animate-sync-pulse,
+  .animate-dd-float,
+  .animate-dd-sweep,
+  .animate-dd-slab-left,
+  .animate-dd-slab-mid,
+  .animate-dd-slab-right,
+  .animate-dd-glare {
     animation: none !important;
   }
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Check, ArrowRight } from 'lucide-react';
-import { motion } from 'motion/react';
 import { SectionMotionAsset } from './SectionMotionAsset';
 
 interface ZigZagSectionProps {
@@ -28,9 +27,6 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
   ctaText,
   onCtaClick,
 }) => {
-  // Kinetic Staging Constants using Apple/Linear easeOutQuint [0.16, 1, 0.3, 1]
-  const easeCurve = [0.16, 1, 0.3, 1] as const;
-
   return (
     <section
       id={id}
@@ -42,14 +38,8 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
             reversed ? 'lg:flex-row-reverse' : ''
           }`}
         >
-          {/* 1. Text Content Column - Viewport-Triggered Stagger Cascade */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px 0px -60px 0px' }}
-            transition={{ duration: 0.7, ease: easeCurve }}
-            className="w-full lg:w-5/12 xl:w-5/12 transform-gpu"
-          >
+          {/* 1. Text Content Column */}
+          <div className="w-full lg:w-5/12 xl:w-5/12 transform-gpu">
             <div className="bg-white/95 border border-[#E2E8F0] rounded-xl sm:rounded-2xl shadow-xs sm:shadow-sm hover:shadow-md transition-shadow p-5 sm:p-8 md:p-10 lg:p-12 space-y-4 sm:space-y-6 text-left w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px]">
               
               {/* Header Badge with Instant Reveal */}
@@ -72,15 +62,11 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
                 {description}
               </p>
 
-              {/* Bullet Points with Staggered Cascading Reveal */}
+              {/* Bullet Points */}
               <div className="space-y-3 sm:space-y-4 pt-2 sm:pt-3 border-t border-[#F1F5F9]">
                 {bulletPoints.map((bp, i) => (
-                  <motion.div
+                  <div
                     key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.12 + i * 0.06, ease: easeCurve }}
                     className="flex items-start gap-2.5 sm:gap-3.5 group"
                   >
                     <div className="mt-0.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-md bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -94,7 +80,7 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
                         {bp.desc}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
@@ -111,24 +97,18 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {/* 2. UI Mockup Column - Structured Elevation Stage */}
           <div className="w-full lg:w-7/12 xl:w-7/12 flex h-full relative">
             {/* Dedicated Floating Section Motion Asset (Positioned dynamically) */}
             <SectionMotionAsset sectionId={id} reversed={reversed} />
 
-            <motion.div
-              initial={{ opacity: 0, y: 24, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: '-60px 0px -60px 0px' }}
-              transition={{ duration: 0.8, delay: 0.1, ease: easeCurve }}
-              className="w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px] transform-gpu"
-            >
+            <div className="w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px] transform-gpu">
               <div className="bg-white border border-[#E2E8F0] shadow-md hover:shadow-xl transition-shadow duration-500 rounded-xl sm:rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-8 w-full h-full flex flex-col justify-center relative overflow-hidden">
                 {mockup}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

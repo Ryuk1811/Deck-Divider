@@ -30,6 +30,11 @@ async function prerenderAllRoutes() {
       'icon-google-192.png',
       'icon-512.png',
       'logo.png',
+      'logo-36.webp',
+      'logo-48.webp',
+      'logo-96.webp',
+      'logo-192.webp',
+      'logo.webp',
       'security.txt',
       '_headers'
     ];

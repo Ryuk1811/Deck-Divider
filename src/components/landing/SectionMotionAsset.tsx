@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Sparkles, TrendingUp, Zap, CheckCircle2, Search, Bell, Award, Shield } from 'lucide-react';
 
 interface SectionMotionAssetProps {
@@ -11,24 +10,10 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
   switch (sectionId) {
     case 'collection':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -top-3 sm:-top-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -top-3 sm:-top-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5 relative overflow-hidden">
             {/* Autonomous subtle laser scan line sweep */}
-            <motion.div
-              animate={{ x: ['-150%', '250%'] }}
-              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
-              className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-[#DC143C]/20 to-transparent skew-x-12 pointer-events-none transform-gpu will-change-transform"
-            />
+            <div className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-[#DC143C]/20 to-transparent skew-x-12 pointer-events-none transform-gpu animate-dd-sweep" />
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-[#DC143C] text-white flex items-center justify-center font-black text-[9px] sm:text-[11px] shadow-xs">
               10
             </div>
@@ -40,22 +25,12 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
             </div>
             <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 ml-0.5" />
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'metrics':
       return (
-        <motion.div
-          animate={{
-            y: [0, -6, 0],
-          }}
-          transition={{
-            duration: 5.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -top-3 sm:-top-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -top-3 sm:-top-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-xs">
               <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -70,22 +45,12 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'decks':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 4.8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -bottom-3 sm:-bottom-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -bottom-3 sm:-bottom-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
               <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 fill-amber-300" />
@@ -102,22 +67,12 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'sets':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 5.2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -top-3 sm:-top-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -top-3 sm:-top-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-purple-600 text-white flex items-center justify-center shadow-xs">
               <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -131,22 +86,12 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'search':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 5.4,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -bottom-3 sm:-bottom-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -bottom-3 sm:-bottom-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-xs">
               <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -163,22 +108,12 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'lists':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 5.6,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -top-3 sm:-top-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -top-3 sm:-top-5 -left-1 sm:-left-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-xs">
               <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -192,23 +127,13 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     case 'sealed-vault':
     case 'vault':
       return (
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-          }}
-          transition={{
-            duration: 5.8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute -bottom-3 sm:-bottom-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu will-change-transform backface-hidden max-w-[90vw]"
-        >
+        <div className="absolute -bottom-3 sm:-bottom-5 -right-1 sm:-right-4 z-20 pointer-events-none transform-gpu animate-dd-float backface-hidden max-w-[90vw]">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shadow-md sm:shadow-lg flex items-center gap-2 sm:gap-2.5 text-[10px] sm:text-xs font-mono font-bold text-slate-800 ring-1 ring-slate-900/5">
             <div className="w-5 h-5 sm:w-7 sm:h-7 rounded sm:rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
               <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -223,7 +148,7 @@ export const SectionMotionAsset: React.FC<SectionMotionAssetProps> = ({ sectionI
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
 
     default:

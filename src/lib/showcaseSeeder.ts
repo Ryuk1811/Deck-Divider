@@ -115,7 +115,7 @@ const CHARIZARD_151_RAW: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/sv3pt5/199.png',
-    large: 'https://images.pokemontcg.io/sv3pt5/199_hires.png',
+    large: 'https://images.pokemontcg.io/sv3pt5/199.png',
   },
 };
 
@@ -168,7 +168,7 @@ const MOONBREON_VMAX: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/swsh7/215.png',
-    large: 'https://images.pokemontcg.io/swsh7/215_hires.png',
+    large: 'https://images.pokemontcg.io/swsh7/215.png',
   },
 };
 
@@ -221,7 +221,7 @@ const GENGAR_VMAX_ALT: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/swsh8/271.png',
-    large: 'https://images.pokemontcg.io/swsh8/271_hires.png',
+    large: 'https://images.pokemontcg.io/swsh8/271.png',
   },
 };
 
@@ -274,7 +274,7 @@ const GIRATINA_V_ALT: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/swsh11/186.png',
-    large: 'https://images.pokemontcg.io/swsh11/186_hires.png',
+    large: 'https://images.pokemontcg.io/swsh11/186.png',
   },
 };
 
@@ -327,7 +327,7 @@ const LUGIA_V_ALT: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/swsh12/186.png',
-    large: 'https://images.pokemontcg.io/swsh12/186_hires.png',
+    large: 'https://images.pokemontcg.io/swsh12/186.png',
   },
 };
 
@@ -380,7 +380,7 @@ const BUBBLE_MEW_SIR: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/sv4pt5/232.png',
-    large: 'https://images.pokemontcg.io/sv4pt5/232_hires.png',
+    large: 'https://images.pokemontcg.io/sv4pt5/232.png',
   },
 };
 
@@ -427,7 +427,7 @@ const GREY_FELT_HAT_PIKACHU: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/svp/085.png',
-    large: 'https://images.pokemontcg.io/svp/085_hires.png',
+    large: 'https://images.pokemontcg.io/svp/085.png',
   },
 };
 
@@ -480,7 +480,7 @@ const BLASTOISE_151_SIR: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/sv3pt5/200.png',
-    large: 'https://images.pokemontcg.io/sv3pt5/200_hires.png',
+    large: 'https://images.pokemontcg.io/sv3pt5/200.png',
   },
 };
 
@@ -533,7 +533,7 @@ const VENUSAUR_151_SIR: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/sv3pt5/198.png',
-    large: 'https://images.pokemontcg.io/sv3pt5/198_hires.png',
+    large: 'https://images.pokemontcg.io/sv3pt5/198.png',
   },
 };
 
@@ -569,7 +569,7 @@ const IONO_PALDEA_SIR: PokemonCard = {
   },
   images: {
     small: 'https://images.pokemontcg.io/sv2/269.png',
-    large: 'https://images.pokemontcg.io/sv2/269_hires.png',
+    large: 'https://images.pokemontcg.io/sv2/269.png',
   },
 };
 
@@ -620,7 +620,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
     },
     images: {
       small: 'https://images.pokemontcg.io/sv3/225.png',
-      large: 'https://images.pokemontcg.io/sv3/225_hires.png',
+      large: 'https://images.pokemontcg.io/sv3/225.png',
     },
   };
 
@@ -652,7 +652,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
     },
     images: {
       small: 'https://images.pokemontcg.io/sv5/157.png',
-      large: 'https://images.pokemontcg.io/sv5/157_hires.png',
+      large: 'https://images.pokemontcg.io/sv5/157.png',
     },
   };
 
@@ -684,7 +684,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
     },
     images: {
       small: 'https://images.pokemontcg.io/sv1/249.png',
-      large: 'https://images.pokemontcg.io/sv1/249_hires.png',
+      large: 'https://images.pokemontcg.io/sv1/249.png',
     },
   };
 

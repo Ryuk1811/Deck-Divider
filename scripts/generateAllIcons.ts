@@ -51,6 +51,15 @@ async function regenerateAllIcons() {
     { name: 'icon-512.png', size: 512, paddingRatio: 0.08 }
   ];
 
+  // Modern lightweight WebP brand logos for headers, navbar, SSR, and preloading
+  const webpTargets = [
+    { name: 'logo-36.webp', size: 36, paddingRatio: 0.02, quality: 85 },
+    { name: 'logo-48.webp', size: 48, paddingRatio: 0.02, quality: 85 },
+    { name: 'logo-96.webp', size: 96, paddingRatio: 0.04, quality: 88 },
+    { name: 'logo-192.webp', size: 192, paddingRatio: 0.06, quality: 90 },
+    { name: 'logo.webp', size: 512, paddingRatio: 0.05, quality: 90 }
+  ];
+
   const publicDir = path.resolve(process.cwd(), 'public');
   const distDir = path.resolve(process.cwd(), 'dist');
 
@@ -74,6 +83,13 @@ async function regenerateAllIcons() {
     // Copy all target icon files to dist if it exists
     if (fs.existsSync(distDir)) {
       for (const target of targets) {
+        const src = path.join(publicDir, target.name);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, path.join(distDir, target.name));
+        }
+      }
+
+      for (const target of webpTargets) {
         const src = path.join(publicDir, target.name);
         if (fs.existsSync(src)) {
           fs.copyFileSync(src, path.join(distDir, target.name));
@@ -126,7 +142,7 @@ async function regenerateAllIcons() {
       }
     })
       .composite([{ input: resizedLogo, top: pad, left: pad }])
-      .png()
+      .png({ compressionLevel: 9, effort: 8 })
       .toBuffer();
 
     // Write to public/
@@ -142,6 +158,34 @@ async function regenerateAllIcons() {
     if (target.size === 16 || target.size === 32 || target.size === 48) {
       icoFrames.push({ width: target.size, height: target.size, buffer: outputBuffer });
     }
+  }
+
+  // Generate modern WebP formats for instant loading
+  for (const target of webpTargets) {
+    const innerSize = Math.round(target.size * (1 - target.paddingRatio * 2));
+    const pad = Math.round((target.size - innerSize) / 2);
+
+    const resizedLogo = await sharp(logoPath)
+      .resize(innerSize, innerSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .toBuffer();
+
+    const outputBuffer = await sharp({
+      create: {
+        width: target.size,
+        height: target.size,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 }
+      }
+    })
+      .composite([{ input: resizedLogo, top: pad, left: pad }])
+      .webp({ quality: target.quality, effort: 6 })
+      .toBuffer();
+
+    fs.writeFileSync(path.join(publicDir, target.name), outputBuffer);
+    if (fs.existsSync(distDir)) {
+      fs.writeFileSync(path.join(distDir, target.name), outputBuffer);
+    }
+    console.log(`[IconGenerator] ✓ Generated WebP ${target.name} (${target.size}x${target.size})`);
   }
 
   // Generate multi-resolution favicon.ico

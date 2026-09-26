@@ -116,7 +116,7 @@ export const ListsView: React.FC<ListsViewProps> = ({
         set: { id: setCode, name: 'Pokémon TCG', series: 'Scarlet & Violet' },
         images: {
           small: `https://images.pokemontcg.io/${setCode}/${numberCode}.png`,
-          large: `https://images.pokemontcg.io/${setCode}/${numberCode}_hires.png`,
+          large: `https://images.pokemontcg.io/${setCode}/${numberCode}.png`,
         },
         prices: { raw: 4.50, psa10Estimate: 15.00, psa9Estimate: 7.50 },
       } as PokemonCard;

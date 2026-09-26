@@ -48,11 +48,18 @@ export const DeckDividersIcon: React.FC<DeckDividersIconProps> = ({
       role={onClick ? "button" : "img"}
       title={title}
     >
-      <img
-        src="/logo.png?v=11"
-        alt={title || "DECK / divider"}
-        className="w-full h-full object-contain pointer-events-none"
-      />
+      <picture>
+        <source srcSet="/logo-36.webp 1x, /logo-48.webp 2x, /logo-96.webp 3x" type="image/webp" />
+        <img
+          src="/logo-48.webp"
+          alt={title || "DECK / divider"}
+          width={36}
+          height={36}
+          loading="eager"
+          decoding="async"
+          className="w-full h-full object-contain pointer-events-none"
+        />
+      </picture>
     </div>
   );
 };

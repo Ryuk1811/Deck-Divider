@@ -1,6 +1,5 @@
 import React from 'react';
 import { Target, Shield, Compass, Sparkles, Database, Users } from 'lucide-react';
-import { motion } from 'motion/react';
 import { getCommunityReviews } from '../../lib/reviewsService';
 
 export const PlatformPhilosophySection: React.FC = () => {

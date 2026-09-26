@@ -34,6 +34,9 @@ export default defineConfig(() => {
             if (id.includes('node_modules/minisearch/') || id.includes('node_modules/idb/') || id.includes('node_modules/idb-keyval/')) {
               return 'vendor-search';
             }
+            if (id.includes('node_modules/@sentry/')) {
+              return 'vendor-sentry';
+            }
             if (id.includes('node_modules/recharts/')) {
               return 'vendor-charts';
             }

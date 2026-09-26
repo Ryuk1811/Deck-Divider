@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Sparkles, Award, ShieldCheck, Crown } from 'lucide-react';
 
 export const HeroFluidMotionCanvas: React.FC = () => {
@@ -7,19 +6,13 @@ export const HeroFluidMotionCanvas: React.FC = () => {
   const slabOuterClasses = "w-full h-full bg-white/95 rounded-2xl p-2 sm:p-3 shadow-[0_10px_30px_-6px_rgba(15,23,42,0.12),0_4px_10px_-2px_rgba(15,23,42,0.06)] border border-slate-200/90 flex flex-col justify-between overflow-hidden relative isolate";
   
   // Smooth, lightweight glare animation using pure opacity
-  const glareClasses = "absolute -inset-full w-[300%] h-[300%] bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none z-20 will-change-transform";
+  const glareClasses = "absolute -inset-full w-[300%] h-[300%] bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none z-20 animate-dd-glare";
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
       {/* 1. Fluid Ambient Studio Atmosphere - Static blur layer with lightweight opacity pulse */}
       <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-        <motion.div
-          animate={{
-            opacity: [0.22, 0.32, 0.22],
-          }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-[80vw] max-w-[900px] h-[35vh] max-h-[480px] rounded-full bg-gradient-to-r from-[#DC143C]/10 via-amber-500/8 to-indigo-500/10 blur-[50px] transform-gpu"
-        />
+        <div className="w-[80vw] max-w-[900px] h-[35vh] max-h-[480px] rounded-full bg-gradient-to-r from-[#DC143C]/10 via-amber-500/8 to-indigo-500/10 blur-[50px] transform-gpu animate-pulse" />
       </div>
 
       {/* 2. Tri-Slab Floating Collector Stage */}
@@ -29,20 +22,9 @@ export const HeroFluidMotionCanvas: React.FC = () => {
           {/* ========================================================================= */}
           {/* SLAB 1 (LEFT): PSA 10 Gem Mint Red Label */}
           {/* ========================================================================= */}
-          <motion.div
-            animate={{
-              y: [0, -8, 0],
-              rotate: [-7, -5, -7],
-            }}
-            transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute left-[-2%] sm:left-2 md:left-6 lg:left-8 top-[8%] sm:top-[10%] md:top-[12%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 will-change-transform"
-          >
+          <div className="absolute left-[-2%] sm:left-2 md:left-6 lg:left-8 top-[8%] sm:top-[10%] md:top-[12%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 animate-dd-slab-left">
             <div className={slabOuterClasses}>
-              <motion.div 
-                animate={{ x: ['-15%', '15%', '-15%'], y: ['-15%', '15%', '-15%'] }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                className={glareClasses} 
-              />
+              <div className={glareClasses} />
               
               {/* PSA Header */}
               <div className="relative z-10 bg-white border border-slate-200 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
@@ -54,11 +36,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
 
               {/* Plain Central Card (No Texture) */}
               <div className="relative z-10 flex-1 my-1.5 sm:my-2.5 rounded-sm bg-slate-50 border border-slate-200 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
-                <motion.div
-                  animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.5 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none will-change-transform"
-                />
+                <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none animate-dd-sweep" />
                 <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 mb-2 flex items-center justify-center shadow-xs border border-slate-300/50">
                   <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-slate-400" />
                 </div>
@@ -74,25 +52,14 @@ export const HeroFluidMotionCanvas: React.FC = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* ========================================================================= */}
           {/* SLAB 2 (MIDDLE): CGC Pristine 10 Black Label */}
           {/* ========================================================================= */}
-          <motion.div
-            animate={{
-              y: [0, 6, 0],
-              rotate: [0, 1.5, 0],
-            }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-[2%] sm:top-[4%] md:top-[6%] w-[32vw] min-w-[120px] max-w-[210px] h-[48vw] min-h-[175px] max-h-[310px] z-0 will-change-transform"
-          >
+          <div className="absolute top-[2%] sm:top-[4%] md:top-[6%] w-[32vw] min-w-[120px] max-w-[210px] h-[48vw] min-h-[175px] max-h-[310px] z-0 animate-dd-slab-mid">
             <div className={slabOuterClasses}>
-              <motion.div 
-                animate={{ x: ['-10%', '10%', '-10%'], y: ['-10%', '10%', '-10%'] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                className={glareClasses} 
-              />
+              <div className={glareClasses} />
 
               {/* CGC Header */}
               <div className="relative z-10 bg-slate-950 border border-amber-400/40 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
@@ -107,11 +74,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
 
               {/* Plain Central Card */}
               <div className="relative z-10 flex-1 my-1.5 sm:my-2 rounded-sm bg-gradient-to-b from-slate-50 to-slate-100 border border-slate-200/80 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
-                <motion.div
-                  animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.5 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-amber-100/40 to-transparent skew-x-12 pointer-events-none will-change-transform"
-                />
+                <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-amber-100/40 to-transparent skew-x-12 pointer-events-none animate-dd-sweep" />
                 <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-slate-200/80 border border-slate-300/50 mb-2 flex items-center justify-center shadow-xs">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-slate-500" />
                 </div>
@@ -127,25 +90,14 @@ export const HeroFluidMotionCanvas: React.FC = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* ========================================================================= */}
           {/* SLAB 3 (RIGHT): BGS 9.5 Gem Mint Gold Label */}
           {/* ========================================================================= */}
-          <motion.div
-            animate={{
-              y: [0, -6, 0],
-              rotate: [7, 9, 7],
-            }}
-            transition={{ duration: 5.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute right-[-2%] sm:right-2 md:right-6 lg:right-8 top-[10%] sm:top-[12%] md:top-[14%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 will-change-transform"
-          >
+          <div className="absolute right-[-2%] sm:right-2 md:right-6 lg:right-8 top-[10%] sm:top-[12%] md:top-[14%] w-[34vw] min-w-[125px] max-w-[220px] h-[50vw] min-h-[180px] max-h-[320px] z-10 animate-dd-slab-right">
             <div className={slabOuterClasses}>
-              <motion.div 
-                animate={{ x: ['-12%', '12%', '-12%'], y: ['-12%', '12%', '-12%'] }}
-                transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
-                className={glareClasses} 
-              />
+              <div className={glareClasses} />
 
               {/* BGS Header */}
               <div className="relative z-10 bg-amber-500/10 border border-amber-500/20 rounded-md sm:rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between shadow-xs">
@@ -160,11 +112,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
 
               {/* Plain Central Card */}
               <div className="relative z-10 flex-1 my-1.5 sm:my-2.5 rounded-sm bg-slate-50 border border-slate-200/80 shadow-inner overflow-hidden flex flex-col items-center justify-center p-1.5 sm:p-3">
-                <motion.div
-                  animate={{ x: ['-200%', '200%'] }}
-                  transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2.2 }}
-                  className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none will-change-transform"
-                />
+                <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/80 to-transparent skew-x-12 pointer-events-none animate-dd-sweep" />
                 <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg bg-slate-200/70 border border-slate-300/50 mb-2 flex items-center justify-center shadow-xs">
                   <Award className="w-4 h-4 sm:w-6 sm:h-6 text-slate-400" />
                 </div>
@@ -180,7 +128,7 @@ export const HeroFluidMotionCanvas: React.FC = () => {
                 <span>C:9.5</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
         </div>
       </div>

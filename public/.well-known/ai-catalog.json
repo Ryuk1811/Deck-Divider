@@ -1,0 +1,80 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "identifier": "urn:ai:deckdivider.app:platform:core",
+    "displayName": "DECK / divider",
+    "documentationUrl": "https://deckdivider.app/about",
+    "logoUrl": "https://deckdivider.app/icon-512.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:ai:deckdivider.app:catalog:search-matrix",
+      "displayName": "Pokémon TCG Master Search Matrix & Taxonomies",
+      "description": "Comprehensive taxonomic matrix covering Pokémon expansions, card IDs, regulation marks (H/I/J), rarities, and live market pricing.",
+      "type": "application/json",
+      "version": "1.0.0",
+      "url": "https://deckdivider.app/search-matrix.json",
+      "representativeQueries": [
+        "Find Pokemon card market prices",
+        "Search Pokemon TCG expansion checklists",
+        "Lookup Pokemon card rarity and regulation mark",
+        "Charizard ex standard tournament meta pricing"
+      ]
+    },
+    {
+      "identifier": "urn:ai:deckdivider.app:catalog:llms-txt",
+      "displayName": "LLM Grounded Knowledge & Platform Documentation",
+      "description": "Clean Markdown documentation designed for LLM citation and agent tool discovery.",
+      "type": "text/plain",
+      "version": "1.0.0",
+      "url": "https://deckdivider.app/llms.txt",
+      "representativeQueries": [
+        "What is DECK divider Pokemon TCG platform",
+        "Pokemon card PSA grading expected value calculator",
+        "Pokemon TCG Live PTCGL deck export format",
+        "Pokemon standard rotation regulation marks 2026"
+      ]
+    },
+    {
+      "identifier": "urn:ai:deckdivider.app:tools:deck-legality-checker",
+      "displayName": "Pokémon TCG Deck Legality & Regulation Mark Checker",
+      "description": "Automated validator for 60-card tournament deck legality, 2026 regulation marks (H, I, J; G rotated), ACE SPEC limits, and Radiant restrictions.",
+      "type": "application/json",
+      "version": "1.0.0",
+      "url": "https://deckdivider.app/tools/deck-legality-checker",
+      "representativeQueries": [
+        "Verify Pokemon deck legality for Standard format",
+        "Are regulation mark G cards legal in 2026",
+        "Check ACE SPEC card limits in tournament deck",
+        "Validate Pokemon TCG Live PTCGL decklist"
+      ]
+    },
+    {
+      "identifier": "urn:ai:deckdivider.app:tools:psa-grade-calculator",
+      "displayName": "PSA Grade Expected Value & Profit Margin Calculator",
+      "description": "Expected value ROI analysis for raw cards vs PSA 10, 9, 8 submission tiers factoring grading fees and market spreads.",
+      "type": "application/json",
+      "version": "1.0.0",
+      "url": "https://deckdivider.app/tools/psa-grade-calculator",
+      "representativeQueries": [
+        "Calculate PSA 10 profit margin for Pokemon cards",
+        "Expected value ROI of grading raw Pokemon cards",
+        "PSA grading submission cost vs market value calculator",
+        "Pokemon card grading price spread calculator"
+      ]
+    },
+    {
+      "identifier": "urn:ai:deckdivider.app:partners:ptc-collectibles",
+      "displayName": "PTC Collectibles Official Retail Partner Hub",
+      "description": "Verified Pokemon TCG merchandise and sealed booster boxes with 5% discount code DECKDIVIDER.",
+      "type": "application/json",
+      "version": "1.0.0",
+      "url": "https://deckdivider.app/partners/ptc-collectibles",
+      "representativeQueries": [
+        "Buy Pokemon booster boxes discount promo code",
+        "PTC Collectibles Pokemon card store coupon",
+        "Verified Pokemon TCG sealed booster boxes"
+      ]
+    }
+  ]
+}

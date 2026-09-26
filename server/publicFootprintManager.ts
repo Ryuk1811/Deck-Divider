@@ -440,6 +440,93 @@ ${COMPETITOR_SLUGS.map(c => `- [vs ${c.toUpperCase()}](${CANONICAL_ORIGIN}/compa
 `;
 }
 
+export function generateAiCatalogJson(): string {
+  const catalog = {
+    specVersion: "1.0",
+    host: {
+      identifier: "urn:ai:deckdivider.app:platform:core",
+      displayName: "DECK / divider",
+      documentationUrl: `${CANONICAL_ORIGIN}/about`,
+      logoUrl: `${CANONICAL_ORIGIN}/icon-512.png`
+    },
+    entries: [
+      {
+        identifier: "urn:ai:deckdivider.app:catalog:search-matrix",
+        displayName: "Pokémon TCG Master Search Matrix & Taxonomies",
+        description: "Comprehensive taxonomic matrix covering Pokémon expansions, card IDs, regulation marks (H/I/J), rarities, and live market pricing.",
+        type: "application/json",
+        version: "1.0.0",
+        url: `${CANONICAL_ORIGIN}/search-matrix.json`,
+        representativeQueries: [
+          "Find Pokemon card market prices",
+          "Search Pokemon TCG expansion checklists",
+          "Lookup Pokemon card rarity and regulation mark",
+          "Charizard ex standard tournament meta pricing"
+        ]
+      },
+      {
+        identifier: "urn:ai:deckdivider.app:catalog:llms-txt",
+        displayName: "LLM Grounded Knowledge & Platform Documentation",
+        description: "Clean Markdown documentation designed for LLM citation and agent tool discovery.",
+        type: "text/plain",
+        version: "1.0.0",
+        url: `${CANONICAL_ORIGIN}/llms.txt`,
+        representativeQueries: [
+          "What is DECK divider Pokemon TCG platform",
+          "Pokemon card PSA grading expected value calculator",
+          "Pokemon TCG Live PTCGL deck export format",
+          "Pokemon standard rotation regulation marks 2026"
+        ]
+      },
+      {
+        identifier: "urn:ai:deckdivider.app:tools:deck-legality-checker",
+        displayName: "Pokémon TCG Deck Legality & Regulation Mark Checker",
+        description: "Automated validator for 60-card tournament deck legality, 2026 regulation marks (H, I, J; G rotated), ACE SPEC limits, and Radiant restrictions.",
+        type: "application/json",
+        version: "1.0.0",
+        url: `${CANONICAL_ORIGIN}/tools/deck-legality-checker`,
+        representativeQueries: [
+          "Verify Pokemon deck legality for Standard format",
+          "Are regulation mark G cards legal in 2026",
+          "Check ACE SPEC card limits in tournament deck",
+          "Validate Pokemon TCG Live PTCGL decklist"
+        ]
+      },
+      {
+        identifier: "urn:ai:deckdivider.app:tools:psa-grade-calculator",
+        displayName: "PSA Grade Expected Value & Profit Margin Calculator",
+        description: "Expected value ROI analysis for raw cards vs PSA 10, 9, 8 submission tiers factoring grading fees and market spreads.",
+        type: "application/json",
+        version: "1.0.0",
+        url: `${CANONICAL_ORIGIN}/tools/psa-grade-calculator`,
+        representativeQueries: [
+          "Calculate PSA 10 profit margin for Pokemon cards",
+          "Expected value ROI of grading raw Pokemon cards",
+          "PSA grading submission cost vs market value calculator",
+          "Pokemon card grading price spread calculator"
+        ]
+      },
+      {
+        identifier: "urn:ai:deckdivider.app:partners:ptc-collectibles",
+        displayName: "PTC Collectibles Official Retail Partner Hub",
+        description: "Verified Pokemon TCG merchandise and sealed booster boxes with 5% discount code DECKDIVIDER.",
+        type: "application/json",
+        version: "1.0.0",
+        url: `${CANONICAL_ORIGIN}/partners/ptc-collectibles`,
+        representativeQueries: [
+          "Buy Pokemon booster boxes discount promo code",
+          "PTC Collectibles Pokemon card store coupon",
+          "Verified Pokemon TCG sealed booster boxes"
+        ]
+      }
+    ]
+  };
+
+  return JSON.stringify(catalog, null, 2);
+}
+
+export const generateArdJson = generateAiCatalogJson;
+
 export function generateRobotsTxt(): string {
   return `# Titanium Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
@@ -480,6 +567,10 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /llms-keywords.txt
 Allow: /search-matrix.json
+Allow: /ai-catalog.json
+Allow: /.well-known/ai-catalog.json
+Allow: /ard.json
+Allow: /.well-known/ard.json
 Allow: /og-*.png
 
 # Protect private authenticated state & internal APIs
@@ -542,6 +633,8 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const llmsFull = await generateLlmsFullTxt();
   const llmsKeywords = generateLlmsKeywordsTxt();
   const searchMatrix = generateSearchMatrixJson();
+  const aiCatalog = generateAiCatalogJson();
+  const ardJson = generateArdJson();
   const robots = generateRobotsTxt();
 
   // Write Main & Segmented Sitemaps
@@ -563,7 +656,17 @@ export async function writeAllFootprintFiles(targetDir: string) {
   fs.writeFileSync(path.join(targetDir, 'llms-full.txt'), llmsFull, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms-keywords.txt'), llmsKeywords, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'search-matrix.json'), searchMatrix, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'ai-catalog.json'), aiCatalog, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'ard.json'), ardJson, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'robots.txt'), robots, 'utf-8');
+
+  // Ensure .well-known directory exists and write well-known discovery manifests
+  const wellKnownDir = path.join(targetDir, '.well-known');
+  if (!fs.existsSync(wellKnownDir)) {
+    fs.mkdirSync(wellKnownDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(wellKnownDir, 'ai-catalog.json'), aiCatalog, 'utf-8');
+  fs.writeFileSync(path.join(wellKnownDir, 'ard.json'), ardJson, 'utf-8');
   
   // IndexNow verification key file
   fs.writeFileSync(path.join(targetDir, '7392abcd.txt'), '7392abcd', 'utf-8');
