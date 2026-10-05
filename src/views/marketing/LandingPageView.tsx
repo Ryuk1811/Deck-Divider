@@ -41,6 +41,8 @@ interface LandingPageViewProps {
   user?: any;
   onImportCustomCards?: (entries: any[]) => void;
   onSelectCard?: (card: any) => void;
+  onSelectLifetime?: () => void;
+  isLifetime?: boolean;
 }
 
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
@@ -54,6 +56,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   user,
   onImportCustomCards,
   onSelectCard,
+  onSelectLifetime,
+  isLifetime = false,
 }) => {
   // Track landing page view on mount
   useEffect(() => {
@@ -406,6 +410,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           currentTier={currentTier}
           onSelectTier={onSelectTier}
           displayCurrency={displayCurrency}
+          onSelectLifetime={onSelectLifetime}
+          isLifetime={isLifetime}
         />
 
         {/* Section 05 Header Line: FAQ & Guides */}

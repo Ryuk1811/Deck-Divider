@@ -59,7 +59,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { formatSetReleaseDate } from '../../utils/setCategorizer';
 
-const SUPER_USER_EMAIL = 'gurutvamurdia@gmail.com';
+const SUPER_USER_EMAIL = 'deckdivider@outlook.com';
+const SUPER_ADMIN_EMAILS = ['deckdivider@outlook.com', 'gurutvamurdia@gmail.com'];
 
 export interface AdminMetrics {
   totalUsers: number;
@@ -69,6 +70,7 @@ export interface AdminMetrics {
     Stack: number;
     Deck: number;
     Collection: number;
+    Founder?: number;
   };
   revenueByTier: {
     Starter: number;
@@ -76,6 +78,7 @@ export interface AdminMetrics {
     Stack: number;
     Deck: number;
     Collection: number;
+    Founder?: number;
   };
   mrr: number;
   arr: number;
@@ -158,10 +161,11 @@ export interface BroadcastAnnouncement {
 
 const TIER_PRICES: Record<string, number> = {
   Starter: 0,
-  Bunch: 11,
-  Stack: 22,
-  Deck: 33,
-  Collection: 44,
+  Bunch: 4,
+  Stack: 7,
+  Deck: 11,
+  Collection: 14,
+  Founder: 250,
 };
 
 const TIER_COLORS: Record<string, string> = {
@@ -170,6 +174,7 @@ const TIER_COLORS: Record<string, string> = {
   Stack: '#8B5CF6',
   Deck: '#EC4899',
   Collection: '#DC143C',
+  Founder: '#10B981',
 };
 
 export const AdminDashboardView: React.FC = () => {
@@ -238,7 +243,7 @@ export const AdminDashboardView: React.FC = () => {
   const [indexNowStatus, setIndexNowStatus] = useState<string | null>(null);
   const [pingingIndexNow, setPingingIndexNow] = useState(false);
 
-  const isSuperUser = (user?.email || '').toLowerCase() === SUPER_USER_EMAIL;
+  const isSuperUser = SUPER_ADMIN_EMAILS.includes((user?.email || '').toLowerCase());
 
   // 1. Fetch Admin Metrics
   const fetchAdminMetrics = async () => {
@@ -963,10 +968,10 @@ export const AdminDashboardView: React.FC = () => {
                   >
                     <option value="all">All Tiers</option>
                     <option value="Starter">Starter (Free)</option>
-                    <option value="Bunch">Bunch ($11/mo)</option>
-                    <option value="Stack">Stack ($22/mo)</option>
-                    <option value="Deck">Deck ($33/mo)</option>
-                    <option value="Collection">Collection ($44/mo)</option>
+                    <option value="Bunch">Bunch ($4/mo)</option>
+                    <option value="Stack">Stack ($7/mo)</option>
+                    <option value="Deck">Deck ($11/mo)</option>
+                    <option value="Collection">Collection ($14/mo)</option>
                   </select>
                 </div>
 
@@ -1008,7 +1013,7 @@ export const AdminDashboardView: React.FC = () => {
                       </tr>
                     ) : (
                       filteredUsers.map((u) => {
-                        const isTargetSuper = (u.email || '').toLowerCase() === SUPER_USER_EMAIL;
+                        const isTargetSuper = SUPER_ADMIN_EMAILS.includes((u.email || '').toLowerCase());
                         const isSuspended = u.status === 'suspended';
                         return (
                           <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
@@ -1277,7 +1282,7 @@ export const AdminDashboardView: React.FC = () => {
                     </p>
 
                     <div className="space-y-2 mb-6">
-                      {(['Starter', 'Bunch', 'Stack', 'Deck', 'Collection'] as const).map((tier) => (
+                      {(['Starter', 'Bunch', 'Stack', 'Deck', 'Collection', 'Founder'] as const).map((tier) => (
                         <label 
                           key={tier}
                           className={`flex items-center justify-between p-3 rounded-xl border text-xs font-mono cursor-pointer transition-all ${
@@ -1297,7 +1302,7 @@ export const AdminDashboardView: React.FC = () => {
                             />
                             <span>{tier}</span>
                           </div>
-                          <span className="text-[#64748B]">${TIER_PRICES[tier]}/mo</span>
+                          <span className="text-[#64748B]">${TIER_PRICES[tier]}{tier === 'Founder' ? ' one-time' : '/mo'}</span>
                         </label>
                       ))}
                     </div>
@@ -1358,8 +1363,8 @@ export const AdminDashboardView: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white border border-[#E2E8F0] p-6 rounded-2xl shadow-xs">
                 <h3 className="text-sm font-bold font-heading text-[#0F172A] mb-4">Monthly Revenue by Subscription Tier</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="h-64 min-w-0">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={240}>
                     <BarChart data={[
                       { tier: 'Starter', rev: metrics?.revenueByTier?.Starter || 0 },
                       { tier: 'Bunch', rev: metrics?.revenueByTier?.Bunch || 0 },

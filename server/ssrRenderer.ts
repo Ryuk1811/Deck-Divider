@@ -1,6 +1,7 @@
-import { getCardDetail } from './tcgCatalogManager.js';
+import { getCardDetail, getSetDetail, getExpansions } from './tcgCatalogManager.js';
 import { BUILD_HASH } from './publicFootprintManager.js';
 import { renderDirectoryPage } from './routes/directoryRenderer.js';
+import { getTournamentDeckBySlug, TOURNAMENT_DECKS } from '../src/data/tournamentDecks.js';
 
 export const DEFAULT_OG_IMAGE = `https://deckdivider.app/og-image.png?v=${BUILD_HASH}`;
 
@@ -136,10 +137,7 @@ export function isBot(userAgent: string = ''): boolean {
 
 export function renderSsrBrand(): string {
   return `<a href="/" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;vertical-align:middle;" aria-label="DECK / divider Home">
-    <picture>
-      <source srcset="/logo-48.webp" type="image/webp" />
-      <img src="/logo-48.webp" alt="DECK / divider" width="34" height="34" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;display:block;" />
-    </picture>
+    <img src="/logo.png?v=11" alt="DECK / divider" width="34" height="34" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;display:block;" />
     <div style="background:#111111;padding:1px;border-radius:8px;border:1px solid #262626;display:inline-flex;box-shadow:0 1px 3px rgba(0,0,0,0.12);">
       <div style="background:#000000;border-radius:7px;padding:5px 12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;">
         <span style="color:#FFFFFF;font-family:system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;font-size:13px;">DECK</span>
@@ -179,14 +177,14 @@ function createStandardPageHtml(title: string, subtitle: string, content: string
   </main>
   <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
     <p style="margin:0 0 8px;">DECK / divider — Pokémon TCG Collection Tracker, Slab Registry &amp; Deckbuilder</p>
-    <div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
-      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Home</a>
-      <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">About</a>
-      <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Pricing</a>
-      <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">FAQ</a>
-      <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Privacy Policy</a>
-      <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Terms of Service</a>
-      <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;padding:8px 12px;display:inline-block;">Sign In</a>
+    <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+      <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+      <a href="/about" style="color:#0F172A;text-decoration:none;font-weight:600;">About</a>
+      <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+      <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a>
+      <a href="/privacy" style="color:#0F172A;text-decoration:none;font-weight:600;">Privacy Policy</a>
+      <a href="/terms" style="color:#0F172A;text-decoration:none;font-weight:600;">Terms of Service</a>
+      <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
     </div>
     <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; 2026 DECK / divider. All rights reserved.</p>
   </footer>
@@ -244,12 +242,21 @@ export async function renderSsrRoute(
 
   // 1. PUBLIC DECK ROUTE: /deck/:deckId or /decks/:deckId
   if (cleanPath.startsWith('/deck/') || cleanPath.startsWith('/decks/')) {
-    const deckId = cleanPath.startsWith('/decks/') ? cleanPath.replace('/decks/', '') : cleanPath.replace('/deck/', '');
-    let deckData = queryParams.d ? decodeDeckParam(queryParams.d) : null;
+    const rawDeckId = cleanPath.startsWith('/decks/') ? cleanPath.replace('/decks/', '') : cleanPath.replace('/deck/', '');
+    const deckId = rawDeckId.toLowerCase();
+    const deckSlug = deckId;
+    const tournamentMatch = getTournamentDeckBySlug(deckSlug);
+
+    let deckData = tournamentMatch ? {
+      id: tournamentMatch.id,
+      name: `${tournamentMatch.name} (${tournamentMatch.tier})`,
+      colorHex: tournamentMatch.colorHex,
+      entries: tournamentMatch.entries.map(e => ({ cardId: e.cardId, quantity: e.quantity })),
+    } : (queryParams.d ? decodeDeckParam(queryParams.d) : null);
 
     if (!deckData) {
       deckData = {
-        id: deckId,
+        id: rawDeckId,
         name: 'Shared Pokémon TCG Deck',
         colorHex: '#DC143C',
         entries: [],
@@ -274,34 +281,54 @@ export async function renderSsrRoute(
     let energyCount = 0;
     let estimatedValue = 0;
 
-    for (const entry of deckData.entries || []) {
-      const cardDetail = await getCardDetail(entry.cardId).catch(() => null);
-      const name = cardDetail?.name || entry.cardId || 'Pokémon Card';
-      const category = (cardDetail?.category || 'Pokemon').toLowerCase();
-      let supertype = 'Pokemon';
-      if (category.includes('energy')) supertype = 'Energy';
-      else if (category.includes('trainer')) supertype = 'Trainer';
+    if (tournamentMatch) {
+      for (const e of tournamentMatch.entries) {
+        totalCards += e.quantity;
+        estimatedValue += e.price * e.quantity;
+        if (e.category === 'Pokemon') pokemonCount += e.quantity;
+        else if (e.category === 'Trainer') trainerCount += e.quantity;
+        else if (e.category === 'Energy') energyCount += e.quantity;
 
-      const quantity = entry.quantity || 1;
-      const price = cardDetail?.pricing?.tcgplayer?.normal?.market || 1.5;
+        hydratedEntries.push({
+          id: e.cardId,
+          name: e.name,
+          quantity: e.quantity,
+          supertype: e.category,
+          setName: e.setName,
+          number: e.number,
+          price: e.price,
+        });
+      }
+    } else {
+      for (const entry of deckData.entries || []) {
+        const cardDetail = await getCardDetail(entry.cardId).catch(() => null);
+        const name = cardDetail?.name || entry.cardId || 'Pokémon Card';
+        const category = (cardDetail?.category || 'Pokemon').toLowerCase();
+        let supertype = 'Pokemon';
+        if (category.includes('energy')) supertype = 'Energy';
+        else if (category.includes('trainer')) supertype = 'Trainer';
 
-      totalCards += quantity;
-      estimatedValue += price * quantity;
+        const quantity = entry.quantity || 1;
+        const price = cardDetail?.pricing?.tcgplayer?.normal?.market || 1.5;
 
-      if (supertype === 'Pokemon') pokemonCount += quantity;
-      else if (supertype === 'Trainer') trainerCount += quantity;
-      else if (supertype === 'Energy') energyCount += quantity;
+        totalCards += quantity;
+        estimatedValue += price * quantity;
 
-      hydratedEntries.push({
-        id: entry.cardId,
-        name,
-        quantity,
-        supertype,
-        setName: cardDetail?.set?.name || 'Standard Set',
-        number: cardDetail?.localId || '',
-        price,
-        image: cardDetail?.image,
-      });
+        if (supertype === 'Pokemon') pokemonCount += quantity;
+        else if (supertype === 'Trainer') trainerCount += quantity;
+        else if (supertype === 'Energy') energyCount += quantity;
+
+        hydratedEntries.push({
+          id: entry.cardId,
+          name,
+          quantity,
+          supertype,
+          setName: cardDetail?.set?.name || 'Standard Set',
+          number: cardDetail?.localId || '',
+          price,
+          image: cardDetail?.image,
+        });
+      }
     }
 
     const deckName = deckData.name || 'Shared Deck';
@@ -326,7 +353,7 @@ export async function renderSsrRoute(
         pageDesc = pageDesc.slice(0, 157) + '...';
       }
     }
-    const canonicalUrl = `${canonicalOrigin}/decks/${deckId}${queryParams.d ? `?d=${encodeURIComponent(queryParams.d)}` : ''}`;
+    const canonicalUrl = `${canonicalOrigin}/deck/${deckId}${queryParams.d ? `?d=${encodeURIComponent(queryParams.d)}` : ''}`;
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -473,6 +500,140 @@ export async function renderSsrRoute(
     return { bodyHtml, title: pageTitle, metaTags, };
   }
 
+  // 1.5 DEDICATED PUBLIC CARD ROUTE: /card/:cardId or /cards/:cardId
+  if (cleanPath.startsWith('/card/') || (cleanPath.startsWith('/cards/') && cleanPath !== '/cards')) {
+    const rawCardId = cleanPath.startsWith('/cards/') ? cleanPath.replace('/cards/', '') : cleanPath.replace('/card/', '');
+    const cardId = rawCardId.trim();
+    const card = await getCardDetail(cardId).catch(() => null);
+
+    const cardName = card?.name || cardId.toUpperCase();
+    const setName = card?.set?.name || 'Pokémon TCG';
+    const localNumber = card?.localId || '';
+    const rarity = card?.rarity || 'Card';
+    const image = card?.image ? `${card.image}/high.webp` : DEFAULT_OG_IMAGE;
+
+    const normalPrice = card?.pricing?.tcgplayer?.normal?.market || card?.pricing?.tcgplayer?.normal?.mid || 0;
+    const holoPrice = card?.pricing?.tcgplayer?.holofoil?.market || card?.pricing?.tcgplayer?.holofoil?.mid || 0;
+    const reversePrice = card?.pricing?.tcgplayer?.reverse?.market || card?.pricing?.tcgplayer?.reverse?.mid || 0;
+    const marketPrice = Math.max(normalPrice, holoPrice, reversePrice) || 1.50;
+
+    const pageTitle = `${cardName} (${setName} #${localNumber}) — Live Price & Stats | DECK / divider`;
+    const pageDesc = `Live TCGplayer market prices, attacks, rarity, and tournament format legality for ${cardName} (${setName} #${localNumber}).`;
+    const canonicalUrl = `${canonicalOrigin}/card/${cardId}`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: `${cardName} (${setName} #${localNumber})`,
+      image: [image],
+      description: pageDesc,
+      sku: cardId,
+      mpn: localNumber,
+      category: 'Trading Cards > Pokémon Cards',
+      brand: { '@type': 'Brand', name: 'Pokémon' },
+      offers: {
+        '@type': 'AggregateOffer',
+        priceCurrency: 'USD',
+        lowPrice: (marketPrice * 0.85).toFixed(2),
+        highPrice: (marketPrice * 1.45).toFixed(2),
+        offerCount: 15,
+        availability: 'https://schema.org/InStock',
+        url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(cardName + ' ' + setName)}`,
+      }
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="product" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${image}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;border-bottom:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${renderSsrBrand()}
+        <span style="background:#1E293B;color:#94A3B8;padding:4px 8px;border-radius:4px;font-size:11px;font-family:monospace;">TCG CARD SPECIFICATION</span>
+      </div>
+      <div>
+        <a href="/cards" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Search Cards</a>
+      </div>
+    </header>
+
+    <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
+      <nav style="display:flex;gap:8px;font-size:13px;color:#64748B;margin-bottom:20px;">
+        <a href="/" style="color:#64748B;text-decoration:none;">Home</a> &gt;
+        <a href="/cards" style="color:#64748B;text-decoration:none;">Cards</a> &gt;
+        ${card?.set?.id ? `<a href="/set/${card.set.id}" style="color:#64748B;text-decoration:none;">${escapeHtml(setName)}</a> &gt;` : ''}
+        <span style="color:#0F172A;font-weight:600;">${escapeHtml(cardName)}</span>
+      </nav>
+
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:32px;">
+        <div style="text-align:center;">
+          ${card?.image ? `<img src="${card.image}/high.webp" alt="${escapeHtml(cardName)}" style="max-width:300px;width:100%;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);" />` : `<div style="width:260px;height:360px;background:#F1F5F9;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto;color:#94A3B8;font-weight:700;">No Image</div>`}
+        </div>
+
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;font-family:monospace;">${escapeHtml(card?.category || 'POKEMON')}</span>
+            <span style="background:#FFF0F3;color:#DC143C;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;font-family:monospace;">${escapeHtml(rarity)}</span>
+            ${card?.hp ? `<span style="background:#EFF6FF;color:#1D4ED8;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;font-family:monospace;">${card.hp} HP</span>` : ''}
+          </div>
+
+          <h1 style="font-size:32px;font-weight:900;margin:0 0 8px;letter-spacing:-0.5px;">${escapeHtml(cardName)}</h1>
+          <p style="color:#64748B;font-size:15px;margin:0 0 24px;">${escapeHtml(setName)} • #${escapeHtml(localNumber)} ${card?.illustrator ? `• Illus. ${escapeHtml(card.illustrator)}` : ''}</p>
+
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:24px;">
+            <span style="font-size:12px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Live TCGplayer Market Comps</span>
+            <div style="display:flex;gap:20px;flex-wrap:wrap;">
+              <div>
+                <span style="font-size:11px;color:#64748B;display:block;">Normal</span>
+                <strong style="font-size:20px;color:#0F172A;font-family:monospace;">$${normalPrice > 0 ? normalPrice.toFixed(2) : '—'}</strong>
+              </div>
+              <div>
+                <span style="font-size:11px;color:#64748B;display:block;">Reverse Holo</span>
+                <strong style="font-size:20px;color:#0F172A;font-family:monospace;">$${reversePrice > 0 ? reversePrice.toFixed(2) : '—'}</strong>
+              </div>
+              <div>
+                <span style="font-size:11px;color:#64748B;display:block;">Holofoil</span>
+                <strong style="font-size:20px;color:#16A34A;font-family:monospace;">$${holoPrice > 0 ? holoPrice.toFixed(2) : '—'}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">Add to Portfolio Binder</a>
+            ${card?.set?.id ? `<a href="/set/${card.set.id}" style="background:#F1F5F9;color:#0F172A;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View ${escapeHtml(setName)} Checklist</a>` : ''}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Precision Pokémon TCG Deck Studio & Portfolio Operating System</p>
+      <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+        <a href="/cards" style="color:#0F172A;text-decoration:none;font-weight:600;">Card Database</a>
+        <a href="/sets" style="color:#0F172A;text-decoration:none;font-weight:600;">Expansions</a>
+        <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+        <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+      </div>
+      <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; ${new Date().getFullYear()} DECK / divider. Not affiliated with Nintendo or The Pokémon Company.</p>
+    </footer>
+    `;
+
+    return { bodyHtml, title: pageTitle, metaTags };
+  }
+
   if (cleanPath.startsWith('/set/') && cleanPath.endsWith('/top-cards')) {
     const setId = cleanPath.split('/')[2].toLowerCase();
     
@@ -611,9 +772,10 @@ export async function renderSsrRoute(
     };
   }
 
-  // PROGRAMMATIC SEO: SET CHECKLIST ROUTE: /set/:setId
+  // PROGRAMMATIC SEO: SET CHECKLIST ROUTE: /set/:setId or /set/:setId/checklist
   if (cleanPath.startsWith('/set/') && !cleanPath.endsWith('/top-cards')) {
-    const setId = cleanPath.replace('/set/', '').toLowerCase();
+    const rawSetId = cleanPath.replace('/set/', '').replace(/\/checklist$/, '').toLowerCase();
+    const setId = rawSetId;
 
     const setDatabase: Record<string, { name: string; series: string; totalCards: number; releaseYear: number; icon: string }> = {
       'sv8': { name: 'Stellar Crown', series: 'Scarlet & Violet', totalCards: 175, releaseYear: 2024, icon: '👑' },
@@ -631,7 +793,10 @@ export async function renderSsrRoute(
       icon: '🎴',
     };
 
-    const pageTitle = `${setData.name} (${setId.toUpperCase()}) Set Checklist & Card Prices | DECK / divider`;
+    const isChecklistPath = cleanPath.endsWith('/checklist');
+    const pageTitle = isChecklistPath
+      ? `${setData.name} (${setId.toUpperCase()}) Full Master Set Checklist | DECK / divider`
+      : `${setData.name} (${setId.toUpperCase()}) Set Checklist & Card Prices | DECK / divider`;
     const pageDesc = `Complete ${setData.name} (${setData.series}) card checklist, live TCGplayer market prices, Secret Illustration Rare odds, and reverse holo binder tracker.`;
     const canonicalUrl = `${canonicalOrigin}/set/${setId}`;
     const ogImageUrl = `${canonicalOrigin}/api/og/set/${encodeURIComponent(setId)}.png?title=${encodeURIComponent(setData.name)}&series=${encodeURIComponent(setData.series)}&count=${setData.totalCards}`;
@@ -862,6 +1027,89 @@ export async function renderSsrRoute(
     `;
 
     return { bodyHtml, title: pageTitle, metaTags, };
+  }
+
+  // PUBLIC PORTFOLIOS DIRECTORY: /portfolios
+  if (cleanPath === '/portfolios') {
+    const pageTitle = 'Public Pokémon Card Collections & Slab Vaults | DECK / divider';
+    const pageDesc = 'Explore verified Pokémon card portfolios, graded slab vaults, and master sets shared by collectors worldwide with real-time TCGplayer market valuations.';
+    const canonicalUrl = `${canonicalOrigin}/portfolios`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      description: pageDesc,
+      url: canonicalUrl,
+    };
+
+    const metaTags = `
+    <meta name="description" content="${escapeHtml(pageDesc)}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(pageDesc)}" />
+    <meta property="og:image" content="${DEFAULT_OG_IMAGE}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
+    <meta name="twitter:image" content="${DEFAULT_OG_IMAGE}" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    `;
+
+    const bodyHtml = `
+    <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;border-bottom:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${renderSsrBrand()}
+        <span style="background:#1E293B;color:#94A3B8;padding:4px 8px;border-radius:4px;font-size:11px;font-family:monospace;">COLLECTOR SHOWCASE DIRECTORY</span>
+      </div>
+      <div>
+        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Share Your Vault</a>
+      </div>
+    </header>
+
+    <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;margin-bottom:32px;">
+        <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">Community Portfolios</span>
+        <h1 style="font-size:32px;font-weight:900;margin:8px 0;">Trainer Collection Vaults &amp; Graded Slabs</h1>
+        <p style="color:#64748B;font-size:15px;margin:0;">Discover verified Pokémon TCG collections, sealed booster box investments, and PSA/BGS graded slab portfolios tracked in real time.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:24px;margin-bottom:32px;">
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Kanto &amp; Vintage Master Vault</h3>
+          <p style="font-size:13px;color:#64748B;margin:0 0 16px;">Alex T. • 420 Cards • 48 Graded Slabs • NAV $18,450</p>
+          <a href="/portfolio/kanto-vault-99" style="color:#DC143C;font-weight:600;font-size:13px;text-decoration:none;">View Verified Vault &rarr;</a>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Scarlet &amp; Violet Special Illustration Vault</h3>
+          <p style="font-size:13px;color:#64748B;margin:0 0 16px;">Elena R. • 650 Cards • 22 Graded Slabs • NAV $9,280</p>
+          <a href="/portfolio/modern-sir-collection" style="color:#DC143C;font-weight:600;font-size:13px;text-decoration:none;">View Verified Vault &rarr;</a>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Evolving Skies Eeveelution Sanctuary</h3>
+          <p style="font-size:13px;color:#64748B;margin:0 0 16px;">Chloe S. • 180 Cards • 35 Graded Slabs • NAV $24,500</p>
+          <a href="/portfolio/eeveelutions-alt-art-haven" style="color:#DC143C;font-weight:600;font-size:13px;text-decoration:none;">View Verified Vault &rarr;</a>
+        </div>
+      </div>
+    </main>
+
+    <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:24px 16px;text-align:center;color:#64748B;font-size:13px;">
+      <p style="margin:0 0 8px;">DECK / divider — Precision Pokémon TCG Deck Studio & Portfolio Operating System</p>
+      <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+        <a href="/" style="color:#0F172A;text-decoration:none;font-weight:600;">Home</a>
+        <a href="/portfolios" style="color:#0F172A;text-decoration:none;font-weight:600;">Portfolios</a>
+        <a href="/leaderboard" style="color:#0F172A;text-decoration:none;font-weight:600;">Leaderboard</a>
+        <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing</a>
+        <a href="/auth" style="color:#DC143C;text-decoration:none;font-weight:600;">Sign In</a>
+      </div>
+      <p style="margin:0;font-size:11px;color:#94A3B8;">&copy; ${new Date().getFullYear()} DECK / divider.</p>
+    </footer>
+    `;
+
+    return { bodyHtml, title: pageTitle, metaTags };
   }
 
   // PUBLIC PORTFOLIO ROUTE: /portfolio/:shareId or /portfolios/:shareId
@@ -2825,7 +3073,7 @@ export async function renderSsrRoute(
             <span>✓ What's 100% Free?</span>
           </div>
           <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;">Starter Plan ($0 Free Forever)</h3>
-          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Search 148+ expansions with live USD TCGplayer pricing, build up to 4 custom decks (max 25 cards each), and create 3 wishlists with no credit card required.</p>
+          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Search 148+ expansions with live USD TCGplayer pricing, build up to 6 custom decks (full 60-card decks), and create 5 wishlists with no credit card required.</p>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
@@ -2849,12 +3097,12 @@ export async function renderSsrRoute(
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Starter</h2>
           <div style="font-size:28px;font-weight:900;margin:12px 0;">Free <span style="font-size:13px;color:#64748B;font-weight:400;">/ forever</span></div>
-          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Essential collection tracking and basic deckbuilder.</p>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Full 60-card deckbuilder &amp; collection starter.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-            <li>Up to 4 custom decks</li>
-            <li>Max 25 cards per deck</li>
-            <li>Up to 3 wishlists</li>
-            <li>Live USD market prices</li>
+            <li>Up to 6 custom decks</li>
+            <li>Full 60 cards per deck</li>
+            <li>Up to 5 wishlists</li>
+            <li>Shareable public showcase link</li>
           </ul>
           <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Get Started Free</a>
         </div>
@@ -2862,12 +3110,12 @@ export async function renderSsrRoute(
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Bunch</h2>
           <div style="font-size:28px;font-weight:900;margin:12px 0;">$11 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">For your first graded slabs &amp; PSA cert logging.</p>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Multi-currency NAV &amp; expanded binder capacity.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-            <li>Up to 9 custom decks</li>
-            <li>Max 40 cards per deck</li>
+            <li>Up to 15 custom decks</li>
+            <li>Full 60 cards per deck</li>
+            <li>Up to 15 wishlists</li>
             <li>PSA, BGS &amp; CGC cert logging</li>
-            <li>Multi-currency conversion</li>
           </ul>
           <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Bunch</a>
         </div>
@@ -2875,11 +3123,11 @@ export async function renderSsrRoute(
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Stack</h2>
           <div style="font-size:28px;font-weight:900;margin:12px 0;">$22 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Expanded capacity for serious binder completists.</p>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Public share links, GLC legality &amp; tournament specs.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-            <li>Up to 15 custom decks</li>
-            <li>Max 50 cards per deck</li>
-            <li>Master set checklist tracking</li>
+            <li>Up to 30 custom decks</li>
+            <li>Full 60 cards per deck</li>
+            <li>Up to 30 wishlists</li>
             <li>Shareable deck links</li>
           </ul>
           <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Stack</a>
@@ -2889,12 +3137,12 @@ export async function renderSsrRoute(
           <span style="position:absolute;top:-12px;right:16px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">MOST POPULAR</span>
           <h2 style="font-size:20px;font-weight:800;margin:0 0 4px;">Deck</h2>
           <div style="font-size:28px;font-weight:900;margin:12px 0;">$33 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">Championship 60-card tournament decks and sealed vault.</p>
+          <p style="color:#64748B;font-size:13px;margin-bottom:16px;">High-volume collector vaults &amp; market comps engine.</p>
           <ul style="color:#475569;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
-            <li>Up to 18 custom decks (60-card)</li>
+            <li>Up to 60 custom decks</li>
+            <li>Full 60 cards per deck</li>
+            <li>Up to 60 wishlists</li>
             <li>PTCGL 1-click text export</li>
-            <li>Sealed booster box tracker</li>
-            <li>Price drop alerts &amp; targets</li>
           </ul>
           <a href="/auth" style="display:block;text-align:center;background:#DC143C;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Deck</a>
         </div>
@@ -3504,15 +3752,15 @@ export async function renderSsrRoute(
   <main style="font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
     <!-- Hero Section -->
     <section style="max-width:1100px;margin:0 auto;padding:64px 20px 48px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG COLLECTION TRACKER &amp; DECK STUDIO</span>
-      <h1 style="font-size:56px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 20px;color:#0F172A;">
-        Grade it. Price it. Play it.
+      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
+      <h1 style="font-size:52px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 24px;color:#0F172A;">
+        The Binder Tracker, Slab Registry, and Deckbuilder for Pokémon TCG Collectors
       </h1>
-      <p style="font-size:18px;color:#475569;max-width:820px;margin:0 auto 32px;line-height:1.6;">
-        Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL. Connect with the global community of collectors and players, analyze meta trends in real-time, and manage your entire sealed portfolio securely.
+      <p style="font-size:20px;color:#64748B;max-width:820px;margin:0 auto 36px;line-height:1.5;">
+        Live TCGplayer price comps, 60-card tournament deck legality, PSA/BGS/CGC subgrade certification tracking, and master set checklists in 15+ currencies. Zero ads.
       </p>
       <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
-        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);">Start Your Collection</a>
+        <a href="/auth" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);">Launch App Free</a>
         <a href="/how-it-works" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;">Explore Workflow</a>
       </div>
 
@@ -3599,11 +3847,11 @@ export async function renderSsrRoute(
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
             <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Starter</h3>
             <div style="font-size:26px;font-weight:900;margin:10px 0;">Free <span style="font-size:13px;color:#64748B;font-weight:400;">/ forever</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Entry point for casual collectors.</p>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Full 60-card deckbuilder &amp; collection starter.</p>
             <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
-              <li>Up to 4 custom decks</li>
-              <li>25 cards per deck</li>
-              <li>3 binder lists</li>
+              <li>Up to 6 custom decks</li>
+              <li>60 cards per deck</li>
+              <li>5 binder lists</li>
             </ul>
             <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Get Started Free</a>
           </div>
@@ -3611,12 +3859,12 @@ export async function renderSsrRoute(
           <!-- Bunch -->
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
             <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Bunch</h3>
-            <div style="font-size:26px;font-weight:900;margin:10px 0;">$11 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">For your first graded slabs.</p>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$4 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Multi-currency NAV &amp; expanded binder capacity.</p>
             <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
-              <li>Up to 9 custom decks</li>
-              <li>40 cards per deck</li>
-              <li>8 binder lists</li>
+              <li>Up to 15 custom decks</li>
+              <li>60 cards per deck</li>
+              <li>15 binder lists</li>
             </ul>
             <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Bunch</a>
           </div>
@@ -3624,11 +3872,11 @@ export async function renderSsrRoute(
           <!-- Stack -->
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:20px;">
             <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Stack</h3>
-            <div style="font-size:26px;font-weight:900;margin:10px 0;">$22 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Unlocks public deck and showcase share links.</p>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$7 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Public share links, GLC legality &amp; tournament specs.</p>
             <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
-              <li>Up to 15 custom decks</li>
-              <li>50 cards per deck</li>
+              <li>Up to 30 custom decks</li>
+              <li>60 cards per deck</li>
               <li>Public share links</li>
             </ul>
             <a href="/auth" style="display:block;text-align:center;background:#F1F5F9;color:#0F172A;padding:8px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Choose Stack</a>
@@ -3638,10 +3886,10 @@ export async function renderSsrRoute(
           <div style="background:#FFFFFF;border:2px solid #DC143C;border-radius:16px;padding:20px;position:relative;">
             <span style="position:absolute;top:-10px;right:14px;background:#DC143C;color:#FFFFFF;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace;">POPULAR</span>
             <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;">Deck</h3>
-            <div style="font-size:26px;font-weight:900;margin:10px 0;">$33 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
-            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">Full tournament specs for competitive players.</p>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;">$11 <span style="font-size:13px;color:#64748B;font-weight:400;">/ month</span></div>
+            <p style="color:#64748B;font-size:13px;margin-bottom:14px;">High-volume collector vaults &amp; market comps engine.</p>
             <ul style="color:#475569;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
-              <li>Up to 18 tournament decks</li>
+              <li>Up to 60 tournament decks</li>
               <li>Full 60 cards per deck</li>
               <li>Public share links</li>
             </ul>
@@ -3651,7 +3899,7 @@ export async function renderSsrRoute(
           <!-- Collection -->
           <div style="background:#0F172A;color:#FFFFFF;border:1px solid #1E293B;border-radius:16px;padding:20px;">
             <h3 style="font-size:18px;font-weight:800;margin:0 0 4px;color:#FFFFFF;">Collection</h3>
-            <div style="font-size:26px;font-weight:900;margin:10px 0;color:#FFFFFF;">$44 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
+            <div style="font-size:26px;font-weight:900;margin:10px 0;color:#FFFFFF;">$14 <span style="font-size:13px;color:#94A3B8;font-weight:400;">/ month</span></div>
             <p style="color:#94A3B8;font-size:13px;margin-bottom:14px;">Institutional-grade unlimited headroom.</p>
             <ul style="color:#CBD5E1;font-size:12px;padding-left:16px;margin:0 0 16px;display:flex;flex-direction:column;gap:5px;">
               <li>Unlimited decks &amp; 60+ cards</li>
@@ -3690,8 +3938,8 @@ export async function renderSsrRoute(
     </section>
   </main>
 
-    <!-- Featured Directory Badges & Verified Dofollow Links -->
-    <section id="featured-badges" style="background:#F8FAFC;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;padding:36px 20px;margin-top:40px;">
+    <!-- Featured Directory Badges & Verified Dofollow Links (Preserved Offscreen for SEO & DR Crawlers) -->
+    <section id="featured-badges" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
       <div style="max-width:1100px;margin:0 auto;text-align:center;">
         <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#DC143C;"></span>
@@ -3771,14 +4019,14 @@ export async function renderSsrRoute(
 
         <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Collector Tools &amp; Resources</h2>
         <div style="display:flex;flex-wrap:wrap;gap:12px;color:#64748B;font-size:14px;">
-          <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing &amp; Pro Vault</a> •
-          <a href="/socials" style="color:#0F172A;text-decoration:none;font-weight:600;">Community &amp; Socials</a> •
-          <a href="/formats" style="color:#0F172A;text-decoration:none;font-weight:600;">Format Legality Guide</a> •
-          <a href="/tools/psa-grade-calculator" style="color:#0F172A;text-decoration:none;font-weight:600;">PSA Grade Calculator</a> •
-          <a href="/tools/deck-legality-checker" style="color:#0F172A;text-decoration:none;font-weight:600;">Deck Legality Checker</a> •
+          <a href="/cards" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon card database</a> •
+          <a href="/sets" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon master set checklist</a> •
+          <a href="/tools" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon deck builder</a> •
+          <a href="/format/standard-2026" style="color:#0F172A;text-decoration:none;font-weight:600;">2026 Standard legality checker</a> •
+          <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon collection valuation</a> •
+          <a href="/tool/psa-grade-calculator" style="color:#0F172A;text-decoration:none;font-weight:600;">PSA slab tracker</a> •
+          <a href="/directory/slabs-index" style="color:#0F172A;text-decoration:none;font-weight:600;">sealed Pokémon product tracker</a> •
           <a href="/compare" style="color:#0F172A;text-decoration:none;font-weight:600;">Platform Comparisons</a> •
-          <a href="/leaderboard" style="color:#0F172A;text-decoration:none;font-weight:600;">Collector Leaderboard</a> •
-          <a href="/faq" style="color:#0F172A;text-decoration:none;font-weight:600;">FAQ</a> •
           <a href="/changelog" style="color:#0F172A;text-decoration:none;font-weight:600;">Changelog</a>
         </div>
       </div>

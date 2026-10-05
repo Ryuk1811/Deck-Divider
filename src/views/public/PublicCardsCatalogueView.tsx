@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useTransition } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   Search as SearchIcon,
   Filter,
@@ -17,6 +17,7 @@ import {
   CardRarity,
   CardSet,
 } from '../../types';
+import { CATALOG_STATS } from '../../data/catalogStatsCanon';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
@@ -236,7 +237,7 @@ export const PublicCardsCatalogueView: React.FC = () => {
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Pokémon TCG Cards Database & Catalogue — Search All Cards"
+        title="Pokémon Card Database — Search & Filter Every Card | DECK / divider"
         description="Comprehensive public catalogue of Pokémon Trading Card Game cards. Search and filter by name, energy type, rarity, set, HP, and attacks with high-resolution visual scans."
         canonicalPath="/cards"
         keywords={[
@@ -288,14 +289,14 @@ export const PublicCardsCatalogueView: React.FC = () => {
                 </h1>
               </div>
               <p className="font-mono text-xs text-[#64748B]">
-                Public card search engine across 148+ expansions. Filter by category, stage, rarity, and tournament legalities.
+                Public card search engine across {CATALOG_STATS.totalSetsAndProducts} catalogued sets &amp; series ({CATALOG_STATS.mainlineMasterExpansionsLabel}). Search all {CATALOG_STATS.totalCardsIndexed} card records or filter below.
               </p>
             </div>
 
             <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
-              <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs">
+              <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs" title={CATALOG_STATS.publicSpotlightExplanation}>
                 <Sparkles className="w-4 h-4 text-[#DC143C]" />
-                <span>{filteredCards.length} Cards Indexed</span>
+                <span>{filteredCards.length} Spotlight Cards Shown (of {CATALOG_STATS.totalCardsIndexed} Records)</span>
               </div>
             </div>
           </div>
@@ -568,12 +569,22 @@ export const PublicCardsCatalogueView: React.FC = () => {
             ) : displayedCards.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 p-2.5 sm:p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
                 {displayedCards.map((card) => (
-                  <HolographicCard
+                  <Link
                     key={card.id}
-                    card={card}
-                    showPrice={false}
-                    onClick={() => setSelectedDetailCard(card)}
-                  />
+                    to={`/card/${card.id}`}
+                    onClick={(e) => {
+                      if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                        e.preventDefault();
+                        setSelectedDetailCard(card);
+                      }
+                    }}
+                    className="block transition-transform duration-200 hover:-translate-y-1"
+                  >
+                    <HolographicCard
+                      card={card}
+                      showPrice={false}
+                    />
+                  </Link>
                 ))}
               </div>
             ) : (

@@ -4,14 +4,19 @@ export interface GovernedSubscription {
   id: string;
   tierName: AccountTier;
   effectiveTier: AccountTier;
-  billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
+  billingStatus: 'active' | 'expiring_soon' | 'expired' | 'past_due' | 'canceled' | 'unpaid';
   paymentType: 'one_time' | 'recurring';
   provider: 'paypal' | 'system';
+  billingCycle?: 'monthly' | 'yearly' | 'lifetime';
   currentPeriodStart?: string;
   currentPeriodEnd?: string;
   daysRemaining: number;
   isExpired: boolean;
+  isExpiringSoon: boolean;
+  isLifetime: boolean;
   isSuperUser: boolean;
+  lifetimeOrderNumber?: number;
+  orderId?: string;
   paypalSubscriptionId?: string;
   updatedAt: string;
   governorNote?: string;
@@ -39,21 +44,29 @@ export function evaluateSubscriptionGovernor(
   const subId = sub?.id || 'guest';
   const rawTier = (sub?.tierName || 'Starter') as AccountTier;
   const isSuper = isSuperUser || Boolean(sub?.isSuperUser);
+  const isLifetime = Boolean(sub?.isLifetime);
 
-  // 1. Super User override: permanent Collection tier access
-  if (isSuper) {
+  // 1. Super User / Founder Lifetime override: permanent Collection tier access
+  if (isSuper || isLifetime) {
     return {
       id: subId,
       tierName: 'Collection',
       effectiveTier: 'Collection',
       billingStatus: 'active',
-      paymentType: 'recurring',
-      provider: 'system',
+      paymentType: 'one_time',
+      provider: sub?.provider || 'system',
+      billingCycle: 'lifetime',
       daysRemaining: Infinity,
       isExpired: false,
-      isSuperUser: true,
+      isExpiringSoon: false,
+      isLifetime: true,
+      isSuperUser: isSuper,
+      lifetimeOrderNumber: sub?.lifetimeOrderNumber,
+      orderId: sub?.orderId,
       updatedAt: sub?.updatedAt || new Date().toISOString(),
-      governorNote: 'Governed as Super User (Unlimited Lifetime Access)',
+      governorNote: isLifetime
+        ? `Founder Lifetime Pass Member #${sub?.lifetimeOrderNumber || 1} (Permanent Access)`
+        : 'Governed as Super User (Unlimited Lifetime Access)',
     };
   }
 
@@ -68,6 +81,8 @@ export function evaluateSubscriptionGovernor(
       provider: 'system',
       daysRemaining: Infinity,
       isExpired: false,
+      isExpiringSoon: false,
+      isLifetime: false,
       isSuperUser: false,
       updatedAt: sub?.updatedAt || new Date().toISOString(),
       governorNote: 'Governed under Standard Free Starter Tier',
@@ -75,9 +90,53 @@ export function evaluateSubscriptionGovernor(
   }
 
   const provider = (sub.provider as 'paypal' | 'system') || 'paypal';
-  const paymentType = (sub.paymentType as 'one_time' | 'recurring') || 'recurring';
+  const paymentType = (sub.paymentType as 'one_time' | 'recurring') || 'one_time';
+  const billingCycle = sub.billingCycle || 'monthly';
 
-  // 3. PayPal / Recurring Subscriptions
+  // 3. One-Time Pass / Governed Expiration Calculation
+  if (sub.currentPeriodEnd) {
+    const now = Date.now();
+    const end = new Date(sub.currentPeriodEnd).getTime();
+    const diff = end - now;
+    const daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    const isExpired = diff <= 0;
+    const isExpiringSoon = !isExpired && daysRemaining <= 7;
+    const effectiveTier = isExpired ? 'Starter' : rawTier;
+
+    let billingStatus: GovernedSubscription['billingStatus'] = 'active';
+    if (isExpired) {
+      billingStatus = 'expired';
+    } else if (isExpiringSoon) {
+      billingStatus = 'expiring_soon';
+    }
+
+    const governorNote = isExpired
+      ? `${rawTier} pass expired. Reverted to Free Starter tier. Renew anytime to restore higher limits.`
+      : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining on ${rawTier} pass (${billingCycle === 'yearly' ? 'Yearly' : 'Monthly'}).`;
+
+    return {
+      id: subId,
+      tierName: rawTier,
+      effectiveTier,
+      billingStatus,
+      paymentType,
+      provider,
+      billingCycle,
+      currentPeriodStart: sub.currentPeriodStart,
+      currentPeriodEnd: sub.currentPeriodEnd,
+      daysRemaining,
+      isExpired,
+      isExpiringSoon,
+      isLifetime: false,
+      isSuperUser: false,
+      orderId: sub.orderId,
+      paypalSubscriptionId: sub.paypalSubscriptionId,
+      updatedAt: sub?.updatedAt || new Date().toISOString(),
+      governorNote,
+    };
+  }
+
+  // Fallback for legacy subscriptions without periodEnd
   const isCanceledOrPastDue = sub.billingStatus === 'canceled' || sub.billingStatus === 'past_due' || sub.billingStatus === 'unpaid';
   const effectiveTier = isCanceledOrPastDue ? 'Starter' : rawTier;
 
@@ -88,13 +147,16 @@ export function evaluateSubscriptionGovernor(
     billingStatus: isCanceledOrPastDue ? (sub.billingStatus as any) : 'active',
     paymentType,
     provider,
+    billingCycle,
     paypalSubscriptionId: sub.paypalSubscriptionId,
     daysRemaining: Infinity,
     isExpired: isCanceledOrPastDue,
+    isExpiringSoon: false,
+    isLifetime: false,
     isSuperUser: false,
     updatedAt: sub?.updatedAt || new Date().toISOString(),
     governorNote: isCanceledOrPastDue
       ? `Recurring subscription ${sub.billingStatus}. Reverted to Starter tier.`
-      : `Active recurring PayPal subscription (${rawTier} Plan)`,
+      : `Active ${rawTier} Plan`,
   };
 }

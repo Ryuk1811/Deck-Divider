@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Zap, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Zap, Lock, AlertCircle, Loader2, Check, ShieldCheck, Sparkles, Calendar } from 'lucide-react';
 import { AccountTier, TIER_LIMITS } from '../../types';
 
 declare global {
@@ -8,38 +8,43 @@ declare global {
   }
 }
 
-interface PaymentSubscriptionModalProps {
+interface PayPalSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   tierName: AccountTier;
-  planId: string;
+  initialCycle?: 'monthly' | 'yearly';
   clientId: string;
-  onApproveSubscription: (subscriptionId: string, tier: AccountTier, provider?: 'paypal') => Promise<void>;
+  onApproveSubscription: (
+    orderId: string,
+    tier: AccountTier,
+    cycle?: 'monthly' | 'yearly',
+    provider?: 'paypal'
+  ) => Promise<void>;
   getUserToken?: () => Promise<string | undefined>;
 }
 
-// Singleton script loader to ensure PayPal SDK is only loaded once and shared across components
-let paypalScriptPromise: Promise<void> | null = null;
+// Singleton script loader using intent=capture for standard one-time PayPal orders
+let paypalOrderScriptPromise: Promise<void> | null = null;
 
-function loadPayPalSdk(clientId: string): Promise<void> {
+function loadPayPalOrderSdk(clientId: string): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve();
 
   if (window.paypal && typeof window.paypal.Buttons === 'function') {
     return Promise.resolve();
   }
 
-  if (paypalScriptPromise) {
-    return paypalScriptPromise;
+  if (paypalOrderScriptPromise) {
+    return paypalOrderScriptPromise;
   }
 
-  paypalScriptPromise = new Promise<void>((resolve, reject) => {
+  paypalOrderScriptPromise = new Promise<void>((resolve, reject) => {
     const existingScript = document.querySelector<HTMLScriptElement>('script[src*="paypal.com/sdk/js"]');
     if (existingScript) {
       if (window.paypal && typeof window.paypal.Buttons === 'function') {
         resolve();
       } else {
         existingScript.addEventListener('load', () => resolve());
-        existingScript.addEventListener('error', () => reject(new Error('Failed to load existing script')));
+        existingScript.addEventListener('error', () => reject(new Error('Failed to load PayPal script')));
       }
       return;
     }
@@ -47,7 +52,7 @@ function loadPayPalSdk(clientId: string): Promise<void> {
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
       clientId
-    )}&vault=true&intent=subscription`;
+    )}&intent=capture&currency=USD`;
     script.async = true;
 
     script.onload = () => {
@@ -56,28 +61,29 @@ function loadPayPalSdk(clientId: string): Promise<void> {
       } else {
         reject(new Error('PayPal SDK loaded but window.paypal is not defined'));
       }
-      paypalScriptPromise = null;
+      paypalOrderScriptPromise = null;
     };
 
     script.onerror = () => {
-      paypalScriptPromise = null;
+      paypalOrderScriptPromise = null;
       reject(new Error('Failed to load PayPal SDK'));
     };
 
     document.body.appendChild(script);
   });
 
-  return paypalScriptPromise;
+  return paypalOrderScriptPromise;
 }
 
-export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = ({
+export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = ({
   isOpen,
   onClose,
   tierName,
-  planId,
+  initialCycle = 'monthly',
   clientId,
   onApproveSubscription,
 }) => {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>(initialCycle);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSdkLoading, setIsSdkLoading] = useState(true);
@@ -88,11 +94,20 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
   const effectiveClientId =
     clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || '';
 
+  const tierLimit = TIER_LIMITS[tierName] || TIER_LIMITS.Bunch;
+  const isYearly = billingCycle === 'yearly';
+  const price = isYearly ? tierLimit.priceYearly : tierLimit.priceMonthly;
+  const durationText = isYearly ? '365 Days Unlocked' : '30 Days Unlocked';
+
   const handleClose = () => {
     setErrorMessage(null);
     setIsProcessing(false);
     onClose();
   };
+
+  useEffect(() => {
+    setBillingCycle(initialCycle);
+  }, [initialCycle, isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -113,7 +128,7 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
       return;
     }
 
-    if (!effectiveClientId || !planId) {
+    if (!effectiveClientId) {
       setIsSdkLoading(false);
       setErrorMessage('PayPal configuration is missing. Please contact administrator.');
       return;
@@ -123,16 +138,25 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
     setIsSdkLoading(true);
     setErrorMessage(null);
 
-    loadPayPalSdk(effectiveClientId)
+    // Clean up previous button if cycle or tier changed
+    if (paypalButtonInstanceRef.current && typeof paypalButtonInstanceRef.current.close === 'function') {
+      try {
+        paypalButtonInstanceRef.current.close();
+      } catch {
+        // ignore
+      }
+      paypalButtonInstanceRef.current = null;
+    }
+    if (buttonContainerRef.current) {
+      buttonContainerRef.current.innerHTML = '';
+    }
+
+    loadPayPalOrderSdk(effectiveClientId)
       .then(() => {
         if (!isSubscribed) return;
 
-        if (!window.paypal || !window.paypal.Buttons) {
-          throw new Error('PayPal SDK loaded without Buttons component');
-        }
-
-        if (buttonContainerRef.current) {
-          buttonContainerRef.current.innerHTML = '';
+        if (!window.paypal || typeof window.paypal.Buttons !== 'function') {
+          throw new Error('PayPal Buttons component not available in SDK.');
         }
 
         const buttons = window.paypal.Buttons({
@@ -140,22 +164,44 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
             shape: 'rect',
             color: 'gold',
             layout: 'vertical',
-            label: 'subscribe',
+            label: 'pay',
           },
-          createSubscription: function (_data: any, actions: any) {
-            return actions.subscription.create({
-              plan_id: planId,
+          createOrder: function (_data: any, actions: any) {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: price.toFixed(2),
+                    currency_code: 'USD',
+                  },
+                  description: `DECK / divider ${tierName} Tier Pass — ${durationText} ($${price} USD One-Time)`,
+                },
+              ],
+              application_context: {
+                shipping_preference: 'NO_SHIPPING',
+              },
             });
           },
-          onApprove: async function (data: any) {
+          onApprove: async function (data: any, actions: any) {
             try {
               setIsProcessing(true);
               setErrorMessage(null);
-              await onApproveSubscription(data.subscriptionID, tierName, 'paypal');
+
+              let orderId = data.orderID;
+              if (actions && actions.order && typeof actions.order.capture === 'function') {
+                try {
+                  const captureDetails = await actions.order.capture();
+                  orderId = captureDetails?.id || orderId;
+                } catch (captureErr) {
+                  console.warn('PayPal capture notice (orderId preserved):', captureErr);
+                }
+              }
+
+              await onApproveSubscription(orderId || `ORDER_${Date.now()}`, tierName, billingCycle, 'paypal');
               handleClose();
             } catch (err: any) {
               setErrorMessage(
-                err?.message || 'Failed to activate your subscription. Please contact support.'
+                err?.message || 'Failed to activate your plan. Please contact support.'
               );
             } finally {
               setIsProcessing(false);
@@ -166,7 +212,7 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
             setErrorMessage('An error occurred during payment processing. Please try again.');
           },
           onCancel: function () {
-            // User cancelled modal
+            // User cancelled
           },
         });
 
@@ -184,7 +230,7 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
         console.error('PayPal SDK loading error:', err);
         if (isSubscribed) {
           setIsSdkLoading(false);
-          setErrorMessage('Unable to initialize PayPal payment component. Please check your connection.');
+          setErrorMessage('Unable to initialize PayPal checkout. Please check your connection.');
         }
       });
 
@@ -198,106 +244,171 @@ export const PayPalSubscriptionModal: React.FC<PaymentSubscriptionModalProps> = 
         }
         paypalButtonInstanceRef.current = null;
       }
-      if (buttonContainerRef.current) {
-        buttonContainerRef.current.innerHTML = '';
-      }
     };
-  }, [isOpen, planId, effectiveClientId, tierName]);
+  }, [isOpen, tierName, billingCycle, price, effectiveClientId]);
 
   if (!isOpen) return null;
 
-  const tierInfo = TIER_LIMITS[tierName];
-
   return (
-    <div id="paypal-subscription-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xl transition-all duration-300 animate-fade-in">
-      <div className="w-full max-w-md bg-white border border-[#E2E8F0] p-6 shadow-2xl rounded-2xl space-y-5 relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-fade-in font-mono">
+      <div className="w-full max-w-lg bg-white border border-[#E2E8F0] shadow-2xl rounded-2xl overflow-hidden relative animate-scale-up space-y-5 p-6 sm:p-7 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b border-[#E2E8F0] pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/30 text-[#DC143C]">
+            <div className="p-2.5 rounded-xl bg-[#FFF0F3] border border-[#DC143C]/30 text-[#DC143C]">
               <Zap className="w-6 h-6 text-[#DC143C]" />
             </div>
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#DC143C] uppercase tracking-wider block">
-                Subscription Upgrade
-              </span>
-              <h3 className="font-heading font-bold text-xl text-[#0F172A]">
-                Subscribe to {tierName}
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[10px] font-bold text-[#DC143C] uppercase tracking-wider block">
+                  One-Time Pass • No Auto-Renewal
+                </span>
+              </div>
+              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-[#0F172A]">
+                {tierName} Plan Pass
               </h3>
             </div>
           </div>
           <button
-            id="close-paypal-subscription-modal-btn"
             type="button"
             onClick={handleClose}
-            className="p-1.5 rounded-md bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] cursor-pointer"
+            className="p-1.5 rounded-md bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#FFF0F3] cursor-pointer transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Pricing Summary */}
-        <div className="p-4 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-between">
-          <div>
-            <div className="font-heading font-bold text-sm text-[#0F172A]">
-              {tierName} Tier
+        {/* Monthly vs Yearly Billing Cycle Switcher */}
+        <div className="bg-[#F8FAFC] p-1.5 rounded-xl border border-[#CBD5E1] grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setBillingCycle('monthly')}
+            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+              billingCycle === 'monthly'
+                ? 'bg-white text-[#DC143C] shadow-xs border-2 border-[#DC143C]'
+                : 'bg-white/60 text-[#64748B] hover:text-[#0F172A] border border-[#E2E8F0]'
+            }`}
+          >
+            <span className="font-mono text-[10px] uppercase text-[#64748B]">30-Day Monthly Pass</span>
+            <span className="font-num text-sm font-bold text-[#0F172A]">
+              ${tierLimit.priceMonthly} / month
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setBillingCycle('yearly')}
+            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center relative cursor-pointer ${
+              billingCycle === 'yearly'
+                ? 'bg-white text-[#DC143C] shadow-xs border-2 border-[#DC143C]'
+                : 'bg-white/60 text-[#64748B] hover:text-[#0F172A] border border-[#E2E8F0]'
+            }`}
+          >
+            <div className="absolute -top-2.5 right-2 bg-emerald-600 text-white font-mono text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase shadow-xs">
+              Save {tierLimit.yearlyDiscountPercent}%
             </div>
-            <div className="font-mono text-xs text-[#64748B]">
-              {tierInfo?.tagline || 'Monthly access'}
+            <span className="font-mono text-[10px] uppercase text-[#64748B] flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-[#DC143C]" />
+              365-Day Annual Pass
+            </span>
+            <span className="font-num text-sm font-bold text-[#0F172A]">
+              ${tierLimit.priceYearly} / year
+            </span>
+          </button>
+        </div>
+
+        {/* Pricing Summary Card */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-[#F8FAFC] via-[#FFF8F9] to-[#F8FAFC] border border-[#E2E8F0] space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-mono font-bold text-[#DC143C] uppercase tracking-wider block">
+                Total Charge ({billingCycle === 'yearly' ? '365 Days' : '30 Days'})
+              </span>
+              <span className="text-xs font-mono text-[#475569] flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-[#DC143C]" />
+                {durationText} of {tierName} Features
+              </span>
+            </div>
+            <div className="text-right font-num">
+              <div className="font-extrabold text-3xl text-[#0F172A]">
+                ${price}.00
+              </div>
+              <div className="text-[11px] text-emerald-700 font-mono font-bold">
+                USD • Flexible Pass (Opt out anytime)
+              </div>
             </div>
           </div>
-          <div className="text-right font-num">
-            <div className="font-bold text-2xl text-[#0F172A]">
-              ${tierInfo?.priceMonthly}/mo
-            </div>
-            <div className="text-[11px] text-[#64748B] font-mono">
-              Renews monthly • Cancel anytime
-            </div>
+
+          <div className="pt-2 border-t border-[#E2E8F0] text-[11px] font-mono text-[#64748B] leading-relaxed">
+            Flexible pay-per-period access: You receive full access for your purchased duration with zero continuous forced mandates or locked recurring contracts. Renew or change plans whenever you choose.
           </div>
         </div>
 
+        {/* Feature Highlights */}
+        <div className="grid grid-cols-2 gap-2 text-xs font-mono text-[#334155] bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]">
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 text-[#DC143C] shrink-0" />
+            <span>{tierLimit.maxDecks === Infinity ? 'Unlimited' : tierLimit.maxDecks} Custom Decks</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 text-[#DC143C] shrink-0" />
+            <span>{tierLimit.maxGradedSlabs === Infinity ? 'Unlimited' : `${tierLimit.maxGradedSlabs} Graded Slabs`}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 text-[#DC143C] shrink-0" />
+            <span>{tierLimit.maxSealedItems === Infinity ? 'Unlimited' : `${tierLimit.maxSealedItems} Sealed Vault`}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 text-[#DC143C] shrink-0" />
+            <span>{tierLimit.hasMultiCurrency ? 'Multi-Currency Live FX' : 'USD Native Rates'}</span>
+          </div>
+        </div>
+
+        {/* Error Message */}
         {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-mono rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-red-700 leading-relaxed font-mono">{errorMessage}</p>
           </div>
         )}
 
-        {/* PayPal Checkout Area */}
-        <div className="space-y-3 min-h-[110px] relative flex flex-col justify-center">
-          {isProcessing ? (
-            <div className="py-8 text-center space-y-2">
-              <Loader2 className="w-8 h-8 text-[#DC143C] animate-spin mx-auto" />
-              <div className="font-mono text-xs font-bold text-[#0F172A]">
-                Activating your {tierName} plan...
-              </div>
+        {/* PayPal Button Container */}
+        <div className="space-y-3">
+          {isSdkLoading && (
+            <div className="h-12 w-full rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
+              <Loader2 className="w-4 h-4 animate-spin text-[#DC143C]" />
+              <span>Connecting to PayPal Secure Checkout...</span>
             </div>
-          ) : (
-            <>
-              {isSdkLoading && (
-                <div className="py-8 flex flex-col items-center justify-center space-y-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <Loader2 className="w-7 h-7 text-[#DC143C] animate-spin" />
-                  <div className="font-mono text-xs text-slate-600 font-medium">
-                    Connecting to PayPal...
-                  </div>
-                </div>
-              )}
-              <div
-                id="paypal-button-container"
-                ref={buttonContainerRef}
-                className={`w-full transition-opacity duration-200 ${
-                  isSdkLoading ? 'hidden' : 'block'
-                }`}
-              />
-              <div className="flex items-center justify-center gap-1.5 text-[11px] font-mono text-[#64748B] pt-2 border-t border-[#E2E8F0]">
-                <Lock className="w-3.5 h-3.5 text-[#16A34A]" />
-                <span>Encrypted PayPal Checkout • USD Monthly Billing</span>
-              </div>
-            </>
           )}
+
+          {isProcessing && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-center gap-3 font-mono">
+              <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+              <span className="text-xs font-bold text-amber-800">
+                Authorizing payment &amp; activating {tierName} pass...
+              </span>
+            </div>
+          )}
+
+          <div
+            ref={buttonContainerRef}
+            className={`min-h-[48px] ${isProcessing || isSdkLoading ? 'hidden' : 'block'}`}
+          />
         </div>
 
+        {/* Guarantee */}
+        <div className="pt-2 border-t border-[#E2E8F0] flex items-center justify-between text-[11px] text-[#64748B] font-mono">
+          <span className="flex items-center gap-1">
+            <Lock className="w-3 h-3 text-[#64748B]" />
+            Encrypted 256-bit TLS
+          </span>
+          <span className="flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            Flexible access • Opt out or renew anytime
+          </span>
+        </div>
       </div>
     </div>
   );

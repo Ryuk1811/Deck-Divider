@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import {
   X,
   Info,
@@ -10,6 +11,7 @@ import {
   Loader2,
   Calendar,
   Hash,
+  ExternalLink,
 } from 'lucide-react';
 import { PokemonCard, EnergyType } from '../../types';
 import { ENERGY_COLORS } from '../../utils/formatters';
@@ -206,6 +208,17 @@ export const PublicCardDetailModal: React.FC<PublicCardDetailModalProps> = ({
                 <span className="inline-flex items-center rounded-md px-2.5 py-0.5 text-[10px] font-mono font-bold bg-[#0F172A] text-white">
                   {fullCardData.rarity || 'Common'}
                 </span>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  to={`/card/${fullCardData.id}`}
+                  onClick={onClose}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-white border border-[#CBD5E1] text-[#0F172A] hover:text-[#DC143C] hover:border-[#DC143C] font-mono text-xs font-bold rounded-lg transition-colors shadow-2xs w-full"
+                >
+                  <span>View Full Card Page & Comps</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
           </div>

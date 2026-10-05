@@ -30,11 +30,6 @@ async function prerenderAllRoutes() {
       'icon-google-192.png',
       'icon-512.png',
       'logo.png',
-      'logo-36.webp',
-      'logo-48.webp',
-      'logo-96.webp',
-      'logo-192.webp',
-      'logo.webp',
       'security.txt',
       '_headers'
     ];
@@ -100,6 +95,18 @@ async function prerenderAllRoutes() {
     { route: '/changelog', outputPath: path.join(distDir, 'changelog', 'index.html') },
     { route: '/partners/ptc-collectibles', outputPath: path.join(distDir, 'partners', 'ptc-collectibles', 'index.html') },
     { route: '/partners', outputPath: path.join(distDir, 'partners', 'index.html') },
+    { route: '/portfolios', outputPath: path.join(distDir, 'portfolios', 'index.html') },
+    
+    // Iconic Chase Cards (Programmatic Showcase)
+    { route: '/card/base1-4', outputPath: path.join(distDir, 'card', 'base1-4', 'index.html') },
+    { route: '/card/base1-15', outputPath: path.join(distDir, 'card', 'base1-15', 'index.html') },
+    { route: '/card/sv03pt5-199', outputPath: path.join(distDir, 'card', 'sv03pt5-199', 'index.html') },
+    { route: '/card/sv08-252', outputPath: path.join(distDir, 'card', 'sv08-252', 'index.html') },
+    { route: '/card/swsh7-215', outputPath: path.join(distDir, 'card', 'swsh7-215', 'index.html') },
+    { route: '/card/swsh12pt5-GG70', outputPath: path.join(distDir, 'card', 'swsh12pt5-GG70', 'index.html') },
+    { route: '/card/sv04pt5-234', outputPath: path.join(distDir, 'card', 'sv04pt5-234', 'index.html') },
+    { route: '/card/sm115-68', outputPath: path.join(distDir, 'card', 'sm115-68', 'index.html') },
+    { route: '/card/xy12-11', outputPath: path.join(distDir, 'card', 'xy12-11', 'index.html') },
     
     // Formats & Legality
     { route: '/formats', outputPath: path.join(distDir, 'formats', 'index.html') },
@@ -162,6 +169,10 @@ async function prerenderAllRoutes() {
           publicRoutes.push({
             route: `/set/${set.id}/top-cards`,
             outputPath: path.join(distDir, 'set', set.id, 'top-cards', 'index.html')
+          });
+          publicRoutes.push({
+            route: `/set/${set.id}/checklist`,
+            outputPath: path.join(distDir, 'set', set.id, 'checklist', 'index.html')
           });
         }
       });

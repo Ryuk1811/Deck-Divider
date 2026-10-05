@@ -44,7 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfileAndSubscription = async (userObj: FirebaseUser) => {
     const uid = userObj.uid;
-    const isSuperUser = (userObj.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+    const em = (userObj.email || '').toLowerCase();
+    const isSuperUser = em === 'deckdivider@outlook.com' || em === 'gurutvamurdia@gmail.com';
 
     const googleName = userObj.displayName || 
                        userObj.providerData?.find(p => p.displayName)?.displayName || 
@@ -141,12 +142,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     while (attempts < 3) {
       try {
         const provider = new GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-        provider.setCustomParameters({
-          prompt: 'select_account',
-        });
-        const result = await signInWithPopup(auth, provider, browserPopupRedirectResolver);
+        // Use clean provider without duplicate scopes or forced 'select_account' prompt,
+        // which prevents accounts.google.com from returning 401 "The server cannot process the request because it is malformed"
+        const result = await signInWithPopup(auth, provider);
         if (result.user) {
           await fetchProfileAndSubscription(result.user);
         }
@@ -188,7 +186,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshSubscription = async () => {
     if (!user) return;
     try {
-      const isSuperUser = (user.email || '').toLowerCase() === 'gurutvamurdia@gmail.com';
+      const em = (user.email || '').toLowerCase();
+      const isSuperUser = em === 'deckdivider@outlook.com' || em === 'gurutvamurdia@gmail.com';
       const subDoc = await getDoc(doc(db, 'subscriptions', user.uid));
       if (subDoc.exists()) {
         const governed = evaluateSubscriptionGovernor(subDoc.data() as SubscriptionRecord, isSuperUser);

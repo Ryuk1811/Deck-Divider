@@ -74,7 +74,7 @@ export const PublicPortfolioView: React.FC = () => {
             return;
           }
           if (!TIER_LIMITS[ownerTier]?.canSharePublicLinks) {
-            setError('Public link sharing is restricted to Stack tier ($22/mo) and above.');
+            setError('Public link sharing is restricted to Stack tier ($7/mo) and above.');
             setLoading(false);
             return;
           }

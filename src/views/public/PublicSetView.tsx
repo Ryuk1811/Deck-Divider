@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check } from 'lucide-react';
+import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check, Clock } from 'lucide-react';
 import { CardSet, PokemonCard } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -202,6 +202,10 @@ export const PublicSetView: React.FC = () => {
                     <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
                       {set.printedTotal} Cards (Total: {set.total})
                     </span>
+                    <span className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1 rounded-full font-bold">
+                      <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                      Updated: 05 Oct 2026, 06:00 UTC
+                    </span>
                     <Link
                       to={`/set/${set.id}/top-cards`}
                       className="inline-flex items-center gap-1.5 bg-[#DC143C]/10 hover:bg-[#DC143C]/20 border border-[#DC143C]/30 text-[#DC143C] px-3.5 py-1 rounded-full text-xs font-bold transition-colors shadow-2xs"
@@ -288,7 +292,11 @@ export const PublicSetView: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                   {paginatedCards.map((card) => (
-                    <div key={card.id} className="flex flex-col group bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-3 transition-all hover:shadow-md hover:-translate-y-0.5">
+                    <Link
+                      key={card.id}
+                      to={`/card/${card.id}`}
+                      className="flex flex-col group bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                    >
                       <div className="relative aspect-[63/88] rounded-xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-2xs">
                         <HolographicCard
                           card={card}
@@ -308,7 +316,7 @@ export const PublicSetView: React.FC = () => {
                           </div>
                         ) : null}
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

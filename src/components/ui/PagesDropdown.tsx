@@ -23,7 +23,8 @@ import {
   ChevronDown,
   X,
   Compass,
-  FileText
+  FileText,
+  Database,
 } from 'lucide-react';
 
 export interface PageItem {
@@ -59,7 +60,7 @@ export const ALL_PAGES: PageItem[] = [
     path: '/app',
     category: 'Workspace',
     icon: Search,
-    description: '14,800+ card SKUs with live market pricing',
+    description: '18,400+ card records with daily market pricing',
     isAppTab: 'search',
   },
   {
@@ -117,8 +118,8 @@ export const ALL_PAGES: PageItem[] = [
     path: '/expansions',
     category: 'Community',
     icon: Boxes,
-    description: 'All 148+ official Pokémon TCG expansions & checklists',
-    badge: '148+ Sets',
+    description: 'All 218 catalogued Pokémon TCG sets & 148+ master checklists',
+    badge: '218 Sets',
   },
   {
     name: 'Socials & Trainer Reviews',
@@ -207,6 +208,21 @@ export const ALL_PAGES: PageItem[] = [
     description: 'Origins, architecture, and ad-free pledge',
   },
   {
+    name: 'Founder Story',
+    path: '/founder',
+    category: 'Platform',
+    icon: Sparkles,
+    description: 'By Gurutva Murdia — solo engineer & lifelong collector',
+    badge: 'Founder',
+  },
+  {
+    name: 'Data & Pricing Methodology',
+    path: '/data-methodology',
+    category: 'Platform',
+    icon: Database,
+    description: 'TCGplayer comps, condition formulas & 2026 legality',
+  },
+  {
     name: 'How It Works',
     path: '/how-it-works',
     category: 'Platform',
@@ -218,7 +234,7 @@ export const ALL_PAGES: PageItem[] = [
     path: '/pricing',
     category: 'Platform',
     icon: CreditCard,
-    description: 'Starter, Bunch, Binder, and Vault memberships',
+    description: 'Starter, Bunch, Stack, Deck, and Collection plans',
   },
   {
     name: 'Frequently Asked Questions',

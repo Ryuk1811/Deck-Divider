@@ -31,6 +31,7 @@ import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { getPublicDeckSchema } from '../../components/seo/schemaData';
 import { generateDeckSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
+import { getTournamentDeckBySlug } from '../../data/tournamentDecks';
 
 interface PublicDeckViewProps {
   deckId?: string;
@@ -156,14 +157,70 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
       if (encodedData) {
         loadedDeck = decodeUrlParamToDeck(encodedData);
       } else if (deckId) {
-        try {
-          const localDecks = await idbGetUserDecks();
-          const match = localDecks.find(d => d.id === deckId);
-          if (match) {
-            loadedDeck = match;
+        // 1. Check if deckId matches a standard tournament meta deck archetype
+        const tournamentMatch = getTournamentDeckBySlug(deckId);
+        if (tournamentMatch) {
+          const entries: PortfolioCardEntry[] = tournamentMatch.entries.map((e, idx) => ({
+            id: `entry-${idx}-${e.cardId}`,
+            cardId: e.cardId,
+            quantity: e.quantity,
+            purchasePrice: e.price,
+            purchaseCurrency: 'USD',
+            purchaseDate: new Date().toISOString().split('T')[0],
+            isSold: false,
+            condition: 'NM',
+            variant: 'Normal',
+            card: {
+              id: e.cardId,
+              name: e.name,
+              supertype: e.category === 'Pokemon' ? 'Pokémon' : e.category,
+              subtypes: [],
+              number: e.number,
+              rarity: 'Common',
+              artist: 'Official',
+              set: {
+                id: e.cardId.split('-')[0] || 'sv',
+                name: e.setName,
+                series: 'Scarlet & Violet',
+                printedTotal: 100,
+                total: 100,
+                releaseDate: '2024-01-01',
+              },
+              images: {
+                small: `https://images.pokemontcg.io/${e.cardId.split('-')[0]}/${e.cardId.split('-')[1]}.png`,
+                large: `https://images.pokemontcg.io/${e.cardId.split('-')[0]}/${e.cardId.split('-')[1]}_hires.png`,
+              },
+              prices: {
+                raw: e.price,
+                psa10Estimate: e.price * 3,
+                psa9Estimate: e.price * 1.5,
+                priceHistory: [],
+              },
+              tcgplayer: {
+                price: e.price,
+              },
+            } as any
+          }));
+
+          loadedDeck = {
+            id: tournamentMatch.id,
+            name: `${tournamentMatch.name} (${tournamentMatch.tier})`,
+            description: tournamentMatch.description,
+            colorHex: tournamentMatch.colorHex,
+            isPublic: true,
+            entries,
+          };
+        } else {
+          // 2. Fall back to local user decks
+          try {
+            const localDecks = await idbGetUserDecks();
+            const match = localDecks.find(d => d.id === deckId);
+            if (match) {
+              loadedDeck = match;
+            }
+          } catch (e) {
+            console.warn('Could not query local decks for deckId:', deckId, e);
           }
-        } catch (e) {
-          console.warn('Could not query local decks for deckId:', deckId, e);
         }
       }
       

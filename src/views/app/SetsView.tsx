@@ -162,7 +162,7 @@ export const SetsView: React.FC<SetsViewProps> = ({
             </span>
           </div>
           <p className="font-mono text-xs text-[#64748B]">
-            Explore {allExpansions.length} official Pokémon TCG expansion sets from 1999 to 30th Celebrations & beyond.
+            Browse {allExpansions.length || 218}+ catalogued expansions with real-time auto-provisioning for newly logged sets, promo subsets, and Japanese imports from 1999 to modern 2026 releases &amp; beyond.
           </p>
         </div>
 

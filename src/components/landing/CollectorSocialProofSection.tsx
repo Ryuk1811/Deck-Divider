@@ -82,7 +82,11 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
       <div className="w-full max-w-[2200px] mx-auto space-y-8 sm:space-y-10 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center space-y-2 max-w-3xl mx-auto">
+        <div
+          className="text-center space-y-2 max-w-3xl mx-auto transform-gpu"
+          data-motion-reveal
+          data-motion-delay="0.02"
+        >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-[11px] font-mono font-bold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Systems Offering</span>
@@ -102,7 +106,10 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
           {primaryMetrics.map((item, idx) => (
             <div
               key={idx}
-              className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between"
+              className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between transform-gpu"
+              data-motion-reveal
+              data-motion-delay={(0.05 * idx).toFixed(2)}
+              data-motion-tilt
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
@@ -132,7 +139,10 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
           {coreCapabilities.map((cap, idx) => (
             <div
               key={idx}
-              className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-3"
+              className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-3 transform-gpu"
+              data-motion-reveal
+              data-motion-delay={(0.06 * idx).toFixed(2)}
+              data-motion-tilt
             >
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
@@ -157,7 +167,11 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
         </div>
 
         {/* Technical Data Transparency Banner */}
-        <div className="bg-slate-900 text-white rounded-xl sm:rounded-2xl p-5 sm:p-7 max-w-6xl mx-auto border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div
+          className="bg-slate-900 text-white rounded-xl sm:rounded-2xl p-5 sm:p-7 max-w-6xl mx-auto border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-5 transform-gpu"
+          data-motion-reveal
+          data-motion-delay="0.1"
+        >
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-wider">
               <Lock className="w-3.5 h-3.5" />
@@ -181,7 +195,7 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
               onClick={onEnterApp || onOpenAuth}
               className="px-4 py-2 bg-[#DC143C] hover:bg-[#B01030] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
             >
-              <span>Explore Platform</span>
+              <span>Pokémon collection valuation</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

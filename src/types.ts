@@ -13,61 +13,122 @@ export interface TierLimit {
   maxLists: number; // Infinity for Collection
   maxItemsPerList: number; // Infinity for Collection
   canSharePublicLinks: boolean;
+  maxGradedSlabs: number; // Max certified slabs logged
+  maxSealedItems: number; // Max sealed items in vault
+  hasMultiCurrency: boolean; // Multi-currency display beyond USD
+  hasGlcAndRetroLegality: boolean; // GLC & Retro format legality engine
+  hasCsvExport: boolean; // Full portfolio & sales CSV export
+  hasCloudBackups: boolean; // Encrypted multi-device cloud snapshot restore
+  hasGradedMarketComps: boolean; // Live verified PSA/BGS/CGC auction comps
   tagline: string;
+  priceYearly: number;
+  yearlyDiscountPercent: number;
 }
 
 export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
   Starter: {
     name: 'Starter',
     priceMonthly: 0,
-    maxDecks: 4,
-    maxCardsPerDeck: 25,
-    maxLists: 3,
-    maxItemsPerList: 20,
-    canSharePublicLinks: false,
-    tagline: 'Entry point for casual collectors',
+    priceYearly: 0,
+    yearlyDiscountPercent: 0,
+    maxDecks: 6,
+    maxCardsPerDeck: 60,
+    maxLists: 5,
+    maxItemsPerList: 100,
+    canSharePublicLinks: true,
+    maxGradedSlabs: 25,
+    maxSealedItems: 15,
+    hasMultiCurrency: false,
+    hasGlcAndRetroLegality: false,
+    hasCsvExport: false,
+    hasCloudBackups: false,
+    hasGradedMarketComps: false,
+    tagline: 'Full 60-card deckbuilder & collection starter',
   },
   Bunch: {
     name: 'Bunch',
-    priceMonthly: 11,
-    maxDecks: 9,
-    maxCardsPerDeck: 40,
-    maxLists: 8,
-    maxItemsPerList: 50,
-    canSharePublicLinks: false,
-    tagline: 'For your first graded slabs',
+    priceMonthly: 4,
+    priceYearly: 42,
+    yearlyDiscountPercent: 13,
+    maxDecks: 15,
+    maxCardsPerDeck: 60,
+    maxLists: 15,
+    maxItemsPerList: 300,
+    canSharePublicLinks: true,
+    maxGradedSlabs: 100,
+    maxSealedItems: 50,
+    hasMultiCurrency: true,
+    hasGlcAndRetroLegality: false,
+    hasCsvExport: false,
+    hasCloudBackups: true,
+    hasGradedMarketComps: true,
+    tagline: 'Multi-currency NAV & expanded binder capacity',
   },
   Stack: {
     name: 'Stack',
-    priceMonthly: 22,
-    maxDecks: 15,
-    maxCardsPerDeck: 50,
-    maxLists: 15,
-    maxItemsPerList: 100,
+    priceMonthly: 7,
+    priceYearly: 75,
+    yearlyDiscountPercent: 11,
+    maxDecks: 30,
+    maxCardsPerDeck: 60,
+    maxLists: 30,
+    maxItemsPerList: 750,
     canSharePublicLinks: true,
-    tagline: 'Unlocks public deck and showcase share links',
+    maxGradedSlabs: 300,
+    maxSealedItems: 150,
+    hasMultiCurrency: true,
+    hasGlcAndRetroLegality: true,
+    hasCsvExport: false,
+    hasCloudBackups: true,
+    hasGradedMarketComps: true,
+    tagline: 'Public share links, GLC legality & tournament specs',
   },
   Deck: {
     name: 'Deck',
-    priceMonthly: 33,
-    maxDecks: 18,
+    priceMonthly: 11,
+    priceYearly: 120,
+    yearlyDiscountPercent: 9,
+    maxDecks: 60,
     maxCardsPerDeck: 60,
-    maxLists: 25,
-    maxItemsPerList: 200,
+    maxLists: 60,
+    maxItemsPerList: 1500,
     canSharePublicLinks: true,
-    tagline: 'Full tournament specs',
+    maxGradedSlabs: 1000,
+    maxSealedItems: 500,
+    hasMultiCurrency: true,
+    hasGlcAndRetroLegality: true,
+    hasCsvExport: true,
+    hasCloudBackups: true,
+    hasGradedMarketComps: true,
+    tagline: 'High-volume collector vaults & market comps engine',
   },
   Collection: {
     name: 'Collection',
-    priceMonthly: 44,
+    priceMonthly: 14,
+    priceYearly: 150,
+    yearlyDiscountPercent: 11,
     maxDecks: Infinity,
     maxCardsPerDeck: Infinity,
     maxLists: Infinity,
     maxItemsPerList: Infinity,
     canSharePublicLinks: true,
+    maxGradedSlabs: Infinity,
+    maxSealedItems: Infinity,
+    hasMultiCurrency: true,
+    hasGlcAndRetroLegality: true,
+    hasCsvExport: true,
+    hasCloudBackups: true,
+    hasGradedMarketComps: true,
     tagline: 'Hold your whole collection with zero limits',
   },
 };
+
+export function getTierLimits(tier?: string | null): TierLimit {
+  if (!tier || !(tier in TIER_LIMITS)) {
+    return TIER_LIMITS.Starter;
+  }
+  return TIER_LIMITS[tier as AccountTier];
+}
 
 export type PokemonSpeciesType =
   | 'Normal'
@@ -365,17 +426,30 @@ export interface SubscriptionRecord {
   id: string; // auth.uid
   tierName: AccountTier;
   effectiveTier?: AccountTier;
-  billingStatus: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
+  billingStatus: 'active' | 'expiring_soon' | 'past_due' | 'canceled' | 'unpaid' | 'expired';
   paymentType?: 'one_time' | 'recurring';
+  billingCycle?: 'monthly' | 'yearly' | 'lifetime';
   provider?: 'paypal' | 'system';
   currentPeriodStart?: string;
   currentPeriodEnd?: string;
   daysRemaining?: number;
   isExpired?: boolean;
   paypalSubscriptionId?: string;
+  orderId?: string;
+  amountPaid?: number;
+  isLifetime?: boolean;
+  lifetimeOrderNumber?: number;
   isSuperUser?: boolean;
   updatedAt: string;
   governorNote?: string;
+}
+
+export interface LifetimeTierStatus {
+  totalSlots: number;
+  claimedSlots: number;
+  remainingSlots: number;
+  isAvailable: boolean;
+  priceUsd: number;
 }
 
 export interface SearchFilters {

@@ -19,6 +19,9 @@ import {
   LogIn,
   UserCheck,
   Lock,
+  Crown,
+  Clock,
+  AlertCircle,
 } from 'lucide-react';
 import {
   DisplayCurrency,
@@ -32,13 +35,16 @@ import {
 import { setLiveExchangeRates } from '../../utils/formatters';
 import { useAuth } from '../../lib/AuthContext';
 import { PublicShareLinkBox } from '../../components/ui/PublicShareLinkBox';
+import { LimitAttemptedAction } from '../../components/modals/LimitReachedModal';
 
 interface SettingsViewProps {
   currency: DisplayCurrency;
   onSelectCurrency: (c: DisplayCurrency) => void;
   currentTier: AccountTier;
   onChangeTier: (tier: AccountTier) => void;
-  onTriggerLimitModal?: (action: 'SHARE_PUBLIC_LINK') => void;
+  onSelectLifetime?: () => void;
+  isLifetime?: boolean;
+  onTriggerLimitModal?: (action: LimitAttemptedAction, details?: any) => void;
   decks: Deck[];
   soldEntries: PortfolioCardEntry[];
   exportDataSignal?: number;
@@ -55,6 +61,7 @@ interface SettingsViewProps {
   onOpenBackupModal?: () => void;
   onSignOut?: () => void;
   onOpenAuth?: () => void;
+  onExportCSV?: () => void;
 }
 
 const SUPPORTED_CURRENCIES = [
@@ -85,6 +92,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onSelectCurrency,
   currentTier,
   onChangeTier,
+  onSelectLifetime,
+  isLifetime = false,
   decks,
   soldEntries,
   customLists = [],
@@ -100,6 +109,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onOpenBackupModal,
   onSignOut,
   onOpenAuth,
+  onExportCSV,
 }) => {
   const { user, profile, subscription } = useAuth();
   const [isSnapshotting, setIsSnapshotting] = useState(false);
@@ -307,11 +317,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-56 overflow-y-auto pr-1">
                         {filteredCurrencies.map((c) => {
                           const isSelected = currency === c.code;
+                          const isCurrencyLocked = c.code !== 'USD' && !TIER_LIMITS[currentTier]?.hasMultiCurrency;
                           return (
                             <button
                               key={c.code}
                               type="button"
                               onClick={() => {
+                                if (isCurrencyLocked) {
+                                  onTriggerLimitModal?.('MULTI_CURRENCY', { currencyCode: c.code });
+                                  return;
+                                }
                                 onSelectCurrency(c.code as DisplayCurrency);
                                 setIsDropdownOpen(false);
                               }}
@@ -326,7 +341,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className={isSelected ? 'text-[#FFD700]' : 'text-[#DC143C] font-bold'}>{c.code}</span>
                                 <span className="truncate opacity-80 text-[11px]">{c.name}</span>
                               </div>
-                              {isSelected && <Check className="w-3.5 h-3.5 text-[#DC143C]" />}
+                              {isSelected ? (
+                                <Check className="w-3.5 h-3.5 text-[#DC143C]" />
+                              ) : isCurrencyLocked ? (
+                                <span className="text-[10px] px-1 py-0.2 bg-amber-50 text-amber-700 border border-amber-200 rounded font-mono font-bold flex items-center gap-0.5">
+                                  <Lock className="w-2.5 h-2.5" /> Bunch
+                                </span>
+                              ) : null}
                             </button>
                           );
                         })}
@@ -362,6 +383,29 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-auto">
+                {onExportCSV && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!TIER_LIMITS[currentTier]?.hasCsvExport) {
+                        onTriggerLimitModal?.('EXPORT_CSV');
+                        return;
+                      }
+                      onExportCSV();
+                    }}
+                    className="h-10 px-4 neo-btn-secondary text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-lg cursor-pointer shadow-xs"
+                    title={TIER_LIMITS[currentTier]?.hasCsvExport ? 'Export portfolio to CSV' : 'Export CSV (Deck Tier required)'}
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#DC143C]" />
+                    <span>Export CSV</span>
+                    {!TIER_LIMITS[currentTier]?.hasCsvExport && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded font-mono font-bold flex items-center gap-0.5">
+                        <Lock className="w-2.5 h-2.5" /> Deck
+                      </span>
+                    )}
+                  </button>
+                )}
+
                 {onOpenBackupModal && (
                   <button
                     type="button"
@@ -590,13 +634,23 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <h2 className="font-heading font-bold text-base sm:text-lg text-[#0F172A]">
                   Account Tier: {currentTier}
                 </h2>
-                {subscription?.isSuperUser ? (
-                  <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                    Lifetime Collection Pass
+                {isLifetime || subscription?.isLifetime || subscription?.isSuperUser ? (
+                  <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
+                    <Crown className="w-3 h-3 text-amber-600" />
+                    Lifetime Collection Member #{subscription?.lifetimeOrderNumber || 1}
+                  </span>
+                ) : subscription?.daysRemaining !== undefined && subscription?.daysRemaining !== Infinity && currentTier !== 'Starter' ? (
+                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border flex items-center gap-1 ${
+                    subscription.daysRemaining <= 7
+                      ? 'bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]/30 animate-pulse'
+                      : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  }`}>
+                    <Clock className="w-3 h-3" />
+                    {subscription.daysRemaining} Days Left
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20">
-                    Active Plan
+                  <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                    Free Starter Plan
                   </span>
                 )}
               </div>
@@ -606,17 +660,49 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 self-start sm:self-auto bg-white px-3.5 py-1.5 rounded-lg border border-[#E2E8F0] shadow-xs">
-            <span className="font-mono text-xs text-[#64748B]">Monthly Rate:</span>
-            <span className="font-num font-bold text-lg text-[#0F172A]">
-              ${TIER_LIMITS[currentTier].priceMonthly}
-            </span>
-            <span className="font-mono text-[11px] text-[#64748B]">/mo</span>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {currentTier !== 'Starter' && !isLifetime && !subscription?.isLifetime && (
+              <button
+                type="button"
+                onClick={() => onChangeTier(currentTier)}
+                className="px-3 py-1.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Extend / Renew</span>
+              </button>
+            )}
+
+            <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-lg border border-[#E2E8F0] shadow-xs">
+              <span className="font-mono text-xs text-[#64748B]">Rate:</span>
+              <span className="font-num font-bold text-lg text-[#0F172A]">
+                ${TIER_LIMITS[currentTier].priceMonthly}
+              </span>
+              <span className="font-mono text-[11px] text-[#64748B]">/mo</span>
+            </div>
           </div>
         </div>
 
+        {/* Real-time Expiration / Countdown Warning Banner */}
+        {subscription?.daysRemaining !== undefined && subscription?.daysRemaining <= 7 && !isLifetime && !subscription?.isLifetime && currentTier !== 'Starter' && (
+          <div className="bg-[#FFF0F3] border-b border-[#DC143C]/20 px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-[#DC143C]">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#DC143C]" />
+              <span>
+                <strong>Subscription Governor Notice:</strong> Your {currentTier} pass expires in {subscription.daysRemaining} day{subscription.daysRemaining === 1 ? '' : 's'}. Renew now to keep your expanded vaults.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onChangeTier(currentTier)}
+              className="px-3 py-1 bg-[#DC143C] text-white rounded font-bold text-xs hover:bg-[#B01030] cursor-pointer shrink-0 self-start sm:self-auto"
+            >
+              Renew Plan Now
+            </button>
+          </div>
+        )}
+
         {/* 5 TIERS COMPARISON CARDS - Symmetrical, Aligned Grid */}
-        <div className="p-5 sm:p-6">
+        <div className="p-5 sm:p-6 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
             {tiersList.map((tierName) => {
               const limit = TIER_LIMITS[tierName];
@@ -643,11 +729,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       ) : null}
                     </div>
 
-                    <div className="font-num flex items-baseline gap-1">
-                      <span className="font-bold text-2xl text-[#0F172A]">
-                        ${limit.priceMonthly}
-                      </span>
-                      <span className="font-mono text-[11px] text-[#64748B]">/mo</span>
+                    <div>
+                      <div className="font-num flex items-baseline gap-1">
+                        <span className="font-bold text-2xl text-[#0F172A]">
+                          ${limit.priceMonthly}
+                        </span>
+                        <span className="font-mono text-[11px] text-[#64748B]">/mo</span>
+                      </div>
+                      {limit.priceYearly > 0 && (
+                        <div className="text-[11px] font-mono text-emerald-700 font-bold mt-0.5">
+                          ${limit.priceYearly}/yr (${limit.yearlyDiscountPercent}% off)
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2 pt-1 font-mono text-xs">
@@ -672,6 +765,34 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         </span>
                       </div>
 
+                      <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                        <span className="text-[#64748B]">Certified Slabs</span>
+                        <span className="font-bold text-[#0F172A]">
+                          {limit.maxGradedSlabs === Infinity ? 'Unlimited' : `${limit.maxGradedSlabs} Slabs`}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                        <span className="text-[#64748B]">Sealed Vault</span>
+                        <span className="font-bold text-[#0F172A]">
+                          {limit.maxSealedItems === Infinity ? 'Unlimited' : `${limit.maxSealedItems} Items`}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                        <span className="text-[#64748B]">Currencies</span>
+                        <span className={`font-bold ${limit.hasMultiCurrency ? 'text-emerald-700' : 'text-slate-500'}`}>
+                          {limit.hasMultiCurrency ? 'FX Live' : 'USD Native'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                        <span className="text-[#64748B]">Tax CSV Export</span>
+                        <span className={`font-bold ${limit.hasCsvExport ? 'text-emerald-700' : 'text-slate-400'}`}>
+                          {limit.hasCsvExport ? 'Enabled' : 'Locked'}
+                        </span>
+                      </div>
+
                       <div className="flex items-center justify-between py-1">
                         <span className="text-[#64748B]">Public Link</span>
                         <span className={`font-bold ${limit.canSharePublicLinks ? 'text-emerald-700' : 'text-slate-400'}`}>
@@ -683,9 +804,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
                   <div className="pt-4 mt-auto">
                     {isCurrent ? (
-                      <div className="w-full h-9 flex items-center justify-center bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg shadow-xs">
-                        Current Plan
-                      </div>
+                      currentTier === 'Starter' ? (
+                        <div className="w-full h-9 flex items-center justify-center bg-slate-100 text-slate-600 font-mono text-xs font-bold rounded-lg shadow-xs">
+                          Active Plan
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onChangeTier(tierName)}
+                          className="w-full h-9 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold flex items-center justify-center rounded-lg cursor-pointer shadow-xs transition-colors"
+                        >
+                          Extend / Renew
+                        </button>
+                      )
                     ) : (
                       <button
                         type="button"
@@ -699,6 +830,49 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 </div>
               );
             })}
+          </div>
+
+          {/* Compact $250 Founder Lifetime Pass Card inside Settings */}
+          <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-50/90 via-[#FFFDF5] to-amber-50/90 border-2 border-amber-300 text-[#0F172A] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-lg bg-amber-100/80 border border-amber-300 text-[#CA8A04] flex items-center justify-center shrink-0 shadow-xs">
+                <Crown className="w-5 h-5 text-[#B45309]" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="font-heading font-bold text-sm sm:text-base text-[#0F172A]">
+                    Founder Lifetime Pass
+                  </h4>
+                  <span className="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900 border border-amber-300">
+                    $250 ONE-TIME
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-[#64748B]">
+                    • 100 Slots Cap
+                  </span>
+                </div>
+                <p className="font-mono text-xs text-[#475569]">
+                  Permanent Collection Tier access forever. Zero renewals, zero monthly invoices, and all future expansions included.
+                </p>
+              </div>
+            </div>
+
+            <div className="shrink-0 self-start sm:self-auto">
+              {isLifetime || subscription?.isLifetime ? (
+                <div className="px-3.5 py-1.5 bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs">
+                  <Check className="w-4 h-4 text-emerald-600" />
+                  <span>Active Founder #{subscription?.lifetimeOrderNumber || 1}</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onSelectLifetime}
+                  className="px-4 py-2 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-2"
+                >
+                  <Crown className="w-3.5 h-3.5" />
+                  <span>Claim Founder Pass ($250)</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

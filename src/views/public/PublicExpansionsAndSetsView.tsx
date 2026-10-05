@@ -13,6 +13,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { CardSet, PokemonCard } from '../../types';
+import { CATALOG_STATS } from '../../data/catalogStatsCanon';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
@@ -163,9 +164,9 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Pokémon TCG Expansions & Sets Directory — Complete Master Checklists"
-        description="Comprehensive directory of official Pokémon Trading Card Game expansions and sets. Browse all series eras from Scarlet & Violet to Vintage, filter expansions, and view card checklists."
-        canonicalPath="/expansions"
+        title="Pokémon TCG Sets &amp; Master Set Checklists | DECK / divider"
+        description="Comprehensive directory of official Pokémon Trading Card Game expansions and sets. Browse all series eras from Scarlet &amp; Violet to Vintage, filter expansions, and view card checklists."
+        canonicalPath="/sets"
         keywords={[
           'pokemon tcg expansions',
           'pokemon card sets',
@@ -217,7 +218,7 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
                 </span>
               </div>
               <p className="font-mono text-xs text-[#64748B]">
-                Explore {allExpansions.length} official Pokémon TCG expansion sets from 1999 to 30th Celebrations & beyond.
+                Browse {allExpansions.length || CATALOG_STATS.totalSetsAndProducts}+ catalogued expansions with real-time auto-provisioning for newly logged sets, promo subsets, and Japanese imports from 1999 to modern 2026 releases &amp; beyond.
               </p>
             </div>
 
@@ -285,10 +286,16 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
                   const isSelected = s.id === activeSet?.id;
 
                   return (
-                    <div
+                    <Link
                       key={s.id}
-                      onClick={() => handleSelectSet(s.id)}
-                      className={`p-4 space-y-2.5 cursor-pointer transition-all glass-slab ${
+                      to={`/set/${s.id}`}
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSelectSet(s.id);
+                        }
+                      }}
+                      className={`block p-4 space-y-2.5 transition-all glass-slab ${
                         isSelected
                           ? 'border-[#DC143C] bg-[#FFF0F3]/40 shadow-sm ring-1 ring-[#DC143C]'
                           : 'hover:border-[#CBD5E1] shadow-xs hover:shadow-md'
@@ -323,7 +330,7 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
                           {s.total || s.printedTotal} Cards
                         </span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -407,12 +414,22 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 p-2.5 sm:p-4 rounded-xl bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:16px_16px] bg-[#F8FAFC]/50 border border-[#E2E8F0]">
                     {displayedSetCards.map((card) => (
-                      <HolographicCard
+                      <Link
                         key={card.id}
-                        card={card}
-                        showPrice={false}
-                        onClick={() => setSelectedDetailCard(card)}
-                      />
+                        to={`/card/${card.id}`}
+                        onClick={(e) => {
+                          if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                            e.preventDefault();
+                            setSelectedDetailCard(card);
+                          }
+                        }}
+                        className="block transition-transform duration-200 hover:-translate-y-1"
+                      >
+                        <HolographicCard
+                          card={card}
+                          showPrice={false}
+                        />
+                      </Link>
                     ))}
                   </div>
 

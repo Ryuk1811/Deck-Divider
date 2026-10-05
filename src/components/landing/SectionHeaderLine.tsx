@@ -16,7 +16,12 @@ export const SectionHeaderLine: React.FC<SectionHeaderLineProps> = ({
   subtitle,
 }) => {
   return (
-    <div id={id} className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 sm:mt-20 lg:mt-24 mb-6 sm:mb-8 md:mb-10 scroll-mt-20">
+    <div
+      id={id}
+      className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 sm:mt-20 lg:mt-24 mb-6 sm:mb-8 md:mb-10 scroll-mt-20 transform-gpu"
+      data-motion-reveal
+      data-motion-delay="0.02"
+    >
       <div className="relative flex items-center justify-center">
         {/* Horizontal dividing line across container */}
         <div className="absolute inset-0 flex items-center" aria-hidden="true">

@@ -1,19 +1,25 @@
-import React from 'react';
-import { Check, Sparkles, Zap, Shield } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Sparkles, Zap, Shield, Calendar } from 'lucide-react';
 import { AccountTier, DisplayCurrency, TIER_LIMITS } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { LifetimePricingBanner } from '../pricing/LifetimePricingBanner';
 
 interface PricingHeroSectionProps {
   currentTier?: AccountTier;
-  onSelectTier: (tier: AccountTier) => void;
+  onSelectTier: (tier: AccountTier, cycle?: 'monthly' | 'yearly') => void;
   displayCurrency: DisplayCurrency;
+  onSelectLifetime?: () => void;
+  isLifetime?: boolean;
 }
 
 export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
   currentTier = 'Starter',
   onSelectTier,
   displayCurrency,
+  onSelectLifetime,
+  isLifetime = false,
 }) => {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const tiers: {
     tier: AccountTier;
     popular?: boolean;
@@ -23,35 +29,35 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       tier: 'Starter',
       popular: false,
       features: [
-        'Up to 4 custom decks',
-        'Max 25 cards per deck',
-        'Up to 3 card wishlists',
-        'Max 20 items per list',
+        'Up to 6 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 5 card wishlists',
+        'Max 100 items per list',
         'Instant card search',
-        'Live TCGplayer prices',
+        'Shareable public showcase link',
       ],
     },
     {
       tier: 'Bunch',
       popular: false,
       features: [
-        'Up to 9 custom decks',
-        'Max 40 cards per deck',
-        'Up to 8 card wishlists',
-        'Max 50 items per list',
+        'Up to 15 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 15 card wishlists',
+        'Max 300 items per list',
         'PSA, BGS & CGC grade logging',
-        'Historical price trends',
+        'Multi-currency NAV converter',
       ],
     },
     {
       tier: 'Stack',
       popular: false,
       features: [
-        'Up to 15 custom decks',
-        'Max 50 cards per deck',
-        'Up to 15 card wishlists',
-        'Max 100 items per list',
-        'Shareable deck links',
+        'Up to 30 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 30 card wishlists',
+        'Max 750 items per list',
+        'Shareable public deck links',
         'Master set checklist tracking',
       ],
     },
@@ -59,10 +65,10 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       tier: 'Deck',
       popular: true,
       features: [
-        'Up to 18 custom decks',
+        'Up to 60 custom decks',
         'Full 60-card tournament decks',
-        'Up to 25 card wishlists',
-        'Max 200 items per list',
+        'Up to 60 card wishlists',
+        'Max 1,500 items per list',
         'PTCGL text export',
         'Sealed booster box tracker',
         'Price drop alerts',
@@ -99,7 +105,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               Starter Plan ($0 Free Forever)
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Search 148+ expansions with live USD TCGplayer pricing, build up to 4 custom decks (max 25 cards each), and create 3 wishlists with no credit card required.
+              Search all 218 catalogued sets &amp; series (148+ master checklists) with daily USD TCGplayer pricing, build up to 6 custom decks (full 60-card decks), log 25 slabs, and create 5 wishlists with no credit card required.
             </p>
           </div>
 
@@ -129,9 +135,47 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               Full Guest Exploration
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Browse card catalogs, view real-time price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
+              Browse card catalogs, view daily market price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
             </p>
           </div>
+        </div>
+
+        {/* Billing Cycle Switcher with Whole Number Yearly Savings */}
+        <div className="flex flex-col items-center justify-center gap-2 max-w-md mx-auto my-2">
+          <div className="bg-white p-1.5 rounded-xl border border-[#CBD5E1] shadow-xs flex items-center w-full max-w-sm">
+            <button
+              type="button"
+              onClick={() => setBillingCycle('monthly')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                billingCycle === 'monthly'
+                  ? 'bg-[#DC143C] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              30-Day Monthly Pass
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle('yearly')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer relative flex items-center justify-center gap-1.5 ${
+                billingCycle === 'yearly'
+                  ? 'bg-[#DC143C] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              <span>365-Day Pass</span>
+              <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase ${
+                billingCycle === 'yearly'
+                  ? 'bg-[#FFD700] text-[#0F172A]'
+                  : 'bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20'
+              }`}>
+                Save ~11%
+              </span>
+            </button>
+          </div>
+          <p className="text-[11px] font-mono text-[#64748B] text-center">
+            Flexible pay-per-period subscription • Opt out or renew anytime with zero continuous mandates
+          </p>
         </div>
 
         {/* Pricing Cards Grid (All 5 Tiers) */}
@@ -139,7 +183,8 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 text-left">
             {tiers.map(({ tier, popular, features }) => {
               const limit = TIER_LIMITS[tier];
-              const priceMonthly = limit.priceMonthly;
+              const isYearly = billingCycle === 'yearly';
+              const price = isYearly ? limit.priceYearly : limit.priceMonthly;
               const isCurrent = currentTier === tier;
 
               return (
@@ -172,12 +217,18 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
                     <div className="mt-3 pt-3 border-t border-[#F1F5F9] pb-1">
                       <div className="flex items-baseline gap-1">
                         <span className="text-2xl font-extrabold font-mono text-[#0F172A]">
-                          {formatCurrency(priceMonthly, displayCurrency)}
+                          {formatCurrency(price, displayCurrency)}
                         </span>
-                        <span className="text-xs text-[#64748B] font-mono">/ mo</span>
+                        <span className="text-xs text-[#64748B] font-mono">
+                          {isYearly ? '/ 365 days' : '/ 30 days'}
+                        </span>
                       </div>
                       <span className="text-[10px] font-mono text-[#94A3B8] block mt-0.5">
-                        {priceMonthly === 0 ? 'Free forever' : 'Billed monthly'}
+                        {price === 0
+                          ? 'Free forever'
+                          : isYearly
+                          ? `Save ${limit.yearlyDiscountPercent}% with bulk annual pass`
+                          : 'One-time 30-day pass'}
                       </span>
                     </div>
 
@@ -198,7 +249,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
                   {/* Tier Action Button */}
                   <div className="mt-5 pt-3 border-t border-[#F1F5F9]">
                     <button
-                      onClick={() => onSelectTier(tier)}
+                      onClick={() => onSelectTier(tier, billingCycle)}
                       className={`w-full py-2.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                         popular
                           ? 'bg-[#DC143C] hover:bg-[#B01030] text-white shadow-xs focus-visible:ring-[#DC143C]'
@@ -211,6 +262,17 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
                 </div>
               );
             })}
+          </div>
+
+          {/* Horizontal Lifetime Access Element */}
+          <div className="mt-8">
+            <LifetimePricingBanner
+              onSelectLifetime={() => {
+                if (onSelectLifetime) onSelectLifetime();
+                else onSelectTier('Collection');
+              }}
+              isCurrentLifetime={isLifetime || currentTier === 'Collection'}
+            />
           </div>
         </div>
       </div>

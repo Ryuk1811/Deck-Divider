@@ -527,7 +527,7 @@ export const getHowItWorksSchema = () => ({
     {
       '@type': 'HowToStep',
       name: 'Search and Add Cards',
-      text: 'Search across 148+ expansions with instant ⌘K search, filtering by rarity, regulation mark, or series, and add cards to your binder or deck.'
+      text: 'Search across 218+ catalogued expansions with instant ⌘K search and dynamic auto-provisioning for newly logged set releases, promotional subsets, and Japanese imports.'
     },
     {
       '@type': 'HowToStep',
@@ -550,21 +550,27 @@ export const getHowItWorksSchema = () => ({
 export const getPricingSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'DECK / divider Membership Tiers',
-  description: 'Pricing options for DECK / divider: Starter (Free forever offline), Trainer, and Champion tiers.',
+  name: 'DECK / divider Flexible Membership Tiers',
+  description: 'Flexible pay-per-period pricing options for DECK / divider: Starter ($0 free), Bunch ($4/mo), Stack ($7/mo), Deck ($11/mo), Collection ($14/mo), and Founder Lifetime Pass ($250).',
   url: 'https://deckdivider.app/pricing',
   image: STANDARD_IMAGE,
   brand: STANDARD_BRAND,
-  sku: 'DD-MEMBERSHIP-TIERS',
+  sku: 'DD-MEMBERSHIP-TIERS-2026',
   applicationCategory: 'UtilitiesApplication, FinanceApplication',
   operatingSystem: 'All',
   offers: [
     {
       '@type': 'Offer',
-      name: 'Starter (Free)',
+      name: 'Starter Tier',
       price: '0.00',
       priceCurrency: 'USD',
-      description: 'Full offline binder, master set tracking, and 60-card tournament deck builder.',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '0.00',
+        priceCurrency: 'USD',
+        unitCode: 'MONTH'
+      },
+      description: 'Free forever Starter plan with 6 custom 60-card decks, card catalog search across 218+ sets, and daily USD pricing.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',
@@ -573,10 +579,82 @@ export const getPricingSchema = () => ({
     },
     {
       '@type': 'Offer',
-      name: 'Champion (Pro)',
-      price: '4.99',
+      name: 'Bunch Tier',
+      price: '4.00',
       priceCurrency: 'USD',
-      description: 'Encrypted cloud sync, unlimited sealed vault, and real-time portfolio market alerts.',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '4.00',
+        priceCurrency: 'USD',
+        unitCode: 'MONTH'
+      },
+      description: 'Flexible monthly or annual pay-per-period subscription with 15 decks, multi-currency conversion, and 15 binder lists.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+    },
+    {
+      '@type': 'Offer',
+      name: 'Stack Tier',
+      price: '7.00',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '7.00',
+        priceCurrency: 'USD',
+        unitCode: 'MONTH'
+      },
+      description: 'Flexible monthly or annual pay-per-period subscription with 30 decks, public share links, and GLC tournament legality rules.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+    },
+    {
+      '@type': 'Offer',
+      name: 'Deck Tier (Popular)',
+      price: '11.00',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '11.00',
+        priceCurrency: 'USD',
+        unitCode: 'MONTH'
+      },
+      description: 'Flexible monthly or annual pay-per-period subscription with 60 tournament decks, market comps engine, 1,000 slabs, and CSV exports.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+    },
+    {
+      '@type': 'Offer',
+      name: 'Collection Tier',
+      price: '14.00',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: '14.00',
+        priceCurrency: 'USD',
+        unitCode: 'MONTH'
+      },
+      description: 'Unlimited capacity pay-per-period tier for master set completion, unlimited slabs, sealed vault, and institutional CSV exports.',
+      availability: 'https://schema.org/InStock',
+      url: 'https://deckdivider.app/pricing',
+      priceValidUntil: '2027-12-31',
+      shippingDetails: STANDARD_SHIPPING_DETAILS,
+      hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+    },
+    {
+      '@type': 'Offer',
+      name: 'Founder Lifetime Pass',
+      price: '250.00',
+      priceCurrency: 'USD',
+      description: 'One-time $250 non-recurring pass for permanent lifetime Collection tier features with zero subscription fees forever.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',

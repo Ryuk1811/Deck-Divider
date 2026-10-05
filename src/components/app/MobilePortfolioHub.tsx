@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   TrendingUp,
   Package,
@@ -97,6 +97,18 @@ export const MobilePortfolioHub: React.FC<MobilePortfolioHubProps> = ({
   userEmail,
 }) => {
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(
+    () => (typeof window !== 'undefined' ? window.innerWidth < 768 : false)
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileViewport(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 1. Calculate Sealed Vault Value & Tracked Items
   const { sealedVaultValue, sealedItemsCount } = useMemo(() => {
@@ -361,54 +373,56 @@ export const MobilePortfolioHub: React.FC<MobilePortfolioHubProps> = ({
         </div>
 
         {/* Smooth Area Chart */}
-        <div className="h-32 sm:h-36 w-full -mx-1 pt-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="mobileCrimsonTrajectory" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#DC143C" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#DC143C" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="date"
-                stroke="#94A3B8"
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                stroke="#94A3B8"
-                fontSize={9}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(val) => `$${Math.round(val / 1000)}k`}
-                domain={['auto', 'auto']}
-              />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-slate-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-mono shadow-md border border-slate-800">
-                        <p className="text-[10px] text-slate-400">{data.date}</p>
-                        <p className="font-bold text-[#FF6B81]">{data.formatted}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="#DC143C"
-                strokeWidth={2.5}
-                fillOpacity={1}
-                fill="url(#mobileCrimsonTrajectory)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="h-32 sm:h-36 w-full -mx-1 pt-1 min-w-0">
+          {isMobileViewport && (
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={128}>
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="mobileCrimsonTrajectory" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#DC143C" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#DC143C" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="date"
+                  stroke="#94A3B8"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#94A3B8"
+                  fontSize={9}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val) => `$${Math.round(val / 1000)}k`}
+                  domain={['auto', 'auto']}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-slate-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-mono shadow-md border border-slate-800">
+                          <p className="text-[10px] text-slate-400">{data.date}</p>
+                          <p className="font-bold text-[#FF6B81]">{data.formatted}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#DC143C"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#mobileCrimsonTrajectory)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </section>
 

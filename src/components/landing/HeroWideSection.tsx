@@ -98,7 +98,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-slate-600 bg-transparent hover:bg-slate-100/60 rounded-xl transition-all cursor-pointer"
             >
               <Layers className="w-4 h-4 text-slate-500" />
-              <span>Explore Features</span>
+              <span>Pokémon card database</span>
             </button>
           </div>
         </div>

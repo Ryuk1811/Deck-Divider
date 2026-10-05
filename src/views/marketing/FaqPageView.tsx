@@ -83,7 +83,7 @@ const FAQ_COLLECTION: FaqData[] = [
     answer:
       'Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.',
     highlights: [
-      'Coverage across all 148+ expansions from Base Set through modern Scarlet & Violet.',
+      'Coverage across all 218 catalogued sets & series (148+ master expansions) from Base Set through modern Scarlet & Violet.',
       'Missing cards list sorted by card number or lowest market price for efficient binder completion.',
       'Visual progress rings showing binder completion percentage by expansion.',
     ],
@@ -117,7 +117,19 @@ const FAQ_COLLECTION: FaqData[] = [
     category: 'Pricing & Data',
     question: 'What are the limits of the free Starter tier?',
     answer:
-      'The free Starter plan includes up to 4 custom decks (max 25 cards each), 3 wishlists (up to 20 items per list), instant card search across all 148+ expansions, and live USD valuations. You can upgrade anytime to unlock full 60-card tournament decks, PSA slab cert tracking, and unlimited lists.',
+      'The free Starter plan includes up to 6 custom decks (full 60-card decks), 5 wishlists (up to 100 items per list), 25 graded slabs, 15 sealed items, instant card search across all 218 catalogued sets & series, and daily USD market valuations. You can upgrade anytime to expand deck capacity, unlock multi-currency conversion, and access advanced portfolio analytics.',
+  },
+  {
+    id: 'faq-7b',
+    category: 'Pricing & Data',
+    question: 'How does the $250 Founder Lifetime Pass work?',
+    answer:
+      'The Founder Lifetime Pass is a single, one-time payment of $250 USD that grants permanent, non-expiring access to the top-tier Collection specifications (unlimited decks, unlimited lists, unlimited slabs, sealed vault, multi-currency live FX, and full CSV exports) with zero recurring subscription charges. It is strictly limited to the first 100 paying customers and includes live slot tracking.',
+    highlights: [
+      'Single $250 payment with zero recurring charges or subscription renewals forever.',
+      'Permanent Collection tier with unlimited capacity across all features.',
+      'Strictly capped at the first 100 customers with real-time registry slot accounting.',
+    ],
   },
   {
     id: 'faq-8',
@@ -401,7 +413,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
               Ready to organize your Pokémon TCG collection?
             </h2>
             <p className="text-[#64748B] text-xs sm:text-sm max-w-xl mx-auto">
-              Launch the studio to start logging cards, building decks, and tracking real-time market value.
+              Launch the studio to start logging cards, building decks, and tracking daily updated market value with instant portfolio NAV recalculation.
             </p>
           </div>
           <button

@@ -27,6 +27,9 @@ import {
   Menu,
   Search,
   Loader2,
+  Clock,
+  Crown,
+  AlertCircle,
 } from 'lucide-react';
 import { initForexMetronome } from './utils/forexMetronome';
 import { initSnapshotMetronome, recordSnapshotCompleted } from './utils/cloudSnapshotMetronome';
@@ -39,6 +42,7 @@ import { MobileBottomNav } from './components/ui/MobileBottomNav';
 import { MobileTopBar } from './components/ui/MobileTopBar';
 
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
+import { SealedPortfolioManager } from './components/app/SealedPortfolioManager';
 import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
@@ -62,7 +66,6 @@ import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 
 // Lazy-loaded Views for ultra-fast PageSpeed (sub-90KB initial entrypoint)
-const SealedPortfolioManager = lazy(() => import('./components/app/SealedPortfolioManager').then(m => ({ default: m.SealedPortfolioManager })));
 const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
 const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
 const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
@@ -79,6 +82,8 @@ const CompetitorComparisonView = lazy(() => import('./views/marketing/Competitor
 const CommunityLeaderboardView = lazy(() => import('./views/public/CommunityLeaderboardView').then(m => ({ default: m.CommunityLeaderboardView })));
 const BestOfGuidesView = lazy(() => import('./views/marketing/BestOfGuidesView').then(m => ({ default: m.BestOfGuidesView })));
 const HighIntentToolsView = lazy(() => import('./views/public/HighIntentToolsView').then(m => ({ default: m.HighIntentToolsView })));
+const FounderPageView = lazy(() => import('./views/public/FounderPageView').then(m => ({ default: m.FounderPageView })));
+const DataMethodologyView = lazy(() => import('./views/public/DataMethodologyView').then(m => ({ default: m.DataMethodologyView })));
 const ListsView = lazy(() => import('./views/app/ListsView').then(m => ({ default: m.ListsView })));
 const SettingsView = lazy(() => import('./views/app/SettingsView').then(m => ({ default: m.SettingsView })));
 const AuthView = lazy(() => import('./views/auth/AuthView').then(m => ({ default: m.AuthView })));
@@ -97,13 +102,20 @@ const ContactPageView = lazy(() => import('./views/legal/AdditionalPages').then(
 const SecurityPageView = lazy(() => import('./views/legal/AdditionalPages').then(m => ({ default: m.SecurityPageView })));
 const PublicDeckView = lazy(() => import('./views/public/PublicDeckView').then(m => ({ default: m.PublicDeckView })));
 const PublicPortfolioView = lazy(() => import('./views/public/PublicPortfolioView').then(m => ({ default: m.PublicPortfolioView })));
+const DirectoryHubView = lazy(() => import('./views/public/DirectoryHubView').then(m => ({ default: m.DirectoryHubView })));
+const PublicPortfoliosDirectoryView = lazy(() => import('./views/public/PublicPortfoliosDirectoryView').then(m => ({ default: m.PublicPortfoliosDirectoryView })));
+const PublicCardView = lazy(() => import('./views/public/PublicCardView').then(m => ({ default: m.PublicCardView })));
 
 // Lazy-loaded Modals
+import type { LimitAttemptedAction } from './components/modals/LimitReachedModal';
+import { exportPortfolioToCsv } from './utils/csvExportEngine';
+
 const CardDetailModal = lazy(() => import('./components/modals/CardDetailModal').then(m => ({ default: m.CardDetailModal })));
 const QuickLookModal = lazy(() => import('./components/modals/QuickLookModal').then(m => ({ default: m.QuickLookModal })));
 const LimitReachedModal = lazy(() => import('./components/modals/LimitReachedModal').then(m => ({ default: m.LimitReachedModal })));
 const GuestLimitModal = lazy(() => import('./components/modals/GuestLimitModal').then(m => ({ default: m.GuestLimitModal })));
 const PayPalSubscriptionModal = lazy(() => import('./components/modals/PayPalSubscriptionModal').then(m => ({ default: m.PayPalSubscriptionModal })));
+const PayPalLifetimeCheckoutModal = lazy(() => import('./components/modals/PayPalLifetimeCheckoutModal').then(m => ({ default: m.PayPalLifetimeCheckoutModal })));
 const PayPalSuccessModal = lazy(() => import('./components/modals/PayPalSuccessModal').then(m => ({ default: m.PayPalSuccessModal })));
 const PayPalCancelModal = lazy(() => import('./components/modals/PayPalCancelModal').then(m => ({ default: m.PayPalCancelModal })));
 const AnalyticsFunnelModal = lazy(() => import('./components/modals/AnalyticsFunnelModal').then(m => ({ default: m.AnalyticsFunnelModal })));
@@ -194,38 +206,18 @@ export default function App() {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    const isPublicMarketingRoute = 
-      location.pathname === '/' || 
-      location.pathname === '/about' || 
-      location.pathname === '/how-it-works' || 
-      location.pathname === '/pricing' || 
-      location.pathname === '/faq' || 
-      location.pathname === '/socials' || 
-      location.pathname === '/privacy' || 
-      location.pathname === '/terms';
-
-    const runSync = () => {
-      initSearchEngine()
-        .then(() => setEngineReady(true))
-        .catch((err) => console.warn('initSearchEngine non-fatal warning:', err));
-      getExpansionsCatalog()
-        .then((sets) => {
-          if (sets && sets.length > 0) setLiveSets(sets);
-        })
-        .catch((err) => console.warn('getExpansionsCatalog non-fatal warning:', err));
-      startFullCatalogBackgroundSync().catch((err) =>
-        console.warn('startFullCatalogBackgroundSync non-fatal warning:', err)
-      );
-    };
-
-    if (isPublicMarketingRoute) {
-      // Defer catalog download and index generation until well after initial paint & hydration
-      const timer = setTimeout(runSync, 4500);
-      return () => clearTimeout(timer);
-    } else {
-      runSync();
-    }
-  }, [location.pathname]);
+    initSearchEngine()
+      .then(() => setEngineReady(true))
+      .catch((err) => console.warn('initSearchEngine non-fatal warning:', err));
+    getExpansionsCatalog()
+      .then((sets) => {
+        if (sets && sets.length > 0) setLiveSets(sets);
+      })
+      .catch((err) => console.warn('getExpansionsCatalog non-fatal warning:', err));
+    startFullCatalogBackgroundSync().catch((err) =>
+      console.warn('startFullCatalogBackgroundSync non-fatal warning:', err)
+    );
+  }, []);
 
   const allCards = React.useMemo(
     () => (engineReady ? searchCards({}).slice(0, 300).map(mapToPokemonCard) : []),
@@ -238,7 +230,38 @@ export default function App() {
   const effectiveCards = allCards;
 
   // Navigation State
-  const [activeTab, setActiveTab] = useState<ActiveTab>('collection');
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    try {
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab') as ActiveTab | null;
+        const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+        if (tab && validTabs.includes(tab)) return tab;
+      }
+    } catch (e) {}
+    return 'collection';
+  });
+
+  // Keep activeTab in sync with ?tab= query parameter on route transitions
+  React.useEffect(() => {
+    if (location.pathname.startsWith('/app')) {
+      const searchParams = new URLSearchParams(location.search);
+      const tabParam = searchParams.get('tab') as ActiveTab | null;
+      const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+      if (tabParam && validTabs.includes(tabParam) && tabParam !== activeTab) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, [location.pathname, location.search, activeTab]);
+
+  const handleTabChange = React.useCallback((newTab: ActiveTab) => {
+    setActiveTab(newTab);
+    if (location.pathname.startsWith('/app')) {
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set('tab', newTab);
+      navigate(`/app?${searchParams.toString()}`, { replace: true });
+    }
+  }, [location.pathname, location.search, navigate]);
   const [authViewRequested, setAuthViewRequested] = useState(false);
   const [guestMode, setGuestMode] = useState<boolean>(() => {
     try {
@@ -279,6 +302,14 @@ export default function App() {
   const displayCurrency = selectedCurrency;
 
   const setDisplayCurrency = (c: DisplayCurrency) => {
+    if (c !== 'USD' && !TIER_LIMITS[currentTier]?.hasMultiCurrency) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'MULTI_CURRENCY',
+        details: { currencyCode: c },
+      });
+      return;
+    }
     setSelectedCurrency(c);
     safeSetItem('displayCurrency', c);
     triggerSyncPulse();
@@ -291,6 +322,7 @@ export default function App() {
     planIds: Record<string, string>;
   } | null>(null);
   const [paypalModalTier, setPaypalModalTier] = useState<AccountTier | null>(null);
+  const [paypalModalCycle, setPaypalModalCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [paypalSuccessData, setPaypalSuccessData] = useState<{ tier: AccountTier; subId: string } | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isLaunchingPayPal, setIsLaunchingPayPal] = useState(false);
@@ -307,43 +339,116 @@ export default function App() {
     fetch('/api/billing/paypal-config')
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.planIds) {
+        if (data && (data.clientId || data.planIds)) {
           setPaypalConfig(data);
         }
       })
       .catch((err) => console.warn('Failed to load PayPal config:', err));
   }, []);
 
-  const handleApproveSubscription = async (subscriptionId: string, tier: AccountTier, provider: 'paypal' = 'paypal') => {
+  const handleApproveSubscription = async (
+    orderId: string,
+    tier: AccountTier,
+    cycle: 'monthly' | 'yearly' = 'monthly',
+    provider: 'paypal' = 'paypal'
+  ) => {
     const token = await auth.currentUser?.getIdToken();
-    const res = await fetch('/api/billing/execute', {
+    const res = await fetch('/api/billing/order/capture', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ subscriptionId, tier, provider }),
+      body: JSON.stringify({ orderId, tier, cycle, provider }),
     });
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.error || 'Failed to process subscription');
+      throw new Error(err.error || 'Failed to process tier activation');
     }
     await refreshSubscription();
-    setPaypalSuccessData({ tier, subId: subscriptionId });
+    setCurrentTier(tier);
+    triggerSyncPulse();
+    setPaypalModalTier(null);
+    setPaypalSuccessData({ tier, subId: `ORDER_${orderId}` });
   };
 
-  const handleChangeTier = async (newTier: AccountTier) => {
-    if (!user) return alert("Must be logged in to upgrade");
-    triggerSyncPulse();
+  const [isLifetimeCheckoutOpen, setIsLifetimeCheckoutOpen] = useState(false);
 
+  const handleOpenLifetimeCheckout = () => {
+    if (!user) {
+      try {
+        sessionStorage.setItem('dd_pending_purchase', JSON.stringify({ type: 'LIFETIME' }));
+      } catch (e) {}
+      handleOpenAuth();
+      return;
+    }
+    setIsLifetimeCheckoutOpen(true);
+  };
+
+  const handleApproveLifetime = async (orderId: string) => {
+    const token = await auth.currentUser?.getIdToken();
+    const res = await fetch('/api/billing/lifetime/capture', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ orderId, provider: 'paypal' }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to process lifetime pass activation');
+    }
+    const data = await res.json();
+    await refreshSubscription();
+    setCurrentTier('Collection');
+    triggerSyncPulse();
+    setIsLifetimeCheckoutOpen(false);
+    setPaypalSuccessData({
+      tier: 'Collection',
+      subId: `FOUNDER_LIFETIME_#${data.lifetimeOrderNumber || 1}`,
+    });
+  };
+
+  const handleChangeTier = async (newTier: AccountTier, cycle: 'monthly' | 'yearly' = 'monthly') => {
     if (newTier === 'Starter') {
-      window.open('https://www.paypal.com/myaccount/autopay/', '_blank');
-      alert("To cancel your active subscription or manage recurring billing, visit your PayPal dashboard.");
+      setCurrentTier('Starter');
       return;
     }
 
+    if (!user) {
+      try {
+        sessionStorage.setItem('dd_pending_purchase', JSON.stringify({ type: 'TIER', tier: newTier, cycle }));
+      } catch (e) {}
+      handleOpenAuth();
+      return;
+    }
+    triggerSyncPulse();
+    setPaypalModalCycle(cycle);
     setPaypalModalTier(newTier);
   };
+
+  // Auto-resume stashed checkout or tier selection once user authenticates
+  React.useEffect(() => {
+    if (!user) return;
+    try {
+      const rawPending = sessionStorage.getItem('dd_pending_purchase');
+      if (rawPending) {
+        sessionStorage.removeItem('dd_pending_purchase');
+        const pending = JSON.parse(rawPending);
+        if (pending?.type === 'LIFETIME') {
+          navigate('/app');
+          setIsLifetimeCheckoutOpen(true);
+        } else if (pending?.type === 'TIER' && pending.tier && pending.tier !== 'Starter') {
+          navigate('/app');
+          setPaypalModalCycle(pending.cycle || 'monthly');
+          setPaypalModalTier(pending.tier);
+        }
+      }
+    } catch (e) {
+      console.warn('Pending purchase auto-resume notice:', e);
+    }
+  }, [user?.uid, navigate]);
 
   // HANDLE POP-UP MESSAGES AND REDIRECTS
   React.useEffect(() => {
@@ -505,9 +610,8 @@ export default function App() {
       const sanitizedLists = curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
       const sanitizedSealed = curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
 
-      // SAFETY GUARD 1: Never write snapshots if initial data load from cloud/IDB is still running
-      if (curUser && !isDataInitializedRef.current) {
-        console.warn('[SyncGuard] Blocked cloud snapshot overwrite: initial load still running.');
+      // SAFETY GUARD 1: Never write snapshots if initial data load from cloud/IDB is still running (unless explicitly provided)
+      if (curUser && !isDataInitializedRef.current && !overrideState) {
         return;
       }
 
@@ -517,9 +621,9 @@ export default function App() {
         hasKnownRemoteDataRef.current &&
         sanitizedDecks.length === 0 &&
         sanitizedLists.length === 0 &&
-        sanitizedSealed.length === 0
+        sanitizedSealed.length === 0 &&
+        !overrideState
       ) {
-        console.warn('[SyncGuard] Blocked accidental empty-state wipeout of populated account.');
         return;
       }
 
@@ -689,10 +793,6 @@ export default function App() {
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
 
-        if (currentDecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
-          hasKnownRemoteDataRef.current = true;
-        }
-
         // If authenticated, check Firestore snapshot AND query subcollections to guarantee cross-device persistence
         if (user) {
           let remoteSnapshotState: UserCompressedSnapshotState | null = null;
@@ -801,6 +901,9 @@ export default function App() {
             idbSaveCustomLists(currentLists, user.uid),
             idbSaveSealedVault(currentSealed, user.uid),
           ]);
+
+          // Mark data initialized before cloud sync
+          isDataInitializedRef.current = true;
 
           // Only sync back if there is actual content, preventing race condition overwrite
           if (currentDecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
@@ -986,7 +1089,7 @@ export default function App() {
   // Limit Hit Modal State
   const [limitModalConfig, setLimitModalConfig] = useState<{
     isOpen: boolean;
-    action: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK' | 'CREATE_LIST' | 'ADD_TO_LIST';
+    action: LimitAttemptedAction;
     details?: any;
   }>({
     isOpen: false,
@@ -1096,6 +1199,16 @@ export default function App() {
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
+    const maxDecks = TIER_LIMITS[currentTier].maxDecks;
+    if (decks.length >= maxDecks) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'CREATE_DECK',
+        details: { currentCount: decks.length, limitCount: maxDecks },
+      });
+      return;
+    }
+
     triggerSyncPulse();
     const sourceDeck = decks.find((d) => d.id === sourceDeckId);
     if (!sourceDeck) return;
@@ -1152,6 +1265,28 @@ export default function App() {
         details: { currentCount: currentCardCount, limitCount: maxCards, deckName: targetDeckRef?.name },
       });
       return;
+    }
+
+    const isGradedEntry = Boolean(entryData.gradingInfo?.company && entryData.gradingInfo?.grade);
+    if (isGradedEntry) {
+      const maxGradedSlabs = TIER_LIMITS[currentTier].maxGradedSlabs;
+      const currentGradedCount = decks.reduce((acc, d) => {
+        return (
+          acc +
+          d.entries
+            .filter((e) => !e.isSold && e.gradingInfo?.company && e.gradingInfo?.grade)
+            .reduce((sum, e) => sum + e.quantity, 0)
+        );
+      }, 0);
+
+      if (currentGradedCount + entryData.quantity > maxGradedSlabs) {
+        setLimitModalConfig({
+          isOpen: true,
+          action: 'LOG_CERT_SLAB',
+          details: { currentCount: currentGradedCount, limitCount: maxGradedSlabs },
+        });
+        return;
+      }
     }
 
     triggerSyncPulse();
@@ -1394,6 +1529,20 @@ export default function App() {
 
   // Sealed Vault Handlers
   const handleAddSealedEntry = async (entry: PortfolioSealedEntry) => {
+    const maxSealed = TIER_LIMITS[currentTier].maxSealedItems;
+    const currentSealedCount = sealedEntries.reduce(
+      (sum, e) => sum + (e.isSold ? 0 : e.quantity),
+      0
+    );
+    if (currentSealedCount + entry.quantity > maxSealed) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'ADD_SEALED_VAULT',
+        details: { currentCount: currentSealedCount, limitCount: maxSealed },
+      });
+      return;
+    }
+
     triggerSyncPulse();
     const newSealed = [entry, ...sealedEntries];
     setSealedEntries(newSealed);
@@ -1420,6 +1569,25 @@ export default function App() {
       },
       ...prev,
     ]);
+  };
+
+  // CSV Export Handler
+  const handleExportCSV = () => {
+    if (!TIER_LIMITS[currentTier]?.hasCsvExport) {
+      setLimitModalConfig({
+        isOpen: true,
+        action: 'EXPORT_CSV',
+      });
+      return;
+    }
+
+    exportPortfolioToCsv({
+      decks,
+      customLists,
+      sealedEntries,
+      soldEntries: allSoldEntries,
+      currency: displayCurrency,
+    });
   };
 
   const handleDeleteSealedEntry = async (id: string) => {
@@ -1544,7 +1712,7 @@ export default function App() {
       {/* Sidebar Navigation (Collapsible Desktop Rail & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         currentTier={currentTier}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         isSyncing={isSyncing}
@@ -1580,8 +1748,30 @@ export default function App() {
             </h1>
           </div>
 
-          {/* Desktop Right Metric Badge (≥ md) */}
+          {/* Desktop Right Metric Badge & Governor Countdown (≥ md) */}
           <div className="flex items-center gap-2 font-mono text-xs flex-shrink-0">
+            {subscription?.isLifetime || (currentTier === 'Collection' && (subscription as any)?.isLifetime) ? (
+              <div className="h-9 px-3 bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-1.5 text-xs font-mono font-bold rounded-md shadow-xs shrink-0">
+                <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Founder #{subscription?.lifetimeOrderNumber || 1}</span>
+              </div>
+            ) : currentTier !== 'Starter' && subscription?.daysRemaining !== undefined && subscription?.daysRemaining !== Infinity ? (
+              <button
+                type="button"
+                onClick={() => handleChangeTier(currentTier)}
+                className={`h-9 px-3 border flex items-center gap-1.5 text-xs font-mono font-bold rounded-md shadow-xs cursor-pointer transition-all hover:scale-102 shrink-0 ${
+                  subscription.daysRemaining <= 7
+                    ? 'bg-[#FFF0F3] border-[#DC143C]/40 text-[#DC143C] animate-pulse'
+                    : 'bg-white border-[#E2E8F0] text-slate-700 hover:border-slate-400'
+                }`}
+                title="Click to renew or extend plan pass"
+              >
+                <Clock className="w-3.5 h-3.5 text-[#DC143C] shrink-0" />
+                <span>{subscription.daysRemaining}d left</span>
+                <span className="text-[10px] text-slate-400 underline ml-0.5">Renew</span>
+              </button>
+            ) : null}
+
             <div className="h-9 px-3.5 bg-white border border-[#E2E8F0] text-[#0F172A] flex items-center gap-2 text-xs font-mono font-bold rounded-md shadow-xs max-w-[220px] truncate">
               {activeTab === 'collection' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
               {activeTab === 'decks' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
@@ -1606,6 +1796,25 @@ export default function App() {
           </div>
         </header>
 
+        {/* Global Governor Expiring-Soon Top Alert */}
+        {subscription?.daysRemaining !== undefined && subscription.daysRemaining <= 7 && !subscription?.isLifetime && currentTier !== 'Starter' && (
+          <div className="bg-[#FFF0F3] border-b border-[#DC143C]/20 px-6 py-2 flex items-center justify-between text-xs font-mono text-[#DC143C] z-10 shrink-0">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#DC143C]" />
+              <span>
+                <strong>Subscription Governor Notice:</strong> You have {subscription.daysRemaining} day{subscription.daysRemaining === 1 ? '' : 's'} remaining on your {currentTier} pass.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleChangeTier(currentTier)}
+              className="px-2.5 py-1 bg-[#DC143C] text-white rounded font-bold text-[11px] hover:bg-[#B01030] cursor-pointer"
+            >
+              Renew Pass
+            </button>
+          </div>
+        )}
+
         {/* Scrollable View Area (Infinite Scrolling inside Panel) */}
         <main className="flex-1 overflow-y-auto flex flex-col min-h-0 pb-20 md:pb-0">
           <div className="flex-1">
@@ -1619,11 +1828,12 @@ export default function App() {
               userEmail={user?.email || undefined}
               userId={user?.uid}
               currentTier={currentTier}
-              onTriggerLimitModal={(action) => {
+              onExportCSV={handleExportCSV}
+              onTriggerLimitModal={(action, details) => {
                 setLimitModalConfig({
                   isOpen: true,
                   action,
-                  details: { currentCount: 0, limitCount: 0 },
+                  details,
                 });
               }}
               isPublicProfile={effectiveIsPublicProfile}
@@ -1758,11 +1968,14 @@ export default function App() {
               onSelectCurrency={setDisplayCurrency}
               currentTier={currentTier}
               onChangeTier={handleChangeTier}
-              onTriggerLimitModal={(action) => {
+              onSelectLifetime={handleOpenLifetimeCheckout}
+              isLifetime={currentTier === 'Collection' && Boolean((user as any)?.isLifetime || (subscription as any)?.isLifetime)}
+              onExportCSV={handleExportCSV}
+              onTriggerLimitModal={(action, details) => {
                 setLimitModalConfig({
                   isOpen: true,
                   action,
-                  details: { currentCount: 0, limitCount: 0 },
+                  details,
                 });
               }}
               decks={decks}
@@ -1796,9 +2009,9 @@ export default function App() {
           {/* Authenticated Workspace Footer Disclaimer */}
           <footer className="mt-auto pt-8 pb-6 border-t border-slate-200 text-center flex flex-col items-center gap-3">
             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
-              <Link to="/privacy" className="hover:text-slate-800 transition-colors py-2 px-1 inline-flex items-center min-h-[40px]">Privacy Policy</Link>
+              <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
               <span className="text-slate-300">•</span>
-              <Link to="/terms" className="hover:text-slate-800 transition-colors py-2 px-1 inline-flex items-center min-h-[40px]">Terms of Service</Link>
+              <Link to="/terms" className="hover:text-slate-800 transition-colors">Terms of Service</Link>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-400 max-w-2xl text-center">
               DECK/divider is an independent fan project and is not affiliated with, endorsed by, or sponsored by The Pokémon Company, Nintendo, or Game Freak.
@@ -1809,7 +2022,7 @@ export default function App() {
         {/* Mobile-Native Bottom Navigation Bar (md:hidden) */}
         <MobileBottomNav
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={handleTabChange}
         />
       </div>
     </div>
@@ -1824,7 +2037,14 @@ export default function App() {
           <Route
             path="/"
             element={
-              user && !location.search.includes('landing=true') ? (
+              authLoading ? (
+                <div className="flex h-screen w-screen items-center justify-center bg-dot-grid bg-[#F8FAFC]">
+                  <div className="flex flex-col items-center gap-3">
+                    <DeckDividerBrand size="md" showLogo={true} />
+                    <Loader2 className="w-5 h-5 animate-spin text-[#DC143C]" />
+                  </div>
+                </div>
+              ) : user && !location.search.includes('landing=true') ? (
                 <Navigate to="/app" replace />
               ) : (
                 <LandingPageView
@@ -1838,71 +2058,77 @@ export default function App() {
                   onOpenAuth={handleOpenAuth}
                   onNavigateAbout={() => navigate('/about')}
                   onNavigateHowItWorks={() => navigate('/how-it-works')}
-                  onSelectTier={(tier) => {
-                    if (user) {
-                      if (tier !== 'Starter') {
-                        setPaypalModalTier(tier);
-                      }
-                      navigate('/app');
-                    } else {
-                      handleOpenAuth();
-                    }
-                  }}
+                  onSelectTier={(tier) => handleChangeTier(tier)}
                   currentTier={currentTier}
                   displayCurrency={displayCurrency}
                   onSelectCurrency={setDisplayCurrency}
                   user={user}
+                  onSelectLifetime={handleOpenLifetimeCheckout}
+                  isLifetime={currentTier === 'Collection' && Boolean((user as any)?.isLifetime || (subscription as any)?.isLifetime)}
                 />
               )
             }
           />
         <Route path="/about" element={<AboutPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} displayCurrency={displayCurrency} />} />
         <Route path="/how-it-works" element={<HowItWorksPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
-        <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} currentTier={currentTier} onSelectTier={(tier) => { if (!user) { handleOpenAuth(); } else { handleChangeTier(tier); } }} displayCurrency={displayCurrency} user={user} />} />
+        <Route path="/pricing" element={<PricingPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} currentTier={currentTier} onSelectTier={(tier) => handleChangeTier(tier)} displayCurrency={displayCurrency} user={user} onSelectLifetime={handleOpenLifetimeCheckout} isLifetime={currentTier === 'Collection' && Boolean((user as any)?.isLifetime || (subscription as any)?.isLifetime)} />} />
         <Route path="/faq" element={<FaqPageView onOpenAuth={handleOpenAuth} onEnterApp={() => { if (user) navigate('/app'); else handleOpenAuth(); }} displayCurrency={displayCurrency} user={user} />} />
+        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
         <Route path="/contact" element={<ContactPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
-        <Route path="/partners/ptc-collectibles" element={<PtcPartnerHubView />} />
-        <Route path="/partner/ptc-collectibles" element={<PtcPartnerHubView />} />
         <Route path="/partners" element={<PtcPartnerHubView />} />
+        <Route path="/partners/ptc-collectibles" element={<PtcPartnerHubView />} />
+        <Route path="/partner/ptc-collectibles" element={<Navigate to="/partners" replace />} />
 
-        {/* === LEGAL & TRUST === */}
+        {/* === LEGAL & METHODOLOGY === */}
         <Route path="/privacy" element={<PrivacyPolicyView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
         <Route path="/terms" element={<TermsOfServiceView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
         <Route path="/security" element={<SecurityPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateHowItWorks={() => navigate('/how-it-works')} />} />
+        <Route path="/founder" element={<FounderPageView />} />
+        <Route path="/about/founder" element={<Navigate to="/founder" replace />} />
+        <Route path="/data-methodology" element={<DataMethodologyView />} />
+        <Route path="/methodology" element={<Navigate to="/data-methodology" replace />} />
 
-        {/* === PUBLIC DIRECTORIES === */}
+        {/* === PUBLIC DIRECTORIES (Canonical) === */}
+        <Route path="/directory" element={<DirectoryHubView />} />
+        <Route path="/directory/:section" element={<DirectoryHubView />} />
         <Route path="/cards" element={<PublicCardsCatalogueView />} />
-        <Route path="/Cards" element={<PublicCardsCatalogueView />} />
-        <Route path="/expansions" element={<PublicExpansionsAndSetsView />} />
-        <Route path="/expansions/sets" element={<PublicExpansionsAndSetsView />} />
+        <Route path="/Cards" element={<Navigate to="/cards" replace />} />
         <Route path="/sets" element={<PublicExpansionsAndSetsView />} />
+        <Route path="/expansions" element={<Navigate to="/sets" replace />} />
+        <Route path="/expansions/sets" element={<Navigate to="/sets" replace />} />
         <Route path="/formats" element={<FormatLegalityDirectoryView />} />
+        <Route path="/rules/standard-2026" element={<Navigate to="/format/standard-2026" replace />} />
+        <Route path="/tools" element={<HighIntentToolsView />} />
         <Route path="/compare" element={<CompetitorComparisonView />} />
         <Route path="/best" element={<BestOfGuidesView />} />
         <Route path="/leaderboard" element={<CommunityLeaderboardView />} />
-        <Route path="/tools" element={<HighIntentToolsView />} />
+        <Route path="/portfolios" element={<PublicPortfoliosDirectoryView />} />
+        <Route path="/collections" element={<Navigate to="/portfolios" replace />} />
         <Route path="/socials" element={<PublicSocialsView />} />
-        <Route path="/reviews" element={<PublicSocialsView />} />
+        <Route path="/reviews" element={<Navigate to="/socials" replace />} />
 
-        {/* === PUBLIC ENTITIES (Singular Canonical Paths) === */}
+        {/* === PUBLIC CANONICAL ENTITIES === */}
+        <Route path="/card/:cardId" element={<PublicCardView />} />
+        <Route path="/cards/:cardId" element={<PublicCardView />} />
         <Route path="/set/:setId" element={<PublicSetView />} />
         <Route path="/set/:setId/top-cards" element={<PublicSetTopCardsView />} />
+        <Route path="/set/:setId/checklist" element={<Navigate to="/set/:setId" replace />} />
+        <Route path="/expansions/:setId" element={<Navigate to="/set/:setId" replace />} />
         <Route path="/format/:formatId" element={<FormatLegalityView />} />
+        <Route path="/formats/:formatId" element={<Navigate to="/format/:formatId" replace />} />
+        <Route path="/tool/:toolId" element={<HighIntentToolsView />} />
+        <Route path="/tools/:toolId" element={<Navigate to="/tool/:toolId" replace />} />
         <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
-        <Route path="/tool/:toolId" element={<HighIntentToolsView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+        <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
+        <Route path="/portfolios/:shareId" element={<Navigate to="/portfolio/:shareId" replace />} />
 
-        {/* === ALIASES FOR LEGACY & PLURALS === */}
-        <Route path="/expansions/:setId" element={<PublicSetView />} />
-        <Route path="/formats/:formatId" element={<FormatLegalityView />} />
-        <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
-        <Route path="/decks/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
-        <Route path="/portfolios/:shareId" element={<PublicPortfolioView />} />
+        {/* === LEGACY WRAPPERS & UTILITY REDIRECTS === */}
+        <Route path="/collection" element={<Navigate to="/app" replace />} />
         <Route path="/support" element={<Navigate to="/contact" replace />} />
         <Route path="/features" element={<Navigate to="/" replace />} />
-        <Route path="/changelog" element={<ChangelogPageView onOpenAuth={handleOpenAuth} onNavigateHome={() => navigate('/')} onNavigateAbout={() => navigate('/about')} displayCurrency={displayCurrency} />} />
         <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
         <Route path="/media-kit" element={<Navigate to="/about" replace />} />
         <Route path="/community" element={<Navigate to="/leaderboard" replace />} />
@@ -1911,7 +2137,7 @@ export default function App() {
         <Route path="/auth" element={<AuthView onBack={() => navigate('/')} onGuestAccess={() => { handleSetGuestMode(true); navigate('/app'); }} />} />
         <Route path="/admin/*" element={<AdminDashboardView />} />
 
-        {/* === AUTHENTICATED APP === */}
+        {/* === AUTHENTICATED WORKSPACE === */}
         <Route path="/app/*" element={renderDashboard()} />
         <Route path="/app" element={renderDashboard()} />
         <Route path="*" element={<NotFoundView />} />
@@ -1944,6 +2170,10 @@ export default function App() {
         decks={decks}
         lists={customLists}
         currency={displayCurrency}
+        currentTier={currentTier}
+        onTriggerLimitModal={(action, details) =>
+          setLimitModalConfig({ isOpen: true, action, details })
+        }
         onAddCardToDeck={handleAddCardToDeck}
         onAddCardToList={handleAddCardToList}
       />
@@ -1983,14 +2213,20 @@ export default function App() {
         isOpen={!!paypalModalTier}
         onClose={() => setPaypalModalTier(null)}
         tierName={paypalModalTier || 'Bunch'}
-        planId={
-          (paypalModalTier && paypalConfig?.planIds?.[paypalModalTier]) || ''
-        }
+        initialCycle={paypalModalCycle}
         clientId={
           paypalConfig?.clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || ''
         }
         onApproveSubscription={handleApproveSubscription}
         getUserToken={async () => auth.currentUser?.getIdToken()}
+      />
+
+      <PayPalLifetimeCheckoutModal
+        isOpen={isLifetimeCheckoutOpen}
+        onClose={() => setIsLifetimeCheckoutOpen(false)}
+        clientId={paypalConfig?.clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || ''}
+        onApproveLifetime={handleApproveLifetime}
+        userEmail={user?.email || undefined}
       />
 
       <PayPalSuccessModal
@@ -2019,6 +2255,10 @@ export default function App() {
         onClose={() => setIsBackupModalOpen(false)}
         userId={user?.uid || 'guest_user'}
         userEmail={user?.email || undefined}
+        currentTier={currentTier}
+        onTriggerLimitModal={(action) =>
+          setLimitModalConfig({ isOpen: true, action })
+        }
         activeState={{
           version: 2,
           userId: user?.uid || 'guest_user',

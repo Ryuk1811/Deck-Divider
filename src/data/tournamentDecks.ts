@@ -1,0 +1,276 @@
+/**
+ * Standard-Legal Tournament Deck Archetypes
+ * Complete 60-card tournament rosters with Play! Pokémon regulation compliance
+ */
+
+export interface TournamentDeckEntry {
+  cardId: string;
+  name: string;
+  quantity: number;
+  category: 'Pokemon' | 'Trainer' | 'Energy';
+  setName: string;
+  number: string;
+  price: number;
+  image?: string;
+}
+
+export interface TournamentDeck {
+  id: string;
+  slug: string;
+  name: string;
+  tier: string;
+  format: string;
+  description: string;
+  keyPokemon: string;
+  colorHex: string;
+  estPrice: number;
+  entries: TournamentDeckEntry[];
+}
+
+export const TOURNAMENT_DECKS: Record<string, TournamentDeck> = {
+  'gardevoir-ex': {
+    id: 'deck-gardevoir-ex',
+    slug: 'gardevoir-ex',
+    name: 'Gardevoir ex',
+    tier: 'Tier 1',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'High-synergy Psychic engine utilizing Psychic Embrace to accelerate Energy from the discard pile onto single-prize attackers like Scream Tail and Drifloon.',
+    keyPokemon: 'Gardevoir ex, Scream Tail, Drifloon, Kirlia (Refinement), Munkidori',
+    colorHex: '#9333EA',
+    estPrice: 85.50,
+    entries: [
+      { cardId: 'sv01-086', name: 'Gardevoir ex', quantity: 2, category: 'Pokemon', setName: 'Scarlet & Violet', number: '86', price: 4.50 },
+      { cardId: 'sv01-085', name: 'Kirlia', quantity: 4, category: 'Pokemon', setName: 'Scarlet & Violet', number: '85', price: 0.75 },
+      { cardId: 'sv01-084', name: 'Ralts', quantity: 4, category: 'Pokemon', setName: 'Scarlet & Violet', number: '84', price: 0.35 },
+      { cardId: 'sv04-086', name: 'Scream Tail', quantity: 2, category: 'Pokemon', setName: 'Paradox Rift', number: '86', price: 1.25 },
+      { cardId: 'sv01-089', name: 'Drifloon', quantity: 2, category: 'Pokemon', setName: 'Scarlet & Violet', number: '89', price: 0.50 },
+      { cardId: 'sv06-095', name: 'Munkidori', quantity: 2, category: 'Pokemon', setName: 'Twilight Masquerade', number: '95', price: 3.50 },
+      { cardId: 'sv04-089', name: 'Flutter Mane', quantity: 1, category: 'Pokemon', setName: 'Paradox Rift', number: '89', price: 0.90 },
+      { cardId: 'sv01-065', name: 'Radiant Greninja', quantity: 1, category: 'Pokemon', setName: 'Astral Radiance', number: '46', price: 5.25 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv04pt5-084', name: 'Buddy-Buddy Poffin', quantity: 4, category: 'Trainer', setName: 'Temporal Forces', number: '144', price: 1.80 },
+      { cardId: 'sv01-181', name: 'Nest Ball', quantity: 2, category: 'Trainer', setName: 'Scarlet & Violet', number: '181', price: 0.40 },
+      { cardId: 'sv05-162', name: 'Unfair Stamp', quantity: 1, category: 'Trainer', setName: 'Twilight Masquerade', number: '165', price: 9.50 },
+      { cardId: 'sv01-191', name: 'Rare Candy', quantity: 2, category: 'Trainer', setName: 'Scarlet & Violet', number: '191', price: 0.35 },
+      { cardId: 'sv01-194', name: 'Super Rod', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '188', price: 0.75 },
+      { cardId: 'sv04-163', name: 'Counter Catcher', quantity: 2, category: 'Trainer', setName: 'Paradox Rift', number: '160', price: 1.10 },
+      { cardId: 'sv04-166', name: 'Earthen Vessel', quantity: 2, category: 'Trainer', setName: 'Paradox Rift', number: '163', price: 2.20 },
+      { cardId: 'sv01-189', name: 'Professor\'s Research', quantity: 3, category: 'Trainer', setName: 'Scarlet & Violet', number: '189', price: 0.30 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 4, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv02-171', name: 'Arven', quantity: 2, category: 'Trainer', setName: 'Scarlet & Violet', number: '166', price: 1.50 },
+      { cardId: 'sv01-090', name: 'Basic Psychic Energy', quantity: 8, category: 'Energy', setName: 'Basic Energy', number: '5', price: 0.20 },
+      { cardId: 'sv01-091', name: 'Basic Darkness Energy', quantity: 2, category: 'Energy', setName: 'Basic Energy', number: '7', price: 0.20 },
+    ],
+  },
+  'charizard-ex': {
+    id: 'deck-charizard-ex',
+    slug: 'charizard-ex',
+    name: 'Charizard ex',
+    tier: 'Tier 1',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Relentless Darkness-type offensive engine. Burning Darkness scales with opponent Prize cards, backed by Pidgeot ex Quick Search and Dusknoir damage placement.',
+    keyPokemon: 'Charizard ex (Dark), Pidgeot ex, Dusclops, Dusknoir, Rotom V, Lumineon V',
+    colorHex: '#DC143C',
+    estPrice: 110.00,
+    entries: [
+      { cardId: 'sv03-125', name: 'Charizard ex', quantity: 3, category: 'Pokemon', setName: 'Obsidian Flames', number: '125', price: 8.50 },
+      { cardId: 'sv03-026', name: 'Charmeleon', quantity: 1, category: 'Pokemon', setName: '151', number: '5', price: 0.80 },
+      { cardId: 'sv03-025', name: 'Charmander', quantity: 3, category: 'Pokemon', setName: '151', number: '4', price: 0.60 },
+      { cardId: 'sv03-164', name: 'Pidgeot ex', quantity: 2, category: 'Pokemon', setName: 'Obsidian Flames', number: '164', price: 6.20 },
+      { cardId: 'sv03-162', name: 'Pidgey', quantity: 2, category: 'Pokemon', setName: 'Obsidian Flames', number: '162', price: 0.40 },
+      { cardId: 'sv06pt5-020', name: 'Dusknoir', quantity: 2, category: 'Pokemon', setName: 'Shrouded Fable', number: '20', price: 5.50 },
+      { cardId: 'sv06pt5-019', name: 'Dusclops', quantity: 1, category: 'Pokemon', setName: 'Shrouded Fable', number: '19', price: 1.10 },
+      { cardId: 'sv06pt5-018', name: 'Duskull', quantity: 2, category: 'Pokemon', setName: 'Shrouded Fable', number: '18', price: 0.50 },
+      { cardId: 'swsh11-058', name: 'Rotom V', quantity: 1, category: 'Pokemon', setName: 'Lost Origin', number: '58', price: 1.90 },
+      { cardId: 'swsh09-040', name: 'Lumineon V', quantity: 1, category: 'Pokemon', setName: 'Brilliant Stars', number: '40', price: 2.10 },
+      { cardId: 'sv04pt5-084', name: 'Buddy-Buddy Poffin', quantity: 4, category: 'Trainer', setName: 'Temporal Forces', number: '144', price: 1.80 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv01-181', name: 'Nest Ball', quantity: 2, category: 'Trainer', setName: 'Scarlet & Violet', number: '181', price: 0.40 },
+      { cardId: 'sv01-191', name: 'Rare Candy', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '191', price: 0.35 },
+      { cardId: 'sv05-160', name: 'Prime Catcher', quantity: 1, category: 'Trainer', setName: 'Temporal Forces', number: '157', price: 14.50 },
+      { cardId: 'sv01-194', name: 'Super Rod', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '188', price: 0.75 },
+      { cardId: 'sv04-163', name: 'Counter Catcher', quantity: 1, category: 'Trainer', setName: 'Paradox Rift', number: '160', price: 1.10 },
+      { cardId: 'sv02-171', name: 'Arven', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '166', price: 1.50 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv06-144', name: 'Carmine', quantity: 1, category: 'Trainer', setName: 'Twilight Masquerade', number: '145', price: 1.20 },
+      { cardId: 'sv01-092', name: 'Basic Fire Energy', quantity: 6, category: 'Energy', setName: 'Basic Energy', number: '2', price: 0.20 },
+    ],
+  },
+  'regidrago-vstar': {
+    id: 'deck-regidrago-vstar',
+    slug: 'regidrago-vstar',
+    name: 'Regidrago VSTAR',
+    tier: 'Tier 1',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Apex Dragon Toolbox. Apex Dragon copies any Dragon attack from the discard pile (Phantom Dive, Trifrost, Dragon Laser, Rolling Iron).',
+    keyPokemon: 'Regidrago VSTAR, Teal Mask Ogerpon ex, Dragapult ex, Kyurem, Giratina VSTAR',
+    colorHex: '#0284C7',
+    estPrice: 145.00,
+    entries: [
+      { cardId: 'swsh12-136', name: 'Regidrago VSTAR', quantity: 3, category: 'Pokemon', setName: 'Silver Tempest', number: '136', price: 4.80 },
+      { cardId: 'swsh12-135', name: 'Regidrago V', quantity: 3, category: 'Pokemon', setName: 'Silver Tempest', number: '135', price: 1.50 },
+      { cardId: 'sv06-025', name: 'Teal Mask Ogerpon ex', quantity: 3, category: 'Pokemon', setName: 'Twilight Masquerade', number: '25', price: 8.50 },
+      { cardId: 'sv06-130', name: 'Dragapult ex', quantity: 1, category: 'Pokemon', setName: 'Twilight Masquerade', number: '130', price: 7.20 },
+      { cardId: 'sv06pt5-047', name: 'Kyurem', quantity: 1, category: 'Pokemon', setName: 'Shrouded Fable', number: '47', price: 3.50 },
+      { cardId: 'swsh11-131', name: 'Giratina VSTAR', quantity: 1, category: 'Pokemon', setName: 'Lost Origin', number: '131', price: 5.10 },
+      { cardId: 'swsh11-058', name: 'Rotom V', quantity: 1, category: 'Pokemon', setName: 'Lost Origin', number: '58', price: 1.90 },
+      { cardId: 'sv06-163', name: 'Legacy Energy', quantity: 1, category: 'Energy', setName: 'Twilight Masquerade', number: '167', price: 8.20 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv01-181', name: 'Nest Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '181', price: 0.40 },
+      { cardId: 'sv04-166', name: 'Earthen Vessel', quantity: 3, category: 'Trainer', setName: 'Paradox Rift', number: '163', price: 2.20 },
+      { cardId: 'sv01-194', name: 'Super Rod', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '188', price: 0.75 },
+      { cardId: 'sv01-189', name: 'Professor\'s Research', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '189', price: 0.30 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv01-093', name: 'Basic Grass Energy', quantity: 8, category: 'Energy', setName: 'Basic Energy', number: '1', price: 0.20 },
+      { cardId: 'sv01-092', name: 'Basic Fire Energy', quantity: 3, category: 'Energy', setName: 'Basic Energy', number: '2', price: 0.20 },
+    ],
+  },
+  'dragapult-ex': {
+    id: 'deck-dragapult-ex',
+    slug: 'dragapult-ex',
+    name: 'Dragapult ex',
+    tier: 'Tier 1.5',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Phantom Dive sniper engine dealing 200 active damage and placing 6 damage counters on bench targets in any arrangement.',
+    keyPokemon: 'Dragapult ex, Drakloak, Dreepy, Xatu, Pidgeot ex, Fezandipiti ex',
+    colorHex: '#0D9488',
+    estPrice: 95.00,
+    entries: [
+      { cardId: 'sv06-130', name: 'Dragapult ex', quantity: 3, category: 'Pokemon', setName: 'Twilight Masquerade', number: '130', price: 7.20 },
+      { cardId: 'sv06-129', name: 'Drakloak', quantity: 3, category: 'Pokemon', setName: 'Twilight Masquerade', number: '129', price: 1.80 },
+      { cardId: 'sv06-128', name: 'Dreepy', quantity: 4, category: 'Pokemon', setName: 'Twilight Masquerade', number: '128', price: 0.60 },
+      { cardId: 'sv04-072', name: 'Xatu', quantity: 2, category: 'Pokemon', setName: 'Paradox Rift', number: '72', price: 1.20 },
+      { cardId: 'sv04-071', name: 'Natu', quantity: 2, category: 'Pokemon', setName: 'Paradox Rift', number: '71', price: 0.35 },
+      { cardId: 'sv06pt5-038', name: 'Fezandipiti ex', quantity: 1, category: 'Pokemon', setName: 'Shrouded Fable', number: '38', price: 11.50 },
+      { cardId: 'sv01-165', name: 'Radiant Alakazam', quantity: 1, category: 'Pokemon', setName: 'Silver Tempest', number: '59', price: 2.10 },
+      { cardId: 'sv04pt5-084', name: 'Buddy-Buddy Poffin', quantity: 4, category: 'Trainer', setName: 'Temporal Forces', number: '144', price: 1.80 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv01-191', name: 'Rare Candy', quantity: 3, category: 'Trainer', setName: 'Scarlet & Violet', number: '191', price: 0.35 },
+      { cardId: 'sv05-160', name: 'Prime Catcher', quantity: 1, category: 'Trainer', setName: 'Temporal Forces', number: '157', price: 14.50 },
+      { cardId: 'sv01-194', name: 'Super Rod', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '188', price: 0.75 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 4, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-171', name: 'Arven', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '166', price: 1.50 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv01-090', name: 'Basic Psychic Energy', quantity: 5, category: 'Energy', setName: 'Basic Energy', number: '5', price: 0.20 },
+      { cardId: 'sv01-092', name: 'Basic Fire Energy', quantity: 3, category: 'Energy', setName: 'Basic Energy', number: '2', price: 0.20 },
+    ],
+  },
+  'miraidon-ex': {
+    id: 'deck-miraidon-ex',
+    slug: 'miraidon-ex',
+    name: 'Miraidon ex',
+    tier: 'Tier 1.5',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Hyper-aggressive Lightning burst. Tandem Unit floods the bench with Basic Lightning Pokémon on turn one, powering up Amp You Very Much with Iron Hands ex.',
+    keyPokemon: 'Miraidon ex, Iron Hands ex, Raikou V, Mew ex, Squawkabilly ex',
+    colorHex: '#EAB308',
+    estPrice: 75.00,
+    entries: [
+      { cardId: 'sv01-081', name: 'Miraidon ex', quantity: 2, category: 'Pokemon', setName: 'Scarlet & Violet', number: '81', price: 3.80 },
+      { cardId: 'sv04-070', name: 'Iron Hands ex', quantity: 2, category: 'Pokemon', setName: 'Paradox Rift', number: '70', price: 9.50 },
+      { cardId: 'swsh09-048', name: 'Raikou V', quantity: 1, category: 'Pokemon', setName: 'Brilliant Stars', number: '48', price: 2.50 },
+      { cardId: 'sv02-068', name: 'Zapdos', quantity: 1, category: 'Pokemon', setName: '151', number: '145', price: 0.80 },
+      { cardId: 'sv02-169', name: 'Squawkabilly ex', quantity: 1, category: 'Pokemon', setName: 'Paldea Evolved', number: '169', price: 2.20 },
+      { cardId: 'sv03pt5-151', name: 'Mew ex', quantity: 1, category: 'Pokemon', setName: '151', number: '151', price: 5.50 },
+      { cardId: 'sv01-181', name: 'Nest Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '181', price: 0.40 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv01-171', name: 'Electric Generator', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '170', price: 1.50 },
+      { cardId: 'sv05-160', name: 'Prime Catcher', quantity: 1, category: 'Trainer', setName: 'Temporal Forces', number: '157', price: 14.50 },
+      { cardId: 'sv01-189', name: 'Professor\'s Research', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '189', price: 0.30 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv01-094', name: 'Basic Lightning Energy', quantity: 14, category: 'Energy', setName: 'Basic Energy', number: '4', price: 0.20 },
+    ],
+  },
+  'lugia-vstar': {
+    id: 'deck-lugia-vstar',
+    slug: 'lugia-vstar',
+    name: 'Lugia VSTAR',
+    tier: 'Tier 1.5',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Summoning Star unleashes Archeops directly onto the bench to turbo-accelerate Special Energies (Jet, Mist, Gift, Legacy) to hard-hitting Colorless and Dragon attackers.',
+    keyPokemon: 'Lugia VSTAR, Archeops, Cinccino, Iron Hands ex, Lumineon V',
+    colorHex: '#475569',
+    estPrice: 105.00,
+    entries: [
+      { cardId: 'swsh12-139', name: 'Lugia VSTAR', quantity: 3, category: 'Pokemon', setName: 'Silver Tempest', number: '139', price: 6.50 },
+      { cardId: 'swsh12-138', name: 'Lugia V', quantity: 3, category: 'Pokemon', setName: 'Silver Tempest', number: '138', price: 2.20 },
+      { cardId: 'swsh12-147', name: 'Archeops', quantity: 4, category: 'Pokemon', setName: 'Silver Tempest', number: '147', price: 1.80 },
+      { cardId: 'sv05-137', name: 'Cinccino', quantity: 2, category: 'Pokemon', setName: 'Temporal Forces', number: '137', price: 2.20 },
+      { cardId: 'sv05-136', name: 'Minccino', quantity: 2, category: 'Pokemon', setName: 'Temporal Forces', number: '136', price: 0.40 },
+      { cardId: 'sv04-070', name: 'Iron Hands ex', quantity: 1, category: 'Pokemon', setName: 'Paradox Rift', number: '70', price: 9.50 },
+      { cardId: 'swsh09-040', name: 'Lumineon V', quantity: 1, category: 'Pokemon', setName: 'Brilliant Stars', number: '40', price: 2.10 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'swsh12-156', name: 'Capturing Aroma', quantity: 4, category: 'Trainer', setName: 'Silver Tempest', number: '153', price: 0.80 },
+      { cardId: 'sv01-189', name: 'Professor\'s Research', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '189', price: 0.30 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv02-192', name: 'Jet Energy', quantity: 4, category: 'Energy', setName: 'Paldea Evolved', number: '190', price: 1.50 },
+      { cardId: 'sv05-161', name: 'Mist Energy', quantity: 4, category: 'Energy', setName: 'Temporal Forces', number: '161', price: 1.20 },
+      { cardId: 'sv06-163', name: 'Legacy Energy', quantity: 1, category: 'Energy', setName: 'Twilight Masquerade', number: '167', price: 8.20 },
+    ],
+  },
+  'raging-bolt-ex': {
+    id: 'deck-raging-bolt-ex',
+    slug: 'raging-bolt-ex',
+    name: 'Raging Bolt ex',
+    tier: 'Tier 1',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Ancient Bellowing Thunder nuke. Pairs with Teal Mask Ogerpon ex Teal Dance and Professor Sada\'s Vitality to attach rapid Basic Energies and discard for 70x damage.',
+    keyPokemon: 'Raging Bolt ex, Teal Mask Ogerpon ex, Sandy Shocks, Fezandipiti ex, Squawkabilly ex',
+    colorHex: '#D97706',
+    estPrice: 115.00,
+    entries: [
+      { cardId: 'sv05-123', name: 'Raging Bolt ex', quantity: 4, category: 'Pokemon', setName: 'Temporal Forces', number: '123', price: 8.50 },
+      { cardId: 'sv06-025', name: 'Teal Mask Ogerpon ex', quantity: 4, category: 'Pokemon', setName: 'Twilight Masquerade', number: '25', price: 8.50 },
+      { cardId: 'sv04-108', name: 'Sandy Shocks', quantity: 1, category: 'Pokemon', setName: 'Paradox Rift', number: '108', price: 1.10 },
+      { cardId: 'sv06pt5-038', name: 'Fezandipiti ex', quantity: 1, category: 'Pokemon', setName: 'Shrouded Fable', number: '38', price: 11.50 },
+      { cardId: 'sv02-169', name: 'Squawkabilly ex', quantity: 1, category: 'Pokemon', setName: 'Paldea Evolved', number: '169', price: 2.20 },
+      { cardId: 'sv01-165', name: 'Radiant Greninja', quantity: 1, category: 'Pokemon', setName: 'Astral Radiance', number: '46', price: 5.25 },
+      { cardId: 'sv01-181', name: 'Nest Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '181', price: 0.40 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 3, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv04-166', name: 'Earthen Vessel', quantity: 4, category: 'Trainer', setName: 'Paradox Rift', number: '163', price: 2.20 },
+      { cardId: 'sv05-160', name: 'Prime Catcher', quantity: 1, category: 'Trainer', setName: 'Temporal Forces', number: '157', price: 14.50 },
+      { cardId: 'sv04-170', name: 'Professor Sada\'s Vitality', quantity: 4, category: 'Trainer', setName: 'Paradox Rift', number: '170', price: 1.80 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv01-093', name: 'Basic Grass Energy', quantity: 6, category: 'Energy', setName: 'Basic Energy', number: '1', price: 0.20 },
+      { cardId: 'sv01-094', name: 'Basic Lightning Energy', quantity: 4, category: 'Energy', setName: 'Basic Energy', number: '4', price: 0.20 },
+      { cardId: 'sv01-095', name: 'Basic Fighting Energy', quantity: 3, category: 'Energy', setName: 'Basic Energy', number: '6', price: 0.20 },
+    ],
+  },
+  'terapagos-ex': {
+    id: 'deck-terapagos-ex',
+    slug: 'terapagos-ex',
+    name: 'Terapagos ex',
+    tier: 'Tier 1.5',
+    format: 'Standard (Regulation H, I, J)',
+    description: 'Stellar Tera engine paired with Area Zero Underdepths to expand the bench to 8 Pokémon, maxing Unified Barrage for 240 damage with Bouffalant tanking.',
+    keyPokemon: 'Terapagos ex, Bouffalant, Noctowl, Pidgeot ex, Fan Rotom',
+    colorHex: '#38BDF8',
+    estPrice: 90.00,
+    entries: [
+      { cardId: 'sv07-128', name: 'Terapagos ex', quantity: 3, category: 'Pokemon', setName: 'Stellar Crown', number: '128', price: 7.50 },
+      { cardId: 'sv07-119', name: 'Bouffalant', quantity: 2, category: 'Pokemon', setName: 'Stellar Crown', number: '119', price: 1.20 },
+      { cardId: 'sv07-115', name: 'Noctowl', quantity: 3, category: 'Pokemon', setName: 'Stellar Crown', number: '115', price: 2.50 },
+      { cardId: 'sv07-114', name: 'Hoothoot', quantity: 3, category: 'Pokemon', setName: 'Stellar Crown', number: '114', price: 0.40 },
+      { cardId: 'sv07-118', name: 'Fan Rotom', quantity: 2, category: 'Pokemon', setName: 'Stellar Crown', number: '118', price: 0.80 },
+      { cardId: 'sv07-131', name: 'Area Zero Underdepths', quantity: 4, category: 'Trainer', setName: 'Stellar Crown', number: '131', price: 1.90 },
+      { cardId: 'sv04pt5-084', name: 'Buddy-Buddy Poffin', quantity: 4, category: 'Trainer', setName: 'Temporal Forces', number: '144', price: 1.80 },
+      { cardId: 'sv01-196', name: 'Ultra Ball', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '196', price: 0.40 },
+      { cardId: 'sv02-171', name: 'Arven', quantity: 4, category: 'Trainer', setName: 'Scarlet & Violet', number: '166', price: 1.50 },
+      { cardId: 'sv02-185', name: 'Iono', quantity: 3, category: 'Trainer', setName: 'Paldea Evolved', number: '185', price: 1.20 },
+      { cardId: 'sv02-172', name: 'Boss\'s Orders', quantity: 2, category: 'Trainer', setName: 'Paldea Evolved', number: '172', price: 0.90 },
+      { cardId: 'sv01-170', name: 'Double Turbo Energy', quantity: 4, category: 'Energy', setName: 'Brilliant Stars', number: '151', price: 1.10 },
+    ],
+  },
+};
+
+export const TOURNAMENT_DECK_SLUGS = Object.keys(TOURNAMENT_DECKS);
+
+export function getTournamentDeckBySlug(slug: string): TournamentDeck | null {
+  const clean = slug.toLowerCase().replace(/^\/deck\//, '').replace(/^\/decks\//, '').replace(/\/$/, '');
+  return TOURNAMENT_DECKS[clean] || null;
+}

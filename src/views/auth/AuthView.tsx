@@ -12,9 +12,8 @@ import { auth } from '../../lib/firebase';
 import { useAuth } from '../../lib/AuthContext';
 import { validateEmailAddress } from '../../lib/emailValidator';
 import { trackAuthView, trackSignupSubmit, trackSignupSuccess, trackLoginSuccess } from '../../lib/analytics';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Crown, Lock } from 'lucide-react';
 import { DeckDividerBrand } from '../../components/ui/DeckDividerBrand';
-import { TurnstileWidget } from '../../components/common/TurnstileWidget';
 
 export function AuthView({ 
   onBack,
@@ -32,7 +31,15 @@ export function AuthView({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  const pendingPurchase = React.useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('dd_pending_purchase');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }, []);
 
   // Track auth page view on mount & flush any residual guest flags
   useEffect(() => {
@@ -151,12 +158,7 @@ export function AuthView({
         await signInWithGoogle();
       } else {
         const provider = new GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-        provider.setCustomParameters({
-          prompt: 'select_account'
-        });
-        await signInWithPopup(auth, provider, browserPopupRedirectResolver);
+        await signInWithPopup(auth, provider);
       }
       trackSignupSuccess('google');
       try {
@@ -175,11 +177,11 @@ export function AuthView({
         return;
       }
 
-      let msg = 'Google Sign-In failed. Please try again.';
+      let msg = 'Google Sign-In was interrupted or encountered a browser cookie issue. Please try again, use an incognito window, sign in with email below, or continue in Guest Mode.';
       if (err.code === 'auth/popup-blocked') {
-        msg = 'Sign-in popup was blocked by the browser. Please allow popups for this site.';
+        msg = 'Sign-in popup was blocked by the browser. Please allow popups for this site, or sign in with email / Guest Mode below.';
       } else if (err.code === 'auth/unauthorized-domain') {
-        msg = 'This domain is not authorized in Firebase Auth settings.';
+        msg = 'This preview domain is not in Firebase Authorized Domains. You can use Email login or Guest Mode below.';
       } else if (err.code === 'auth/argument-error') {
         msg = 'Authentication configuration error. Please refresh the page and try again.';
       } else if (err.message?.includes('Database is closing/hidden') || err.message?.includes('closing')) {
@@ -212,11 +214,27 @@ export function AuthView({
         <h1 className="font-heading font-bold text-2xl text-center text-[#0F172A] mb-1">
           {isLogin ? 'Welcome Back' : 'Create Account'}
         </h1>
-        <p className="text-center text-xs text-[#64748B] mb-6">
+        <p className="text-center text-xs text-[#64748B] mb-5">
           {isLogin 
             ? 'Access your Pokemon TCG portfolio & deck builder.' 
             : 'Join Deck Divider to manage your portfolio.'}
         </p>
+
+        {pendingPurchase && (
+          <div className="mb-5 p-3 rounded-xl bg-[#FFF0F3] border border-[#DC143C]/30 text-center space-y-1 animate-fade-in shadow-xs">
+            <div className="flex items-center justify-center gap-1.5 text-[#DC143C] font-bold text-xs">
+              <Crown className="w-4 h-4 shrink-0 text-[#DC143C]" />
+              <span>
+                {pendingPurchase.type === 'LIFETIME'
+                  ? 'Founder Lifetime Pass Binding'
+                  : `${pendingPurchase.tier || 'Selected'} Tier Subscription Binding`}
+              </span>
+            </div>
+            <p className="text-[11px] text-[#0F172A] leading-snug">
+              Sign in or create an account to bind your purchase directly to your profile.
+            </p>
+          </div>
+        )}
 
         {/* Google Sign In Button */}
         <button
@@ -299,12 +317,6 @@ export function AuthView({
               <p className="text-[11px] text-[#DC143C] font-semibold leading-relaxed">{error}</p>
             </div>
           )}
-
-          {/* Cloudflare Turnstile Bot Verification (No Secrets Required) */}
-          <TurnstileWidget
-            onVerify={(token) => setTurnstileToken(token)}
-            className="my-1"
-          />
 
           <button
             type="submit"

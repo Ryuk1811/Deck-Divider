@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Check, ArrowRight, Shield, Zap, Layers, DollarSign, HelpCircle } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, Shield, Zap, Layers, DollarSign, HelpCircle, Calendar } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
@@ -10,14 +10,17 @@ import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getPricingSchema } from '../../components/seo/schemaData';
+import { LifetimePricingBanner } from '../../components/pricing/LifetimePricingBanner';
 
 interface PricingPageViewProps {
   onOpenAuth: () => void;
   onEnterApp?: () => void;
   currentTier?: AccountTier;
-  onSelectTier: (tier: AccountTier) => void;
+  onSelectTier: (tier: AccountTier, cycle?: 'monthly' | 'yearly') => void;
   displayCurrency: DisplayCurrency;
   user?: any;
+  onSelectLifetime?: () => void;
+  isLifetime?: boolean;
 }
 
 export const PricingPageView: React.FC<PricingPageViewProps> = ({
@@ -27,8 +30,11 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   onSelectTier,
   displayCurrency,
   user,
+  onSelectLifetime,
+  isLifetime = false,
 }) => {
   const easeCurve = [0.16, 1, 0.3, 1] as const;
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const tiers: {
     tier: AccountTier;
@@ -40,14 +46,16 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
     {
       tier: 'Starter',
       popular: false,
-      description: 'Essential collection tracking and basic deckbuilder for casual collectors.',
+      description: 'Essential collection tracking and full 60-card deckbuilder for casual collectors.',
       features: [
-        'Up to 4 custom decks',
-        'Max 25 cards per deck',
-        'Up to 3 card wishlists',
-        'Max 20 items per list',
-        'Instant card search across 148+ expansions',
-        'Live TCGplayer market prices (USD)',
+        'Up to 6 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 5 card wishlists',
+        'Max 100 items per list',
+        'Instant card search across 218 catalogued sets & series',
+        'Daily TCGplayer market prices (USD)',
+        'Log up to 25 graded slabs & 15 sealed items',
+        'Shareable public showcase link',
       ],
       ctaText: 'Get Started Free',
     },
@@ -56,10 +64,10 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
       popular: false,
       description: 'For your first graded slabs — unlocks PSA, BGS, and CGC cert logging plus expanded binder decks.',
       features: [
-        'Up to 9 custom decks',
-        'Max 40 cards per deck',
-        'Up to 8 card wishlists',
-        'Max 50 items per list',
+        'Up to 15 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 15 card wishlists',
+        'Max 300 items per list',
         'PSA, BGS & CGC grade and cert logging',
         'Historical price trends & multi-currency conversion',
       ],
@@ -70,10 +78,10 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
       popular: false,
       description: 'Expanded capacity for serious binder completists and league participants.',
       features: [
-        'Up to 15 custom decks',
-        'Max 50 cards per deck',
-        'Up to 15 card wishlists',
-        'Max 100 items per list',
+        'Up to 30 custom decks',
+        'Full 60-card tournament decks',
+        'Up to 30 card wishlists',
+        'Max 750 items per list',
         'Shareable deck links with dynamic previews',
         'Publicly shareable custom lists',
         'Public Collection Showcase mode',
@@ -86,10 +94,10 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
       popular: true,
       description: 'Championship-ready 60-card tournament decks, sealed vault, and alert tools.',
       features: [
-        'Up to 18 custom decks',
+        'Up to 60 custom decks',
         'Full 60-card tournament decks with format legality',
-        'Up to 25 card wishlists',
-        'Max 200 items per list',
+        'Up to 60 card wishlists',
+        'Max 1,500 items per list',
         'Shareable deck links with dynamic previews',
         'Publicly shareable custom lists',
         'Public Collection Showcase mode',
@@ -122,15 +130,15 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   const pricingFaqs = [
     {
       q: "What's completely free, and do I need a credit card?",
-      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to the card search across 148+ sets, live USD TCGplayer pricing, up to 4 custom decks (25 cards/deck), and 3 wishlists (20 items/list).",
+      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to card search across 218 catalogued sets & series (148+ master checklists), daily USD TCGplayer market prices, up to 6 custom decks (full 60-card decks), 25 graded slabs, 15 sealed items, and 5 wishlists (100 items/list).",
     },
     {
       q: 'What happens right after I sign up or log in?',
-      a: 'Your private encrypted workspace is created instantly. Your binders, decks, and wishlists automatically sync to the cloud across all your desktop and mobile devices with real-time portfolio NAV valuations.',
+      a: 'Your private encrypted workspace is created instantly. Your binders, decks, and wishlists automatically sync to the cloud across all your desktop and mobile devices with instant portfolio NAV recalculations.',
     },
     {
       q: 'Is an account required just to look around?',
-      a: 'No account is needed to explore. You can search cards, check live market price charts, inspect set checklists, and test sample collections immediately as a guest without creating an account or entering an email.',
+      a: 'No account is needed to explore. You can search cards, check daily market price trend charts, inspect set checklists, and test sample collections immediately as a guest without creating an account or entering an email.',
     },
     {
       q: 'Can I cancel or change my plan at any time?',
@@ -153,7 +161,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
-        title="Pricing & Membership Tiers — DECK / divider Pokémon TCG Tracker"
+        title="Pokémon Card Prices &amp; Collection Value Tracker | DECK / divider"
         description="Transparent membership plans for Pokémon TCG collectors and tournament players. Free forever Starter plan, graded slab tracking, 60-card tournament deck builders, and sealed vault."
         canonicalPath="/pricing"
         keywords={[
@@ -216,11 +224,11 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="Is DECK / divider free to use?"
-            summary="Yes. DECK / divider offers a free forever Starter plan requiring no credit card. The Starter plan provides full access to instant card search across 148+ Pokémon TCG expansions, live TCGplayer market prices in USD, up to 4 custom decks, and 3 wishlists. Paid tiers unlock full 60-card tournament decks, PSA/BGS/CGC slab tracking, and sealed vault portfolios."
+            summary="Yes. DECK / divider offers a free forever Starter plan requiring no credit card. The Starter plan provides full access to instant card search across 218 catalogued sets & series (148+ master checklists), daily TCGplayer market prices in USD, up to 6 custom decks (full 60-card decks), 25 graded slabs, 15 sealed items, and 5 wishlists. Paid tiers expand capacity up to unlimited collections with multi-currency FX and CSV export."
             keyFacts={[
               { label: 'Free Plan', value: 'Starter ($0 Forever)' },
               { label: 'Credit Card', value: 'Not Required' },
-              { label: 'Full 60-Cards', value: 'Deck Tier ($6.99/mo)' },
+              { label: 'Decks (Free)', value: '6 (Full 60 Cards)' },
               { label: 'Money-Back', value: '7-Day Guarantee' },
             ]}
           />
@@ -244,7 +252,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               Starter Plan ($0 Free Forever)
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Search 148+ expansions with live USD TCGplayer pricing, build up to 4 custom decks (max 25 cards each), and create 3 wishlists with no credit card required.
+              Search all 218 catalogued sets &amp; series (148+ master checklists) with daily USD TCGplayer pricing, build up to 6 custom decks (full 60-card decks), log 25 slabs, and create 5 wishlists with no credit card required.
             </p>
           </motion.div>
 
@@ -284,16 +292,55 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               Full Guest Exploration
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Browse card catalogs, view real-time price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
+              Browse card catalogs, view daily market price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
             </p>
           </motion.div>
         </section>
+
+        {/* Billing Cycle Switcher with Whole Number Yearly Savings */}
+        <div className="flex flex-col items-center justify-center gap-2 max-w-md mx-auto my-2">
+          <div className="bg-white p-1.5 rounded-xl border border-[#CBD5E1] shadow-xs flex items-center w-full max-w-sm">
+            <button
+              type="button"
+              onClick={() => setBillingCycle('monthly')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                billingCycle === 'monthly'
+                  ? 'bg-[#DC143C] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              30-Day Monthly Pass
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle('yearly')}
+              className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer relative flex items-center justify-center gap-1.5 ${
+                billingCycle === 'yearly'
+                  ? 'bg-[#DC143C] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              <span>365-Day Pass</span>
+              <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase ${
+                billingCycle === 'yearly'
+                  ? 'bg-[#FFD700] text-[#0F172A]'
+                  : 'bg-[#FFF0F3] text-[#DC143C] border border-[#DC143C]/20'
+              }`}>
+                Save ~11%
+              </span>
+            </button>
+          </div>
+          <p className="text-[11px] font-mono text-[#64748B] text-center">
+            Flexible pay-per-period subscription • Opt out or renew anytime with zero continuous mandates
+          </p>
+        </div>
 
         {/* Pricing Cards Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-[2000px] mx-auto">
           {tiers.map((t, idx) => {
             const limitConfig = TIER_LIMITS[t.tier];
-            const price = limitConfig.priceMonthly;
+            const isYearly = billingCycle === 'yearly';
+            const price = isYearly ? limitConfig.priceYearly : limitConfig.priceMonthly;
             const isCurrent = currentTier === t.tier;
 
             return (
@@ -334,9 +381,16 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
                         {price === 0 ? 'Free' : formatCurrency(price, displayCurrency)}
                       </span>
                       {price > 0 && (
-                        <span className="text-xs text-[#64748B] font-medium">/ month</span>
+                        <span className="text-xs text-[#64748B] font-medium">
+                          {isYearly ? '/ 365 days' : '/ 30 days'}
+                        </span>
                       )}
                     </div>
+                    {isYearly && limitConfig.yearlyDiscountPercent > 0 && (
+                      <p className="text-[11px] font-mono font-bold text-emerald-700 mt-1">
+                        Save {limitConfig.yearlyDiscountPercent}% with bulk annual pass
+                      </p>
+                    )}
                   </div>
 
                   {/* Feature Checklist */}
@@ -351,7 +405,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
                 </div>
 
                 <button
-                  onClick={() => onSelectTier(t.tier)}
+                  onClick={() => onSelectTier(t.tier, billingCycle)}
                   className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                     t.popular
                       ? 'bg-[#DC143C] text-white hover:bg-[#B01030] shadow-sm'
@@ -364,6 +418,20 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               </motion.div>
             );
           })}
+        </section>
+
+        {/* Horizontal Founder Lifetime Pass Element ($250, lifetime access, no reoccurring charges) */}
+        <section className="max-w-[2000px] mx-auto w-full">
+          <LifetimePricingBanner
+            onSelectLifetime={() => {
+              if (onSelectLifetime) {
+                onSelectLifetime();
+              } else if (onSelectTier) {
+                onSelectTier('Collection');
+              }
+            }}
+            isCurrentLifetime={isLifetime || (currentTier === 'Collection' && (user?.isLifetime || user?.subscription?.isLifetime))}
+          />
         </section>
 
         {/* Feature Comparison Matrix */}

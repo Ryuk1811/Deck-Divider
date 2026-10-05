@@ -146,7 +146,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
               { label: 'Creator', value: 'Gurutva Murdia' },
               { label: 'Platform Model', value: 'Independent & Ad-Free' },
               { label: 'Official Contact', value: 'deckdivider@outlook.com' },
-              { label: 'Supported Sets', value: '148+ Expansions (Base to Present)' },
+              { label: 'Supported Sets', value: '218 Catalogued Sets (148+ Master Checklists)' },
             ]}
           />
         </div>
@@ -238,7 +238,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
                 <span>Expansions &amp; Checklist Matrix</span>
               </div>
               <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
-                Our database covers 148+ expansions spanning Vintage (Base Set through Neo and e-Reader), Mid-Era (EX, Diamond &amp; Pearl, Platinum, Black &amp; White, XY, Sun &amp; Moon), and Modern (Sword &amp; Shield, Scarlet &amp; Violet) with full illustrator credits and rarity symbols.
+                Our database covers 218 catalogued sets &amp; series (including 148+ mainline master-set expansions) spanning Vintage (Base Set through Neo and e-Reader), Mid-Era (EX, Diamond &amp; Pearl, Platinum, Black &amp; White, XY, Sun &amp; Moon), and Modern (Sword &amp; Shield, Scarlet &amp; Violet) with full illustrator credits and rarity symbols.
               </p>
             </div>
 

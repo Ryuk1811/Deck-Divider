@@ -192,7 +192,7 @@ export function generateSetSeoMetadata(set: CardSet | null, cards: PokemonCard[]
   );
 
   const description = `Complete ${setName} (${seriesName}) card checklist with all ${totalCount} cards. Track Secret Illustration Rares, reverse holos, and real-time TCGplayer market values.${page > 1 ? ` (Page ${page})` : ''}`;
-  const title = `${setName} (${seriesName}) Card Checklist & Market Values${pageSuffix}`;
+  const title = `${setName} Checklist, Card Prices & Market Value | DECK / divider${pageSuffix}`;
   const canonicalPath = `/set/${set.id}`;
   const canonical = `https://deckdivider.app${canonicalPath}`;
 

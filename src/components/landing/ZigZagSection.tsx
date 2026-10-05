@@ -31,6 +31,8 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
     <section
       id={id}
       className="w-full py-8 sm:py-12 md:py-14 lg:py-16 px-3 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 scroll-mt-16 relative overflow-hidden"
+      data-motion-zigzag
+      data-reversed={reversed ? 'true' : 'false'}
     >
       <div className="w-full max-w-[2200px] mx-auto relative z-10">
         <div
@@ -38,11 +40,14 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
             reversed ? 'lg:flex-row-reverse' : ''
           }`}
         >
-          {/* 1. Text Content Column */}
-          <div className="w-full lg:w-5/12 xl:w-5/12 transform-gpu">
+          {/* 1. Text Content Column with Dynamic Scroll-Linked Draw-In/Out */}
+          <div
+            className="w-full lg:w-5/12 xl:w-5/12 transform-gpu will-change-transform"
+            data-motion-text
+          >
             <div className="bg-white/95 border border-[#E2E8F0] rounded-xl sm:rounded-2xl shadow-xs sm:shadow-sm hover:shadow-md transition-shadow p-5 sm:p-8 md:p-10 lg:p-12 space-y-4 sm:space-y-6 text-left w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px]">
               
-              {/* Header Badge with Instant Reveal */}
+              {/* Header Badge */}
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="font-num text-xs font-bold text-[#DC143C] tracking-wider">
@@ -99,13 +104,23 @@ export const ZigZagSection: React.FC<ZigZagSectionProps> = ({
             </div>
           </div>
 
-          {/* 2. UI Mockup Column - Structured Elevation Stage */}
-          <div className="w-full lg:w-7/12 xl:w-7/12 flex h-full relative">
-            {/* Dedicated Floating Section Motion Asset (Positioned dynamically) */}
-            <SectionMotionAsset sectionId={id} reversed={reversed} />
+          {/* 2. UI Mockup Column with Opposite-Side Draw-In, Parallax & Interactive 3D Spring Tilt */}
+          <div
+            className="w-full lg:w-7/12 xl:w-7/12 flex h-full relative transform-gpu will-change-transform"
+            data-motion-card
+          >
+            {/* Dedicated Floating Section Motion Asset (Positioned dynamically with parallax) */}
+            <div data-motion-badge className="contents">
+              <SectionMotionAsset sectionId={id} reversed={reversed} />
+            </div>
 
-            <div className="w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px] transform-gpu">
-              <div className="bg-white border border-[#E2E8F0] shadow-md hover:shadow-xl transition-shadow duration-500 rounded-xl sm:rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-8 w-full h-full flex flex-col justify-center relative overflow-hidden">
+            <div
+              className="w-full h-full flex flex-col justify-center min-h-[auto] sm:min-h-[440px] lg:min-h-[480px] transform-gpu"
+              data-motion-tilt
+            >
+              <div className="bg-white border border-[#E2E8F0] shadow-md hover:shadow-2xl transition-all duration-500 rounded-xl sm:rounded-2xl ring-1 ring-slate-900/[0.04] p-3 sm:p-5 lg:p-8 w-full h-full flex flex-col justify-center relative overflow-hidden group">
+                {/* Subtle sheen highlight on card stage */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-100/30 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 {mockup}
               </div>
             </div>

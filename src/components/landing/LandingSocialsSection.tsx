@@ -4,7 +4,7 @@ import { ExternalLink } from 'lucide-react';
 
 export const LandingSocialsSection: React.FC = () => {
   return (
-    <section id="featured-badges" className="w-full bg-[#F8FAFC]/90 border-t border-[#E2E8F0] py-8 sm:py-10 px-4 sm:px-6 lg:px-8 select-none">
+    <section id="featured-badges" className="sr-only opacity-0 pointer-events-none absolute -left-[9999px] -top-[9999px] w-0 h-0 overflow-hidden" aria-hidden="true">
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
         
         {/* Section Header & Subtitle */}

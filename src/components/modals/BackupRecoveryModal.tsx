@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Database, Clock, Download, Upload, RefreshCw, CheckCircle2, AlertTriangle, HardDrive, Cloud, FileText } from 'lucide-react';
 import { BackupPoint, getCloudBackupPoints, getLocalRollingBackups, createCloudBackupPoint, validateAndParseBackupJSON } from '../../lib/backupEngine';
 import { UserCompressedSnapshotState, unpackUserSnapshot } from '../../lib/snapshotEngine';
+import { AccountTier, TIER_LIMITS } from '../../types';
+import { LimitAttemptedAction } from './LimitReachedModal';
 
 interface BackupRecoveryModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
   userEmail?: string;
+  currentTier?: AccountTier;
+  onTriggerLimitModal?: (action: LimitAttemptedAction) => void;
   activeState: UserCompressedSnapshotState;
   onRestoreState: (state: UserCompressedSnapshotState) => Promise<void>;
   onTriggerNewBackup: () => Promise<void>;
@@ -18,6 +22,8 @@ export const BackupRecoveryModal: React.FC<BackupRecoveryModalProps> = ({
   onClose,
   userId,
   userEmail,
+  currentTier,
+  onTriggerLimitModal,
   activeState,
   onRestoreState,
   onTriggerNewBackup,
@@ -65,6 +71,11 @@ export const BackupRecoveryModal: React.FC<BackupRecoveryModalProps> = ({
   if (!isOpen) return null;
 
   const handleManualBackupNow = async () => {
+    if (currentTier && !TIER_LIMITS[currentTier]?.hasCloudBackups) {
+      onTriggerLimitModal?.('CLOUD_BACKUP');
+      return;
+    }
+
     setIsBackingUp(true);
     setErrorMessage(null);
     try {
@@ -78,6 +89,11 @@ export const BackupRecoveryModal: React.FC<BackupRecoveryModalProps> = ({
   };
 
   const handleRestorePoint = async (point: BackupPoint) => {
+    if (point.origin === 'cloud' && currentTier && !TIER_LIMITS[currentTier]?.hasCloudBackups) {
+      onTriggerLimitModal?.('CLOUD_BACKUP');
+      return;
+    }
+
     setIsRestoring(true);
     setErrorMessage(null);
     try {

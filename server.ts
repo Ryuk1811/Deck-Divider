@@ -71,11 +71,8 @@ import {
   generateRssFeedXml,
   generateLlmsTxt,
   generateLlmsFullTxt,
-  generateAiCatalogJson,
-  generateArdJson,
   generateRobotsTxt
 } from './server/publicFootprintManager.js';
-import { generateSearchMatrixJson } from './server/keywordCatalogManager.js';
 import { generateOgImageSvg, generateOgImagePng } from './server/ogImageGenerator.js';
 
 async function startServer() {
@@ -113,11 +110,8 @@ async function startServer() {
     );
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    res.setHeader('Origin-Agent-Cluster', '?1');
     res.setHeader(
       'Permissions-Policy',
       'accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(self "https://www.paypal.com" "https://www.sandbox.paypal.com"), picture-in-picture=(self), publickey-credentials-get=(self), screen-wake-lock=(), usb=(), xr-spatial-tracking=()'
@@ -654,6 +648,7 @@ async function startServer() {
         Stack: 0,
         Deck: 0,
         Collection: 0,
+        Founder: 0,
       };
 
       usersList.forEach(u => {
@@ -667,16 +662,17 @@ async function startServer() {
 
       const revenueByTier = {
         Starter: 0,
-        Bunch: usersByTier.Bunch * 11,
-        Stack: usersByTier.Stack * 22,
-        Deck: usersByTier.Deck * 33,
-        Collection: Math.max(0, (usersByTier.Collection - 1)) * 44,
+        Bunch: usersByTier.Bunch * 4,
+        Stack: usersByTier.Stack * 7,
+        Deck: usersByTier.Deck * 11,
+        Collection: Math.max(0, (usersByTier.Collection - 1)) * 14,
+        Founder: usersByTier.Founder * 250,
       };
 
       const mrr = revenueByTier.Bunch + revenueByTier.Stack + revenueByTier.Deck + revenueByTier.Collection;
-      const arr = mrr * 12;
+      const arr = (mrr * 12) + revenueByTier.Founder;
       const totalUsers = usersList.length;
-      const paidUsers = usersByTier.Bunch + usersByTier.Stack + usersByTier.Deck + usersByTier.Collection;
+      const paidUsers = usersByTier.Bunch + usersByTier.Stack + usersByTier.Deck + usersByTier.Collection + usersByTier.Founder;
       const arpu = totalUsers > 0 ? Number((mrr / totalUsers).toFixed(2)) : 0;
       const arppu = paidUsers > 0 ? Number((mrr / paidUsers).toFixed(2)) : 0;
       const conversionRate = totalUsers > 0 ? Number(((paidUsers / totalUsers) * 100).toFixed(1)) : 0;
@@ -755,9 +751,9 @@ async function startServer() {
         return res.status(400).json({ error: 'Missing targetUid or tierName' });
       }
 
-      const validTiers = ['Starter', 'Bunch', 'Stack', 'Deck', 'Collection'];
+      const validTiers = ['Starter', 'Bunch', 'Stack', 'Deck', 'Collection', 'Founder'];
       if (!validTiers.includes(tierName)) {
-        return res.status(400).json({ error: 'Invalid tierName. Must be Starter, Bunch, Stack, Deck, or Collection.' });
+        return res.status(400).json({ error: 'Invalid tierName. Must be Starter, Bunch, Stack, Deck, Collection, or Founder.' });
       }
 
       await updateAdminUserTier(targetUid, tierName, rawToken);
@@ -1317,40 +1313,6 @@ async function startServer() {
       console.error('Error generating llms-full.txt', err);
       res.status(500).send('Error generating llms-full.txt');
     }
-  });
-
-  // Agent Resource Discovery (ARD) Specification: ai-catalog.json & ard.json
-  app.get(['/ai-catalog.json', '/.well-known/ai-catalog.json'], (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateAiCatalogJson());
-  });
-
-  app.get(['/ard.json', '/.well-known/ard.json'], (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateArdJson());
-  });
-
-  app.get('/search-matrix.json', (req, res) => {
-    if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-      return res.status(304).end();
-    }
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.setHeader('ETag', `"${BUILD_HASH}"`);
-    res.send(generateSearchMatrixJson());
   });
 
   // TCG Companion Proxy Routes
@@ -1971,13 +1933,208 @@ async function startServer() {
     }
   });
 
+  // Standard One-Time Tier Order Capture (Monthly & Bulk Discounted Yearly)
+  app.post('/api/billing/order/capture', verifyToken, async (req: any, res: any) => {
+    try {
+      const { orderId, tier, cycle = 'monthly', provider = 'paypal' } = req.body;
+      const uid = req.uid;
+      const now = new Date();
+
+      const validTiers = ['Bunch', 'Stack', 'Deck', 'Collection'];
+      if (!validTiers.includes(tier)) {
+        return res.status(400).json({ error: 'Invalid tier specified' });
+      }
+
+      const durationDays = cycle === 'yearly' ? 365 : 30;
+      let currentPeriodEnd = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+      const prices: Record<string, { monthly: number; yearly: number }> = {
+        Bunch: { monthly: 4, yearly: 42 },
+        Stack: { monthly: 7, yearly: 75 },
+        Deck: { monthly: 11, yearly: 120 },
+        Collection: { monthly: 14, yearly: 150 },
+      };
+      const amountPaid = prices[tier]?.[cycle as 'monthly' | 'yearly'] || (cycle === 'yearly' ? 75 : 7);
+
+      if (hasAdminCredentials()) {
+        const db = getAdminDb();
+        try {
+          const subDoc = await db.collection('subscriptions').doc(uid).get();
+          if (subDoc.exists) {
+            const existingData = subDoc.data();
+            // If renewing active pass before expiration, stack duration onto remaining days!
+            if (existingData?.tierName === tier && existingData?.currentPeriodEnd) {
+              const existingEnd = new Date(existingData.currentPeriodEnd).getTime();
+              if (existingEnd > now.getTime()) {
+                currentPeriodEnd = new Date(existingEnd + durationDays * 24 * 60 * 60 * 1000).toISOString();
+              }
+            }
+          }
+
+          const updateData = {
+            id: uid,
+            tierName: tier,
+            effectiveTier: tier,
+            billingStatus: 'active',
+            paymentType: 'one_time',
+            billingCycle: cycle,
+            provider,
+            orderId: orderId || `ONE_TIME_${tier.toUpperCase()}_${Date.now()}`,
+            amountPaid,
+            isLifetime: false,
+            currentPeriodStart: now.toISOString(),
+            currentPeriodEnd,
+            updatedAt: now.toISOString(),
+            governorNote: `Active ${tier} Pass (${cycle === 'yearly' ? '365 Days Yearly' : '30 Days Monthly'})`,
+          };
+
+          await db.collection('subscriptions').doc(uid).set(updateData, { merge: true });
+          await db.collection('users').doc(uid).set({ tier, updatedAt: now.toISOString() }, { merge: true });
+        } catch (dbErr) {
+          console.warn('Firestore subscription doc update notice:', dbErr);
+        }
+      }
+
+      res.json({
+        success: true,
+        tierName: tier,
+        effectiveTier: tier,
+        billingCycle: cycle,
+        currentPeriodEnd,
+      });
+    } catch (err: any) {
+      console.error('Order capture error:', err);
+      res.status(500).json({ error: err.message || 'Internal Server Error' });
+    }
+  });
+
+  // Founder Lifetime Pass ($250 One-Time • 100 Slots Cap)
+  const LIFETIME_TOTAL_SLOTS = 100;
+
+  app.get('/api/billing/lifetime-status', async (_req, res) => {
+    try {
+      let claimedCount = 0;
+      try {
+        if (hasAdminCredentials()) {
+          const db = getAdminDb();
+          // Count real live lifetime subscriptions in database
+          const snap = await db.collection('subscriptions').where('isLifetime', '==', true).count().get();
+          claimedCount = snap.data().count || 0;
+
+          // Keep counter document in sync with actual real count
+          await db.collection('system').doc('lifetime_counter').set({
+            totalSlots: LIFETIME_TOTAL_SLOTS,
+            claimedSlots: claimedCount,
+            updatedAt: new Date().toISOString(),
+          }, { merge: true });
+        }
+      } catch (dbErr) {
+        console.warn('Lifetime counter real DB lookup fallback:', dbErr);
+      }
+
+      const remainingSlots = Math.max(0, LIFETIME_TOTAL_SLOTS - claimedCount);
+      res.json({
+        totalSlots: LIFETIME_TOTAL_SLOTS,
+        claimedSlots: claimedCount,
+        remainingSlots,
+        isAvailable: remainingSlots > 0,
+        priceUsd: 250,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  app.post('/api/billing/lifetime/capture', verifyToken, async (req: any, res: any) => {
+    try {
+      const { orderId, provider = 'paypal' } = req.body;
+      const uid = req.uid;
+      const now = new Date();
+
+      if (!hasAdminCredentials()) {
+        return res.json({
+          success: true,
+          tierName: 'Collection',
+          effectiveTier: 'Collection',
+          isLifetime: true,
+          lifetimeOrderNumber: 1,
+          provider,
+        });
+      }
+
+      const db = getAdminDb();
+      let slotNumber = 1;
+
+      await db.runTransaction(async (t) => {
+        const lifetimeQuery = db.collection('subscriptions').where('isLifetime', '==', true);
+        const snap = await t.get(lifetimeQuery);
+        const currentRealClaimed = snap.size;
+
+        if (currentRealClaimed >= LIFETIME_TOTAL_SLOTS) {
+          throw new Error('SOLD_OUT: All 100 Founder Lifetime slots have been claimed.');
+        }
+
+        slotNumber = currentRealClaimed + 1;
+
+        const counterRef = db.collection('system').doc('lifetime_counter');
+        t.set(counterRef, {
+          totalSlots: LIFETIME_TOTAL_SLOTS,
+          claimedSlots: slotNumber,
+          updatedAt: now.toISOString(),
+        }, { merge: true });
+
+        const subRef = db.collection('subscriptions').doc(uid);
+        t.set(subRef, {
+          id: uid,
+          tierName: 'Collection',
+          effectiveTier: 'Collection',
+          billingStatus: 'active',
+          paymentType: 'one_time',
+          provider,
+          orderId: orderId || `ONE_TIME_FOUNDER_${Date.now()}`,
+          amountPaid: 250,
+          isLifetime: true,
+          lifetimeOrderNumber: slotNumber,
+          currentPeriodStart: now.toISOString(),
+          currentPeriodEnd: '2099-12-31T23:59:59.999Z',
+          updatedAt: now.toISOString(),
+          governorNote: `Founder Lifetime Pass Member #${slotNumber} ($250 One-Time - Permanent Collection Tier)`,
+        }, { merge: true });
+
+        const userRef = db.collection('users').doc(uid);
+        t.set(userRef, {
+          tier: 'Collection',
+          isLifetime: true,
+          lifetimeOrderNumber: slotNumber,
+          updatedAt: now.toISOString(),
+        }, { merge: true });
+      });
+
+      res.json({
+        success: true,
+        tierName: 'Collection',
+        effectiveTier: 'Collection',
+        isLifetime: true,
+        lifetimeOrderNumber: slotNumber,
+        provider,
+        updatedAt: now.toISOString(),
+      });
+    } catch (err: any) {
+      console.error('Execute lifetime capture error:', err);
+      if (err.message && err.message.includes('SOLD_OUT')) {
+        return res.status(400).json({ error: 'All 100 Founder Lifetime slots have been claimed.' });
+      }
+      res.status(500).json({ error: 'Failed to complete lifetime pass capture.' });
+    }
+  });
+
   
   // Deck & Limit Routes
   const TIER_LIMITS: Record<string, { maxDecks: number; maxCards: number; maxLists: number; maxItemsPerList: number; maxVerifiedCerts: number; canSharePublicLinks: boolean }> = {
-    Starter: { maxDecks: 4, maxCards: 25, maxLists: 3, maxItemsPerList: 20, maxVerifiedCerts: 5, canSharePublicLinks: false },
-    Bunch: { maxDecks: 9, maxCards: 40, maxLists: 8, maxItemsPerList: 50, maxVerifiedCerts: 15, canSharePublicLinks: false },
-    Stack: { maxDecks: 15, maxCards: 50, maxLists: 15, maxItemsPerList: 100, maxVerifiedCerts: 40, canSharePublicLinks: true },
-    Deck: { maxDecks: 18, maxCards: 60, maxLists: 25, maxItemsPerList: 200, maxVerifiedCerts: 100, canSharePublicLinks: true },
+    Starter: { maxDecks: 6, maxCards: 60, maxLists: 5, maxItemsPerList: 100, maxVerifiedCerts: 25, canSharePublicLinks: true },
+    Bunch: { maxDecks: 15, maxCards: 60, maxLists: 15, maxItemsPerList: 300, maxVerifiedCerts: 100, canSharePublicLinks: true },
+    Stack: { maxDecks: 30, maxCards: 60, maxLists: 30, maxItemsPerList: 750, maxVerifiedCerts: 300, canSharePublicLinks: true },
+    Deck: { maxDecks: 60, maxCards: 60, maxLists: 60, maxItemsPerList: 1500, maxVerifiedCerts: 1000, canSharePublicLinks: true },
     Collection: { maxDecks: 99999, maxCards: 99999, maxLists: 99999, maxItemsPerList: 99999, maxVerifiedCerts: 99999, canSharePublicLinks: true }
   };
 

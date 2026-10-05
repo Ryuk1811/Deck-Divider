@@ -12,6 +12,8 @@ export interface ServerGovernedSubscription {
   daysRemaining: number;
   isExpired: boolean;
   isSuperUser: boolean;
+  isLifetime?: boolean;
+  lifetimeOrderNumber?: number;
   paypalSubscriptionId?: string;
   updatedAt: string;
   governorNote?: string;
@@ -49,8 +51,28 @@ export function evaluateServerSubscription(
       daysRemaining: Infinity,
       isExpired: false,
       isSuperUser: true,
+      isLifetime: true,
       updatedAt: sub?.updatedAt || new Date().toISOString(),
       governorNote: 'Governed as Super User (Unlimited Lifetime Access)',
+    };
+  }
+
+  // Lifetime Founder Pass (Collection Tier - One-Time Payment $250)
+  if (sub?.isLifetime || (sub?.paymentType === 'one_time' && sub?.tierName === 'Collection')) {
+    return {
+      id: subId,
+      tierName: 'Collection',
+      effectiveTier: 'Collection',
+      billingStatus: 'active',
+      paymentType: 'one_time',
+      provider: sub?.provider || 'paypal',
+      daysRemaining: 99999,
+      isExpired: false,
+      isSuperUser: false,
+      isLifetime: true,
+      lifetimeOrderNumber: sub?.lifetimeOrderNumber,
+      updatedAt: sub?.updatedAt || new Date().toISOString(),
+      governorNote: `Governed as Lifetime Founder Pass Member #${sub?.lifetimeOrderNumber || 1} (Permanent Collection Tier)`,
     };
   }
 

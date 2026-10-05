@@ -258,16 +258,22 @@ export const CompetitorComparisonView: React.FC = () => {
             </div>
 
             <GeoExtractableBlock
-              className="mb-12"
+              className="mb-8"
               heading="Quick Verdict: Which Pokémon Card Tracker Should You Use in 2026?"
-              summary="Choose Collectr if you need a casual multi-TCG mobile app covering Sports, Magic, and Lorcana under one profile. Choose DECK / divider if you want a dedicated, high-speed Pokémon TCG studio with native 60-card tournament deck building, Standard rotation legality checking (Marks G & H), private offline-first storage, and live TCGplayer market NAV calculations."
+              summary="Choose Collectr if you need a casual multi-TCG mobile app covering Sports, Magic, and Lorcana under one profile. Choose DECK / divider if you want a dedicated, high-speed Pokémon TCG operating system with native 60-card tournament deck building, Standard rotation legality checking (Regulation Marks H, I & J legal; Mark G rotated), private offline-first storage, and daily TCGplayer market NAV calculations."
               keyFacts={[
-                { label: 'Highest Rated', value: 'DECK / divider (4.9)' },
-                { label: 'Market Feed', value: 'TCGplayer Lowest Verified' },
+                { label: 'Specialization', value: '100% Pokémon TCG Dedicated' },
+                { label: 'Market Feed', value: 'TCGplayer Lowest Verified (Daily)' },
                 { label: 'Deck Studio', value: 'PTCGL 1-Click Export' },
-                { label: 'Privacy', value: 'Offline-First Encrypted' },
+                { label: 'Free Plan', value: 'Starter ($0 Forever)' },
               ]}
             />
+
+            {/* Editorial Disclosure */}
+            <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 sm:p-4 mb-10 text-xs text-amber-900 leading-relaxed font-mono flex items-start gap-2.5">
+              <span className="font-bold uppercase tracking-wider text-amber-800 shrink-0">Editorial Disclosure:</span>
+              <span>This comparison is researched and published by DECK / divider. Specifications are benchmarked against publicly available feature sets and updated regularly. All competitor product names, logos, and trademarks belong to their respective owners.</span>
+            </div>
 
             {/* Quick Summary Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
@@ -376,6 +382,16 @@ export const CompetitorComparisonView: React.FC = () => {
                       <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-[#94A3B8] mx-auto" /></td>
                       <td className="py-4 px-4 text-center"><Check className="w-5 h-5 text-[#16A34A] mx-auto" /></td>
                     </tr>
+                    <tr className="hover:bg-[#F8FAFC]">
+                      <td className="py-4 px-4 font-medium text-[#0F172A]">Pricing Model &amp; Free Plan</td>
+                      <td className="py-4 px-4 text-center bg-[#DC143C]/5 border-x border-[#DC143C]/20 font-mono text-xs font-bold text-[#DC143C]">
+                        Free Starter (6 Decks) • Pro $4–$14/mo
+                      </td>
+                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Freemium ($8.99/mo Pro)</td>
+                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free with Banner Ads</td>
+                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free / $35/mo API</td>
+                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free / In-App Purchases</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -430,11 +446,17 @@ export const CompetitorComparisonView: React.FC = () => {
 
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[#0F172A] font-heading">
-              DECK / divider vs. {competitor.name}
+              DECK / divider vs. {competitor.name}: Feature &amp; Pricing Comparison
             </h1>
             <p className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto">
-              Wondering whether DECK / divider or {competitor.name} is the best choice for your Pokémon card collection? Here is the definitive feature and pricing benchmark.
+              Objective benchmark comparing DECK / divider and {competitor.name} across card databases, 60-card deck tools, graded slab tracking, and pricing models.
             </p>
+          </div>
+
+          {/* Publisher Disclosure */}
+          <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 sm:p-4 mb-8 text-xs text-amber-900 leading-relaxed font-mono flex items-start gap-2.5">
+            <span className="font-bold uppercase tracking-wider text-amber-800 shrink-0">Editorial Disclosure:</span>
+            <span>This comparison is published by DECK / divider. Specifications are verified against publicly available product documentation and actively maintained. Trademarks belong to their respective holders.</span>
           </div>
 
           {/* PTC Collectibles Partner Perk */}

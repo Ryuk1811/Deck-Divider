@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import { getAdminAuth } from '../firebaseAdmin.js';
 
-export const SUPER_USER_EMAIL = 'gurutvamurdia@gmail.com';
+export const SUPER_USER_EMAIL = 'deckdivider@outlook.com';
+export const SUPER_ADMIN_EMAILS = ['deckdivider@outlook.com', 'gurutvamurdia@gmail.com'];
 
 export interface AuthenticatedRequest extends Request {
   uid?: string;
@@ -33,7 +34,7 @@ export async function authenticateToken(req: AuthenticatedRequest, res: Response
     req.uid = decodedToken.uid;
     req.userEmail = (decodedToken.email || '').toLowerCase();
     req.user = decodedToken;
-    req.isSuperUser = req.userEmail === SUPER_USER_EMAIL;
+    req.isSuperUser = SUPER_ADMIN_EMAILS.includes(req.userEmail || '');
     next();
   } catch (err: any) {
     console.warn('[AuthMiddleware] Cryptographic ID token verification failed:', err.message);

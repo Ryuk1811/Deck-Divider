@@ -203,34 +203,36 @@ export const PublicSetTopCardsView: React.FC = () => {
                     const price = card.tcgplayer?.price || card.tcgplayer?.trendPrice || 0;
                     
                     return (
-                      <div key={card.id} className="bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-6 transition-all hover:shadow-md hover:-translate-y-0.5">
-                        <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-sm font-mono font-bold shadow-2xs">
-                          #{idx + 1}
-                        </div>
-                        
-                        <div className="w-28 sm:w-32 flex-shrink-0">
-                          <div className="aspect-[63/88] rounded-xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-2xs">
-                             <HolographicCard
-                                card={card}
-                                className="w-full h-full object-cover"
-                              />
+                      <Link key={card.id} to={`/card/${card.id}`} className="block bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-4 sm:p-5 transition-all hover:shadow-md hover:-translate-y-0.5">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                          <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-sm font-mono font-bold shadow-2xs">
+                            #{idx + 1}
+                          </div>
+                          
+                          <div className="w-28 sm:w-32 flex-shrink-0">
+                            <div className="aspect-[63/88] rounded-xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-2xs">
+                              <HolographicCard
+                                  card={card}
+                                  className="w-full h-full object-cover"
+                                />
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1 text-center sm:text-left min-w-0">
+                            <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] font-heading mb-1 hover:text-[#DC143C] transition-colors">{card.name}</h2>
+                            <div className="text-xs text-[#64748B] mb-2 font-mono">
+                              {card.number} / {set.printedTotal} • {card.rarity || 'Unknown Rarity'}
+                            </div>
+                          </div>
+                          
+                          <div className="flex-shrink-0 text-center sm:text-right bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-5 py-3 min-w-[140px]">
+                            <div className="text-[11px] font-mono font-bold text-[#64748B] uppercase tracking-wider mb-0.5">Market Value</div>
+                            <div className="text-2xl sm:text-3xl font-extrabold text-[#16A34A] font-num">
+                              ${price.toFixed(2)}
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="flex-1 text-center sm:text-left min-w-0">
-                          <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] font-heading mb-1">{card.name}</h2>
-                          <div className="text-xs text-[#64748B] mb-2 font-mono">
-                            {card.number} / {set.printedTotal} • {card.rarity || 'Unknown Rarity'}
-                          </div>
-                        </div>
-                        
-                        <div className="flex-shrink-0 text-center sm:text-right bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-5 py-3 min-w-[140px]">
-                          <div className="text-[11px] font-mono font-bold text-[#64748B] uppercase tracking-wider mb-0.5">Market Value</div>
-                          <div className="text-2xl sm:text-3xl font-extrabold text-[#16A34A] font-num">
-                            ${price.toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

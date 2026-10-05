@@ -73,8 +73,14 @@ export const LandingFeatureGrid: React.FC = () => {
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-min max-w-7xl mx-auto">
         {features.map((feature, i) => (
-          <div key={i} className={`p-5 sm:p-6 lg:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-start gap-4 ${feature.span}`}>
-            <div className={`p-3 rounded-2xl ${feature.bg} ${feature.border} border`}>
+          <div
+            key={i}
+            className={`p-5 sm:p-6 lg:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between items-start gap-4 transform-gpu ${feature.span}`}
+            data-motion-reveal
+            data-motion-delay={(0.04 * (i % 4)).toFixed(2)}
+            data-motion-tilt
+          >
+            <div className={`p-3 rounded-2xl ${feature.bg} ${feature.border} border shadow-2xs`}>
               {feature.icon}
             </div>
             <div className="space-y-2 mt-auto">

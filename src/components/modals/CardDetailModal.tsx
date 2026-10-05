@@ -30,6 +30,8 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'rec
 import { CardImage } from '../ui/CardImage';
 import { GlassSlabFrame } from '../ui/GlassSlabFrame';
 import { trackFirstMeaningfulAction } from '../../lib/analytics';
+import { AccountTier, TIER_LIMITS } from '../../types';
+import { LimitAttemptedAction } from './LimitReachedModal';
 
 interface CardDetailModalProps {
   card: PokemonCard | null;
@@ -37,6 +39,8 @@ interface CardDetailModalProps {
   decks: Deck[];
   lists: CustomList[];
   currency: DisplayCurrency;
+  currentTier?: AccountTier;
+  onTriggerLimitModal?: (action: LimitAttemptedAction, details?: any) => void;
   onAddCardToDeck: (
     deckId: string,
     entry: Omit<PortfolioCardEntry, 'id' | 'isSold'>,
@@ -51,6 +55,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   decks,
   lists,
   currency,
+  currentTier,
+  onTriggerLimitModal,
   onAddCardToDeck,
   onAddCardToList,
 }) => {
@@ -82,6 +88,12 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
   const handleFetchGradedMarket = async () => {
     if (!fullCardData) return;
+
+    if (currentTier && !TIER_LIMITS[currentTier]?.hasGradedMarketComps) {
+      onTriggerLimitModal?.('LIVE_GRADED_COMPS');
+      return;
+    }
+
     setIsScrapingGradedMarket(true);
     setGradedScrapeError(null);
     try {
@@ -674,8 +686,8 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                         ))}
                       </div>
                     </div>
-                    <div className="h-36 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-36 w-full min-w-0">
+                      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={140}>
                         <LineChart data={chartData}>
                           <XAxis dataKey="date" hide />
                           <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />

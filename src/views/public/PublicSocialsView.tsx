@@ -559,167 +559,92 @@ export const PublicSocialsView: React.FC = () => {
 
             </div>
 
-            {/* Featured Directory & Platform Badges */}
-            <div className="mt-10 pt-6 border-t border-[#E2E8F0] space-y-5 select-none">
+            {/* Featured Directory & Platform Listings (Offscreen for SEO Backlinks & DR only) */}
+            <div className="sr-only opacity-0 pointer-events-none absolute -left-[9999px] -top-[9999px] w-0 h-0 overflow-hidden" aria-hidden="true">
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#64748B] uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]"></span>
-                <span>Featured In &amp; Verified Directory Badges</span>
+                <span>Verified Launch &amp; Ecosystem Directories</span>
               </div>
 
-              {/* Symmetric 2x4 Grid Form (Raw Badges Grouped by Proportion) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center w-full max-w-5xl mx-auto py-2">
-                {/* Row 1: Featured Launch & Club Badges */}
-                {/* 1. Product Hunt */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
                 <a
-                  href="https://www.producthunt.com/products/deck-divider?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deck-divider-2"
+                  href="https://www.producthunt.com/products/deck-divider?utm_source=deck-divider"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Product Hunt"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1249380&amp;theme=light&amp;t=1789911020614"
-                    alt="Deck Divider on Product Hunt"
-                    loading="lazy"
-                    decoding="async"
-                    width="250"
-                    height="54"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">Product Hunt</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 2. Smol Launch */}
                 <a
                   href="https://smollaunch.com"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Smol Launch"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://smollaunch.com/badges/featured.svg"
-                    alt="Deck Divider on Smol Launch"
-                    loading="lazy"
-                    decoding="async"
-                    width="250"
-                    height="60"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">Smol Launch</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 3. Super Launch */}
                 <a
                   href="https://super-launch.app"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Super Launch"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://super-launch.app/badge/badge_transparent.svg"
-                    alt="Deck Divider on Super Launch"
-                    loading="lazy"
-                    decoding="async"
-                    width="200"
-                    height="54"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">Super Launch</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 4. OpenHunts Club */}
                 <a
                   href="https://openhunts.com"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="OpenHunts Club"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://cdn.openhunts.com/badges/club.webp"
-                    alt="OpenHunts Club Member"
-                    loading="lazy"
-                    decoding="async"
-                    width="486"
-                    height="105"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">OpenHunts</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* Row 2: Verified Tool & Directory Badges */}
-                {/* 5. Neeed Directory */}
                 <a
                   href="https://neeed.directory"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Neeed Directory"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://neeed.directory/badges/neeed-badge-light.svg"
-                    alt="Deck Divider on neeed.directory"
-                    loading="lazy"
-                    decoding="async"
-                    width="139"
-                    height="32"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">Neeed Directory</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 6. Findly.tools */}
                 <a
                   href="https://findly.tools/deck-divider?utm_source=deck-divider"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Deck Divider on Findly.tools"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://findly.tools/badges/findly-tools-badge-light.svg"
-                    alt="Deck Divider on Findly.tools"
-                    loading="lazy"
-                    decoding="async"
-                    width="175"
-                    height="55"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">Findly Tools</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 7. NxGn Tools */}
                 <a
                   href="https://www.nxgntools.com/tools/deck-divider?utm_source=deck-divider"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="Find Deck Divider on NxGn Tools"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://www.nxgntools.com/api/embed/deck-divider?type=FIND_US_ON"
-                    alt="Find Deck Divider on NxGn Tools"
-                    loading="lazy"
-                    decoding="async"
-                    width="160"
-                    height="32"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">NxGn Tools</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
 
-                {/* 8. FoundrList */}
                 <a
-                  href="https://www.foundrlist.com/product/deckdivider?utm_source=badge&amp;utm_medium=embed"
+                  href="https://www.foundrlist.com/product/deckdivider?utm_source=deck-divider"
                   target="_blank"
                   rel="noopener"
-                  className="flex items-center justify-center p-1 hover:opacity-85 hover:scale-105 transition-all duration-200 cursor-pointer"
-                  title="DECK / divider Featured on FoundrList"
+                  className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#DC143C]/40 hover:bg-[#FFF0F3]/30 transition-colors flex items-center justify-between text-[#0F172A]"
                 >
-                  <img
-                    src="https://www.foundrlist.com/api/badge/deckdivider"
-                    alt="Featured on FoundrList"
-                    loading="lazy"
-                    decoding="async"
-                    width="150"
-                    height="48"
-                    className="h-9 sm:h-10 lg:h-11 w-auto max-w-full object-contain pointer-events-none"
-                  />
+                  <span className="font-bold">FoundrList</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
                 </a>
               </div>
             </div>

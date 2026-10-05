@@ -1,6 +1,6 @@
 {
   "name": "DECK / divider",
-  "description": "Track your Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks, complete master sets, and view real-time collection values in 15+ currencies.",
+  "description": "Track your Pokémon TCG collection value, check 2026 Standard legality, browse master set checklists across 218+ auto-provisioned sets, and manage PSA slabs with DECK / divider. Flexible subscription plans from $4/month.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -338,7 +338,25 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  About
+                  About DECK / divider
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/founder"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]"></span>
+                  Founder Story (Gurutva Murdia)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/data-methodology"
+                  className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Data &amp; Pricing Methodology
                 </Link>
               </li>
               <li>
@@ -436,7 +454,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               </li>
               <li>
                 <div className="pt-2 text-[11px] text-slate-400 leading-relaxed font-sans">
-                  No ads or tracking cookies. Export and backup your data anytime.
+                  No ads or third-party advertising trackers. Export and backup your data anytime.
                 </div>
               </li>
             </ul>

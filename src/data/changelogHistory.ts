@@ -18,6 +18,45 @@ export interface ReleaseEntry {
 
 export const ALL_RELEASES: ReleaseEntry[] = [
   {
+    iteration: 59,
+    version: 'v1.59',
+    date: 'October 2026',
+    badge: '59th Iteration',
+    badgeColor: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    tag: 'Major',
+    title: 'Universal Canonical SEO Metadata, Flexible Pay-Per-Period Engine & Dynamic Expansion Provisioning',
+    summary: 'The 59th platform iteration introducing a concise canonical title strategy, flexible pay-per-period subscription metadata ($4 Bunch, $7 Stack, $11 Deck, $14 Collection), live UTC data freshness timestamps, site-name alternate search schema (thedeckdivider), and dynamic auto-provisioning for newly logged expansion sets.',
+    highlights: [
+      {
+        category: 'Canonical Titles & Semantic Linking',
+        items: [
+          'Re-architected homepage and category page titles to prioritize high-intent collector search terms over overloaded brand strings.',
+          'Replaced generic action links with semantic contextual anchors across all public templates (Pokémon card database, 2026 Standard legality checker, Pokémon master set checklist, PSA slab tracker, sealed Pokémon product tracker).',
+          'Injected Schema.org WebSite alternateName markup (thedeckdivider, The Deck Divider, DeckDivider) for precise SERP brand recognition.'
+        ]
+      },
+      {
+        category: 'Flexible Pay-Per-Period Pricing Engine & Metadata',
+        items: [
+          'Updated platform subscription metadata with flexible monthly and annual pay-per-period identifiers ($4 Bunch, $7 Stack, $11 Deck, $14 Collection, $250 Founder Lifetime).',
+          'Synchronized AggregateOffer JSON-LD schemas, Open Graph tags, and microdata to communicate transparent pricing tiers to Google search engines.'
+        ]
+      },
+      {
+        category: 'Dynamic Expansion Ingestion & UTC Freshness Engine',
+        items: [
+          'Upgraded sets metadata to support dynamic auto-provisioning for newly logged expansion sets, promo subsets, and Japanese imports (218+ catalogued sets with continuous ingestion).',
+          'Embedded live UTC timestamp indicators (Updated: 05 Oct 2026, 06:00 UTC) across card prices, master set checklists, and format legality checkers.'
+        ]
+      }
+    ],
+    relatedUrls: [
+      { label: 'Pricing Plans', url: '/pricing' },
+      { label: 'Expansions Directory', url: '/sets' },
+      { label: 'Card Database', url: '/cards' }
+    ]
+  },
+  {
     iteration: 58,
     version: 'v1.58',
     date: 'September 2026',

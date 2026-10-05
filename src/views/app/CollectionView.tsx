@@ -18,6 +18,7 @@ import {
   ArrowUpDown,
   ChevronDown,
   Lock,
+  Download,
 } from 'lucide-react';
 import {
   Deck,
@@ -40,6 +41,7 @@ import { getPokemonSpeciesTypes } from '../../data/pokemonSpeciesTypes';
 import { MobilePortfolioHub } from '../../components/app/MobilePortfolioHub';
 import { ActiveTab } from '../../components/ui/Sidebar';
 import { PortfolioSealedEntry } from '../../types';
+import { LimitAttemptedAction } from '../../components/modals/LimitReachedModal';
 
 interface CollectionViewProps {
   decks: Deck[];
@@ -50,7 +52,7 @@ interface CollectionViewProps {
   userEmail?: string;
   userId?: string;
   currentTier?: AccountTier;
-  onTriggerLimitModal?: (action: 'SHARE_PUBLIC_LINK') => void;
+  onTriggerLimitModal?: (action: LimitAttemptedAction, details?: any) => void;
   isPublicProfile?: boolean;
   onTogglePublicProfile?: (isPublic: boolean) => void;
   onSelectCard: (card: PokemonCard) => void;
@@ -61,6 +63,7 @@ interface CollectionViewProps {
   onNavigateToTab?: (tab: ActiveTab) => void;
   onLoadShowcase?: () => void;
   onAddSampleDeck?: () => void;
+  onExportCSV?: () => void;
 }
 
 export type GroupByOption = 'none' | 'type' | 'rarity' | 'set' | 'deck' | 'supertype';
@@ -110,8 +113,9 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onNavigateToTab,
   onLoadShowcase,
   onAddSampleDeck,
+  onExportCSV,
 }) => {
-  const isSuperUser = userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
+  const isSuperUser = userEmail?.toLowerCase() === 'deckdivider@outlook.com' || userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
 
   // View & Grouping Controls State
   const [viewMode, setViewMode] = useState<ViewModeOption>('grid');
@@ -445,6 +449,29 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               </button>
             )}
 
+            {onExportCSV && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentTier && !TIER_LIMITS[currentTier]?.hasCsvExport) {
+                    onTriggerLimitModal?.('EXPORT_CSV');
+                    return;
+                  }
+                  onExportCSV();
+                }}
+                className="h-9 px-3.5 bg-white border border-[#CBD5E1] text-[#0F172A] hover:bg-slate-50 hover:border-[#94A3B8] flex items-center justify-center gap-1.5 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+                title={currentTier && TIER_LIMITS[currentTier]?.hasCsvExport ? 'Export collection & sales to CSV' : 'Export CSV (Deck Tier $11/mo required)'}
+              >
+                <Download className="w-3.5 h-3.5 text-[#DC143C]" />
+                <span>Export CSV</span>
+                {currentTier && !TIER_LIMITS[currentTier]?.hasCsvExport && (
+                  <span className="text-[10px] px-1 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded font-mono font-bold flex items-center gap-0.5">
+                    <Lock className="w-2.5 h-2.5" /> Deck
+                  </span>
+                )}
+              </button>
+            )}
+
             {onTogglePublicProfile && (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5">
@@ -454,7 +481,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   {!TIER_LIMITS[currentTier]?.canSharePublicLinks && (
                     <span 
                       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200"
-                      title="Public portfolio sharing is available on Stack Tier ($22/mo) and above"
+                      title="Public portfolio sharing is available on Stack Tier ($7/mo) and above"
                     >
                       <Lock className="w-2.5 h-2.5" /> Stack
                     </span>

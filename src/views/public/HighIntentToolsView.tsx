@@ -187,15 +187,15 @@ export const HighIntentToolsView: React.FC = () => {
       <PageHead
         title={
           isDeckChecker
-            ? 'Pokémon TCG Regulation Mark & Standard Rotation Legality Checker'
-            : 'Pokémon Card Grading ROI Calculator — PSA, BGS & CGC Expected Value'
+            ? 'Pokémon TCG Deck Builder & Standard Legality Checker | DECK / divider'
+            : 'Pokémon Card PSA Grade ROI & Value Calculator | DECK / divider'
         }
         description={
           isDeckChecker
             ? 'Check Pokémon card regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with live rule validation.'
             : 'Calculate net ROI, grading costs, and expected value (EV) before submitting cards to PSA, BGS, or CGC. Includes Gem Mint probability simulator.'
         }
-        canonicalPath={isDeckChecker ? '/tools/deck-legality-checker' : '/tools/psa-grade-calculator'}
+        canonicalPath={isDeckChecker ? '/tool/deck-legality-checker' : '/tool/psa-grade-calculator'}
         keywords={
           isDeckChecker
             ? [

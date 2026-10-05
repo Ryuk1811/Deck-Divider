@@ -16,12 +16,10 @@ export interface RouteEntry {
   priority?: string;
 }
 
-// 1. Core Platform & Directory Pages (Aligned with Phase 1 rewrite)
+// 1. Core Platform & Directory Pages (Trimmed, canonical hierarchy)
 export const CORE_PAGES: RouteEntry[] = [
   { path: '/', lastmod: BUILD_DATE, priority: '1.0', changefreq: 'daily' },
   { path: '/cards', lastmod: BUILD_DATE, priority: '1.0', changefreq: 'daily' },
-  { path: '/expansions', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
-  { path: '/expansions/sets', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'daily' },
   { path: '/sets', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
   { path: '/directory', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'daily' },
   { path: '/directory/sets-index', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
@@ -34,25 +32,27 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/best', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
   { path: '/tools', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
   { path: '/leaderboard', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/about', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/about', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'monthly' },
   { path: '/how-it-works', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'monthly' },
-  { path: '/faq', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/faq', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'monthly' },
   { path: '/contact', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
+  { path: '/founder', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
+  { path: '/data-methodology', lastmod: BUILD_DATE, priority: '0.7', changefreq: 'monthly' },
   { path: '/privacy', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/terms', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/security', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/formats', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/format/standard', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
+  { path: '/format/standard-2026', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
   { path: '/format/expanded', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/format/glc', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
   { path: '/format/unlimited', lastmod: BUILD_DATE, priority: '0.65', changefreq: 'weekly' },
   { path: '/format/retro-2010', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
   { path: '/format/retro-2004', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
-  { path: '/socials', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
-  { path: '/partners/ptc-collectibles', lastmod: BUILD_DATE, priority: '0.95', changefreq: 'daily' },
+  { path: '/socials', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
+  { path: '/partners/ptc-collectibles', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
   { path: '/portfolios', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
-  { path: '/tools/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
-  { path: '/tools/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tool/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tool/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
 ];
 
 // 2. Tournament Decks & Archetypes (Singular)
@@ -228,6 +228,10 @@ export function generateCardsSitemapXml(): string {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/card/base1-4</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/card/sv03pt5-199</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/card/sv08-252</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/card/swsh7-215</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Charizard</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Pikachu</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/cards?q=Mewtwo</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
@@ -241,7 +245,7 @@ export function generateToolsSitemapXml(): string {
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
   TOOL_SLUGS.forEach(slug => {
-    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tool/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
   });
   xml += `</urlset>`;
   return xml;
@@ -251,7 +255,7 @@ export function generateChangelogSitemapXml(): string {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
-  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.58</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.59</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.58</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.57</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/changelog#v1.56</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
   xml += `</urlset>`;
@@ -440,93 +444,6 @@ ${COMPETITOR_SLUGS.map(c => `- [vs ${c.toUpperCase()}](${CANONICAL_ORIGIN}/compa
 `;
 }
 
-export function generateAiCatalogJson(): string {
-  const catalog = {
-    specVersion: "1.0",
-    host: {
-      identifier: "urn:ai:deckdivider.app:platform:core",
-      displayName: "DECK / divider",
-      documentationUrl: `${CANONICAL_ORIGIN}/about`,
-      logoUrl: `${CANONICAL_ORIGIN}/icon-512.png`
-    },
-    entries: [
-      {
-        identifier: "urn:ai:deckdivider.app:catalog:search-matrix",
-        displayName: "Pokémon TCG Master Search Matrix & Taxonomies",
-        description: "Comprehensive taxonomic matrix covering Pokémon expansions, card IDs, regulation marks (H/I/J), rarities, and live market pricing.",
-        type: "application/json",
-        version: "1.0.0",
-        url: `${CANONICAL_ORIGIN}/search-matrix.json`,
-        representativeQueries: [
-          "Find Pokemon card market prices",
-          "Search Pokemon TCG expansion checklists",
-          "Lookup Pokemon card rarity and regulation mark",
-          "Charizard ex standard tournament meta pricing"
-        ]
-      },
-      {
-        identifier: "urn:ai:deckdivider.app:catalog:llms-txt",
-        displayName: "LLM Grounded Knowledge & Platform Documentation",
-        description: "Clean Markdown documentation designed for LLM citation and agent tool discovery.",
-        type: "text/plain",
-        version: "1.0.0",
-        url: `${CANONICAL_ORIGIN}/llms.txt`,
-        representativeQueries: [
-          "What is DECK divider Pokemon TCG platform",
-          "Pokemon card PSA grading expected value calculator",
-          "Pokemon TCG Live PTCGL deck export format",
-          "Pokemon standard rotation regulation marks 2026"
-        ]
-      },
-      {
-        identifier: "urn:ai:deckdivider.app:tools:deck-legality-checker",
-        displayName: "Pokémon TCG Deck Legality & Regulation Mark Checker",
-        description: "Automated validator for 60-card tournament deck legality, 2026 regulation marks (H, I, J; G rotated), ACE SPEC limits, and Radiant restrictions.",
-        type: "application/json",
-        version: "1.0.0",
-        url: `${CANONICAL_ORIGIN}/tools/deck-legality-checker`,
-        representativeQueries: [
-          "Verify Pokemon deck legality for Standard format",
-          "Are regulation mark G cards legal in 2026",
-          "Check ACE SPEC card limits in tournament deck",
-          "Validate Pokemon TCG Live PTCGL decklist"
-        ]
-      },
-      {
-        identifier: "urn:ai:deckdivider.app:tools:psa-grade-calculator",
-        displayName: "PSA Grade Expected Value & Profit Margin Calculator",
-        description: "Expected value ROI analysis for raw cards vs PSA 10, 9, 8 submission tiers factoring grading fees and market spreads.",
-        type: "application/json",
-        version: "1.0.0",
-        url: `${CANONICAL_ORIGIN}/tools/psa-grade-calculator`,
-        representativeQueries: [
-          "Calculate PSA 10 profit margin for Pokemon cards",
-          "Expected value ROI of grading raw Pokemon cards",
-          "PSA grading submission cost vs market value calculator",
-          "Pokemon card grading price spread calculator"
-        ]
-      },
-      {
-        identifier: "urn:ai:deckdivider.app:partners:ptc-collectibles",
-        displayName: "PTC Collectibles Official Retail Partner Hub",
-        description: "Verified Pokemon TCG merchandise and sealed booster boxes with 5% discount code DECKDIVIDER.",
-        type: "application/json",
-        version: "1.0.0",
-        url: `${CANONICAL_ORIGIN}/partners/ptc-collectibles`,
-        representativeQueries: [
-          "Buy Pokemon booster boxes discount promo code",
-          "PTC Collectibles Pokemon card store coupon",
-          "Verified Pokemon TCG sealed booster boxes"
-        ]
-      }
-    ]
-  };
-
-  return JSON.stringify(catalog, null, 2);
-}
-
-export const generateArdJson = generateAiCatalogJson;
-
 export function generateRobotsTxt(): string {
   return `# Titanium Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
@@ -567,10 +484,6 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /llms-keywords.txt
 Allow: /search-matrix.json
-Allow: /ai-catalog.json
-Allow: /.well-known/ai-catalog.json
-Allow: /ard.json
-Allow: /.well-known/ard.json
 Allow: /og-*.png
 
 # Protect private authenticated state & internal APIs
@@ -633,8 +546,6 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const llmsFull = await generateLlmsFullTxt();
   const llmsKeywords = generateLlmsKeywordsTxt();
   const searchMatrix = generateSearchMatrixJson();
-  const aiCatalog = generateAiCatalogJson();
-  const ardJson = generateArdJson();
   const robots = generateRobotsTxt();
 
   // Write Main & Segmented Sitemaps
@@ -656,17 +567,7 @@ export async function writeAllFootprintFiles(targetDir: string) {
   fs.writeFileSync(path.join(targetDir, 'llms-full.txt'), llmsFull, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms-keywords.txt'), llmsKeywords, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'search-matrix.json'), searchMatrix, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'ai-catalog.json'), aiCatalog, 'utf-8');
-  fs.writeFileSync(path.join(targetDir, 'ard.json'), ardJson, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'robots.txt'), robots, 'utf-8');
-
-  // Ensure .well-known directory exists and write well-known discovery manifests
-  const wellKnownDir = path.join(targetDir, '.well-known');
-  if (!fs.existsSync(wellKnownDir)) {
-    fs.mkdirSync(wellKnownDir, { recursive: true });
-  }
-  fs.writeFileSync(path.join(wellKnownDir, 'ai-catalog.json'), aiCatalog, 'utf-8');
-  fs.writeFileSync(path.join(wellKnownDir, 'ard.json'), ardJson, 'utf-8');
   
   // IndexNow verification key file
   fs.writeFileSync(path.join(targetDir, '7392abcd.txt'), '7392abcd', 'utf-8');

@@ -37,6 +37,7 @@ import { DropdownMenu } from '../../components/ui/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
 import { encodeDeckToUrlParam } from '../../utils/deckUrlEncoder';
 import { PublicShareLinkBox } from '../../components/ui/PublicShareLinkBox';
+import { LimitAttemptedAction } from '../../components/modals/LimitReachedModal';
 
 interface DecksViewProps {
   decks: Deck[];
@@ -55,7 +56,7 @@ interface DecksViewProps {
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
   onTriggerLimitModal: (
-    action: 'CREATE_DECK' | 'ADD_CARD_TO_DECK' | 'SHARE_PUBLIC_LINK',
+    action: LimitAttemptedAction,
     details?: any
   ) => void;
   initialSelectedDeckId?: string;
@@ -82,7 +83,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
   onLoadShowcase,
   onAddSampleDeck,
 }) => {
-  const isSuperUser = userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
+  const isSuperUser = userEmail?.toLowerCase() === 'deckdivider@outlook.com' || userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     initialSelectedDeckId || decks[0]?.id || ''
   );
@@ -264,6 +265,15 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
   const handleConfirmSplit = () => {
     if (!currentDeck || !splitGroupSetId || !splitNewDeckName) return;
+
+    if (decks.length >= tierLimit.maxDecks) {
+      onTriggerLimitModal('CREATE_DECK', {
+        currentCount: decks.length,
+        limitCount: tierLimit.maxDecks,
+      });
+      return;
+    }
+
     const entriesInSet = currentDeck.entries.filter(
       (e) => e.card.set.id === splitGroupSetId
     );

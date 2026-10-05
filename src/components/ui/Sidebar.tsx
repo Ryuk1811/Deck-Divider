@@ -121,7 +121,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const displayName = user?.displayName || profile?.displayName || user?.email?.split('@')[0] || 'Collector';
   const avatarUrl = profile?.avatar || user?.photoURL || user?.providerData?.find(p => p.photoURL)?.photoURL || '';
   const initials = displayName.substring(0, 2).toUpperCase();
-  const isSuperUser = profile?.isSuperUser || user?.email?.toLowerCase() === 'gurutvamurdia@gmail.com';
+  const userEmailLower = (user?.email || '').toLowerCase();
+  const isSuperUser = profile?.isSuperUser || userEmailLower === 'deckdivider@outlook.com' || userEmailLower === 'gurutvamurdia@gmail.com';
 
   useEffect(() => {
     if (isMobileOpen && isCollapsed) {

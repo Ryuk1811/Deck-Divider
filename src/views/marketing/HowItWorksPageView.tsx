@@ -34,11 +34,11 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       stepNumber: '01',
       title: 'Add Cards & Graded Slabs',
       subtitle: 'Raw Binders & Graded Slabs',
-      description: 'Search cards easily across 148+ expansions. Add raw cards or register authenticated slabs from PSA, BGS, and CGC with certificate numbers and subgrades.',
-      tags: ['Fast Search', 'Subgrades', 'Cert Verification'],
+      description: 'Search cards easily across 218 catalogued sets & series (148+ mainline checklists). Add raw cards or register slabs from PSA, BGS, CGC, and ACE with certificate number tracking, grade validation, and subgrades.',
+      tags: ['Fast Search', 'Subgrades', 'Cert Tracking'],
       details: [
         'Instant search by card name, number, set, rarity, and illustrator.',
-        'Record PSA, BGS, and CGC certificates with grade details.',
+        'Record PSA, BGS, and CGC certificates with grade details and format validation.',
         'Input purchase prices and dates to keep track of what you paid.',
       ],
       previewContent: {
@@ -46,26 +46,26 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         title: 'Charizard ex #199 - 151 (MEW)',
         certNumber: 'PSA 10 GEM MINT #83921049',
         estValue: '$485.00 USD',
-        status: 'Authenticated',
+        status: 'Logged & Tracked',
       },
     },
     {
       stepNumber: '02',
-      title: 'Live Market Pricing',
+      title: 'Daily Market Pricing',
       subtitle: 'Automatic Price Updates',
-      description: 'The app automatically updates card values using real-time market prices. Your total collection value updates in your chosen currency without manual calculations.',
-      tags: ['Live Market Prices', '15+ Currencies', 'Value History'],
+      description: 'The app automatically updates card values using daily verified market price feeds. Your total collection value recalculates instantly in your chosen currency without manual calculations.',
+      tags: ['Daily Market Prices', '15+ Currencies', 'Value History'],
       details: [
-        'Live market prices based on verified marketplace sales.',
+        'Daily market prices based on verified marketplace sales.',
         'Instant currency conversion across USD, EUR, GBP, JPY, CAD, and more.',
         'See your total collection value and your most valuable cards at a glance.',
       ],
       previewContent: {
-        badge: 'REAL-TIME VALUATION',
+        badge: 'PORTFOLIO VALUATION',
         title: 'Total Collection Value',
         certNumber: '1,420 Cards Logged',
         estValue: '$42,850.00 USD (+14.2%)',
-        status: 'Live Synced',
+        status: 'Daily Synced',
       },
     },
     {
@@ -92,7 +92,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       title: 'Sealed Products & Set Checklists',
       subtitle: 'Complete Sets & Sealed Boxes',
       description: 'Keep track of sealed booster boxes, Elite Trainer Boxes (ETBs), and tins while tracking your completion progress for every expansion set.',
-      tags: ['Sealed Products', '148+ Set Checklists', 'Secure Cloud Sync'],
+      tags: ['Sealed Products', '218 Sets Catalogued', 'Secure Cloud Sync'],
       details: [
         'Log sealed booster boxes, cases, and ETBs with what you paid.',
         'Interactive checklists showing what cards you have and what you still need.',
@@ -205,10 +205,10 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="How does DECK / divider organize Pokémon collections?"
-            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 148+ sets with ⌘K search, 2) Automatic market valuation calculated from live TCGplayer comps in 15+ currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
+            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 218 catalogued sets & series (148+ master checklists) with ⌘K search, 2) Automatic market valuation calculated from daily TCGplayer comps in 15+ currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
             keyFacts={[
-              { label: 'Step 1', value: 'Card Intake & Cert Registration' },
-              { label: 'Step 2', value: 'Live Pricing & Currency Sync' },
+              { label: 'Step 1', value: 'Card Intake & Cert Tracking' },
+              { label: 'Step 2', value: 'Daily Pricing & Currency Sync' },
               { label: 'Step 3', value: 'Format Legality & PTCGL Export' },
               { label: 'Step 4', value: 'Sealed Vault & Cloud Sync' },
             ]}
