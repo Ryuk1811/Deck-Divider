@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Zap, Lock, AlertCircle, Loader2, Check, ShieldCheck, Sparkles, Calendar } from 'lucide-react';
+import { X, Zap, Lock, AlertCircle, Loader2, Check, ShieldCheck, Sparkles, Calendar, RefreshCw } from 'lucide-react';
 import { AccountTier, TIER_LIMITS } from '../../types';
 
 declare global {
@@ -23,53 +23,106 @@ interface PayPalSubscriptionModalProps {
   getUserToken?: () => Promise<string | undefined>;
 }
 
-// Singleton script loader using intent=capture for standard one-time PayPal orders
+// Singleton failsafe script loader
 let paypalOrderScriptPromise: Promise<void> | null = null;
 
 function loadPayPalOrderSdk(clientId: string): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve();
 
+  // 1. Instant check
   if (window.paypal && typeof window.paypal.Buttons === 'function') {
     return Promise.resolve();
   }
 
+  // 2. Active promise check
   if (paypalOrderScriptPromise) {
     return paypalOrderScriptPromise;
   }
 
+  const activeClientId = (clientId && clientId.trim().length > 0)
+    ? clientId.trim()
+    : ((import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || 'sb');
+
   paypalOrderScriptPromise = new Promise<void>((resolve, reject) => {
+    let isSettled = false;
+
+    const timer = setTimeout(() => {
+      if (!isSettled) {
+        isSettled = true;
+        paypalOrderScriptPromise = null;
+        reject(new Error('PayPal SDK connection timed out. Please check your connection or retry.'));
+      }
+    }, 9000);
+
+    const checkReady = () => {
+      if (window.paypal && typeof window.paypal.Buttons === 'function') {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          resolve();
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (checkReady()) return;
+
+    // Check existing script tags in DOM
     const existingScript = document.querySelector<HTMLScriptElement>('script[src*="paypal.com/sdk/js"]');
     if (existingScript) {
-      if (window.paypal && typeof window.paypal.Buttons === 'function') {
-        resolve();
-      } else {
-        existingScript.addEventListener('load', () => resolve());
-        existingScript.addEventListener('error', () => reject(new Error('Failed to load PayPal script')));
-      }
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (checkReady()) {
+          clearInterval(interval);
+        } else if (attempts >= 20) {
+          clearInterval(interval);
+          try { existingScript.remove(); } catch {}
+          appendFreshScript();
+        }
+      }, 100);
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
-      clientId
-    )}&intent=capture&currency=USD`;
-    script.async = true;
+    function appendFreshScript() {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
+        activeClientId
+      )}&intent=capture&currency=USD`;
+      script.async = true;
 
-    script.onload = () => {
-      if (window.paypal) {
-        resolve();
-      } else {
-        reject(new Error('PayPal SDK loaded but window.paypal is not defined'));
-      }
-      paypalOrderScriptPromise = null;
-    };
+      script.onload = () => {
+        let attempts = 0;
+        const poll = setInterval(() => {
+          attempts++;
+          if (checkReady()) {
+            clearInterval(poll);
+          } else if (attempts >= 15) {
+            clearInterval(poll);
+            if (!isSettled) {
+              isSettled = true;
+              clearTimeout(timer);
+              paypalOrderScriptPromise = null;
+              reject(new Error('PayPal SDK loaded but Buttons component was not found.'));
+            }
+          }
+        }, 100);
+      };
 
-    script.onerror = () => {
-      paypalOrderScriptPromise = null;
-      reject(new Error('Failed to load PayPal SDK'));
-    };
+      script.onerror = () => {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          paypalOrderScriptPromise = null;
+          reject(new Error('Failed to load PayPal payment SDK.'));
+        }
+      };
 
-    document.body.appendChild(script);
+      document.body.appendChild(script);
+    }
+
+    appendFreshScript();
   });
 
   return paypalOrderScriptPromise;
@@ -87,12 +140,13 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSdkLoading, setIsSdkLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const buttonContainerRef = useRef<HTMLDivElement>(null);
   const paypalButtonInstanceRef = useRef<any>(null);
 
   const effectiveClientId =
-    clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || '';
+    clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || 'sb';
 
   const tierLimit = TIER_LIMITS[tierName] || TIER_LIMITS.Bunch;
   const isYearly = billingCycle === 'yearly';
@@ -112,11 +166,7 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
   useEffect(() => {
     if (!isOpen) {
       if (paypalButtonInstanceRef.current && typeof paypalButtonInstanceRef.current.close === 'function') {
-        try {
-          paypalButtonInstanceRef.current.close();
-        } catch {
-          // ignore
-        }
+        try { paypalButtonInstanceRef.current.close(); } catch {}
         paypalButtonInstanceRef.current = null;
       }
       if (buttonContainerRef.current) {
@@ -128,23 +178,13 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
       return;
     }
 
-    if (!effectiveClientId) {
-      setIsSdkLoading(false);
-      setErrorMessage('PayPal configuration is missing. Please contact administrator.');
-      return;
-    }
-
     let isSubscribed = true;
     setIsSdkLoading(true);
     setErrorMessage(null);
 
-    // Clean up previous button if cycle or tier changed
+    // Clean up previous button instance if cycle or tier changed
     if (paypalButtonInstanceRef.current && typeof paypalButtonInstanceRef.current.close === 'function') {
-      try {
-        paypalButtonInstanceRef.current.close();
-      } catch {
-        // ignore
-      }
+      try { paypalButtonInstanceRef.current.close(); } catch {}
       paypalButtonInstanceRef.current = null;
     }
     if (buttonContainerRef.current) {
@@ -158,6 +198,9 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
         if (!window.paypal || typeof window.paypal.Buttons !== 'function') {
           throw new Error('PayPal Buttons component not available in SDK.');
         }
+
+        if (!buttonContainerRef.current) return;
+        buttonContainerRef.current.innerHTML = '';
 
         const buttons = window.paypal.Buttons({
           style: {
@@ -219,33 +262,44 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
         paypalButtonInstanceRef.current = buttons;
 
         if (buttonContainerRef.current) {
-          buttons.render(buttonContainerRef.current).catch((err: any) => {
-            console.warn('Button render error (possibly unmounted):', err);
-          });
+          const renderPromise = buttons.render(buttonContainerRef.current);
+          if (renderPromise && typeof renderPromise.then === 'function') {
+            renderPromise
+              .then(() => {
+                if (isSubscribed) setIsSdkLoading(false);
+              })
+              .catch((err: any) => {
+                console.warn('Button render error (possibly unmounted):', err);
+                if (isSubscribed) setIsSdkLoading(false);
+              });
+          } else {
+            if (isSubscribed) setIsSdkLoading(false);
+          }
+        } else {
+          if (isSubscribed) setIsSdkLoading(false);
         }
 
-        setIsSdkLoading(false);
+        // Safety timeout to dismiss loading spinner after 1.5s
+        setTimeout(() => {
+          if (isSubscribed) setIsSdkLoading(false);
+        }, 1500);
       })
       .catch((err: any) => {
         console.error('PayPal SDK loading error:', err);
         if (isSubscribed) {
           setIsSdkLoading(false);
-          setErrorMessage('Unable to initialize PayPal checkout. Please check your connection.');
+          setErrorMessage('Unable to connect to PayPal. Click retry or check connection.');
         }
       });
 
     return () => {
       isSubscribed = false;
       if (paypalButtonInstanceRef.current && typeof paypalButtonInstanceRef.current.close === 'function') {
-        try {
-          paypalButtonInstanceRef.current.close();
-        } catch {
-          // ignore
-        }
+        try { paypalButtonInstanceRef.current.close(); } catch {}
         paypalButtonInstanceRef.current = null;
       }
     };
-  }, [isOpen, tierName, billingCycle, price, effectiveClientId]);
+  }, [isOpen, tierName, billingCycle, price, effectiveClientId, reloadKey]);
 
   if (!isOpen) return null;
 
@@ -366,16 +420,29 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
           </div>
         </div>
 
-        {/* Error Message */}
+        {/* Error Message & Retry */}
         {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-red-700 leading-relaxed font-mono">{errorMessage}</p>
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl space-y-2">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-red-700 leading-relaxed font-mono">{errorMessage}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                paypalOrderScriptPromise = null;
+                setReloadKey(k => k + 1);
+              }}
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-mono font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Retry Connection
+            </button>
           </div>
         )}
 
         {/* PayPal Button Container */}
-        <div className="space-y-3">
+        <div className="space-y-3 min-h-[50px] relative">
           {isSdkLoading && (
             <div className="h-12 w-full rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
               <Loader2 className="w-4 h-4 animate-spin text-[#DC143C]" />
@@ -394,7 +461,7 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
 
           <div
             ref={buttonContainerRef}
-            className={`min-h-[48px] ${isProcessing || isSdkLoading ? 'hidden' : 'block'}`}
+            className={`w-full min-h-[48px] ${isProcessing ? 'hidden' : 'block'}`}
           />
         </div>
 
