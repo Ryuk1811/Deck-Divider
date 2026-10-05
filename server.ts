@@ -21,6 +21,7 @@ if (process.env.SENTRY_DSN) {
 
 import { 
   createSubscription, 
+  createPayPalOrder,
   reviseSubscription, 
   getSubscription, 
   getPayPalConfig, 
@@ -1846,6 +1847,54 @@ async function startServer() {
       });
     } catch (err: any) {
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  app.post('/api/billing/order/create', verifyToken, async (req, res) => {
+    try {
+      const { tier, cycle = 'monthly', returnUrl, cancelUrl } = req.body || {};
+      const prices: Record<string, { monthly: number; yearly: number }> = {
+        Bunch: { monthly: 4, yearly: 42 },
+        Stack: { monthly: 7, yearly: 75 },
+        Deck: { monthly: 11, yearly: 120 },
+        Collection: { monthly: 14, yearly: 150 },
+      };
+      const validTiers = ['Bunch', 'Stack', 'Deck', 'Collection'];
+      const targetTier = validTiers.includes(tier) ? tier : 'Bunch';
+      const amount = prices[targetTier]?.[cycle as 'monthly' | 'yearly'] || (cycle === 'yearly' ? 75 : 7);
+      const desc = `DECK / divider ${targetTier} Tier Pass (${cycle === 'yearly' ? '365 Days Annual' : '30 Days Monthly'})`;
+
+      const order = await createPayPalOrder(amount, desc, returnUrl, cancelUrl);
+      res.json({
+        success: true,
+        orderId: order.orderId,
+        approvalUrl: order.approvalUrl,
+        amount,
+        tier: targetTier,
+        cycle,
+      });
+    } catch (err: any) {
+      console.error('[Create PayPal Order Error]', err);
+      res.status(500).json({ error: err.message || 'Failed to create PayPal order' });
+    }
+  });
+
+  app.post('/api/billing/lifetime/create', verifyToken, async (req, res) => {
+    try {
+      const { returnUrl, cancelUrl } = req.body || {};
+      const desc = 'DECK / divider Founder Lifetime Pass — Unlimited Collection Tier ($250 USD One-Time)';
+      const order = await createPayPalOrder(250, desc, returnUrl, cancelUrl);
+      res.json({
+        success: true,
+        orderId: order.orderId,
+        approvalUrl: order.approvalUrl,
+        amount: 250,
+        tier: 'Collection',
+        isLifetime: true,
+      });
+    } catch (err: any) {
+      console.error('[Create Lifetime Order Error]', err);
+      res.status(500).json({ error: err.message || 'Failed to create PayPal lifetime order' });
     }
   });
 
