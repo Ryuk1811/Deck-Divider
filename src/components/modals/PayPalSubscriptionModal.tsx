@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
-import { X, Zap, Lock, AlertCircle, Loader2, Check, ShieldCheck, Sparkles, Calendar, ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { X, Zap, Lock, AlertCircle, Loader2, Check, ShieldCheck, Sparkles, Calendar, ArrowRight, RefreshCw } from 'lucide-react';
 import { AccountTier, TIER_LIMITS } from '../../types';
 import { auth } from '../../lib/firebase';
+
+declare global {
+  interface Window {
+    paypal?: any;
+  }
+}
 
 interface PayPalSubscriptionModalProps {
   isOpen: boolean;
@@ -18,25 +24,151 @@ interface PayPalSubscriptionModalProps {
   getUserToken?: () => Promise<string | undefined>;
 }
 
+let paypalSdkScriptPromise: Promise<void> | null = null;
+
+function loadPayPalJsSdk(clientId: string): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve();
+
+  if (window.paypal && typeof window.paypal.Buttons === 'function') {
+    return Promise.resolve();
+  }
+
+  if (paypalSdkScriptPromise) {
+    return paypalSdkScriptPromise;
+  }
+
+  const activeClientId = clientId?.trim() || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || '';
+
+  if (!activeClientId) {
+    return Promise.reject(new Error('PayPal Client ID is missing'));
+  }
+
+  paypalSdkScriptPromise = new Promise<void>((resolve, reject) => {
+    let isSettled = false;
+
+    const timer = setTimeout(() => {
+      if (!isSettled) {
+        isSettled = true;
+        paypalSdkScriptPromise = null;
+        reject(new Error('PayPal SDK script timeout'));
+      }
+    }, 8000);
+
+    const checkReady = () => {
+      if (window.paypal && typeof window.paypal.Buttons === 'function') {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          resolve();
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (checkReady()) return;
+
+    const existingScript = document.querySelector<HTMLScriptElement>('script[src*="paypal.com/sdk/js"]');
+    if (existingScript) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (checkReady()) {
+          clearInterval(interval);
+        } else if (attempts >= 20) {
+          clearInterval(interval);
+          try { existingScript.remove(); } catch {}
+          appendFreshScript();
+        }
+      }, 100);
+      return;
+    }
+
+    function appendFreshScript() {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
+        activeClientId
+      )}&intent=capture&currency=USD`;
+      script.async = true;
+
+      script.onload = () => {
+        let attempts = 0;
+        const poll = setInterval(() => {
+          attempts++;
+          if (checkReady()) {
+            clearInterval(poll);
+          } else if (attempts >= 15) {
+            clearInterval(poll);
+            if (!isSettled) {
+              isSettled = true;
+              clearTimeout(timer);
+              paypalSdkScriptPromise = null;
+              reject(new Error('PayPal SDK loaded without Buttons component'));
+            }
+          }
+        }, 100);
+      };
+
+      script.onerror = () => {
+        if (!isSettled) {
+          isSettled = true;
+          clearTimeout(timer);
+          paypalSdkScriptPromise = null;
+          reject(new Error('Failed to load PayPal JS SDK script'));
+        }
+      };
+
+      document.body.appendChild(script);
+    }
+
+    appendFreshScript();
+  });
+
+  return paypalSdkScriptPromise;
+}
+
 export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = ({
   isOpen,
   onClose,
   tierName,
   initialCycle = 'monthly',
+  clientId = '',
   onApproveSubscription,
 }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>(initialCycle);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSdkLoading, setIsSdkLoading] = useState(true);
+  const [sdkFailed, setSdkFailed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const buttonContainerRef = useRef<HTMLDivElement>(null);
+  const paypalButtonsRef = useRef<any>(null);
 
   const tierLimit = TIER_LIMITS[tierName] || TIER_LIMITS.Bunch;
   const isYearly = billingCycle === 'yearly';
   const price = isYearly ? tierLimit.priceYearly : tierLimit.priceMonthly;
   const durationText = isYearly ? '365 Days Unlocked' : '30 Days Unlocked';
 
-  React.useEffect(() => {
+  const [activeClientId, setActiveClientId] = useState<string>(clientId);
+
+  useEffect(() => {
     setBillingCycle(initialCycle);
   }, [initialCycle, isOpen]);
+
+  // Fetch client ID if missing
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!activeClientId) {
+      fetch('/api/billing/paypal-config')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.clientId) {
+            setActiveClientId(data.clientId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen, activeClientId]);
 
   const handleClose = () => {
     if (isProcessing) return;
@@ -45,20 +177,181 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
     onClose();
   };
 
-  const handleProceedWithPayPal = async () => {
+  // Mount Standard PayPal JS SDK Buttons
+  useEffect(() => {
+    if (!isOpen) {
+      if (paypalButtonsRef.current && typeof paypalButtonsRef.current.close === 'function') {
+        try { paypalButtonsRef.current.close(); } catch {}
+        paypalButtonsRef.current = null;
+      }
+      if (buttonContainerRef.current) {
+        buttonContainerRef.current.innerHTML = '';
+      }
+      setIsSdkLoading(true);
+      setSdkFailed(false);
+      setErrorMessage(null);
+      setIsProcessing(false);
+      return;
+    }
+
+    let isSubscribed = true;
+    setIsSdkLoading(true);
+    setSdkFailed(false);
+    setErrorMessage(null);
+
+    if (paypalButtonsRef.current && typeof paypalButtonsRef.current.close === 'function') {
+      try { paypalButtonsRef.current.close(); } catch {}
+      paypalButtonsRef.current = null;
+    }
+    if (buttonContainerRef.current) {
+      buttonContainerRef.current.innerHTML = '';
+    }
+
+    const targetClientId = activeClientId || clientId || (import.meta.env.VITE_PAYPAL_CLIENT_ID as string) || '';
+
+    loadPayPalJsSdk(targetClientId)
+      .then(() => {
+        if (!isSubscribed) return;
+
+        if (!window.paypal || typeof window.paypal.Buttons !== 'function') {
+          throw new Error('PayPal Buttons unavailable');
+        }
+
+        if (!buttonContainerRef.current) return;
+        buttonContainerRef.current.innerHTML = '';
+
+        const buttons = window.paypal.Buttons({
+          style: {
+            shape: 'rect',
+            color: 'gold',
+            layout: 'vertical',
+            label: 'pay',
+          },
+          createOrder: async () => {
+            setErrorMessage(null);
+            setIsProcessing(true);
+            try {
+              const token = await auth.currentUser?.getIdToken().catch(() => undefined);
+              const res = await fetch('/api/billing/order/create', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                  tier: tierName,
+                  cycle: billingCycle,
+                }),
+              });
+
+              if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to create PayPal order');
+              }
+
+              const data = await res.json();
+              if (!data.orderId) {
+                throw new Error('No order ID returned');
+              }
+              return data.orderId;
+            } catch (err: any) {
+              setIsProcessing(false);
+              setErrorMessage(err.message || 'Error creating PayPal order.');
+              throw err;
+            }
+          },
+          onApprove: async (data: { orderID: string }) => {
+            try {
+              setIsProcessing(true);
+              const token = await auth.currentUser?.getIdToken().catch(() => undefined);
+              const res = await fetch('/api/billing/order/capture', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                  orderId: data.orderID,
+                  tier: tierName,
+                  cycle: billingCycle,
+                }),
+              });
+
+              if (!res.ok) {
+                const captureErr = await res.json().catch(() => ({}));
+                console.warn('Capture response notice:', captureErr);
+              }
+
+              await onApproveSubscription(data.orderID, tierName, billingCycle, 'paypal');
+              handleClose();
+            } catch (err: any) {
+              setErrorMessage(err.message || 'Failed to capture payment. Please contact support.');
+            } finally {
+              setIsProcessing(false);
+            }
+          },
+          onError: (err: any) => {
+            console.error('PayPal button execution error:', err);
+            setIsProcessing(false);
+            setErrorMessage('An error occurred during payment. You can try again or use direct checkout below.');
+          },
+          onCancel: () => {
+            setIsProcessing(false);
+          },
+        });
+
+        paypalButtonsRef.current = buttons;
+
+        if (buttonContainerRef.current) {
+          buttons.render(buttonContainerRef.current)
+            .then(() => {
+              if (isSubscribed) setIsSdkLoading(false);
+            })
+            .catch(() => {
+              if (isSubscribed) {
+                setIsSdkLoading(false);
+                setSdkFailed(true);
+              }
+            });
+        }
+
+        // Safety fallback timer for spinner
+        setTimeout(() => {
+          if (isSubscribed) setIsSdkLoading(false);
+        }, 1200);
+      })
+      .catch((err) => {
+        console.warn('PayPal SDK load fallback:', err.message);
+        if (isSubscribed) {
+          setIsSdkLoading(false);
+          setSdkFailed(true);
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+      if (paypalButtonsRef.current && typeof paypalButtonsRef.current.close === 'function') {
+        try { paypalButtonsRef.current.close(); } catch {}
+        paypalButtonsRef.current = null;
+      }
+    };
+  }, [isOpen, tierName, billingCycle, activeClientId]);
+
+  // Direct checkout fallback if JS SDK script is blocked or fails
+  const handleDirectPayPalCheckout = async () => {
     try {
       setIsProcessing(true);
       setErrorMessage(null);
 
-      const token = await auth.currentUser?.getIdToken();
+      const token = await auth.currentUser?.getIdToken().catch(() => undefined);
       const returnUrl = `${window.location.origin}/app?paypal_success=true&tier=${encodeURIComponent(tierName)}&cycle=${encodeURIComponent(billingCycle)}`;
       const cancelUrl = `${window.location.origin}/app?paypal_cancel=true`;
 
-      const response = await fetch('/api/billing/order/create', {
+      const res = await fetch('/api/billing/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           tier: tierName,
@@ -68,43 +361,22 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
         }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || 'Unable to initiate PayPal checkout. Please try again.');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to initiate PayPal checkout');
       }
 
-      const orderData = await response.json();
-      const approvalUrl = orderData.approvalUrl;
-
-      if (!approvalUrl) {
-        // Direct local capture fallback if no approval url is returned
-        if (orderData.orderId) {
-          await onApproveSubscription(orderData.orderId, tierName, billingCycle, 'paypal');
-          handleClose();
-          return;
-        }
-        throw new Error('PayPal approval URL was not returned. Please try again.');
-      }
-
-      // Open PayPal Checkout in an optimized window or redirect
-      const width = 500;
-      const height = 700;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2.5;
-
-      const popup = window.open(
-        approvalUrl,
-        'PayPalCheckout',
-        `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,status=no`
-      );
-
-      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-        // If popup blocker intercepted, redirect directly
-        window.location.href = approvalUrl;
+      const data = await res.json();
+      if (data.approvalUrl) {
+        window.location.href = data.approvalUrl;
+      } else if (data.orderId) {
+        await onApproveSubscription(data.orderId, tierName, billingCycle, 'paypal');
+        handleClose();
+      } else {
+        throw new Error('Approval URL missing');
       }
     } catch (err: any) {
-      console.error('[PayPal Checkout Error]', err);
-      setErrorMessage(err.message || 'Payment initiation failed. Please try again.');
+      setErrorMessage(err.message || 'Direct checkout failed. Please try again.');
       setIsProcessing(false);
     }
   };
@@ -201,13 +473,9 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
                 ${price}.00
               </div>
               <div className="text-[11px] text-emerald-700 font-mono font-bold">
-                USD • Flexible Pass (Opt out anytime)
+                USD • One-Time Pass
               </div>
             </div>
-          </div>
-
-          <div className="pt-2 border-t border-[#E2E8F0] text-[11px] font-mono text-[#64748B] leading-relaxed">
-            Pay-per-period subscription: Instant upgrade upon payment with zero locked obligations. You can opt out or renew at your convenience.
           </div>
         </div>
 
@@ -239,35 +507,41 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
           </div>
         )}
 
-        {/* Official PayPal Checkout Button */}
-        <div className="space-y-2.5 pt-1">
-          <button
-            type="button"
-            onClick={handleProceedWithPayPal}
-            disabled={isProcessing}
-            className="w-full py-3.5 px-6 rounded-xl bg-[#FFC439] hover:bg-[#F2BA36] active:scale-[0.99] text-[#003087] font-bold text-sm transition-all duration-150 shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed select-none"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin text-[#003087]" />
-                <span>Connecting to PayPal Secure Checkout...</span>
-              </>
-            ) : (
-              <>
-                {/* Official PayPal Icon SVG */}
-                <svg className="h-5 w-auto" viewBox="0 0 100 32" fill="currentColor">
-                  <path d="M12.2 4.1h-7c-.5 0-.9.4-1 .9L1.4 23.4c0 .3.2.6.5.6h3.4c.5 0 .9-.4 1-.9l.7-4.5c.1-.5.5-.9 1-.9h2.3c4.7 0 7.4-2.3 8.1-6.8.3-2-.1-3.6-1.1-4.7-1.1-1.3-3-2.1-5.1-2.1zm.8 6.6c-.4 2.8-2.3 2.8-4.5 2.8h-1.2l.9-5.7c0-.2.2-.4.4-.4h.8c1.5 0 2.9 0 3.4.9.4.6.4 1.4.2 2.4z" fill="#003087"/>
-                  <path d="M31.2 11.2h-3.4c-.4 0-.8.3-.9.7l-.1.9-.3-.4c-.8-1.2-2.6-1.6-4.4-1.6-4.1 0-7.7 3.1-8.3 7.3-.4 2.1.1 4.2 1.3 5.6 1.1 1.3 2.8 1.9 4.7 1.9 3.3 0 5.2-2.1 5.2-2.1l-.1.9c0 .3.2.6.5.6h3.1c.5 0 .9-.4 1-.9l1.8-11.7c-.1-.7-.5-1.2-1.1-1.2zm-4.3 6.9c-.3 2-2 3.4-4 3.4-1.1 0-2-.4-2.5-1.1-.5-.7-.7-1.7-.5-2.7.3-2 2-3.4 4.1-3.4 1 0 1.9.4 2.4 1.1.5.7.7 1.7.5 2.7z" fill="#0079C1"/>
-                  <path d="M48.2 11.2h-3.5c-.3 0-.6.2-.8.5l-4.7 6.9-2-6.7c-.1-.4-.5-.7-.9-.7h-3.5c-.4 0-.7.4-.5.8l4.1 12-3.5 4.9c-.3.4 0 1 .5 1h3.5c.3 0 .6-.2.8-.5l11.4-16.9c.3-.5 0-1.4-.4-1.4z" fill="#0079C1"/>
-                  <path d="M60.2 4.1h-7c-.5 0-.9.4-1 .9L49.4 23.4c0 .3.2.6.5.6h3.6c.4 0 .7-.3.8-.7l.8-5c.1-.5.5-.9 1-.9h2.3c4.7 0 7.4-2.3 8.1-6.8.3-2-.1-3.6-1.1-4.7-1.1-1.3-3-2.1-5.2-2.1zm.8 6.6c-.4 2.8-2.3 2.8-4.5 2.8h-1.2l.9-5.7c0-.2.2-.4.4-.4h.8c1.5 0 2.9 0 3.4.9.4.6.4 1.4.2 2.4z" fill="#003087"/>
-                  <path d="M79.2 11.2h-3.4c-.4 0-.8.3-.9.7l-.1.9-.3-.4c-.8-1.2-2.6-1.6-4.4-1.6-4.1 0-7.7 3.1-8.3 7.3-.4 2.1.1 4.2 1.3 5.6 1.1 1.3 2.8 1.9 4.7 1.9 3.3 0 5.2-2.1 5.2-2.1l-.1.9c0 .3.2.6.5.6h3.1c.5 0 .9-.4 1-.9l1.8-11.7c-.1-.7-.5-1.2-1.1-1.2zm-4.3 6.9c-.3 2-2 3.4-4 3.4-1.1 0-2-.4-2.5-1.1-.5-.7-.7-1.7-.5-2.7.3-2 2-3.4 4.1-3.4 1 0 1.9.4 2.4 1.1.5.7.7 1.7.5 2.7z" fill="#0079C1"/>
-                  <path d="M84.2 4.6l-2.8 18.3c0 .3.2.6.5.6h3.1c.5 0 .9-.4 1-.9l2.8-17.7c0-.3-.2-.6-.5-.6h-3.6c-.3.1-.5.2-.5.3z" fill="#0079C1"/>
-                </svg>
-                <span>Pay with PayPal • ${price}.00 USD</span>
-                <ArrowRight className="w-4 h-4 text-[#003087]" />
-              </>
-            )}
-          </button>
+        {/* Standard PayPal JS SDK Buttons Container */}
+        <div className="space-y-3 min-h-[50px] relative">
+          {isSdkLoading && (
+            <div className="h-12 w-full rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
+              <Loader2 className="w-4 h-4 animate-spin text-[#DC143C]" />
+              <span>Connecting to PayPal Secure Checkout...</span>
+            </div>
+          )}
+
+          {isProcessing && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-center gap-3 font-mono">
+              <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+              <span className="text-xs font-bold text-amber-800">
+                Authorizing payment &amp; activating {tierName} pass...
+              </span>
+            </div>
+          )}
+
+          {/* Standard PayPal JS SDK Buttons */}
+          <div
+            ref={buttonContainerRef}
+            className={`w-full min-h-[48px] ${isProcessing || sdkFailed ? 'hidden' : 'block'}`}
+          />
+
+          {/* Fallback Direct PayPal Checkout Button if SDK fails or adblocker blocks */}
+          {sdkFailed && !isProcessing && (
+            <button
+              type="button"
+              onClick={handleDirectPayPalCheckout}
+              className="w-full py-3.5 px-6 rounded-xl bg-[#FFC439] hover:bg-[#F2BA36] active:scale-[0.99] text-[#003087] font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Pay with PayPal (${price}.00 USD)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Guarantee */}
@@ -278,7 +552,7 @@ export const PayPalSubscriptionModal: React.FC<PayPalSubscriptionModalProps> = (
           </span>
           <span className="flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            Flexible access • Opt out or renew anytime
+            Instant Pass Activation
           </span>
         </div>
       </div>

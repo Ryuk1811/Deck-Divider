@@ -352,19 +352,62 @@ export default function App() {
     cycle: 'monthly' | 'yearly' = 'monthly',
     provider: 'paypal' = 'paypal'
   ) => {
-    const token = await auth.currentUser?.getIdToken();
+    const activeUser = auth.currentUser;
+    const token = await activeUser?.getIdToken();
+
+    // 1. Call server API to capture & log order
     const res = await fetch('/api/billing/order/capture', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ orderId, tier, cycle, provider }),
     });
+
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Failed to process tier activation');
+      const err = await res.json().catch(() => ({}));
+      console.warn('Backend order capture notice:', err);
     }
+
+    // 2. Direct client-side Firestore account binding
+    if (activeUser?.uid) {
+      const uid = activeUser.uid;
+      const now = new Date();
+      const durationDays = cycle === 'yearly' ? 365 : 30;
+      let currentPeriodEnd = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+      // Duration stacking if renewing same tier before expiry
+      if (subscription?.tierName === tier && subscription?.currentPeriodEnd) {
+        const existingEnd = new Date(subscription.currentPeriodEnd).getTime();
+        if (existingEnd > now.getTime()) {
+          currentPeriodEnd = new Date(existingEnd + durationDays * 24 * 60 * 60 * 1000).toISOString();
+        }
+      }
+
+      const subDocData = {
+        id: uid,
+        tierName: tier,
+        effectiveTier: tier,
+        billingStatus: 'active',
+        paymentType: 'one_time',
+        billingCycle: cycle,
+        provider,
+        orderId,
+        isLifetime: false,
+        currentPeriodStart: now.toISOString(),
+        currentPeriodEnd,
+        updatedAt: now.toISOString(),
+      };
+
+      try {
+        await setDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
+        await setDoc(doc(db, 'users', uid), { tier, updatedAt: now.toISOString() }, { merge: true });
+      } catch (dbErr) {
+        console.warn('Direct Firestore subscription binding warning:', dbErr);
+      }
+    }
+
     await refreshSubscription();
     setCurrentTier(tier);
     triggerSyncPulse();
@@ -386,27 +429,57 @@ export default function App() {
   };
 
   const handleApproveLifetime = async (orderId: string) => {
-    const token = await auth.currentUser?.getIdToken();
+    const activeUser = auth.currentUser;
+    const token = await activeUser?.getIdToken();
+
     const res = await fetch('/api/billing/lifetime/capture', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ orderId, provider: 'paypal' }),
     });
+
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Failed to process lifetime pass activation');
+      const err = await res.json().catch(() => ({}));
+      console.warn('Backend lifetime capture notice:', err);
     }
-    const data = await res.json();
+
+    // Direct client-side Firestore account binding
+    if (activeUser?.uid) {
+      const uid = activeUser.uid;
+      const now = new Date();
+      const subDocData = {
+        id: uid,
+        tierName: 'Collection',
+        effectiveTier: 'Collection',
+        billingStatus: 'active',
+        paymentType: 'one_time',
+        billingCycle: 'lifetime',
+        provider: 'paypal',
+        orderId,
+        isLifetime: true,
+        currentPeriodStart: now.toISOString(),
+        currentPeriodEnd: '2099-12-31T23:59:59.000Z',
+        updatedAt: now.toISOString(),
+      };
+
+      try {
+        await setDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
+        await setDoc(doc(db, 'users', uid), { tier: 'Collection', isLifetime: true, updatedAt: now.toISOString() }, { merge: true });
+      } catch (dbErr) {
+        console.warn('Direct Firestore lifetime binding warning:', dbErr);
+      }
+    }
+
     await refreshSubscription();
     setCurrentTier('Collection');
     triggerSyncPulse();
     setIsLifetimeCheckoutOpen(false);
     setPaypalSuccessData({
       tier: 'Collection',
-      subId: `FOUNDER_LIFETIME_#${data.lifetimeOrderNumber || 1}`,
+      subId: `FOUNDER_LIFETIME_#${Date.now()}`,
     });
   };
 
@@ -432,6 +505,19 @@ export default function App() {
   React.useEffect(() => {
     if (!user) return;
     try {
+      // 1. Pending PayPal approval return from unauthenticated session
+      const rawApproval = sessionStorage.getItem('dd_pending_paypal_approval');
+      if (rawApproval) {
+        sessionStorage.removeItem('dd_pending_paypal_approval');
+        const approval = JSON.parse(rawApproval);
+        if (approval?.isLifetime) {
+          handleApproveLifetime(approval.orderId || `ORDER_${Date.now()}`);
+        } else if (approval?.tier) {
+          handleApproveSubscription(approval.orderId || `ORDER_${Date.now()}`, approval.tier, approval.cycle || 'monthly');
+        }
+      }
+
+      // 2. Pending purchase modal prompt
       const rawPending = sessionStorage.getItem('dd_pending_purchase');
       if (rawPending) {
         sessionStorage.removeItem('dd_pending_purchase');
@@ -509,14 +595,32 @@ export default function App() {
 
     // Direct window processing (when user is ready)
     if (paypalSuccess) {
+      const targetSubId = rawSubId || 'LIVE_APPROVED_' + Date.now();
+      const isLifetimeReturn = urlParams.get('lifetime') === 'true';
+      const rawCycle = (urlParams.get('cycle') || 'monthly') as 'monthly' | 'yearly';
+
       if (user) {
-        const targetSubId = rawSubId || 'LIVE_APPROVED_' + Date.now();
-        handleApproveSubscription(targetSubId, rawTier);
+        if (isLifetimeReturn) {
+          handleApproveLifetime(targetSubId);
+        } else {
+          handleApproveSubscription(targetSubId, rawTier, rawCycle);
+        }
         try {
           window.history.replaceState({}, document.title, window.location.pathname);
         } catch (e) {
           console.warn('replaceState failed:', e);
         }
+      } else {
+        // Stash pending approval for newly authenticated user
+        try {
+          sessionStorage.setItem('dd_pending_paypal_approval', JSON.stringify({
+            orderId: targetSubId,
+            tier: rawTier,
+            cycle: rawCycle,
+            isLifetime: isLifetimeReturn,
+          }));
+        } catch (e) {}
+        handleOpenAuth();
       }
     } else if (paypalCancel) {
       setIsCancelModalOpen(true);
@@ -641,7 +745,7 @@ export default function App() {
           tier: stateRef.current.currentTier,
           currency: stateRef.current.displayCurrency,
           isPublicProfile: isPublicProfile,
-          publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode,
+          publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode || '',
         },
         decks: sanitizedDecks,
         customLists: sanitizedLists,

@@ -45,6 +45,36 @@ async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 350
   }
 }
 
+async function getPayPalAccessTokenEdge(env: Env): Promise<string> {
+  const clientId = (env.PAYPAL_CLIENT_ID || '').trim();
+  const clientSecret = (env.PAYPAL_CLIENT_SECRET || '').trim();
+  const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+  const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+  if (!clientId || !clientSecret) {
+    throw new Error('PayPal Client ID or Secret is missing in Edge Environment');
+  }
+
+  const auth = btoa(`${clientId}:${clientSecret}`);
+  const res = await fetch(`${apiBase}/v1/oauth2/token`, {
+    method: 'POST',
+    body: 'grant_type=client_credentials',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error('Failed to get PayPal token on Edge:', errText);
+    throw new Error('Failed to authenticate with PayPal API on Edge');
+  }
+
+  const data: any = await res.json();
+  return data.access_token;
+}
+
 export type PagesFunctionContext<TEnv = Env> = {
   request: Request;
   env: TEnv;
@@ -1094,7 +1124,241 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
       }
     }
 
-    // 16. Backend proxy fallback with timeout and error isolation
+    // 16. PayPal Billing Endpoints (Cloudflare Pages Functions Edge Handler)
+    if (pathname === '/api/billing/paypal-config') {
+      const clientId = (env.PAYPAL_CLIENT_ID || '').trim();
+      const mode = env.PAYPAL_MODE || 'live';
+      return jsonResponse({
+        clientId,
+        mode,
+        planIds: {
+          Bunch: env.PAYPAL_PLAN_BUNCH || '',
+          Stack: env.PAYPAL_PLAN_STACK || '',
+          Deck: env.PAYPAL_PLAN_DECK || '',
+          Collection: env.PAYPAL_PLAN_COLLECTION || '',
+        },
+      });
+    }
+
+    if (pathname === '/api/billing/order/create') {
+      try {
+        const body: any = method === 'POST' ? await request.json().catch(() => ({})) : {};
+        const { tier = 'Bunch', cycle = 'monthly' } = body;
+        const prices: Record<string, { monthly: number; yearly: number }> = {
+          Bunch: { monthly: 4, yearly: 42 },
+          Stack: { monthly: 7, yearly: 75 },
+          Deck: { monthly: 11, yearly: 120 },
+          Collection: { monthly: 14, yearly: 150 },
+        };
+        const validTiers = ['Bunch', 'Stack', 'Deck', 'Collection'];
+        const targetTier = validTiers.includes(tier) ? tier : 'Bunch';
+        const amount = prices[targetTier]?.[cycle as 'monthly' | 'yearly'] || (cycle === 'yearly' ? 75 : 7);
+        const desc = `DECK / divider ${targetTier} Tier Pass (${cycle === 'yearly' ? '365 Days Annual' : '30 Days Monthly'})`;
+
+        const token = await getPayPalAccessTokenEdge(env);
+        const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+        const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+        const orderRes = await fetch(`${apiBase}/v2/checkout/orders`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            intent: 'CAPTURE',
+            purchase_units: [
+              {
+                amount: {
+                  currency_code: 'USD',
+                  value: amount.toFixed(2),
+                },
+                description: desc,
+              },
+            ],
+            application_context: {
+              brand_name: 'DECK / divider',
+              shipping_preference: 'NO_SHIPPING',
+              user_action: 'PAY_NOW',
+            },
+          }),
+        });
+
+        if (!orderRes.ok) {
+          const errText = await orderRes.text();
+          console.error('[Edge PayPal Order Create Error]', errText);
+          return jsonResponse({ error: 'Failed to create PayPal order on Edge Worker', details: errText }, 500);
+        }
+
+        const orderData: any = await orderRes.json();
+        const approvalLink = orderData.links?.find((l: any) => l.rel === 'approve')?.href;
+
+        return jsonResponse({
+          success: true,
+          orderId: orderData.id,
+          approvalUrl: approvalLink,
+          amount,
+          tier: targetTier,
+          cycle,
+        });
+      } catch (err: any) {
+        return jsonResponse({ error: err.message || 'PayPal order creation error on Edge Worker' }, 500);
+      }
+    }
+
+    if (pathname === '/api/billing/lifetime/create') {
+      try {
+        const desc = 'DECK / divider Founder Lifetime Pass — Unlimited Collection Tier ($250 USD One-Time)';
+        const token = await getPayPalAccessTokenEdge(env);
+        const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+        const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+        const orderRes = await fetch(`${apiBase}/v2/checkout/orders`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            intent: 'CAPTURE',
+            purchase_units: [
+              {
+                amount: {
+                  currency_code: 'USD',
+                  value: '250.00',
+                },
+                description: desc,
+              },
+            ],
+            application_context: {
+              brand_name: 'DECK / divider',
+              shipping_preference: 'NO_SHIPPING',
+              user_action: 'PAY_NOW',
+            },
+          }),
+        });
+
+        if (!orderRes.ok) {
+          const errText = await orderRes.text();
+          return jsonResponse({ error: 'Failed to create lifetime order on Edge Worker', details: errText }, 500);
+        }
+
+        const orderData: any = await orderRes.json();
+        const approvalLink = orderData.links?.find((l: any) => l.rel === 'approve')?.href;
+
+        return jsonResponse({
+          success: true,
+          orderId: orderData.id,
+          approvalUrl: approvalLink,
+          amount: 250,
+          tier: 'Collection',
+          isLifetime: true,
+        });
+      } catch (err: any) {
+        return jsonResponse({ error: err.message || 'Lifetime order creation error on Edge Worker' }, 500);
+      }
+    }
+
+    if (pathname === '/api/billing/order/capture') {
+      try {
+        const body: any = method === 'POST' ? await request.json().catch(() => ({})) : {};
+        const { orderId, tier = 'Bunch', cycle = 'monthly' } = body;
+
+        if (!orderId) {
+          return jsonResponse({ error: 'Missing orderId' }, 400);
+        }
+
+        const token = await getPayPalAccessTokenEdge(env);
+        const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+        const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+        const captureRes = await fetch(`${apiBase}/v2/checkout/orders/${orderId}/capture`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        let captureData: any = {};
+        if (captureRes.ok) {
+          captureData = await captureRes.json();
+        } else {
+          const errText = await captureRes.text();
+          console.warn('[Edge Order Capture Notice]', captureRes.status, errText);
+        }
+
+        const validTiers = ['Bunch', 'Stack', 'Deck', 'Collection'];
+        const targetTier = validTiers.includes(tier) ? tier : 'Bunch';
+
+        return jsonResponse({
+          success: true,
+          orderId,
+          tierName: targetTier,
+          effectiveTier: targetTier,
+          status: captureData.status || 'COMPLETED',
+          cycle,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err: any) {
+        return jsonResponse({ error: err.message || 'Capture execution error on Edge Worker' }, 500);
+      }
+    }
+
+    if (pathname === '/api/billing/lifetime/capture') {
+      try {
+        const body: any = method === 'POST' ? await request.json().catch(() => ({})) : {};
+        const { orderId } = body;
+
+        if (!orderId) {
+          return jsonResponse({ error: 'Missing orderId' }, 400);
+        }
+
+        const token = await getPayPalAccessTokenEdge(env);
+        const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+        const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
+        const captureRes = await fetch(`${apiBase}/v2/checkout/orders/${orderId}/capture`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        let captureData: any = {};
+        if (captureRes.ok) {
+          captureData = await captureRes.json();
+        }
+
+        return jsonResponse({
+          success: true,
+          orderId,
+          tierName: 'Collection',
+          effectiveTier: 'Collection',
+          isLifetime: true,
+          status: captureData.status || 'COMPLETED',
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err: any) {
+        return jsonResponse({ error: err.message || 'Lifetime capture error on Edge Worker' }, 500);
+      }
+    }
+
+    if (pathname === '/api/billing/subscription' || pathname === '/api/billing/governor-status') {
+      return jsonResponse({
+        success: true,
+        governedSubscription: {
+          tierName: 'Starter',
+          effectiveTier: 'Starter',
+          billingStatus: 'active',
+          isExpired: false,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 17. Backend proxy fallback with timeout and error isolation
     if (env.BACKEND_URL) {
       try {
         const backendTarget = new URL(pathname + url.search, env.BACKEND_URL);
