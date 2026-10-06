@@ -737,8 +737,9 @@ export async function renderSsrRoute(
           ],
           aggregateRating: {
             '@type': 'AggregateRating',
+            '@id': `https://deckdivider.app/set/${setId}/top-cards#aggregate-rating`,
             ratingValue: '4.9',
-            ratingCount: '210',
+            reviewCount: '210',
             bestRating: '5',
             worstRating: '1'
           }
@@ -894,8 +895,9 @@ export async function renderSsrRoute(
           ],
           aggregateRating: {
             '@type': 'AggregateRating',
+            '@id': `https://deckdivider.app/set/${setId}/prices#aggregate-rating`,
             ratingValue: '4.8',
-            ratingCount: '350',
+            reviewCount: '350',
             bestRating: '5',
             worstRating: '1'
           }
@@ -2248,6 +2250,7 @@ export async function renderSsrRoute(
           },
           aggregateRating: {
             '@type': 'AggregateRating',
+            '@id': `${canonicalOrigin}/#software-aggregate-rating`,
             ratingValue: '4.7',
             reviewCount: '1000',
             bestRating: '5',
@@ -3604,6 +3607,7 @@ export async function renderSsrRoute(
         },
         aggregateRating: {
           '@type': 'AggregateRating',
+          '@id': 'https://deckdivider.app/#software-aggregate-rating',
           ratingValue: '4.7',
           reviewCount: '1000',
           bestRating: '5',

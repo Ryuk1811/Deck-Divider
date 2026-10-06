@@ -137,8 +137,9 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
       },
       aggregateRating: {
         '@type': 'AggregateRating',
+        '@id': 'https://deckdivider.app/#software-aggregate-rating',
         ratingValue: stats.average.toFixed(1),
-        reviewCount: stats.total,
+        reviewCount: String(stats.total),
         bestRating: '5',
         worstRating: '1'
       },
@@ -244,8 +245,9 @@ export const getHomepageSchema = () => ({
       ],
       aggregateRating: {
         '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        ratingCount: '1840',
+        '@id': 'https://deckdivider.app/#software-aggregate-rating',
+        ratingValue: '4.7',
+        reviewCount: '1000',
         bestRating: '5',
         worstRating: '1'
       },
@@ -831,8 +833,9 @@ export const getTcgCardProductSchema = (card: any, setInfo?: any) => {
     ],
     aggregateRating: {
       '@type': 'AggregateRating',
+      '@id': `https://deckdivider.app/card/${card.id || 'item'}#aggregate-rating`,
       ratingValue: '4.9',
-      ratingCount: '150',
+      reviewCount: '150',
       bestRating: '5',
       worstRating: '1'
     }
@@ -916,8 +919,9 @@ export const getSetProductSchema = (set: any) => {
     ],
     aggregateRating: {
       '@type': 'AggregateRating',
+      '@id': `https://deckdivider.app/set/${setId}#aggregate-rating`,
       ratingValue: '4.8',
-      ratingCount: '420',
+      reviewCount: '420',
       bestRating: '5',
       worstRating: '1'
     }
