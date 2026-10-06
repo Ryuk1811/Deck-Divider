@@ -156,7 +156,7 @@ export const ALL_RELEASES: ReleaseEntry[] = [
     badgeColor: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
     tag: 'Tournament',
     title: '2026 Standard Rotation Strict Validation (Marks H, I, J)',
-    summary: 'Official 2026 Pokémon TCG Standard rotation enforcement: Regulation Marks H, I, and J legal; Mark G transitioned to Expanded.',
+    summary: '2026 Pokémon TCG Standard rotation enforcement: Regulation Marks H, I, and J legal; Mark G transitioned to Expanded (based on published Play! Pokémon rules).',
     highlights: [
       {
         category: 'Legality Rules Engine',

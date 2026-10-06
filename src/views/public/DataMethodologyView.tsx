@@ -266,12 +266,12 @@ export const DataMethodologyView: React.FC = () => {
 
             <div className="space-y-4 text-sm text-[#334155] leading-relaxed">
               <p>
-                Our deckbuilder validates format rules against official Play! Pokémon tournament bulletins:
+                Our deckbuilder validates format rules against published Play! Pokémon tournament bulletins:
               </p>
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-5 space-y-3 font-mono text-xs">
                 <div className="font-bold text-[#0F172A]">Current 2026 Standard Rotation Rules:</div>
                 <ul className="space-y-2 text-[#64748B]">
-                  <li>• <strong>Active Regulation Marks:</strong> All cards with mark <strong>H, I, or J</strong> are legal for official tournament play.</li>
+                  <li>• <strong>Active Regulation Marks:</strong> All cards with mark <strong>H, I, or J</strong> are legal for Play! Pokémon tournament play.</li>
                   <li>• <strong>Rotated Regulation Mark G:</strong> Officially rotated out on March 26, 2026 for Pokémon TCG Live, and April 10, 2026 for in-person Play! Pokémon events.</li>
                   <li>• <strong>Reprint Exception Rule:</strong> Cards with older regulation marks or vintage prints are legal IF and only if the exact card title and mechanic text has been reprinted in an active H/I/J expansion (e.g. Switch, Rare Candy, Ultra Ball, Boss\'s Orders).</li>
                   <li>• <strong>Rulebox Restrictions:</strong> Maximum 1 Radiant Pokémon and 1 ACE SPEC card per 60-card tournament deck.</li>

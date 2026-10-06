@@ -240,7 +240,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           index="03/07"
           badge="60-CARD STUDIO"
           title="Build a legal 60-card deck in minutes."
-          description="Tournament-ready deck lists. Verifies official 2026 Standard regulation marks (H, I, J blocks; G rotated) and enforces Pokémon, Trainer, and Energy limits."
+          description="Tournament-ready deck lists. Verifies 2026 Standard regulation marks (H, I, J blocks; G rotated) based on published Play! Pokémon rules and enforces card limits."
           bulletPoints={[
             {
               title: 'Standard & Expanded Format Checks',

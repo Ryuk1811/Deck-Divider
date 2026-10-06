@@ -755,10 +755,10 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
 
       const revenueByTier = {
         Starter: 0,
-        Bunch: usersByTier.Bunch * 11,
-        Stack: usersByTier.Stack * 22,
-        Deck: usersByTier.Deck * 33,
-        Collection: Math.max(0, usersByTier.Collection - 1) * 44,
+        Bunch: usersByTier.Bunch * 4,
+        Stack: usersByTier.Stack * 7,
+        Deck: usersByTier.Deck * 11,
+        Collection: Math.max(0, usersByTier.Collection - 1) * 14,
       };
 
       const mrr = revenueByTier.Bunch + revenueByTier.Stack + revenueByTier.Deck + revenueByTier.Collection;

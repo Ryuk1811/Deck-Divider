@@ -830,15 +830,7 @@ export const getTcgCardProductSchema = (card: any, setInfo?: any) => {
         shippingDetails: STANDARD_SHIPPING_DETAILS,
         hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
       }
-    ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      '@id': `https://deckdivider.app/card/${card.id || 'item'}#aggregate-rating`,
-      ratingValue: '4.9',
-      reviewCount: '150',
-      bestRating: '5',
-      worstRating: '1'
-    }
+    ]
   };
 };
 
@@ -916,15 +908,7 @@ export const getSetProductSchema = (set: any) => {
         shippingDetails: STANDARD_SHIPPING_DETAILS,
         hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
       }
-    ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      '@id': `https://deckdivider.app/set/${setId}#aggregate-rating`,
-      ratingValue: '4.8',
-      reviewCount: '420',
-      bestRating: '5',
-      worstRating: '1'
-    }
+    ]
   };
 };
 

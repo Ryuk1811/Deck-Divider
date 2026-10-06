@@ -5,6 +5,7 @@ import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { LandingMotionDirectorate } from '../../components/landing/LandingMotionDirectorate';
 import { AccountTier, DisplayCurrency, TIER_LIMITS } from '../../types';
+import { CENTRAL_ENTITLEMENTS } from '../../config/entitlements';
 import { formatCurrency } from '../../utils/formatters';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
@@ -42,90 +43,17 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
     description: string;
     features: string[];
     ctaText: string;
-  }[] = [
-    {
-      tier: 'Starter',
-      popular: false,
-      description: 'Essential collection tracking and full 60-card deckbuilder for casual collectors.',
-      features: [
-        'Up to 6 custom decks',
-        'Full 60-card tournament decks',
-        'Up to 5 card wishlists',
-        'Max 100 items per list',
-        'Instant card search across 218 catalogued sets & series',
-        'Daily TCGplayer market prices (USD)',
-        'Log up to 25 graded slabs & 15 sealed items',
-        'Shareable public showcase link',
-      ],
-      ctaText: 'Get Started Free',
-    },
-    {
-      tier: 'Bunch',
-      popular: false,
-      description: 'For your first graded slabs — unlocks PSA, BGS, and CGC cert logging plus expanded binder decks.',
-      features: [
-        'Up to 15 custom decks',
-        'Full 60-card tournament decks',
-        'Up to 15 card wishlists',
-        'Max 300 items per list',
-        'PSA, BGS & CGC grade and cert logging',
-        'Historical price trends & multi-currency conversion',
-      ],
-      ctaText: 'Choose Bunch',
-    },
-    {
-      tier: 'Stack',
-      popular: false,
-      description: 'Expanded capacity for serious binder completists and league participants.',
-      features: [
-        'Up to 30 custom decks',
-        'Full 60-card tournament decks',
-        'Up to 30 card wishlists',
-        'Max 750 items per list',
-        'Shareable deck links with dynamic previews',
-        'Publicly shareable custom lists',
-        'Public Collection Showcase mode',
-        'Master set checklist progress tracking',
-      ],
-      ctaText: 'Choose Stack',
-    },
-    {
-      tier: 'Deck',
-      popular: true,
-      description: 'Championship-ready 60-card tournament decks, sealed vault, and alert tools.',
-      features: [
-        'Up to 60 custom decks',
-        'Full 60-card tournament decks with format legality',
-        'Up to 60 card wishlists',
-        'Max 1,500 items per list',
-        'Shareable deck links with dynamic previews',
-        'Publicly shareable custom lists',
-        'Public Collection Showcase mode',
-        'PTCGL 1-click text import/export',
-        'Sealed booster box & ETB ledger',
-        'Price drop notifications & target alerts',
-      ],
-      ctaText: 'Choose Deck',
-    },
-    {
-      tier: 'Collection',
-      popular: false,
-      description: 'Institutional-grade high-net-worth portfolio vault with unlimited headroom.',
-      features: [
-        'Unlimited custom decks (∞)',
-        'Full 60-card tournament decks (∞)',
-        'Unlimited card wishlists (∞)',
-        'Unlimited items per list (∞)',
-        'Shareable deck links with dynamic previews',
-        'Publicly shareable custom lists',
-        'Public Collection Showcase mode',
-        'Priority sub-second market sync',
-        'Full CSV portfolio export & cloud backups',
-        'Advanced subgrade delta analytics',
-      ],
-      ctaText: 'Choose Collection',
-    },
-  ];
+  }[] = (Object.keys(CENTRAL_ENTITLEMENTS) as AccountTier[]).map((tierKey) => {
+    const item = CENTRAL_ENTITLEMENTS[tierKey];
+    const ctaText = tierKey === 'Starter' ? 'Get Started Free' : `Choose ${tierKey}`;
+    return {
+      tier: tierKey,
+      popular: item.popular,
+      description: item.tagline,
+      features: item.features,
+      ctaText,
+    };
+  });
 
   const pricingFaqs = [
     {

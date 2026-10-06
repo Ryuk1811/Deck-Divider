@@ -20,7 +20,11 @@ if (typeof window !== 'undefined') {
       str.includes('Database is closing') ||
       str.includes('closing/hidden') ||
       str.includes('insecure') ||
-      str.includes('SecurityError')
+      str.includes('SecurityError') ||
+      str.includes('WebSocket') ||
+      str.includes('websocket') ||
+      str.includes('@vite/client') ||
+      str.includes('vite')
     );
   };
 

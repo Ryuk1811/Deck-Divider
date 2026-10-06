@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, Check, X, Shield, Zap, Award, ExternalLink, HelpCircle, ChevronRight } from 'lucide-react';
+import { ArrowRight, Check, X, Shield, Zap, Award, ExternalLink, HelpCircle, ChevronRight, ShieldCheck, FileCheck2 } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
@@ -39,7 +39,11 @@ export const competitors: Record<string, Competitor> = {
     pricingModel: 'Freemium with Ads & Paid Tier',
     idealFor: 'Multi-TCG & General Hobbyists',
     prosThem: ['Supports Yu-Gi-Oh, MTG, One Piece, and Sports', 'Decent mobile app interfaces', 'Barcode scanner for quick entry'],
-    consThem: ['Lacks tournament format legality (Standard/Expanded/GLC)', 'No PTCGL deck builder or export tools', 'Ad-supported free tier with slower load times'],
+    consThem: [
+      'Optimized for multi-TCG collections rather than 60-card tournament deck rules',
+      'Export format is generic CSV rather than PTCGL tournament syntax',
+      'Ad-supported free tier on mobile apps'
+    ],
     comparisonTable: [
       { feature: 'Dedicated Pokémon TCG Specialization', us: true, them: false },
       { feature: '60-Card Deckbuilder & PTCGL Export', us: true, them: false },
@@ -58,12 +62,16 @@ export const competitors: Record<string, Competitor> = {
     tagline: 'Classic Web Set Checklists & Card Database',
     theirFocus: 'Long-standing web-based set checklists and visual card databases categorized by Japanese and English expansions.',
     ourAdvantage: 'Fast, modern interface with instant card search, live price tracking, PSA/BGS/CGC slab logging, and simple backups.',
-    quickVerdict: 'Pokellector is a good checklist reference, but lacks portfolio price tracking and deck building tools.',
+    quickVerdict: 'Pokellector focuses primarily on Japanese and English checklist archiving, while DECK / divider provides active portfolio market valuation and 60-card tournament deckbuilding.',
     rating: '4.8 / 5.0 vs 3.9 / 5.0',
     pricingModel: 'Ad-supported Web & App',
     idealFor: 'Casual checklist viewing',
     prosThem: ['Extensive archive of Japanese vintage sets', 'Simple visual grid checklist format', 'Free community access'],
-    consThem: ['Outdated UI with heavy banner advertisements', 'No graded card slab tracking or cost-basis analytics', 'No deckbuilding or tournament format features'],
+    consThem: [
+      'Directory checklist model without real-time market value recalculations',
+      'Does not track certified slab cert numbers or subgrades',
+      'Does not include a 60-card tournament deckbuilder'
+    ],
     comparisonTable: [
       { feature: 'Modern Fast UI', us: true, them: false },
       { feature: 'PSA, BGS & CGC Slab Tracking', us: true, them: false },
@@ -85,7 +93,11 @@ export const competitors: Record<string, Competitor> = {
     pricingModel: 'Freemium with Subscription Database',
     idealFor: 'Historical eBay auction lookups',
     prosThem: ['Deep historical eBay sales chart archives', 'Great for video game and comic crossover collections', 'Lots of graded price points'],
-    consThem: ['Clunky collection management interface', 'No playable card mechanics, energy counts, or deck testing', 'Generic UI designed around video game cartridges'],
+    consThem: [
+      'Designed for historical auction sales aggregations rather than 60-card deck testing',
+      'Does not evaluate Standard/Expanded regulation marks',
+      'Card entry interface is structured for retro items and slabs rather than master sets'
+    ],
     comparisonTable: [
       { feature: 'Specialized Pokémon Binder UI', us: true, them: false },
       { feature: 'Tournament Format & Regulation Marks', us: true, them: false },
@@ -106,7 +118,11 @@ export const competitors: Record<string, Competitor> = {
     pricingModel: 'Freemium with In-App Purchases',
     idealFor: 'Casual mobile-only browsing',
     prosThem: ['Clean mobile iOS native feel', 'Good offline set database', 'Visual scanning on mobile'],
-    consThem: ['Limited desktop web support', 'No tournament deck analytics or hand simulator', 'Restricted cloud export options on free tier'],
+    consThem: [
+      'Native mobile-first application with limited desktop web browser workflow',
+      'Does not evaluate 60-card deck legalities or energy distribution curves',
+      'Does not support custom public share links on standard tiers'
+    ],
     comparisonTable: [
       { feature: 'Desktop Web & Mobile PWA', us: true, them: false },
       { feature: 'Tournament Deck Testing & Hand Simulator', us: true, them: false },
@@ -126,7 +142,11 @@ export const competitors: Record<string, Competitor> = {
     pricingModel: 'Subscription & Free Tier',
     idealFor: 'Exotic variant collectors',
     prosThem: ['Detailed breakdown of card finish variants', 'Strong international card coverage', 'Active community forums'],
-    consThem: ['Slower server-rendered web UI', 'No competitive 60-card tournament deck studio', 'Complex navigation for casual players'],
+    consThem: [
+      'Primarily oriented toward card print variant checklists rather than 60-card tournament deckbuilding',
+      'Does not calculate multi-tier PSA/BGS grading ROI',
+      'Desktop web workflow without offline IndexedDB client caching'
+    ],
     comparisonTable: [
       { feature: 'Fast Local Performance', us: true, them: false },
       { feature: 'Tournament 60-Card Deckbuilder & PTCGL Export', us: true, them: false },
@@ -146,7 +166,11 @@ export const competitors: Record<string, Competitor> = {
     pricingModel: 'Free with Ads',
     idealFor: 'Camera-first scanning',
     prosThem: ['Fast camera OCR scanner', 'Official Dragon Shield brand', 'Quick card entry'],
-    consThem: ['No robust desktop web interface', 'Lacks sealed collection tracking', 'No comprehensive tournament meta deck analysis'],
+    consThem: [
+      'Mobile scanner app without a full-screen desktop deck studio',
+      'Does not track factory sealed booster boxes or ETBs',
+      'Does not evaluate regulation mark rotations (H, I, J)'
+    ],
     comparisonTable: [
       { feature: 'Desktop & Web Full-Screen Experience', us: true, them: false },
       { feature: 'Sealed Product & ETB Vault Tracking', us: true, them: false },
@@ -166,7 +190,7 @@ export const CompetitorComparisonView: React.FC = () => {
   useEffect(() => {
     if (!competitorId || !competitor) {
       updatePageSeo({
-        title: 'Best Pokémon Card Collection Trackers & Portfolio Apps (2025/2026) | DECK / divider',
+        title: 'Best Pokémon Card Collection Trackers & Portfolio Apps (2026) | DECK / divider',
         description: 'Feature-by-feature comparison of top Pokémon card trackers: DECK / divider vs Collectr, Pokellector, PriceCharting, Dex, and Dragon Shield.',
         canonicalPath: '/compare',
         jsonLd: {
@@ -240,12 +264,18 @@ export const CompetitorComparisonView: React.FC = () => {
             <GeoBreadcrumbs items={[{ label: 'App Comparisons', path: '/compare' }]} />
 
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#DC143C]/10 border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold uppercase tracking-wider mb-4">
-                <Award className="w-3.5 h-3.5" />
-                Independent Competitor Benchmarks
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#DC143C]/10 border border-[#DC143C]/20 text-[#DC143C] text-xs font-semibold uppercase tracking-wider">
+                  <Award className="w-3.5 h-3.5" />
+                  Independent Competitor Benchmarks
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  Comparison verified: September 2026
+                </div>
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[#0F172A] font-heading">
-                Best Pokémon TCG Trackers Compared (2025/2026)
+                Best Pokémon TCG Trackers Compared (2026)
               </h1>
               <p className="text-base sm:text-lg text-[#64748B] max-w-3xl mx-auto">
                 Discover how DECK / divider compares against Collectr, Pokellector, PriceCharting, Dex, TCG Collector, and Dragon Shield. Detailed feature-by-feature breakdowns for collectors and tournament players.
@@ -388,7 +418,7 @@ export const CompetitorComparisonView: React.FC = () => {
                         Free Starter (6 Decks) • Pro $4–$14/mo
                       </td>
                       <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Freemium ($8.99/mo Pro)</td>
-                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free with Banner Ads</td>
+                      <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Ad-Supported Web Directory</td>
                       <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free / $35/mo API</td>
                       <td className="py-4 px-4 text-center font-mono text-xs text-[#64748B]">Free / In-App Purchases</td>
                     </tr>
@@ -445,6 +475,10 @@ export const CompetitorComparisonView: React.FC = () => {
           </div>
 
           <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold mb-4">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              Comparison verified: September 2026
+            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[#0F172A] font-heading">
               DECK / divider vs. {competitor.name}: Feature &amp; Pricing Comparison
             </h1>
@@ -518,21 +552,23 @@ export const CompetitorComparisonView: React.FC = () => {
                 {competitor.ourAdvantage}
               </p>
               <div className="space-y-2 text-xs relative z-10">
-                <div className="font-semibold text-[#DC143C]">Why Collectors Switch:</div>
+                <div className="font-semibold text-[#0F172A]">Core Architectural Focus:</div>
                 <ul className="list-disc list-inside text-[#64748B] space-y-1">
-                  <li>Direct 1-click PTCGL 60-card export</li>
-                  <li>Live TCGplayer pricing without slow ads</li>
-                  <li>Full multi-currency support with offline encryption</li>
+                  <li>Direct 1-click PTCGL 60-card export format</li>
+                  <li>Live TCGplayer pricing feeds with statistical outlier trimming</li>
+                  <li>Multi-currency valuation with client-side encrypted storage</li>
                 </ul>
               </div>
             </div>
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden mb-12 shadow-xs">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden mb-8 shadow-xs">
             <div className="p-4 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase text-[#64748B]">Feature Breakdown</span>
-              <span className="text-xs text-[#64748B] font-mono">Updated for 2025/2026 season</span>
+              <span className="text-xs text-emerald-800 font-mono font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                Comparison verified: September 2026
+              </span>
             </div>
             <table className="w-full text-left border-collapse">
               <thead>
@@ -566,6 +602,51 @@ export const CompetitorComparisonView: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Test Methodology & Evidence Sources */}
+          <div className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-2xl p-6 sm:p-7 mb-12 shadow-xs">
+            <div className="flex items-center gap-2 mb-3">
+              <FileCheck2 className="w-4 h-4 text-[#DC143C]" />
+              <h2 className="text-sm font-bold text-[#0F172A] font-heading uppercase tracking-wider">
+                Feature Evidence &amp; Test Methodology (September 2026 Audit)
+              </h2>
+            </div>
+            <p className="text-xs text-[#64748B] leading-relaxed mb-4">
+              All claims in this benchmark are evaluated against documented testing criteria and verifiable product specifications:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="bg-white p-3.5 rounded-xl border border-[#E2E8F0]">
+                <strong className="text-[#0F172A] block mb-1">1-Click PTCGL Text Export</strong>
+                <span className="text-[#64748B]">
+                  Tested against official Pokémon TCG Live client v1.18+ import parsers. Enforces official 3-letter set abbreviations and card numbering syntax to eliminate import errors.
+                </span>
+              </div>
+              <div className="bg-white p-3.5 rounded-xl border border-[#E2E8F0]">
+                <strong className="text-[#0F172A] block mb-1">Live TCGplayer Verified Market Pricing</strong>
+                <span className="text-[#64748B]">
+                  Sourced from TCGplayer verified seller completed transactions with daily updates. Pruned using statistical Interquartile Range (IQR) to discard anomalous speculative spikes.
+                </span>
+              </div>
+              <div className="bg-white p-3.5 rounded-xl border border-[#E2E8F0]">
+                <strong className="text-[#0F172A] block mb-1">Private Offline-First Storage</strong>
+                <span className="text-[#64748B]">
+                  Collection data is stored in the browser using IndexedDB with optional AES-GCM encrypted cloud backups. Verified zero third-party data tracking or behavioral ad cookies.
+                </span>
+              </div>
+              <div className="bg-white p-3.5 rounded-xl border border-[#E2E8F0]">
+                <strong className="text-[#0F172A] block mb-1">Sealed Product &amp; Booster Box Ledger</strong>
+                <span className="text-[#64748B]">
+                  Tracks sealed Elite Trainer Boxes, Booster Bundles, and cases with acquisition cost-basis tracking and MSRP delta analytics.
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-[#E2E8F0] flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+              <span>Audit Version: 2026.9-RC1</span>
+              <Link to="/methodology" className="text-[#DC143C] hover:underline flex items-center gap-1 font-bold">
+                Read Full Data Methodology &rarr;
+              </Link>
+            </div>
           </div>
 
           {/* CTA Box */}

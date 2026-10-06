@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check, Clock } from 'lucide-react';
+import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check, Clock, Shield } from 'lucide-react';
 import { CardSet, PokemonCard } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -12,6 +12,7 @@ import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetDetailSchema } from '../../components/seo/schemaData';
 import { generateSetSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
 import { formatSetReleaseDate } from '../../utils/setCategorizer';
+import { getSetLegality } from '../../config/setLegality';
 
 const PAGE_SIZE = 60;
 
@@ -115,6 +116,10 @@ export const PublicSetView: React.FC = () => {
   const totalPages = Math.ceil(filteredCards.length / PAGE_SIZE);
   const paginatedCards = filteredCards.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  const legalityInfo = useMemo(() => {
+    return set ? getSetLegality(set.id, set.series) : null;
+  }, [set]);
+
   const seoMetadata = useMemo(() => {
     return generateSetSeoMetadata(set, cards, currentPage);
   }, [set, cards, currentPage]);
@@ -195,6 +200,19 @@ export const PublicSetView: React.FC = () => {
                       <Layers className="w-3.5 h-3.5 text-[#DC143C]" />
                       {set.series} Series
                     </span>
+                    {legalityInfo && (
+                      <span
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-bold transition-colors shadow-2xs ${
+                          legalityInfo.isStandardLegal
+                            ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                            : 'bg-rose-50 border border-rose-200 text-rose-800'
+                        }`}
+                        title={legalityInfo.tournamentLegality}
+                      >
+                        <Shield className="w-3.5 h-3.5" />
+                        {legalityInfo.regulationMark} • {legalityInfo.isStandardLegal ? 'Standard Legal (2026: H, I, J)' : 'Rotated (Expanded/GLC)'}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
                       <Calendar className="w-3.5 h-3.5 text-[#64748B]" />
                       {formatSetReleaseDate(set.releaseDate)}
@@ -238,6 +256,8 @@ export const PublicSetView: React.FC = () => {
                 keyFacts={[
                   { label: 'Expansion Name', value: set.name },
                   { label: 'Series', value: `${set.series} Era` },
+                  { label: 'Regulation Mark', value: legalityInfo?.regulationMark || 'Play! Pokémon' },
+                  { label: 'Tournament Legality', value: legalityInfo?.tournamentLegality || 'Official Play! Pokémon' },
                   { label: 'Total Cards', value: `${set.total || cards.length} Cards` },
                   { label: 'Release Date', value: set.releaseDate || 'Official' },
                 ]}

@@ -2,6 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      window.addEventListener('unhandledrejection', function(e) {
+        var msg = String(e && (e.reason || e.message || e));
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('@vite/client') !== -1) {
+          e.preventDefault();
+        }
+      });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokémon TCG Collection Tracker, Card Prices &amp; Deck Builder | DECK / divider</title>
     <meta name="description" content="Track your Pokémon TCG collection value, check 2026 Standard legality, browse master set checklists, and manage PSA slabs with DECK / divider." />
@@ -141,7 +149,7 @@
               "name": "Can I export deck lists directly into Pokémon TCG Live (PTCGL)?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets."
+                "text": "Yes. The deck builder checks 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out; based on published Play! Pokémon rules) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets."
               }
             },
             {

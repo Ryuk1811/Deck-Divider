@@ -373,7 +373,7 @@ export function createSimulatedWebhookEvent(
         custom_id: customUid || 'simulated_user_123',
         state: 'completed',
         amount: {
-          total: tier === 'Stack' ? '22.00' : '11.00',
+          total: (tier === 'Collection' ? '14.00' : tier === 'Deck' ? '11.00' : tier === 'Stack' ? '7.00' : '4.00'),
           currency: 'USD',
         },
       },

@@ -80,7 +80,7 @@ export const FormatLegalityDirectoryView: React.FC = () => {
           <GeoExtractableBlock
             className="mb-10"
             heading="2026 Standard Rotation Summary & Legal Card Criteria"
-            summary="For the 2026 competitive circuit, the Pokémon TCG Standard format permits all cards bearing Regulation Marks H, I, and J. Under official 2026 rotation rules, cards from Regulation Mark G (as well as F and earlier) are rotated out of premier Standard play (effective March 26, 2026 on Pokémon TCG Live and April 10, 2026 for in-person Play! Pokémon events), unless reprinted in an active set with identical card text. Expanded format includes all Black & White series releases to modern, subject to official ban lists."
+            summary="For the 2026 competitive circuit, the Pokémon TCG Standard format permits all cards bearing Regulation Marks H, I, and J. Based on published 2026 Play! Pokémon rotation rules, cards from Regulation Mark G (as well as F and earlier) are rotated out of premier Standard play (effective March 26, 2026 on Pokémon TCG Live and April 10, 2026 for in-person Play! Pokémon events), unless reprinted in an active set with identical card text. Expanded format includes all Black & White series releases to modern, subject to published ban lists."
             keyFacts={[
               { label: 'Standard Marks', value: 'Marks H, I, J Legal' },
               { label: 'Rotated Out', value: 'Mark G & Earlier (Except Reprints)' },

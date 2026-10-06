@@ -69,7 +69,7 @@ const FAQ_COLLECTION: FaqData[] = [
     category: 'Decks & Formats',
     question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
     answer:
-      'Yes. The deck builder checks official 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+      'Yes. The deck builder checks 2026 Standard 60-card format legality based on published Play! Pokémon rules (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
     highlights: [
       'Format compliance audits for Standard (regulation marks H, I, J; G rotated) and Expanded formats.',
       'ACE SPEC single-card limit enforcement and Radiant Pokémon rules.',
@@ -234,7 +234,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
 
         <GeoExtractableBlock
           heading="Frequently Asked Questions: Key Facts & Platform Overview"
-          summary="DECK / divider is an ad-free Pokémon TCG collection manager and tournament deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 15+ fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck builder provides 1-click PTCGL export and official regulation mark legality verification."
+          summary="DECK / divider is an ad-free Pokémon TCG collection manager and tournament deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 15+ fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck builder provides 1-click PTCGL export and published Play! Pokémon regulation mark legality verification."
           keyFacts={[
             { label: 'Market Comps', value: 'TCGplayer & eBay Daily Sync' },
             { label: 'Supported Grading', value: 'PSA, BGS, CGC, ACE, ARS' },

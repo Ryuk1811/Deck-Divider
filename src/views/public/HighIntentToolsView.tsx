@@ -275,7 +275,7 @@ export const HighIntentToolsView: React.FC = () => {
             }
             summary={
               isDeckChecker
-                ? 'Under official 2026 Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark H, I, or J (found in the lower-left corner). Regulation Mark G rotated out on Pokémon TCG Live on March 26, 2026, and for in-person Play! Pokémon events on April 10, 2026. Cards printed with Mark G or older are prohibited unless reprinted in an active H/I/J set with the exact same card title and mechanic text.'
+                ? 'Based on published 2026 Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark H, I, or J (found in the lower-left corner). Regulation Mark G rotated out on Pokémon TCG Live on March 26, 2026, and for in-person Play! Pokémon events on April 10, 2026. Cards printed with Mark G or older are prohibited unless reprinted in an active H/I/J set with the exact same card title and mechanic text.'
                 : 'Submitting a raw Pokémon card to PSA or CGC is profitable only when Expected Value (EV) exceeds the total cost (Raw Card Purchase Price + Grading Tier Fee + Roundtrip Shipping/Insurance). Standard modern raw cards have a 35% to 55% PSA 10 gem mint rate based on population reports.'
             }
             keyFacts={
@@ -300,7 +300,7 @@ export const HighIntentToolsView: React.FC = () => {
             <div>
               <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] font-heading mb-3 tracking-tight">
-                  Pokémon Card Grading ROI &amp; Value Calculator (2025/2026)
+                  Pokémon Card Grading ROI &amp; Value Calculator (2026)
                 </h1>
                 <p className="text-[#64748B] text-sm sm:text-base leading-relaxed">
                   Evaluate whether submitting your raw card to PSA, BGS, or CGC is mathematically profitable based on expected grade probabilities, submission tiers, and historical sales spreads.

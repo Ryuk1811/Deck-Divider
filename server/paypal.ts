@@ -89,10 +89,17 @@ export async function createPayPalOrder(amount: number, description: string, ret
 }
 
 export const TIER_PRICES: Record<string, number> = {
-  Bunch: 11,
-  Stack: 22,
-  Deck: 33,
-  Collection: 44,
+  Bunch: 4,
+  Stack: 7,
+  Deck: 11,
+  Collection: 14,
+};
+
+export const TIER_PRICES_YEARLY: Record<string, number> = {
+  Bunch: 42,
+  Stack: 75,
+  Deck: 120,
+  Collection: 150,
 };
 
 export async function getPlanIdForTier(tier: string): Promise<string> {

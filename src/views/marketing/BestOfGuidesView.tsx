@@ -50,14 +50,14 @@ interface BestOfGuide {
 export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
   'pokemon-card-trackers': {
     slug: 'pokemon-card-trackers',
-    title: 'Best Pokémon TCG Collection Tracker Apps (2025/2026 Ranked)',
+    title: 'Best Pokémon TCG Collection Tracker Apps (2026 Season Ranked)',
     h1: 'Best Pokémon TCG Collection Tracker Apps (Ranked & Tested)',
     metaDesc: 'Looking for the best Pokemon card collection tracker? We tested DECK / divider, Collectr, Pokellector, Dex, and PriceCharting for price accuracy, deck tools, and slab tracking.',
     directAnswerSummary: 'The best overall Pokémon TCG collection tracker is DECK / divider due to its dedicated Pokémon-first architecture, sub-second search, live TCGplayer pricing feeds, 60-card PTCGL deck builder, and private offline-first IndexedDB encryption without disruptive advertisements.',
-    updatedDate: 'September 2025',
+    updatedDate: 'September 2026 (v2.5 Release)',
     evaluationCriteria: [
       { name: 'Pricing Latency & Accuracy', description: 'Live market sync with TCGplayer Lowest Verified and recent graded auction sales.', weight: '30%' },
-      { name: 'Pokémon Specialization', description: 'Native support for regulation marks, set checklists, master set finishes, and PTCGL export codes.', weight: '25%' },
+      { name: 'Pokémon Specialization', description: 'Native support for regulation marks, set checklists, master set finishes, and PTCGL export codes based on published Play! Pokémon rules.', weight: '25%' },
       { name: 'Slab & Sealed Vaulting', description: 'Comprehensive tracking of PSA/BGS/CGC grades and booster box / ETB sealed collections.', weight: '20%' },
       { name: 'Privacy & Offline Speed', description: 'Client-side local caching, zero tracking bloat, and encrypted cloud backups.', weight: '15%' },
       { name: 'User Interface Craft', description: 'Modern dark/light UI density, keyboard shortcuts, and responsiveness.', weight: '10%' },
@@ -68,19 +68,19 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         name: 'DECK / divider',
         badge: 'Best Overall for Serious Collectors & Players',
         rating: 4.9,
-        pricing: 'Free Forever (Starter $0 to Collection $14/mo)',
+        pricing: 'Free Starter ($0) to Collection ($14/mo) across 5 Tiers',
         platforms: ['Web / Desktop PWA', 'Mobile iOS / Android Browser'],
         summary: 'DECK / divider is an institutional-grade Pokémon TCG operating system combining raw card vaulting, PSA/BGS slab registries, sealed booster box tracking, and a full 60-card tournament deckbuilder with regulation mark legality and PTCGL export.',
         pros: [
           'Sub-second search across all 218 catalogued sets & series',
           'Daily verified TCGplayer market price feeds with multi-currency FX',
-          'Built-in 2026 tournament legality checker (Standard Marks H, I & J legal; Mark G rotated)',
+          'Built-in 2026 tournament legality checker (Standard Marks H, I & J legal; Mark G rotated; based on published Play! Pokémon rules)',
           '100% offline-first privacy with optional AES-256 cloud sync',
           'Clean, ad-free interface designed specifically for Pokémon'
         ],
         cons: [
           'Laser-focused strictly on Pokémon (does not track MTG or Sports)',
-          'Native app store download in progress (runs via PWA on mobile)'
+          'Web and PWA optimized (cross-platform installable web app)'
         ],
         bestFor: 'Serious Pokémon collectors, competitive tournament players, and slab investors.',
         isUs: true
@@ -183,11 +183,11 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
   },
   'slab-scanners': {
     slug: 'slab-scanners',
-    title: 'Best Pokémon Card Slab Trackers & Graded Value Scanners (2025/2026)',
+    title: 'Best Pokémon Card Slab Trackers & Graded Value Scanners (2026)',
     h1: 'Best Pokémon Card Slab Trackers & Graded Value Scanners',
     metaDesc: 'Compare the top graded card slab trackers for Pokémon cards. Discover how DECK / divider, PSA Set Registry, and PriceCharting track PSA, BGS, and CGC slab values.',
     directAnswerSummary: 'The best graded Pokémon card slab tracker is DECK / divider for comprehensive portfolio valuation across PSA, BGS, and CGC slabs, combined with real-time TCGplayer feeds, cost-basis tracking, and master set integration.',
-    updatedDate: 'September 2025',
+    updatedDate: 'September 2026 (v2.5 Release)',
     evaluationCriteria: [
       { name: 'Multi-Grading Company Support', description: 'Unified tracking across PSA, BGS, CGC, and TAG slabs in one vault.', weight: '35%' },
       { name: 'Cost-Basis & ROI Analytics', description: 'Tracks purchase price, grading fees, shipping expenses, and realized capital gains.', weight: '30%' },
@@ -200,7 +200,7 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         name: 'DECK / divider Slab Vault',
         badge: 'Best Overall Graded Card & Slab Manager',
         rating: 4.9,
-        pricing: 'Free Starter (25 slabs) to Unlimited Collection ($14/mo)',
+        pricing: 'Free Starter ($0) to Collection ($14/mo) across 5 Tiers',
         platforms: ['Web / Desktop PWA', 'Mobile'],
         summary: 'DECK / divider allows collectors to track graded slabs from all major grading companies with custom cert numbers, acquisition costs, subgrades, and daily updated market trendlines.',
         pros: [
@@ -270,10 +270,10 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
     title: 'Best Pokémon TCG Deck Builders with Live Legality (2026)',
     h1: 'Best Pokémon TCG Deck Builders with Live Pricing & Legality',
     metaDesc: 'Discover the top Pokemon TCG deck builders. Compare DECK / divider, Limitless TCG, and PTCGL for 60-card construction, regulation mark legality, and budget calculations.',
-    directAnswerSummary: 'The best Pokémon TCG deck builder is DECK / divider because it integrates instant regulation mark legality checking (H, I & J marks for Standard 2026; G rotated), live TCGplayer singles cost calculations, collection ownership sync, and 1-click PTCGL export formatting.',
-    updatedDate: 'September 2025',
+    directAnswerSummary: 'The best Pokémon TCG deck builder is DECK / divider because it integrates instant regulation mark legality checking (H, I & J marks for Standard 2026; G rotated; based on published Play! Pokémon rules), live TCGplayer singles cost calculations, collection ownership sync, and 1-click PTCGL export formatting.',
+    updatedDate: 'September 2026 (v2.5 Release)',
     evaluationCriteria: [
-      { name: 'Tournament Legality Verification', description: 'Automatic check for Standard rotation regulation marks, ACE SPEC limits, and Radiant card restrictions.', weight: '35%' },
+      { name: 'Tournament Legality Verification', description: 'Automatic check for Standard rotation regulation marks, ACE SPEC limits, and Radiant card restrictions based on published Play! Pokémon rules.', weight: '35%' },
       { name: 'TCGplayer Singles Cost Calculation', description: 'Real-time estimated cost to build the 60-card list using lowest verified singles.', weight: '25%' },
       { name: 'PTCGL Compatibility', description: 'Zero-error export formatting that imports directly into Pokémon TCG Live.', weight: '25%' },
       { name: 'Collection Integration', description: 'Highlights which cards you already own in your binder versus cards you need to purchase.', weight: '15%' }
@@ -284,11 +284,11 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         name: 'DECK / divider Deck Studio',
         badge: 'Best Integrated Deckbuilder & Budget Optimizer',
         rating: 4.9,
-        pricing: 'Free Starter (6 decks, 60 cards/deck) to Unlimited Collection ($14/mo)',
+        pricing: 'Free Starter ($0) to Collection ($14/mo) across 5 Tiers',
         platforms: ['Web / Desktop PWA', 'Mobile'],
-        summary: 'DECK / divider provides a professional 60-card tournament deck studio with live regulation mark validation (H, I & J legal; G rotated), rulebox limits (ACE SPECs, Radiant cards), daily TCGplayer pricing feeds, and seamless PTCGL export.',
+        summary: 'DECK / divider provides a professional 60-card tournament deck studio with live regulation mark validation (H, I & J legal; G rotated; based on published Play! Pokémon rules), rulebox limits (ACE SPECs, Radiant cards), daily TCGplayer pricing feeds, and seamless PTCGL export.',
         pros: [
-          'Validates Standard (H, I & J marks; G rotated), Expanded, and GLC format rules',
+          'Validates Standard (H, I & J marks; G rotated; based on published Play! Pokémon rules), Expanded, and GLC format rules',
           'Calculates exact cost to finish deck based on cards already in your vault',
           'Instant 1-click PTCGL copy/paste export code',
           'Opening hand draw simulator and energy curve analytics'
@@ -369,7 +369,7 @@ export const BestOfGuidesView: React.FC = () => {
           '@type': 'Article',
           headline: guide.h1,
           description: guide.metaDesc,
-          dateModified: '2025-09-01',
+          dateModified: '2026-09-01',
           url: `https://deckdivider.app/best/${guide.slug}`,
           author: {
             '@type': 'Organization',

@@ -115,7 +115,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
     },
     {
       q: 'How does tournament legality checking work?',
-      a: 'The deck builder checks each card’s regulation mark against official 2026 Play! Pokémon rules (Marks H, I, J legal; G rotated out), flagging illegal cards or duplicate limits instantly.',
+      a: 'The deck builder checks each card’s regulation mark based on published Play! Pokémon rules (Marks H, I, J legal; G rotated out), flagging illegal cards or duplicate limits instantly.',
     },
     {
       q: 'Can I export my cards and deck rosters?',

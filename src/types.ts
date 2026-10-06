@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { CENTRAL_ENTITLEMENTS } from './config/entitlements';
 export type AccountTier = 'Starter' | 'Bunch' | 'Stack' | 'Deck' | 'Collection';
 
 export interface TierLimit {
   name: AccountTier;
-  priceMonthly: number; // 0, 11, 22, 33, 44
+  priceMonthly: number; // 0, 4, 7, 11, 14
   maxDecks: number; // Infinity for Collection
-  maxCardsPerDeck: number; // Infinity for Collection
+  maxCardsPerDeck: number; // 60
   maxLists: number; // Infinity for Collection
   maxItemsPerList: number; // Infinity for Collection
   canSharePublicLinks: boolean;
@@ -25,103 +26,30 @@ export interface TierLimit {
   yearlyDiscountPercent: number;
 }
 
-export const TIER_LIMITS: Record<AccountTier, TierLimit> = {
-  Starter: {
-    name: 'Starter',
-    priceMonthly: 0,
-    priceYearly: 0,
-    yearlyDiscountPercent: 0,
-    maxDecks: 6,
-    maxCardsPerDeck: 60,
-    maxLists: 5,
-    maxItemsPerList: 100,
-    canSharePublicLinks: true,
-    maxGradedSlabs: 25,
-    maxSealedItems: 15,
-    hasMultiCurrency: false,
-    hasGlcAndRetroLegality: false,
-    hasCsvExport: false,
-    hasCloudBackups: false,
-    hasGradedMarketComps: false,
-    tagline: 'Full 60-card deckbuilder & collection starter',
-  },
-  Bunch: {
-    name: 'Bunch',
-    priceMonthly: 4,
-    priceYearly: 42,
-    yearlyDiscountPercent: 13,
-    maxDecks: 15,
-    maxCardsPerDeck: 60,
-    maxLists: 15,
-    maxItemsPerList: 300,
-    canSharePublicLinks: true,
-    maxGradedSlabs: 100,
-    maxSealedItems: 50,
-    hasMultiCurrency: true,
-    hasGlcAndRetroLegality: false,
-    hasCsvExport: false,
-    hasCloudBackups: true,
-    hasGradedMarketComps: true,
-    tagline: 'Multi-currency NAV & expanded binder capacity',
-  },
-  Stack: {
-    name: 'Stack',
-    priceMonthly: 7,
-    priceYearly: 75,
-    yearlyDiscountPercent: 11,
-    maxDecks: 30,
-    maxCardsPerDeck: 60,
-    maxLists: 30,
-    maxItemsPerList: 750,
-    canSharePublicLinks: true,
-    maxGradedSlabs: 300,
-    maxSealedItems: 150,
-    hasMultiCurrency: true,
-    hasGlcAndRetroLegality: true,
-    hasCsvExport: false,
-    hasCloudBackups: true,
-    hasGradedMarketComps: true,
-    tagline: 'Public share links, GLC legality & tournament specs',
-  },
-  Deck: {
-    name: 'Deck',
-    priceMonthly: 11,
-    priceYearly: 120,
-    yearlyDiscountPercent: 9,
-    maxDecks: 60,
-    maxCardsPerDeck: 60,
-    maxLists: 60,
-    maxItemsPerList: 1500,
-    canSharePublicLinks: true,
-    maxGradedSlabs: 1000,
-    maxSealedItems: 500,
-    hasMultiCurrency: true,
-    hasGlcAndRetroLegality: true,
-    hasCsvExport: true,
-    hasCloudBackups: true,
-    hasGradedMarketComps: true,
-    tagline: 'High-volume collector vaults & market comps engine',
-  },
-  Collection: {
-    name: 'Collection',
-    priceMonthly: 14,
-    priceYearly: 150,
-    yearlyDiscountPercent: 11,
-    maxDecks: Infinity,
-    maxCardsPerDeck: Infinity,
-    maxLists: Infinity,
-    maxItemsPerList: Infinity,
-    canSharePublicLinks: true,
-    maxGradedSlabs: Infinity,
-    maxSealedItems: Infinity,
-    hasMultiCurrency: true,
-    hasGlcAndRetroLegality: true,
-    hasCsvExport: true,
-    hasCloudBackups: true,
-    hasGradedMarketComps: true,
-    tagline: 'Hold your whole collection with zero limits',
-  },
-};
+export const TIER_LIMITS: Record<AccountTier, TierLimit> = Object.fromEntries(
+  Object.entries(CENTRAL_ENTITLEMENTS).map(([key, t]) => [
+    key,
+    {
+      name: t.id,
+      priceMonthly: t.pricing.monthly,
+      priceYearly: t.pricing.yearly,
+      yearlyDiscountPercent: t.pricing.yearlyDiscountPercent,
+      maxDecks: t.limits.decks,
+      maxCardsPerDeck: t.limits.cardsPerDeck,
+      maxLists: t.limits.wishlists,
+      maxItemsPerList: t.limits.itemsPerList,
+      canSharePublicLinks: t.capabilities.canSharePublicLinks,
+      maxGradedSlabs: t.limits.gradedSlabs,
+      maxSealedItems: t.limits.sealedItems,
+      hasMultiCurrency: t.capabilities.hasMultiCurrency,
+      hasGlcAndRetroLegality: t.capabilities.hasGlcAndRetroLegality,
+      hasCsvExport: t.capabilities.hasCsvExport,
+      hasCloudBackups: t.capabilities.hasCloudBackups,
+      hasGradedMarketComps: t.capabilities.hasGradedMarketComps,
+      tagline: t.tagline,
+    },
+  ])
+) as Record<AccountTier, TierLimit>;
 
 export function getTierLimits(tier?: string | null): TierLimit {
   if (!tier || !(tier in TIER_LIMITS)) {
