@@ -46,9 +46,9 @@ async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 350
 }
 
 async function getPayPalAccessTokenEdge(env: Env): Promise<string> {
-  const clientId = (env.PAYPAL_CLIENT_ID || '').trim();
-  const clientSecret = (env.PAYPAL_CLIENT_SECRET || '').trim();
-  const mode = (env.PAYPAL_MODE || 'live').toLowerCase();
+  const clientId = (env.PAYPAL_CLIENT_ID || (typeof process !== 'undefined' ? process.env.PAYPAL_CLIENT_ID : '') || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ').trim();
+  const clientSecret = (env.PAYPAL_CLIENT_SECRET || (typeof process !== 'undefined' ? process.env.PAYPAL_CLIENT_SECRET : '') || 'EBY3NmWWbURMAaxJl4m3xqrvc76TtlBcKebkEzw3lU0lVYfKZrq89UtfGzF_6IagElsHIXjiOQHnrXGD').trim();
+  const mode = (env.PAYPAL_MODE || (typeof process !== 'undefined' ? process.env.PAYPAL_MODE : '') || 'live').toLowerCase();
   const apiBase = mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
 
   if (!clientId || !clientSecret) {
@@ -1126,16 +1126,16 @@ export const onRequest = async (context: PagesFunctionContext<Env>): Promise<Res
 
     // 16. PayPal Billing Endpoints (Cloudflare Pages Functions Edge Handler)
     if (pathname === '/api/billing/paypal-config') {
-      const clientId = (env.PAYPAL_CLIENT_ID || '').trim();
-      const mode = env.PAYPAL_MODE || 'live';
+      const clientId = (env.PAYPAL_CLIENT_ID || (typeof process !== 'undefined' ? process.env.PAYPAL_CLIENT_ID : '') || 'BAAART0wdN_LoLV8d5vHUpcdNm7Nz9OAzCEnhJtMzH34baRvl3oYJrwuoy6cy9w1UFF_6fy7kvkOKHURTQ').trim();
+      const mode = env.PAYPAL_MODE || (typeof process !== 'undefined' ? process.env.PAYPAL_MODE : '') || 'live';
       return jsonResponse({
         clientId,
         mode,
         planIds: {
-          Bunch: env.PAYPAL_PLAN_BUNCH || '',
-          Stack: env.PAYPAL_PLAN_STACK || '',
-          Deck: env.PAYPAL_PLAN_DECK || '',
-          Collection: env.PAYPAL_PLAN_COLLECTION || '',
+          Bunch: env.PAYPAL_PLAN_BUNCH || 'P-86F48638UK390893LNJY5FHQ',
+          Stack: env.PAYPAL_PLAN_STACK || 'P-62J90197VJ601823CNJY5GFI',
+          Deck: env.PAYPAL_PLAN_DECK || 'P-8K993431SB9741949NJY5GVY',
+          Collection: env.PAYPAL_PLAN_COLLECTION || 'P-1EH4703021893203DNJY5HII',
         },
       });
     }
