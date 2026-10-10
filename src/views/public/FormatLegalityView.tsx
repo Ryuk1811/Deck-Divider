@@ -13,20 +13,21 @@ export const FormatLegalityView: React.FC = () => {
   const { formatId } = useParams<{ formatId: string }>();
   const navigate = useNavigate();
 
-  const format = formatId ? formats.find(f => f.id === formatId.toLowerCase()) : null;
+  const normalizedId = formatId?.toLowerCase() === 'standard-2026' ? 'standard' : formatId?.toLowerCase();
+  const format = normalizedId ? formats.find(f => f.id === normalizedId) : null;
 
   useEffect(() => {
     if (format) {
       updatePageSeo({
         title: `${format.name} Rules & Regulation Mark Legality | DECK / divider`,
         description: `Complete ${format.name} tournament rules, legal regulation marks, rotation schedule, and 60-card deck restrictions for Pokémon TCG competitive play.`,
-        canonicalPath: `/formats/${format.id}`,
+        canonicalPath: `/format/${format.id}`,
         jsonLd: {
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: `${format.name} Rules & Regulation Mark Legality`,
           description: format.description,
-          url: `https://deckdivider.app/formats/${format.id}`,
+          url: `https://deckdivider.app/format/${format.id}`,
         },
       });
     }
@@ -48,7 +49,7 @@ export const FormatLegalityView: React.FC = () => {
       <PageHead
         title={`${format.name} Rules & Regulation Mark Legality | Pokémon TCG`}
         description={`Tournament deck construction rules, legal regulation marks (${format.regulationMarks.join(', ')}), and rotation timelines for Pokémon TCG ${format.name}.`}
-        canonicalPath={`/formats/${format.id}`}
+        canonicalPath={`/format/${format.id}`}
         keywords={[
           `${format.name.toLowerCase()} rules`,
           `${format.name.toLowerCase()} legal cards`,
@@ -71,7 +72,7 @@ export const FormatLegalityView: React.FC = () => {
           <GeoBreadcrumbs 
             items={[
               { label: 'Format Legality Directory', path: '/formats' },
-              { label: format.name, path: `/formats/${format.id}` },
+              { label: format.name, path: `/format/${format.id}` },
             ]} 
           />
 

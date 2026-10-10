@@ -754,7 +754,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       <div className="flex items-center justify-between py-1 border-b border-slate-100">
                         <span className="text-[#64748B]">Cards / Deck</span>
                         <span className="font-bold text-[#0F172A]">
-                          {limit.maxCardsPerDeck === Infinity ? 'Unlimited' : limit.maxCardsPerDeck}
+                          {limit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${limit.maxCardsPerDeck} Cards`}
                         </span>
                       </div>
 

@@ -151,17 +151,17 @@ export const ALL_RELEASES: ReleaseEntry[] = [
   {
     iteration: 55,
     version: 'v1.55',
-    date: 'August 2026',
+    date: 'September 2026',
     badge: '55th Iteration',
     badgeColor: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
     tag: 'Tournament',
-    title: '2026 Standard Rotation Strict Validation (Marks H, I, J)',
-    summary: '2026 Pokémon TCG Standard rotation enforcement: Regulation Marks H, I, and J legal; Mark G transitioned to Expanded (based on published Play! Pokémon rules).',
+    title: 'Post-Worlds Standard Format Refinements & Legality Audit',
+    summary: 'Mid-season Play! Pokémon championship synchronization: refined rotation validation rules for late-season championship archetypes under the active Marks H, I, and J Standard format (which took effect on-schedule on March 26 for PTCGL and April 10 for in-person play).',
     highlights: [
       {
         category: 'Legality Rules Engine',
         items: [
-          'Strict validation of single-card ACE SPEC limits and Radiant Pokémon caps.',
+          'Strict validation of single-card ACE SPEC limits and regulation mark compliance.',
           'Visual legality badges across deck lists and single card inspectors.',
           'Integrated PTCGL export format compliant with 2026 client specifications.'
         ]
@@ -368,12 +368,13 @@ export const ALL_RELEASES: ReleaseEntry[] = [
     badge: '45th Iteration',
     badgeColor: 'bg-teal-500/10 text-teal-600 border-teal-500/20',
     tag: 'Tournament',
-    title: 'Tournament Archetype Tracker (Gardevoir, Charizard, Lugia)',
-    summary: 'Live meta deck profiles tracking tournament winning decklists from Regional and International championships.',
+    title: '2026 Standard Rotation Launch (Marks H, I, J) & Meta Archetype Tracker',
+    summary: 'Enforced the 2026 Standard format rotation on schedule (March 26 on PTCGL, April 10 in-person): Marks H, I, J legal with Mark G transitioned to Expanded. Deployed tournament archetypes and 60-card legality checks.',
     highlights: [
       {
-        category: 'Meta Decks',
+        category: 'Rotation Enforcement & Meta Decks',
         items: [
+          'Live rotation checks enforcing Regulation Marks H, I, and J, retiring Mark G to Expanded format.',
           'Indexed major deck archetypes including Gardevoir ex, Charizard ex, and Regidrago VSTAR.',
           'Visual archetype breakdowns showing core cards, flex tech cards, and matchup spreads.'
         ]

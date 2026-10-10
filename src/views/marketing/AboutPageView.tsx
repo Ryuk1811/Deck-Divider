@@ -42,7 +42,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
       icon: <Award className="w-5 h-5 text-[#DC143C]" />,
       title: 'Tournament Deckbuilder',
       tagline: 'Standard Format Legality & PTCGL Export',
-      description: 'Engineered specifically for competitive Pokémon TCG formats. Our builder checks 2026 Standard 60-card format legality based on published Play! Pokémon rules (regulation marks H, I, J; G rotated out), validates the 4-card copy rule, Radiant restrictions, and ACE SPEC limits, and generates 1-click PTCGL export lists.',
+      description: 'Engineered specifically for competitive Pokémon TCG formats. Our builder checks 2026 Standard 60-card format legality based on published Play! Pokémon rules (regulation marks H, I, J; G rotated out), validates the 4-card copy rule and single-card ACE SPEC limits, and generates 1-click PTCGL export lists.',
       highlight: 'Standard & Expanded rule validation with instant printable tournament rosters.',
     },
     {

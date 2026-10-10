@@ -286,7 +286,7 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         rating: 4.9,
         pricing: 'Free Starter ($0) to Collection ($14/mo) across 5 Tiers',
         platforms: ['Web / Desktop PWA', 'Mobile'],
-        summary: 'DECK / divider provides a professional 60-card tournament deck studio with live regulation mark validation (H, I & J legal; G rotated; based on published Play! Pokémon rules), rulebox limits (ACE SPECs, Radiant cards), daily TCGplayer pricing feeds, and seamless PTCGL export.',
+        summary: 'DECK / divider provides a professional 60-card tournament deck studio with live regulation mark validation (H, I & J legal; G rotated; based on published Play! Pokémon rules), rulebox limits (ACE SPEC cards), daily TCGplayer pricing feeds, and seamless PTCGL export.',
         pros: [
           'Validates Standard (H, I & J marks; G rotated; based on published Play! Pokémon rules), Expanded, and GLC format rules',
           'Calculates exact cost to finish deck based on cards already in your vault',

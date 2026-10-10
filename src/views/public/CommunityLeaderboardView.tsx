@@ -97,7 +97,7 @@ const TOP_COLLECTORS: PublicCollector[] = [
       { name: 'Iono (Special Illustration Rare #269)', grade: 'PSA 10', value: 145 },
     ],
     shareId: 'sinnoh-champion',
-    portfolioUrl: '/decks/gardevoir-ex',
+    portfolioUrl: '/deck/gardevoir-ex',
   },
 ];
 
@@ -485,7 +485,7 @@ export const CommunityLeaderboardView: React.FC = () => {
                       )}
                     </button>
                     <Link
-                      to={`/decks/${deck.id}`}
+                      to={`/deck/${deck.id}`}
                       className="w-full py-2.5 px-4 rounded-xl bg-[#DC143C]/10 hover:bg-[#DC143C]/20 text-[#DC143C] text-xs font-mono font-bold transition-colors flex items-center justify-center gap-1 border border-[#DC143C]/30"
                     >
                       View Deck Guide &amp; Tech Cards <ChevronRight className="w-4 h-4" />

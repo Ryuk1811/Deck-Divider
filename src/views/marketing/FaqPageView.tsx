@@ -72,7 +72,7 @@ const FAQ_COLLECTION: FaqData[] = [
       'Yes. The deck builder checks 2026 Standard 60-card format legality based on published Play! Pokémon rules (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
     highlights: [
       'Format compliance audits for Standard (regulation marks H, I, J; G rotated) and Expanded formats.',
-      'ACE SPEC single-card limit enforcement and Radiant Pokémon rules.',
+      'ACE SPEC single-card limit enforcement (and Expanded format Radiant Pokémon limits).',
       'One-click export string compatible with PTCGL, Limitless TCG, and tournament sheets.',
     ],
   },
@@ -117,14 +117,14 @@ const FAQ_COLLECTION: FaqData[] = [
     category: 'Pricing & Data',
     question: 'What are the limits of the free Starter tier?',
     answer:
-      'The free Starter plan includes up to 6 custom decks (full 60-card decks), 5 wishlists (up to 100 items per list), 25 graded slabs, 15 sealed items, instant card search across all 218 catalogued sets & series, and daily USD market valuations. You can upgrade anytime to expand deck capacity, unlock multi-currency conversion, and access advanced portfolio analytics.',
+      'The free Starter plan includes up to 6 custom decks (laddered 6-card mini, 30-card half, and 60-card standard decks), 5 wishlists (up to 100 items per list), 25 graded slabs, 15 sealed items, instant card search across all 218 catalogued sets & series, and daily USD market valuations. You can upgrade anytime to expand deck capacity (up to 75 on Bunch, 100 on Stack, 150 on Deck, and unlimited on Collection), unlock multi-currency conversion, and access advanced portfolio analytics.',
   },
   {
     id: 'faq-7b',
     category: 'Pricing & Data',
     question: 'How does the $250 Founder Lifetime Pass work?',
     answer:
-      'The Founder Lifetime Pass is a single, one-time payment of $250 USD that grants permanent, non-expiring access to the top-tier Collection specifications (unlimited decks, unlimited lists, unlimited slabs, sealed vault, multi-currency live FX, and full CSV exports) with zero recurring subscription charges. It is strictly limited to the first 100 paying customers and includes live slot tracking.',
+      'The Founder Lifetime Pass is a single, one-time payment of $250 USD that grants permanent, non-expiring access to the top-tier Collection specifications (unlimited decks, unlimited cards per deck across all ladder sizes, unlimited lists, unlimited slabs, sealed vault, multi-currency live FX, and full CSV exports) with zero recurring subscription charges. It is strictly limited to the first 100 paying customers and includes live slot tracking.',
     highlights: [
       'Single $250 payment with zero recurring charges or subscription renewals forever.',
       'Permanent Collection tier with unlimited capacity across all features.',

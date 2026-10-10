@@ -38,14 +38,6 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
     changefreq: 'daily',
   },
   {
-    path: '/expansions',
-    title: 'Pokémon TCG Expansions & Sets Catalog — DECK / divider',
-    description: 'Comprehensive directory of Pokémon TCG expansion series and master set binder checklists.',
-    category: 'catalog',
-    priority: '0.90',
-    changefreq: 'daily',
-  },
-  {
     path: '/directory',
     title: 'Pokémon TCG Directory & Knowledge Base — DECK / divider',
     description: 'Comprehensive Pokémon TCG index of 100+ expansion sets, competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.',

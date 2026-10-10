@@ -5,6 +5,7 @@ import { AccountTier, TIER_LIMITS } from '../../types';
 export type LimitAttemptedAction =
   | 'CREATE_DECK'
   | 'ADD_CARD_TO_DECK'
+  | 'UNLIMITED_ROSTER'
   | 'SHARE_PUBLIC_LINK'
   | 'CREATE_LIST'
   | 'ADD_TO_LIST'
@@ -45,6 +46,9 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
   const currentLimit = TIER_LIMITS[currentTier];
 
   const getNextTier = (tier: AccountTier, action: LimitAttemptedAction): AccountTier => {
+    if (action === 'UNLIMITED_ROSTER') {
+      return 'Collection';
+    }
     if (action === 'EXPORT_CSV') {
       return (tier === 'Deck' || tier === 'Collection') ? 'Collection' : 'Deck';
     }
@@ -80,10 +84,16 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
     title = `Deck Creation Limit Hit (${currentLimit.maxDecks} Decks)`;
     description = `You attempted to create deck #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxDecks} decks.`;
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) instantly unlocks ${nextLimit.maxDecks === Infinity ? 'Unlimited' : nextLimit.maxDecks} total decks!`;
+  } else if (attemptedAction === 'UNLIMITED_ROSTER') {
+    title = 'Unlimited Deck Rosters Require Collection Tier';
+    description = `Unlimited cards per deck (∞) and open freeform rosters are exclusively accessible on the Collection tier ($14/mo) and Lifetime Founder Pass. Your current ${currentTier} plan allows up to ${currentLimit.maxCardsPerDeck === Infinity ? 'Unlimited' : `${currentLimit.maxCardsPerDeck} cards`} per deck.`;
+    unlockHighlight = `Upgrade to Collection ($14/mo) or Lifetime Founder Pass to build unlimited-capacity rosters without any card caps!`;
   } else if (attemptedAction === 'ADD_CARD_TO_DECK') {
-    title = `Per-Deck Card Limit Hit (${currentLimit.maxCardsPerDeck} Cards)`;
-    description = `You attempted to add a card to "${attemptedDetails?.deckName || 'Deck'}". Your current ${currentTier} plan caps cards per deck at ${currentLimit.maxCardsPerDeck}.`;
-    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your per-deck capacity!`;
+    const currentLimitDisplay = currentLimit.maxCardsPerDeck === Infinity ? 'Unlimited' : `${currentLimit.maxCardsPerDeck} Cards`;
+    const nextLimitDisplay = nextLimit.maxCardsPerDeck === Infinity ? 'Unlimited cards per deck (∞)' : `up to ${nextLimit.maxCardsPerDeck} cards per deck`;
+    title = `Per-Deck Card Limit Hit (${currentLimitDisplay})`;
+    description = `You attempted to add a card to "${attemptedDetails?.deckName || 'Deck'}". Your current ${currentTier} plan caps cards per deck at ${currentLimitDisplay}.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your per-deck capacity to ${nextLimitDisplay}!`;
   } else if (attemptedAction === 'SHARE_PUBLIC_LINK') {
     title = 'Custom Link Slugs & Watermark Removal';
     description = `Your ${currentTier} plan includes public share links with standard DECK / divider badges. Custom handles and ad-free branding are unlocked on Stack tier ($7/mo) and above.`;

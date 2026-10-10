@@ -2738,11 +2738,84 @@ async function startServer() {
   
   // --- End TCGdex Proxy ---
 
-  // --- Canonical 301 Redirects for Legacy Tool Routes ---
+  // --- Canonical 301 Redirects for Legacy / Alias Routes ---
   app.get(['/tool', '/tool/*'], (req, res) => {
     const subpath = req.path.replace(/^\/tool\/?/, '').replace(/\/+$/, '');
     const destination = subpath ? `/tools/${subpath}` : '/tools';
     return res.redirect(301, destination);
+  });
+
+  app.get(['/expansions', '/expansions/sets'], (_req, res) => {
+    return res.redirect(301, '/sets');
+  });
+
+  app.get('/expansions/:setId', (req, res) => {
+    return res.redirect(301, `/set/${req.params.setId}`);
+  });
+
+  app.get('/set/:setId/checklist', (req, res) => {
+    return res.redirect(301, `/set/${req.params.setId}`);
+  });
+
+  app.get(['/rules/standard-2026', '/format/standard-2026'], (_req, res) => {
+    return res.redirect(301, '/format/standard');
+  });
+
+  app.get('/formats/:formatId', (req, res) => {
+    const targetFormat = req.params.formatId === 'standard-2026' ? 'standard' : req.params.formatId;
+    return res.redirect(301, `/format/${targetFormat}`);
+  });
+
+  app.get('/decks/:deckId', (req, res) => {
+    return res.redirect(301, `/deck/${req.params.deckId}`);
+  });
+
+  app.get('/cards/:cardId', (req, res) => {
+    return res.redirect(301, `/card/${req.params.cardId}`);
+  });
+
+  app.get('/portfolios/:shareId', (req, res) => {
+    return res.redirect(301, `/portfolio/${req.params.shareId}`);
+  });
+
+  app.get('/partner/ptc-collectibles', (_req, res) => {
+    return res.redirect(301, '/partners');
+  });
+
+  app.get('/about/founder', (_req, res) => {
+    return res.redirect(301, '/founder');
+  });
+
+  app.get('/methodology', (_req, res) => {
+    return res.redirect(301, '/data-methodology');
+  });
+
+  app.get('/support', (_req, res) => {
+    return res.redirect(301, '/contact');
+  });
+
+  app.get('/cookie-policy', (_req, res) => {
+    return res.redirect(301, '/privacy');
+  });
+
+  app.get('/media-kit', (_req, res) => {
+    return res.redirect(301, '/about');
+  });
+
+  app.get('/community', (_req, res) => {
+    return res.redirect(301, '/leaderboard');
+  });
+
+  app.get('/reviews', (_req, res) => {
+    return res.redirect(301, '/socials');
+  });
+
+  app.get('/collections', (_req, res) => {
+    return res.redirect(301, '/portfolios');
+  });
+
+  app.get('/features', (_req, res) => {
+    return res.redirect(301, '/');
   });
 
   // Trailing slash redirect for tools
@@ -2787,7 +2860,8 @@ async function startServer() {
         const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
         const transformedHtml = await vite.transformIndexHtml(req.originalUrl, populatedHtml);
 
-        res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(transformedHtml);
+        const statusCode = ssr.statusCode || 200;
+        res.status(statusCode).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(transformedHtml);
       } catch (err) {
         vite.ssrFixStacktrace(err as Error);
         next(err);
@@ -2847,7 +2921,8 @@ async function startServer() {
         const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'deckdivider.app');
         const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
 
-        res.status(200).set({
+        const statusCode = ssr.statusCode || 200;
+        res.status(statusCode).set({
           'Content-Type': 'text/html; charset=utf-8',
           'Cache-Control': 'no-cache',
         }).send(populatedHtml);

@@ -14,13 +14,15 @@ export const SET_LEGALITY_MAP: Record<string, {
   isStandardLegal: boolean;
   tournamentLegality: string;
 }> = {
-  // Scarlet & Violet Mark I & J (Standard Legal 2026)
-  'sv8': { regulationMark: 'Regulation Mark I', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
-  'sv8pt5': { regulationMark: 'Regulation Mark I', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
-  'sv9': { regulationMark: 'Regulation Mark I', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
+  // Scarlet & Violet Mark J (Standard Legal 2026)
   'sv10': { regulationMark: 'Regulation Mark J', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
+
+  // Scarlet & Violet Mark I (Standard Legal 2026)
+  'sv9': { regulationMark: 'Regulation Mark I', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
   
   // Scarlet & Violet Mark H (Standard Legal 2026)
+  'sv8pt5': { regulationMark: 'Regulation Mark H', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
+  'sv8': { regulationMark: 'Regulation Mark H', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
   'sv7': { regulationMark: 'Regulation Mark H', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
   'sv6pt5': { regulationMark: 'Regulation Mark H', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
   'sv6': { regulationMark: 'Regulation Mark H', isStandardLegal: true, tournamentLegality: 'Standard Legal (2026 Season: Marks H, I, J)' },
@@ -58,8 +60,9 @@ export function getSetLegality(setId: string, seriesName?: string): {
   badgeTextColor: string;
   badgeBorderColor: string;
 } {
-  const normalizedId = (setId || '').toLowerCase();
-  const known = SET_LEGALITY_MAP[normalizedId];
+  const rawId = (setId || '').toLowerCase().trim();
+  const normalizedId = rawId.replace(/^([a-z]+)0+(\d+)/, '$1$2');
+  const known = SET_LEGALITY_MAP[normalizedId] || SET_LEGALITY_MAP[rawId];
   if (known) {
     return {
       regulationMark: known.regulationMark,

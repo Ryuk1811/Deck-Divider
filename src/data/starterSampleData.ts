@@ -420,6 +420,8 @@ export function createStarterSampleDeck(targetUid: string = 'guest_user'): Deck 
     name: 'Starter Binder & Slabs',
     description: 'Sample collection with verified market comps and PSA/BGS slab tracking.',
     colorHex: '#DC143C',
+    targetSize: 60,
+    deckFormat: '60-Card Tournament Deck',
     isPublic: false,
     entries,
     createdAt: new Date().toISOString(),

@@ -195,7 +195,7 @@ export const HighIntentToolsView: React.FC = () => {
             ? 'Check Pokémon card regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with live rule validation.'
             : 'Calculate net ROI, grading costs, and expected value (EV) before submitting cards to PSA, BGS, or CGC. Includes Gem Mint probability simulator.'
         }
-        canonicalPath={isDeckChecker ? '/tool/deck-legality-checker' : '/tool/psa-grade-calculator'}
+        canonicalPath={isDeckChecker ? '/tools/deck-legality-checker' : '/tools/psa-grade-calculator'}
         keywords={
           isDeckChecker
             ? [

@@ -8,6 +8,8 @@ export function encodeDeckToUrlParam(deck: Deck): string {
       i: deck.id,
       n: deck.name,
       c: deck.colorHex,
+      t: deck.targetSize,
+      df: deck.deckFormat,
       p: (deck.entries || []).map((entry) => ({
         i: entry.card?.id || (entry as any).cardId || entry.id,
         q: entry.quantity || 1,
@@ -48,6 +50,8 @@ export function decodeUrlParamToDeck(encoded: string): Partial<Deck> | null {
       id: parsed.i,
       name: parsed.n || 'Shared Deck',
       colorHex: parsed.c || '#DC143C',
+      targetSize: parsed.t,
+      deckFormat: parsed.df,
       entries: (parsed.p || []).map((p: any) => {
         const fullCard = p.i ? getCardById(p.i) : null;
         const setCode = p.i && p.i.includes('-') ? p.i.split('-')[0] : 'base1';

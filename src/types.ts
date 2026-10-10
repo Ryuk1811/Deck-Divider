@@ -10,7 +10,7 @@ export interface TierLimit {
   name: AccountTier;
   priceMonthly: number; // 0, 4, 7, 11, 14
   maxDecks: number; // Infinity for Collection
-  maxCardsPerDeck: number; // 60
+  maxCardsPerDeck: number; // Laddered per tier: 60, 75, 100, 150, Infinity for Collection/Lifetime
   maxLists: number; // Infinity for Collection
   maxItemsPerList: number; // Infinity for Collection
   canSharePublicLinks: boolean;
@@ -303,10 +303,28 @@ export interface Deck {
   colorHex: string;
   isPublic: boolean;
   publicShareCode?: string;
+  targetSize?: number; // Target ladder size: 6 (Mini Deck), 30 (Half Deck), 60 (Standard), 100 (GLC), or Infinity/undefined for custom
+  deckFormat?: string; // e.g. '6-Card Mini', '30-Card Half', '60-Card Standard', '100-Card GLC', 'Custom / Unlimited'
   entries: PortfolioCardEntry[];
   createdAt: string;
   updatedAt: string;
 }
+
+export interface DeckSizeOption {
+  size: number;
+  label: string;
+  badge: string;
+  description: string;
+  requiredTier?: AccountTier; // Minimum tier required for this ladder format
+}
+
+export const DECK_SIZE_LADDER: DeckSizeOption[] = [
+  { size: 6, label: '6-Card Mini Deck', badge: '6-Card Mini', description: 'Fast casual & prize rush pocket mini roster' },
+  { size: 30, label: '30-Card Half Deck', badge: '30-Card Half', description: 'Learn-to-Play, theme half-deck & sealed starter' },
+  { size: 60, label: '60-Card Tournament Deck', badge: '60-Card Standard', description: 'Official Standard / Expanded championship roster' },
+  { size: 100, label: '100-Card GLC / Singleton', badge: '100-Card GLC', description: 'Gym Leader Challenge & singleton 100-card roster', requiredTier: 'Stack' },
+  { size: Infinity, label: 'Unlimited / Custom Roster', badge: 'Unlimited ∞', description: 'Open format roster without card count restrictions (Collection Tier Only)', requiredTier: 'Collection' },
+];
 
 export interface CustomList {
   id: string;

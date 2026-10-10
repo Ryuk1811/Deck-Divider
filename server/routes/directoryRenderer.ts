@@ -101,7 +101,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
           <div style="font-size:24px;margin-bottom:12px;">⚔️</div>
           <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">60-Card Meta Decks</h2>
-          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Standard format legal tournament deck lists with 2026 regulation marks H/I/J compliance and 1-click PTCGL export strings.</p>
+          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Standard (Marks H/I/J) and Expanded 60-card tournament meta deck rosters with 1-click PTCGL export strings and legality checks.</p>
           <a href="/directory/decks-index" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">View Meta Decks &rarr;</a>
         </div>
 
@@ -243,7 +243,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
   // 3. DECKS INDEX: /directory/decks-index
   if (cleanPath === '/directory/decks-index') {
     const pageTitle = 'Competitive 60-Card Pokémon Meta Decks Index — DECK / divider';
-    const pageDesc = 'Tournament-legal 60-card standard format meta deck lists with card counts, PTCGL import text strings, and live TCGplayer market prices.';
+    const pageDesc = 'Tournament 60-card Standard and Expanded meta deck lists with card counts, PTCGL import text strings, and live TCGplayer market prices.';
     const canonicalUrl = `${CANONICAL_ORIGIN}/directory/decks-index`;
 
     const jsonLd = {
@@ -310,22 +310,30 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
           <a href="/directory" style="color:#64748B;text-decoration:none;">Directory</a> &gt; 
           <span style="color:#0F172A;font-weight:600;">Tournament Meta Decks</span>
         </nav>
-        <h1 style="font-size:32px;font-weight:800;color:#0F172A;margin-bottom:8px;">Standard Format Meta Decks Index</h1>
+        <h1 style="font-size:32px;font-weight:800;color:#0F172A;margin-bottom:8px;">Standard &amp; Expanded Meta Decks Index</h1>
         <p style="font-size:15px;color:#64748B;line-height:1.5;">Browse championship-level 60-card tournament deck lists with card counts, energy distributions, match-up strategies, and 1-click PTCGL copy strings.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;margin-bottom:48px;">
         ${DECK_SLUGS.map(slug => {
           const deckName = slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          const isRotated = ['regidrago-vstar', 'lugia-vstar', 'dialga-vstar', 'giratina-vstar', 'pao-chien-ex', 'snorlax-stall'].includes(slug);
+          const formatBadge = isRotated
+            ? '<span style="font-size:11px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:999px;font-weight:700;">Expanded (Rotated)</span>'
+            : '<span style="font-size:11px;background:#F0FDF4;color:#16A34A;padding:2px 8px;border-radius:999px;font-weight:700;">Standard Legal</span>';
+          const formatDesc = isRotated
+            ? 'Championship Expanded roster featuring Mark F/G archetypes rotated from 2026 Standard. Full 60-card list.'
+            : 'Verified 2026 Standard tournament build complying with Regulation Marks H, I, and J. Full 60-card list.';
+
           return `
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:10px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:11px;background:#FFF0F3;color:#DC143C;padding:2px 8px;border-radius:999px;font-weight:700;">Standard Legal</span>
+                ${formatBadge}
                 <span style="font-size:12px;color:#64748B;font-weight:600;">60 Cards</span>
               </div>
               <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">${escapeHtml(deckName)}</h2>
-              <p style="font-size:13px;color:#64748B;line-height:1.4;margin-bottom:16px;">Verified competitive standard tournament build with full Pokémon, Trainer, and Energy counts.</p>
+              <p style="font-size:13px;color:#64748B;line-height:1.4;margin-bottom:16px;">${escapeHtml(formatDesc)}</p>
             </div>
             <a href="/deck/${slug}" style="background:#0F172A;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;text-align:center;">View 60-Card List &amp; PTCGL String &rarr;</a>
           </div>

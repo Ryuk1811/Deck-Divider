@@ -1231,8 +1231,13 @@ export default function App() {
 
   // Deck Management Handlers
   const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
-    const maxDecks = TIER_LIMITS[currentTier].maxDecks;
-    if (decks.length >= maxDecks) {
+    const isLifetimeUser = Boolean(
+      (subscription as any)?.isLifetime ||
+      (user as any)?.isLifetime ||
+      currentTier === 'Collection'
+    );
+    const maxDecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxDecks;
+    if (maxDecks !== Infinity && decks.length >= maxDecks) {
       setLimitModalConfig({
         isOpen: true,
         action: 'CREATE_DECK',
@@ -1303,8 +1308,13 @@ export default function App() {
     cardIdsToSplit: string[],
     newDeckName: string
   ) => {
-    const maxDecks = TIER_LIMITS[currentTier].maxDecks;
-    if (decks.length >= maxDecks) {
+    const isLifetimeUser = Boolean(
+      (subscription as any)?.isLifetime ||
+      (user as any)?.isLifetime ||
+      currentTier === 'Collection'
+    );
+    const maxDecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxDecks;
+    if (maxDecks !== Infinity && decks.length >= maxDecks) {
       setLimitModalConfig({
         isOpen: true,
         action: 'CREATE_DECK',
@@ -1360,9 +1370,14 @@ export default function App() {
     mode: 'increment' | 'separate'
   ) => {
     const targetDeckRef = decks.find((d) => d.id === deckId);
-    const maxCards = TIER_LIMITS[currentTier].maxCardsPerDeck;
+    const isLifetimeUser = Boolean(
+      (subscription as any)?.isLifetime ||
+      (user as any)?.isLifetime ||
+      currentTier === 'Collection'
+    );
+    const maxCards = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxCardsPerDeck;
     const currentCardCount = targetDeckRef ? targetDeckRef.entries.reduce((a, b) => a + b.quantity, 0) : 0;
-    if (currentCardCount + entryData.quantity > maxCards) {
+    if (maxCards !== Infinity && currentCardCount + entryData.quantity > maxCards) {
       setLimitModalConfig({
         isOpen: true,
         action: 'ADD_CARD_TO_DECK',
@@ -2201,7 +2216,8 @@ export default function App() {
         <Route path="/expansions" element={<Navigate to="/sets" replace />} />
         <Route path="/expansions/sets" element={<Navigate to="/sets" replace />} />
         <Route path="/formats" element={<FormatLegalityDirectoryView />} />
-        <Route path="/rules/standard-2026" element={<Navigate to="/format/standard-2026" replace />} />
+        <Route path="/rules/standard-2026" element={<Navigate to="/format/standard" replace />} />
+        <Route path="/format/standard-2026" element={<Navigate to="/format/standard" replace />} />
         <Route path="/tools" element={<HighIntentToolsView />} />
         <Route path="/compare" element={<CompetitorComparisonView />} />
         <Route path="/best" element={<BestOfGuidesView />} />
@@ -2220,8 +2236,8 @@ export default function App() {
         <Route path="/expansions/:setId" element={<Navigate to="/set/:setId" replace />} />
         <Route path="/format/:formatId" element={<FormatLegalityView />} />
         <Route path="/formats/:formatId" element={<Navigate to="/format/:formatId" replace />} />
-        <Route path="/tool/:toolId" element={<HighIntentToolsView />} />
-        <Route path="/tools/:toolId" element={<Navigate to="/tool/:toolId" replace />} />
+        <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
+        <Route path="/tool/:toolId" element={<Navigate to="/tools/:toolId" replace />} />
         <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />

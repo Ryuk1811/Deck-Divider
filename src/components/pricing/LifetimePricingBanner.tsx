@@ -105,7 +105,7 @@ export const LifetimePricingBanner: React.FC<LifetimePricingBannerProps> = ({
               <div className="w-4 h-4 rounded-full bg-[#FFF0F3] text-[#DC143C] flex items-center justify-center shrink-0">
                 <Check className="w-3 h-3 text-[#DC143C]" />
               </div>
-              <span className="font-medium">Unlimited 60-card tournament rosters &amp; decks</span>
+              <span className="font-medium">Unlimited custom decks &amp; exclusive unlimited cards per deck (Collection tier: 6, 30, 60, 100, &infin;)</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-[#FFF0F3] text-[#DC143C] flex items-center justify-center shrink-0">

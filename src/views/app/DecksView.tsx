@@ -19,7 +19,8 @@ import {
   Eye,
   Settings2,
   Trash2,
-  ExternalLink 
+  ExternalLink,
+  Crown
 } from 'lucide-react';
 import {
   Deck,
@@ -29,6 +30,8 @@ import {
   PortfolioCardEntry,
   PokemonCard,
   CardSet,
+  DECK_SIZE_LADDER,
+  DeckSizeOption,
 } from '../../types';
 import { CardImage } from '../../components/ui/CardImage';
 import { formatCurrency } from '../../utils/formatters';
@@ -96,6 +99,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDesc, setNewDeckDesc] = useState('');
   const [newDeckColor, setNewDeckColor] = useState('#DC143C');
+  const [newDeckTargetSize, setNewDeckTargetSize] = useState<number>(60);
+  const [newDeckFormat, setNewDeckFormat] = useState<string>('60-Card Tournament Deck');
   const [newDeckIsPublic, setNewDeckIsPublic] = useState(false);
 
   // Edit Deck Properties Modal
@@ -103,6 +108,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const [editDeckName, setEditDeckName] = useState('');
   const [editDeckDesc, setEditDeckDesc] = useState('');
   const [editDeckColor, setEditDeckColor] = useState('#DC143C');
+  const [editDeckTargetSize, setEditDeckTargetSize] = useState<number>(60);
+  const [editDeckFormat, setEditDeckFormat] = useState<string>('60-Card Tournament Deck');
 
   // Split Group State
   const [splitGroupSetId, setSplitGroupSetId] = useState<string | null>(null);
@@ -144,6 +151,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
     setNewDeckName('');
     setNewDeckDesc('');
     setNewDeckColor('#DC143C');
+    setNewDeckTargetSize(60);
+    setNewDeckFormat('60-Card Tournament Deck');
     setNewDeckIsPublic(false);
     setIsCreateModalOpen(true);
   };
@@ -153,6 +162,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
     setEditDeckName(currentDeck.name);
     setEditDeckDesc(currentDeck.description || '');
     setEditDeckColor(currentDeck.colorHex || '#DC143C');
+    setEditDeckTargetSize(currentDeck.targetSize || 60);
+    setEditDeckFormat(currentDeck.deckFormat || '60-Card Tournament Deck');
     setIsEditModalOpen(true);
   };
 
@@ -194,6 +205,16 @@ export const DecksView: React.FC<DecksViewProps> = ({
     e.preventDefault();
     if (!newDeckName.trim()) return;
 
+    if (newDeckTargetSize === Infinity && currentTier !== 'Collection' && !isSuperUser) {
+      onTriggerLimitModal('UNLIMITED_ROSTER');
+      return;
+    }
+
+    if (newDeckTargetSize !== Infinity && newDeckTargetSize > tierLimit.maxCardsPerDeck) {
+      onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: newDeckName.trim() });
+      return;
+    }
+
     if (newDeckIsPublic && !tierLimit.canSharePublicLinks) {
       onTriggerLimitModal('SHARE_PUBLIC_LINK');
       return;
@@ -203,6 +224,8 @@ export const DecksView: React.FC<DecksViewProps> = ({
       name: newDeckName.trim(),
       description: newDeckDesc.trim(),
       colorHex: newDeckColor,
+      targetSize: newDeckTargetSize,
+      deckFormat: newDeckFormat,
       isPublic: newDeckIsPublic,
       publicShareCode: newDeckIsPublic
         ? `DD-${Math.floor(1000 + Math.random() * 9000)}`
@@ -218,11 +241,23 @@ export const DecksView: React.FC<DecksViewProps> = ({
     e.preventDefault();
     if (!currentDeck || !editDeckName) return;
 
+    if (editDeckTargetSize === Infinity && currentTier !== 'Collection' && !isSuperUser) {
+      onTriggerLimitModal('UNLIMITED_ROSTER');
+      return;
+    }
+
+    if (editDeckTargetSize !== Infinity && editDeckTargetSize > tierLimit.maxCardsPerDeck) {
+      onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: editDeckName.trim() });
+      return;
+    }
+
     onUpdateDeck({
       ...currentDeck,
       name: editDeckName,
       description: editDeckDesc,
       colorHex: editDeckColor,
+      targetSize: editDeckTargetSize,
+      deckFormat: editDeckFormat,
       updatedAt: new Date().toISOString(),
     });
 
@@ -330,6 +365,29 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0">
                   {decks.length} Active Decks
                 </span>
+                {currentDeck && (
+                  <span className={`font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border ${
+                    currentDeck.targetSize === 6
+                      ? 'bg-purple-50 text-purple-700 border-purple-200'
+                      : currentDeck.targetSize === 30
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : currentDeck.targetSize === 100
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                      : currentDeck.targetSize === Infinity
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-rose-50 text-rose-700 border-rose-200'
+                  }`}>
+                    {currentDeck.targetSize === 6
+                      ? '6-Card Mini'
+                      : currentDeck.targetSize === 30
+                      ? '30-Card Half'
+                      : currentDeck.targetSize === 100
+                      ? '100-Card GLC'
+                      : currentDeck.targetSize === Infinity
+                      ? 'Unlimited ∞'
+                      : '60-Card Standard'}
+                  </span>
+                )}
               </div>
               <p className="font-mono text-[11px] sm:text-xs text-[#64748B] mt-0.5 max-w-xl truncate">
                 {currentDeck?.description || 'Manage deck structures, custom colors, and binder pages'}
@@ -339,10 +397,12 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
           {/* Function Actions Toolbar - Clean wrapping flex row on all screens */}
           <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2 w-full lg:w-auto">
+            {/* New Deck Button */}
             <button
               type="button"
               onClick={handleOpenCreateModal}
               className="h-9 px-4 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
+              title="Configure New Deck"
             >
               <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">New Deck</span>
@@ -458,8 +518,17 @@ export const DecksView: React.FC<DecksViewProps> = ({
                   </div>
 
                   <div className="mt-2 flex items-center justify-between font-mono text-[11px] pt-1.5 border-t border-[#E2E8F0]">
-                    <span className="text-[#64748B]">{totalCards} cards</span>
-                    <strong className="font-num text-[#0F172A] font-bold">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-[#64748B] truncate">
+                        {totalCards}{deck.targetSize && deck.targetSize !== Infinity ? `/${deck.targetSize}` : ''} cards
+                      </span>
+                      {deck.targetSize === 6 && (
+                        <span className="text-[9px] font-bold px-1 rounded bg-purple-100 text-purple-700 flex-shrink-0">
+                          6-Mini
+                        </span>
+                      )}
+                    </div>
+                    <strong className="font-num text-[#0F172A] font-bold flex-shrink-0">
                       {formatCurrency(totalVal, currency)}
                     </strong>
                   </div>
@@ -468,6 +537,64 @@ export const DecksView: React.FC<DecksViewProps> = ({
             })}
           </div>
         </div>
+
+        {/* CURRENT DECK CAPACITY & LADDER STATUS BAR */}
+        {currentDeck && (() => {
+          const targetSize = currentDeck.targetSize || 60;
+          const isUnlimited = targetSize === Infinity;
+          const cardCount = activeEntries.length;
+          const isComplete = !isUnlimited && cardCount === targetSize;
+          const isOver = !isUnlimited && cardCount > targetSize;
+          const pct = isUnlimited ? 100 : Math.min(100, Math.round((cardCount / targetSize) * 100));
+          const tierDeckCap = tierLimit.maxCardsPerDeck;
+
+          return (
+            <div className="p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-bold text-[#0F172A]">
+                    Ladder Format: {targetSize === Infinity ? 'Unlimited / Custom Roster' : `${targetSize}-Card Deck`}
+                  </span>
+                  {isComplete ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                      ✓ Complete ({cardCount}/{targetSize} Cards)
+                    </span>
+                  ) : isOver ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold border border-amber-200">
+                      ⚠ Exceeds Target ({cardCount}/{targetSize})
+                    </span>
+                  ) : isUnlimited ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold border border-purple-200">
+                      Open Unlimited ({cardCount} Cards)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-semibold">
+                      {targetSize - cardCount} card{targetSize - cardCount === 1 ? '' : 's'} to target ({cardCount}/{targetSize})
+                    </span>
+                  )}
+                </div>
+                <div className="text-[#64748B] text-[11px] font-mono">
+                  Plan Deck Capacity: <strong className="text-[#0F172A]">{tierDeckCap === Infinity ? 'Unlimited (∞)' : `${tierDeckCap} Cards Max`}</strong>
+                </div>
+              </div>
+
+              <div className="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    isComplete
+                      ? 'bg-emerald-500'
+                      : isOver
+                      ? 'bg-amber-500'
+                      : targetSize === 6
+                      ? 'bg-purple-600'
+                      : 'bg-[#DC143C]'
+                  }`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+          );
+        })()}
 
         {/* View Mode Switcher Toolbar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#E2E8F0]">
@@ -752,107 +879,196 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* CREATE DECK MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
-              <h3 className="font-heading font-bold text-lg text-[#0F172A]">
-                Configure New Deck
-              </h3>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in overflow-y-auto">
+          <div className="w-full max-w-lg bg-white border border-[#E2E8F0] shadow-2xl rounded-2xl flex flex-col max-h-[90vh] overflow-hidden my-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#E2E8F0] bg-white shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center text-[#DC143C]">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-bold text-base sm:text-lg text-[#0F172A] leading-tight">
+                    Configure New Deck
+                  </h3>
+                  <p className="font-mono text-[11px] text-[#64748B]">
+                    Define format rule, size cap, and color styling
+                  </p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 text-[#0F172A]"
+                className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-4">
-              <div>
-                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">Deck Name</label>
-                <input
-                  type="text"
-                  required
-                  value={newDeckName}
-                  onChange={(e) => setNewDeckName(e.target.value)}
-                  placeholder="e.g. Lost Zone Box or Binder #1"
-                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">Description (Optional)</label>
-                <textarea
-                  value={newDeckDesc}
-                  onChange={(e) => setNewDeckDesc(e.target.value)}
-                  placeholder="Strategy breakdown or archetype tags..."
-                  rows={2}
-                  className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white"
-                />
-              </div>
-
-              {/* Color Palette Swatches & Manual Input */}
-              <div className="space-y-2">
-                <label className="block font-mono text-xs font-semibold text-[#0F172A]">Deck Color Accent</label>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { name: 'Crimson', hex: '#DC143C' },
-                    { name: 'Indigo', hex: '#4F46E5' },
-                    { name: 'Emerald', hex: '#10B981' },
-                    { name: 'Amber', hex: '#F59E0B' },
-                    { name: 'Violet', hex: '#8B5CF6' },
-                    { name: 'Cyan', hex: '#06B6D4' },
-                    { name: 'Rose', hex: '#E11D48' },
-                    { name: 'Obsidian', hex: '#0F172A' },
-                  ].map((color) => (
-                    <button
-                      key={color.hex}
-                      type="button"
-                      onClick={() => setNewDeckColor(color.hex)}
-                      className={`w-7 h-7 rounded-full border-2 transition-transform ${
-                        newDeckColor.toLowerCase() === color.hex.toLowerCase()
-                          ? 'border-[#0F172A] scale-110 shadow-sm'
-                          : 'border-transparent hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="color"
-                    value={newDeckColor}
-                    onChange={(e) => setNewDeckColor(e.target.value)}
-                    className="w-9 h-9 rounded-lg border border-[#E2E8F0] cursor-pointer"
-                  />
+            {/* Scrollable Form Content */}
+            <form onSubmit={handleCreateSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
+                <div>
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
+                    Deck Name <span className="text-[#DC143C]">*</span>
+                  </label>
                   <input
                     type="text"
-                    value={newDeckColor}
-                    onChange={(e) => setNewDeckColor(e.target.value)}
-                    className="w-28 p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold uppercase text-[#0F172A]"
+                    required
+                    value={newDeckName}
+                    onChange={(e) => setNewDeckName(e.target.value)}
+                    placeholder="e.g. Lost Zone Box or Binder #1"
+                    className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors"
                   />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
+                    Description <span className="font-normal text-[#64748B]">(Optional)</span>
+                  </label>
+                  <textarea
+                    value={newDeckDesc}
+                    onChange={(e) => setNewDeckDesc(e.target.value)}
+                    placeholder="Strategy breakdown or archetype tags..."
+                    rows={2}
+                    className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors resize-none"
+                  />
+                </div>
+
+                {/* Deck Size & Format Ladder Selector */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <label className="block font-mono text-xs font-semibold text-[#0F172A]">
+                      Deck Size &amp; Format Ladder
+                    </label>
+                    <span className="text-[10px] font-mono text-[#64748B]">
+                      Plan Cap: {tierLimit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxCardsPerDeck} Cards`}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {DECK_SIZE_LADDER.map((opt) => {
+                      const isSelected = newDeckTargetSize === opt.size;
+                      const isUnlimitedOpt = opt.size === Infinity;
+                      const canAccessUnlimited = currentTier === 'Collection' || isSuperUser;
+                      const isLocked = isUnlimitedOpt
+                        ? !canAccessUnlimited
+                        : opt.size > tierLimit.maxCardsPerDeck;
+
+                      return (
+                        <button
+                          key={String(opt.size)}
+                          type="button"
+                          onClick={() => {
+                            if (isLocked) {
+                              if (isUnlimitedOpt) {
+                                onTriggerLimitModal('UNLIMITED_ROSTER');
+                              } else if (opt.size === 100) {
+                                onTriggerLimitModal('GLC_FORMAT');
+                              } else {
+                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: newDeckName || 'New Deck' });
+                              }
+                              return;
+                            }
+                            setNewDeckTargetSize(opt.size);
+                            setNewDeckFormat(opt.label);
+                          }}
+                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer relative ${
+                            isSelected
+                              ? 'border-[#DC143C] bg-[#FFF0F3] ring-1 ring-[#DC143C]'
+                              : isLocked
+                              ? 'border-slate-200 bg-slate-50 opacity-60 hover:opacity-100 hover:border-slate-300'
+                              : 'border-[#E2E8F0] bg-[#F8FAFC] hover:border-slate-300 hover:bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`text-[11px] font-mono font-bold ${isSelected ? 'text-[#DC143C]' : 'text-[#0F172A]'}`}>
+                              {opt.badge}
+                            </span>
+                            {isLocked ? (
+                              <span className="inline-flex items-center gap-0.5 text-[8px] font-mono px-1 py-0.5 rounded bg-slate-200/80 text-slate-600 font-bold uppercase shrink-0">
+                                <Lock className="w-2.5 h-2.5" />
+                                {isUnlimitedOpt ? 'Collection' : 'Locked'}
+                              </span>
+                            ) : opt.size === 6 ? (
+                              <span className="text-[8px] font-mono px-1 rounded bg-purple-100 text-purple-700 font-bold uppercase shrink-0">
+                                ★ Mini
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="text-[10px] text-[#64748B] line-clamp-1 mt-0.5 font-sans">
+                            {isLocked && isUnlimitedOpt ? 'Collection Tier (∞) Only' : opt.description}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Color Palette Swatches & Manual Input */}
+                <div className="space-y-2">
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A]">Deck Color Accent</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { name: 'Crimson', hex: '#DC143C' },
+                      { name: 'Indigo', hex: '#4F46E5' },
+                      { name: 'Emerald', hex: '#10B981' },
+                      { name: 'Amber', hex: '#F59E0B' },
+                      { name: 'Violet', hex: '#8B5CF6' },
+                      { name: 'Cyan', hex: '#06B6D4' },
+                      { name: 'Rose', hex: '#E11D48' },
+                      { name: 'Obsidian', hex: '#0F172A' },
+                    ].map((color) => (
+                      <button
+                        key={color.hex}
+                        type="button"
+                        onClick={() => setNewDeckColor(color.hex)}
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
+                          newDeckColor.toLowerCase() === color.hex.toLowerCase()
+                            ? 'border-[#0F172A] scale-110 shadow-sm ring-2 ring-[#0F172A]/20'
+                            : 'border-transparent hover:scale-105'
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <input
+                      type="color"
+                      value={newDeckColor}
+                      onChange={(e) => setNewDeckColor(e.target.value)}
+                      className="w-9 h-9 rounded-lg border border-[#E2E8F0] cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={newDeckColor}
+                      onChange={(e) => setNewDeckColor(e.target.value)}
+                      className="w-28 p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold uppercase text-[#0F172A]"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <label className="flex items-center gap-2 font-mono text-xs text-[#0F172A] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newDeckIsPublic}
+                      onChange={(e) => setNewDeckIsPublic(e.target.checked)}
+                      className="w-4 h-4 accent-[#DC143C] rounded cursor-pointer"
+                    />
+                    <span>Allow Public Link Sharing</span>
+                  </label>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <label className="flex items-center gap-2 font-mono text-xs text-[#0F172A] cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={newDeckIsPublic}
-                    onChange={(e) => setNewDeckIsPublic(e.target.checked)}
-                    className="w-4 h-4 accent-[#DC143C]"
-                  />
-                  <span>Allow Public Link Sharing</span>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0]">
+              {/* Sticky Footer */}
+              <div className="flex items-center justify-end gap-2 px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-[#E2E8F0] shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-lg transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-200/70 rounded-lg transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -871,97 +1087,195 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
       {/* EDIT DECK PROPERTIES MODAL */}
       {isEditModalOpen && currentDeck && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md bg-white p-6 border border-[#E2E8F0] shadow-xl space-y-4 rounded-xl">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
-              <h3 className="font-heading font-bold text-lg text-[#0F172A]">
-                Assign Custom Name & Color
-              </h3>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in overflow-y-auto">
+          <div className="w-full max-w-lg bg-white border border-[#E2E8F0] shadow-2xl rounded-2xl flex flex-col max-h-[90vh] overflow-hidden my-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#E2E8F0] bg-white shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#FFF0F3] border border-[#DC143C]/20 flex items-center justify-center text-[#DC143C]">
+                  <Settings2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-bold text-base sm:text-lg text-[#0F172A] leading-tight">
+                    Assign Custom Name & Color
+                  </h3>
+                  <p className="font-mono text-[11px] text-[#64748B]">
+                    Modify deck label, format rules, and marker color
+                  </p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1 text-[#0F172A]"
+                className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              <div>
-                <label className="font-mono text-xs text-[#64748B]">Custom Deck Name</label>
-                <input
-                  type="text"
-                  required
-                  value={editDeckName}
-                  onChange={(e) => setEditDeckName(e.target.value)}
-                  placeholder="e.g. Master Tournament Deck"
-                  className="w-full mt-1 p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A]"
-                />
-              </div>
-
-              <div>
-                <label className="font-mono text-xs text-[#64748B]">Description</label>
-                <textarea
-                  value={editDeckDesc}
-                  onChange={(e) => setEditDeckDesc(e.target.value)}
-                  placeholder="Strategy notes..."
-                  rows={2}
-                  className="w-full mt-1 p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A]"
-                />
-              </div>
-
-              {/* Color Swatches Palette & Hex Input */}
-              <div className="space-y-2">
-                <label className="font-mono text-xs text-[#64748B]">Deck Marker Color</label>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { name: 'Crimson', hex: '#DC143C' },
-                    { name: 'Indigo', hex: '#4F46E5' },
-                    { name: 'Emerald', hex: '#10B981' },
-                    { name: 'Amber', hex: '#F59E0B' },
-                    { name: 'Violet', hex: '#8B5CF6' },
-                    { name: 'Cyan', hex: '#06B6D4' },
-                    { name: 'Rose', hex: '#E11D48' },
-                    { name: 'Obsidian', hex: '#0F172A' },
-                  ].map((color) => (
-                    <button
-                      key={color.hex}
-                      type="button"
-                      onClick={() => setEditDeckColor(color.hex)}
-                      className={`w-7 h-7 rounded-full border-2 transition-transform ${
-                        editDeckColor.toLowerCase() === color.hex.toLowerCase()
-                          ? 'border-[#0F172A] scale-110 shadow-sm'
-                          : 'border-transparent hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="color"
-                    value={editDeckColor}
-                    onChange={(e) => setEditDeckColor(e.target.value)}
-                    className="w-9 h-9 rounded-lg border border-[#E2E8F0] cursor-pointer"
-                  />
+            {/* Scrollable Form Content */}
+            <form onSubmit={handleEditSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
+                <div>
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
+                    Custom Deck Name <span className="text-[#DC143C]">*</span>
+                  </label>
                   <input
                     type="text"
-                    value={editDeckColor}
-                    onChange={(e) => setEditDeckColor(e.target.value)}
-                    className="w-28 p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold uppercase text-[#0F172A]"
+                    required
+                    value={editDeckName}
+                    onChange={(e) => setEditDeckName(e.target.value)}
+                    placeholder="e.g. Master Tournament Deck"
+                    className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors"
                   />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
+                    Description <span className="font-normal text-[#64748B]">(Optional)</span>
+                  </label>
+                  <textarea
+                    value={editDeckDesc}
+                    onChange={(e) => setEditDeckDesc(e.target.value)}
+                    placeholder="Strategy notes..."
+                    rows={2}
+                    className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors resize-none"
+                  />
+                </div>
+
+                {/* Deck Size & Format Ladder Selector */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <label className="block font-mono text-xs font-semibold text-[#0F172A]">
+                      Deck Size &amp; Format Ladder
+                    </label>
+                    <span className="text-[10px] font-mono text-[#64748B]">
+                      Plan Cap: {tierLimit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxCardsPerDeck} Cards`}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {DECK_SIZE_LADDER.map((opt) => {
+                      const isSelected = editDeckTargetSize === opt.size;
+                      const isUnlimitedOpt = opt.size === Infinity;
+                      const canAccessUnlimited = currentTier === 'Collection' || isSuperUser;
+                      const isLocked = isUnlimitedOpt
+                        ? !canAccessUnlimited
+                        : opt.size > tierLimit.maxCardsPerDeck;
+
+                      return (
+                        <button
+                          key={String(opt.size)}
+                          type="button"
+                          onClick={() => {
+                            if (isLocked) {
+                              if (isUnlimitedOpt) {
+                                onTriggerLimitModal('UNLIMITED_ROSTER');
+                              } else if (opt.size === 100) {
+                                onTriggerLimitModal('GLC_FORMAT');
+                              } else {
+                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: editDeckName || 'Deck' });
+                              }
+                              return;
+                            }
+                            setEditDeckTargetSize(opt.size);
+                            setEditDeckFormat(opt.label);
+                          }}
+                          className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer relative ${
+                            isSelected
+                              ? 'border-[#DC143C] bg-[#FFF0F3] ring-1 ring-[#DC143C]'
+                              : isLocked
+                              ? 'border-slate-200 bg-slate-50 opacity-60 hover:opacity-100 hover:border-slate-300'
+                              : 'border-[#E2E8F0] bg-[#F8FAFC] hover:border-slate-300 hover:bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`text-[11px] font-mono font-bold ${isSelected ? 'text-[#DC143C]' : 'text-[#0F172A]'}`}>
+                              {opt.badge}
+                            </span>
+                            {isLocked ? (
+                              <span className="inline-flex items-center gap-0.5 text-[8px] font-mono px-1 py-0.5 rounded bg-slate-200/80 text-slate-600 font-bold uppercase shrink-0">
+                                <Lock className="w-2.5 h-2.5" />
+                                {isUnlimitedOpt ? 'Collection' : 'Locked'}
+                              </span>
+                            ) : opt.size === 6 ? (
+                              <span className="text-[8px] font-mono px-1 rounded bg-purple-100 text-purple-700 font-bold uppercase shrink-0">
+                                ★ Mini
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="text-[10px] text-[#64748B] line-clamp-1 mt-0.5 font-sans">
+                            {isLocked && isUnlimitedOpt ? 'Collection Tier (∞) Only' : opt.description}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Color Swatches Palette & Hex Input */}
+                <div className="space-y-2">
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A]">Deck Marker Color</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { name: 'Crimson', hex: '#DC143C' },
+                      { name: 'Indigo', hex: '#4F46E5' },
+                      { name: 'Emerald', hex: '#10B981' },
+                      { name: 'Amber', hex: '#F59E0B' },
+                      { name: 'Violet', hex: '#8B5CF6' },
+                      { name: 'Cyan', hex: '#06B6D4' },
+                      { name: 'Rose', hex: '#E11D48' },
+                      { name: 'Obsidian', hex: '#0F172A' },
+                    ].map((color) => (
+                      <button
+                        key={color.hex}
+                        type="button"
+                        onClick={() => setEditDeckColor(color.hex)}
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
+                          editDeckColor.toLowerCase() === color.hex.toLowerCase()
+                            ? 'border-[#0F172A] scale-110 shadow-sm ring-2 ring-[#0F172A]/20'
+                            : 'border-transparent hover:scale-105'
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <input
+                      type="color"
+                      value={editDeckColor}
+                      onChange={(e) => setEditDeckColor(e.target.value)}
+                      className="w-9 h-9 rounded-lg border border-[#E2E8F0] cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={editDeckColor}
+                      onChange={(e) => setEditDeckColor(e.target.value)}
+                      className="w-28 p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-bold uppercase text-[#0F172A]"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full neo-btn-primary py-3 text-xs flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Save Deck Customizations</span>
-              </button>
+              {/* Sticky Footer */}
+              <div className="flex items-center justify-end gap-2 px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-[#E2E8F0] shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-xs font-mono font-bold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-200/70 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 neo-btn-primary text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Save Deck Customizations</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>

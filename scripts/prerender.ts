@@ -74,8 +74,6 @@ async function prerenderAllRoutes() {
   const publicRoutes: Array<{ route: string; outputPath: string }> = [
     { route: '/', outputPath: path.join(distDir, 'index.html') },
     { route: '/cards', outputPath: path.join(distDir, 'cards', 'index.html') },
-    { route: '/expansions', outputPath: path.join(distDir, 'expansions', 'index.html') },
-    { route: '/expansions/sets', outputPath: path.join(distDir, 'expansions', 'sets', 'index.html') },
     { route: '/directory', outputPath: path.join(distDir, 'directory', 'index.html') },
     { route: '/directory/sets-index', outputPath: path.join(distDir, 'directory', 'sets-index', 'index.html') },
     { route: '/directory/decks-index', outputPath: path.join(distDir, 'directory', 'decks-index', 'index.html') },
@@ -85,6 +83,8 @@ async function prerenderAllRoutes() {
     { route: '/sets', outputPath: path.join(distDir, 'sets', 'index.html') },
     { route: '/leaderboard', outputPath: path.join(distDir, 'leaderboard', 'index.html') },
     { route: '/about', outputPath: path.join(distDir, 'about', 'index.html') },
+    { route: '/founder', outputPath: path.join(distDir, 'founder', 'index.html') },
+    { route: '/data-methodology', outputPath: path.join(distDir, 'data-methodology', 'index.html') },
     { route: '/how-it-works', outputPath: path.join(distDir, 'how-it-works', 'index.html') },
     { route: '/privacy', outputPath: path.join(distDir, 'privacy', 'index.html') },
     { route: '/terms', outputPath: path.join(distDir, 'terms', 'index.html') },
@@ -169,10 +169,6 @@ async function prerenderAllRoutes() {
           publicRoutes.push({
             route: `/set/${set.id}/top-cards`,
             outputPath: path.join(distDir, 'set', set.id, 'top-cards', 'index.html')
-          });
-          publicRoutes.push({
-            route: `/set/${set.id}/checklist`,
-            outputPath: path.join(distDir, 'set', set.id, 'checklist', 'index.html')
           });
         }
       });

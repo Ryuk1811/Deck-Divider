@@ -75,38 +75,113 @@ export function updateDeckDocumentMeta(deck: Deck | null, deckId?: string) {
   return seo;
 }
 
-// Function to format deck as PTCGL text
+export function getPtcglSetCode(setName?: string, cardId?: string): string {
+  const norm = (setName || '').toLowerCase().trim();
+  const cid = (cardId || '').toLowerCase().trim();
+
+  if (norm.includes('basic energy') || (norm.includes('energy') && cid.startsWith('sv01-09'))) return 'SVE';
+
+  if (cid.startsWith('sv08pt5') || cid.startsWith('sv8pt5')) return 'PRE';
+  if (cid.startsWith('sv08') || cid.startsWith('sv8')) return 'SSP';
+  if (cid.startsWith('sv07') || cid.startsWith('sv7')) return 'SCR';
+  if (cid.startsWith('sv06pt5') || cid.startsWith('sv6pt5')) return 'SFA';
+  if (cid.startsWith('sv06') || cid.startsWith('sv6')) return 'TWM';
+  if (cid.startsWith('sv05') || cid.startsWith('sv5')) return 'TEF';
+  if (cid.startsWith('sv04pt5') || cid.startsWith('sv4pt5')) return 'PAF';
+  if (cid.startsWith('sv04') || cid.startsWith('sv4')) return 'PAR';
+  if (cid.startsWith('sv03pt5') || cid.startsWith('sv3pt5')) return 'MEW';
+  if (cid.startsWith('sv03') || cid.startsWith('sv3')) return 'OBF';
+  if (cid.startsWith('sv02') || cid.startsWith('sv2')) return 'PAL';
+  if (cid.startsWith('sv01') || cid.startsWith('sv1')) return 'SVI';
+  if (cid.startsWith('swsh12pt5')) return 'CRZ';
+  if (cid.startsWith('swsh12')) return 'SIT';
+  if (cid.startsWith('swsh11')) return 'LOR';
+  if (cid.startsWith('swsh10pt5')) return 'PGO';
+  if (cid.startsWith('swsh10')) return 'ASR';
+  if (cid.startsWith('swsh09') || cid.startsWith('swsh9')) return 'BRS';
+  if (cid.startsWith('swsh08') || cid.startsWith('swsh8')) return 'FST';
+  if (cid.startsWith('swsh07') || cid.startsWith('swsh7')) return 'EVS';
+  if (cid.startsWith('swsh06') || cid.startsWith('swsh6')) return 'CRE';
+  if (cid.startsWith('swsh05') || cid.startsWith('swsh5')) return 'BST';
+  if (cid.startsWith('swsh04pt5') || cid.startsWith('swsh4pt5')) return 'SHF';
+  if (cid.startsWith('swsh04') || cid.startsWith('swsh4')) return 'VIV';
+  if (cid.startsWith('swsh03pt5') || cid.startsWith('swsh3pt5')) return 'CPA';
+  if (cid.startsWith('swsh03') || cid.startsWith('swsh3')) return 'DAA';
+  if (cid.startsWith('swsh02') || cid.startsWith('swsh2')) return 'RCL';
+  if (cid.startsWith('swsh01') || cid.startsWith('swsh1')) return 'SSH';
+
+  if (norm.includes('prismatic evolutions')) return 'PRE';
+  if (norm.includes('surging sparks')) return 'SSP';
+  if (norm.includes('stellar crown')) return 'SCR';
+  if (norm.includes('shrouded fable')) return 'SFA';
+  if (norm.includes('twilight masquerade')) return 'TWM';
+  if (norm.includes('temporal forces')) return 'TEF';
+  if (norm.includes('paldean fates')) return 'PAF';
+  if (norm.includes('paradox rift')) return 'PAR';
+  if (norm.includes('151')) return 'MEW';
+  if (norm.includes('obsidian flames')) return 'OBF';
+  if (norm.includes('paldea evolved')) return 'PAL';
+  if (norm.includes('scarlet & violet') || norm.includes('scarlet and violet')) return 'SVI';
+  if (norm.includes('crown zenith')) return 'CRZ';
+  if (norm.includes('silver tempest')) return 'SIT';
+  if (norm.includes('lost origin')) return 'LOR';
+  if (norm.includes('pokémon go') || norm.includes('pokemon go')) return 'PGO';
+  if (norm.includes('astral radiance')) return 'ASR';
+  if (norm.includes('brilliant stars')) return 'BRS';
+  if (norm.includes('fusion strike')) return 'FST';
+  if (norm.includes('celebrations')) return 'CEL';
+  if (norm.includes('evolving skies')) return 'EVS';
+  if (norm.includes('chilling reign')) return 'CRE';
+  if (norm.includes('battle styles')) return 'BST';
+  if (norm.includes('shining fates')) return 'SHF';
+  if (norm.includes('vivid voltage')) return 'VIV';
+  if (norm.includes('darkness ablaze')) return 'DAA';
+  if (norm.includes('rebel clash')) return 'RCL';
+  if (norm.includes('sword & shield') || norm.includes('sword and shield')) return 'SSH';
+
+  return 'SVI';
+}
+
+// Function to format deck as native PTCGL import text
 function formatPTCGL(entries: PortfolioCardEntry[]): string {
-  const pokemon: string[] = [];
-  const trainers: string[] = [];
-  const energy: string[] = [];
+  const pokemon: { qty: number; line: string }[] = [];
+  const trainers: { qty: number; line: string }[] = [];
+  const energy: { qty: number; line: string }[] = [];
 
   (entries || []).forEach(entry => {
     if (!entry || !entry.card) return;
     const sup = (entry.card.supertype || '').toLowerCase();
-    const line = `${entry.quantity || 1} ${entry.card.name || 'Card'} ${entry.card.set?.name || ''} ${entry.card.number || ''}`.trim();
-    
+    const qty = entry.quantity || 1;
+    const setCode = getPtcglSetCode(entry.card.set?.name, entry.card.id || entry.cardId);
+    let cardName = entry.card.name || 'Card';
+    const num = entry.card.number || '1';
+    const line = `${qty} ${cardName} ${setCode} ${num}`.trim();
+
     if (sup.includes('pokémon') || sup.includes('pokemon')) {
-      pokemon.push(line);
+      pokemon.push({ qty, line });
     } else if (sup.includes('energy')) {
-      energy.push(line);
+      energy.push({ qty, line });
     } else {
-      trainers.push(line);
+      trainers.push({ qty, line });
     }
   });
 
-  return [
-    `Pokémon: ${pokemon.length}`,
-    ...pokemon,
-    '',
-    `Trainer: ${trainers.length}`,
-    ...trainers,
-    '',
-    `Energy: ${energy.length}`,
-    ...energy,
-    '',
-    `Total Cards: ${(entries || []).reduce((acc, c) => acc + (c.quantity || 1), 0)}`
-  ].join('\n');
+  const pTotal = pokemon.reduce((acc, c) => acc + c.qty, 0);
+  const tTotal = trainers.reduce((acc, c) => acc + c.qty, 0);
+  const eTotal = energy.reduce((acc, c) => acc + c.qty, 0);
+
+  const sections: string[] = [];
+  if (pokemon.length > 0) {
+    sections.push(`Pokémon: ${pTotal}\n${pokemon.map(p => p.line).join('\n')}`);
+  }
+  if (trainers.length > 0) {
+    sections.push(`Trainer: ${tTotal}\n${trainers.map(t => t.line).join('\n')}`);
+  }
+  if (energy.length > 0) {
+    sections.push(`Energy: ${eTotal}\n${energy.map(e => e.line).join('\n')}`);
+  }
+
+  return sections.join('\n\n');
 }
 
 export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
@@ -208,8 +283,10 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
             description: tournamentMatch.description,
             colorHex: tournamentMatch.colorHex,
             isPublic: true,
+            isStandardLegal: tournamentMatch.isStandardLegal,
+            format: tournamentMatch.format,
             entries,
-          };
+          } as any;
         } else {
           // 2. Fall back to local user decks
           try {
@@ -278,7 +355,21 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
     return { pokemon, trainer, energy, totalValue };
   }, [deck]);
   
-  const isStandardLegal = totalCardsCount === 60; // Simplified check for public view
+  const isDeckStandardLegal = useMemo(() => {
+    if (totalCardsCount !== 60) return false;
+    if ((deck as any)?.isStandardLegal !== undefined) {
+      return Boolean((deck as any).isStandardLegal);
+    }
+    const hasRotatedCards = deck?.entries?.some(e => {
+      const set = (e.card?.set?.name || '').toLowerCase();
+      const name = (e.card?.name || '').toLowerCase();
+      if (name.includes('vstar') || name.includes('vmax') || (name.endsWith(' v') && !name.includes('iron') && !name.includes('great'))) return true;
+      if (name.includes('radiant')) return true;
+      if (set.includes('silver tempest') || set.includes('lost origin') || set.includes('astral radiance') || set.includes('brilliant stars') || set.includes('crown zenith')) return true;
+      return false;
+    });
+    return !hasRotatedCards;
+  }, [deck, totalCardsCount]);
 
   const handleCopyLink = async () => {
     try {
@@ -390,7 +481,20 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
           summary={`This Pokémon TCG deck contains ${totalCardsCount} cards (${stats.pokemon} Pokémon, ${stats.trainer} Trainers, and ${stats.energy} Energy cards) with an estimated live market value of ${formatCurrency(stats.totalValue, activeCurrency)}. It can be copied directly for import into Pokémon TCG Live (PTCGL) or cloned into your personal deck vault.`}
           keyFacts={[
             { label: 'Deck Name', value: deck?.name || 'Tournament Deck' },
-            { label: 'Card Count', value: `${totalCardsCount} Cards ${isStandardLegal ? '(Legal 60)' : ''}` },
+            {
+              label: 'Card Count',
+              value: `${totalCardsCount} Cards ${
+                (deck?.targetSize === 6 || (deck as any)?.targetSize === 6)
+                  ? totalCardsCount === 6 ? '(Complete 6-Card Mini)' : `(Incomplete 6-Card: ${totalCardsCount}/6)`
+                  : (deck?.targetSize && deck.targetSize !== 60 && deck.targetSize !== Infinity)
+                  ? totalCardsCount === deck.targetSize ? `(Complete ${deck.targetSize}-Card)` : `(Incomplete: ${totalCardsCount}/${deck.targetSize})`
+                  : isDeckStandardLegal
+                  ? '(Standard Legal 60)'
+                  : totalCardsCount === 60
+                  ? '(Expanded 60)'
+                  : `(Incomplete ${totalCardsCount}/60)`
+              }`,
+            },
             { label: 'Market Value', value: formatCurrency(stats.totalValue, activeCurrency) },
             { label: 'PTCGL Ready', value: 'Instant Text Export' },
           ]}
@@ -413,14 +517,65 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                   <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
                     {deck.name}
                   </h2>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#DC143C] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
-                    {totalCardsCount}/60 Cards
-                  </span>
-                  <span className={`font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border ${
-                    isStandardLegal ? 'bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30' : 'bg-[#FFFBEB] text-[#D97706] border-[#D97706]/30'
-                  }`}>
-                    {isStandardLegal ? 'Standard Legal' : 'Standard Illegal'}
-                  </span>
+                  {deck?.targetSize === 6 ? (
+                    <>
+                      <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#7C3AED] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
+                        {totalCardsCount}/6 Cards (Mini)
+                      </span>
+                      {totalCardsCount === 6 ? (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
+                          Complete 6-Card Mini Deck
+                        </span>
+                      ) : (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/30">
+                          Incomplete ({totalCardsCount}/6)
+                        </span>
+                      )}
+                    </>
+                  ) : deck?.targetSize && deck.targetSize !== 60 && deck.targetSize !== Infinity ? (
+                    <>
+                      <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0284C7] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
+                        {totalCardsCount}/{deck.targetSize} Cards
+                      </span>
+                      {totalCardsCount === deck.targetSize ? (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
+                          Complete {deck.targetSize}-Card Roster
+                        </span>
+                      ) : (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/30">
+                          Incomplete ({totalCardsCount}/{deck.targetSize})
+                        </span>
+                      )}
+                    </>
+                  ) : deck?.targetSize === Infinity ? (
+                    <>
+                      <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
+                        {totalCardsCount} Cards (Unlimited ∞)
+                      </span>
+                      <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
+                        Custom Open Format
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#DC143C] text-white px-2 py-0.5 rounded flex-shrink-0 shadow-xs">
+                        {totalCardsCount}/60 Cards
+                      </span>
+                      {totalCardsCount !== 60 ? (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/30">
+                          Incomplete ({totalCardsCount}/60)
+                        </span>
+                      ) : isDeckStandardLegal ? (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
+                          Standard Legal
+                        </span>
+                      ) : (
+                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FFFBEB] text-[#D97706] border-[#D97706]/30">
+                          Expanded Legal (Rotated)
+                        </span>
+                      )}
+                    </>
+                  )}
                 </div>
                 {deck.description && (
                   <p className="font-mono text-[11px] sm:text-xs text-[#64748B] mt-0.5 max-w-xl truncate">

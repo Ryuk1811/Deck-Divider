@@ -35,7 +35,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
   Starter: {
     id: 'Starter',
     name: 'Starter',
-    tagline: 'Full 60-card deckbuilder & collection starter',
+    tagline: 'Laddered deckbuilder (6, 30 & 60 cards) & collection starter',
     popular: false,
     pricing: {
       monthly: 0,
@@ -62,7 +62,8 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     features: [
       'Up to 6 custom decks',
-      'Full 60 cards per deck',
+      'Laddered deck sizes: 6-card mini, 30-card half & 60-card standard decks',
+      'Max 60 cards per deck cap',
       'Up to 5 binder lists & wishlists',
       'Max 100 items per list',
       'Instant card search across 218 catalogued sets & series',
@@ -83,7 +84,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     limits: {
       decks: 15,
-      cardsPerDeck: 60,
+      cardsPerDeck: 75,
       wishlists: 15,
       itemsPerList: 300,
       gradedSlabs: 100,
@@ -101,7 +102,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     features: [
       'Up to 15 custom decks',
-      'Full 60 cards per deck',
+      'Up to 75 cards per deck (6, 30, 60 + 15 sideboard)',
       'Up to 15 binder lists & wishlists',
       'Max 300 items per list',
       'PSA, BGS & CGC grade and cert logging (up to 100 slabs)',
@@ -121,7 +122,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     limits: {
       decks: 30,
-      cardsPerDeck: 60,
+      cardsPerDeck: 100,
       wishlists: 30,
       itemsPerList: 750,
       gradedSlabs: 300,
@@ -139,7 +140,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     features: [
       'Up to 30 custom decks',
-      'Full 60 cards per deck',
+      'Up to 100 cards per deck (full 100-card GLC & Singleton rosters)',
       'Up to 30 binder lists & wishlists',
       'Max 750 items per list',
       'Shareable deck links with dynamic previews',
@@ -160,7 +161,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     limits: {
       decks: 60,
-      cardsPerDeck: 60,
+      cardsPerDeck: 150,
       wishlists: 60,
       itemsPerList: 1500,
       gradedSlabs: 1000,
@@ -178,7 +179,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     features: [
       'Up to 60 custom decks',
-      'Full 60 cards per deck with format legality audits',
+      'Up to 150 cards per deck (high-capacity mega rosters)',
       'Up to 60 binder lists & wishlists',
       'Max 1,500 items per list',
       'PTCGL 1-click text import & export',
@@ -199,7 +200,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     limits: {
       decks: Infinity,
-      cardsPerDeck: 60,
+      cardsPerDeck: Infinity,
       wishlists: Infinity,
       itemsPerList: Infinity,
       gradedSlabs: Infinity,
@@ -217,7 +218,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
     },
     features: [
       'Unlimited custom decks (∞)',
-      'Full 60 cards per tournament deck (∞)',
+      'Unlimited cards per deck (∞) across all ladder sizes (6, 30, 60, 100, ∞)',
       'Unlimited binder lists & wishlists (∞)',
       'Unlimited items per list (∞)',
       'Unlimited graded slabs & sealed vault products (∞)',

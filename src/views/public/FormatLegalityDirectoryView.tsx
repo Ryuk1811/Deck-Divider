@@ -93,7 +93,7 @@ export const FormatLegalityDirectoryView: React.FC = () => {
             {formats.map(format => (
               <Link 
                 key={format.id}
-                to={`/formats/${format.id}`}
+                to={`/format/${format.id}`}
                 className="bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-2xl p-6 transition-all hover:-translate-y-1 group flex flex-col justify-between shadow-xs hover:shadow-sm"
               >
                 <div>

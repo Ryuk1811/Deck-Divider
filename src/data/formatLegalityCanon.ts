@@ -35,9 +35,8 @@ export const CANONICAL_FORMATS: Record<string, FormatRuleDefinition> = {
     deckConstructionRules: [
       'Exactly 60 cards per deck',
       'Maximum 4 copies of any card with the same name (except Basic Energy)',
-      'Maximum 1 Radiant Pokémon per deck',
       'Maximum 1 ACE SPEC card per deck',
-      'Cards must bear Regulation Mark H, I, or J',
+      'Cards must bear Regulation Mark H, I, or J (Radiant Pokémon bear Mark F and have rotated out of Standard)',
     ],
     reprintRuleNote:
       'Older prints of cards without Regulation Mark H, I, or J are legal ONLY if the card has received an identical-text reprint in a set currently bearing Mark H, I, or J (e.g. Ultra Ball, Boss\'s Orders, Switch, Rare Candy).',

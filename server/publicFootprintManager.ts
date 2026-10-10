@@ -42,17 +42,14 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/terms', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/security', lastmod: BUILD_DATE, priority: '0.5', changefreq: 'monthly' },
   { path: '/formats', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
-  { path: '/format/standard-2026', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
+  { path: '/format/standard', lastmod: BUILD_DATE, priority: '0.9', changefreq: 'weekly' },
   { path: '/format/expanded', lastmod: BUILD_DATE, priority: '0.8', changefreq: 'weekly' },
   { path: '/format/glc', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
-  { path: '/format/unlimited', lastmod: BUILD_DATE, priority: '0.65', changefreq: 'weekly' },
-  { path: '/format/retro-2010', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
-  { path: '/format/retro-2004', lastmod: BUILD_DATE, priority: '0.6', changefreq: 'weekly' },
   { path: '/socials', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
   { path: '/partners/ptc-collectibles', lastmod: BUILD_DATE, priority: '0.90', changefreq: 'weekly' },
   { path: '/portfolios', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'daily' },
-  { path: '/tool/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
-  { path: '/tool/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tools/psa-grade-calculator', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
+  { path: '/tools/deck-legality-checker', lastmod: BUILD_DATE, priority: '0.85', changefreq: 'weekly' },
 ];
 
 // 2. Tournament Decks & Archetypes (Singular)
@@ -245,7 +242,7 @@ export function generateToolsSitemapXml(): string {
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
   TOOL_SLUGS.forEach(slug => {
-    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tool/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/tools/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
   });
   xml += `</urlset>`;
   return xml;
@@ -284,7 +281,6 @@ export async function generateSetsSitemapXml(): Promise<string> {
         if (set && set.id) {
           xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
           xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/top-cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.75</priority>\n  </url>\n`;
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/checklist</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.75</priority>\n  </url>\n`;
         }
       });
     }
@@ -300,9 +296,6 @@ export function generateFormatsSitemapXml(): string {
     { path: '/format/standard', priority: '0.9' },
     { path: '/format/expanded', priority: '0.8' },
     { path: '/format/glc', priority: '0.85' },
-    { path: '/format/unlimited', priority: '0.65' },
-    { path: '/format/retro-2010', priority: '0.6' },
-    { path: '/format/retro-2004', priority: '0.6' },
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

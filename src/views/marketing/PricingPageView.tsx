@@ -58,7 +58,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   const pricingFaqs = [
     {
       q: "What's completely free, and do I need a credit card?",
-      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to card search across 218 catalogued sets & series (148+ master checklists), daily USD TCGplayer market prices, up to 6 custom decks (full 60-card decks), 25 graded slabs, 15 sealed items, and 5 wishlists (100 items/list).",
+      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to card search across 218 catalogued sets & series (148+ master checklists), daily USD TCGplayer market prices, up to 6 custom decks (laddered 6-card mini, 30-card half & 60-card standard decks), 25 graded slabs, 15 sealed items, and 5 wishlists (100 items/list).",
     },
     {
       q: 'What happens right after I sign up or log in?',
@@ -388,54 +388,78 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               <tbody className="divide-y divide-[#F1F5F9]">
                 <tr>
                   <td className="py-3 px-4 font-semibold text-[#0F172A]">Custom Decks</td>
-                  <td className="py-3 px-2 text-center font-mono">4</td>
-                  <td className="py-3 px-2 text-center font-mono">9</td>
+                  <td className="py-3 px-2 text-center font-mono">6</td>
                   <td className="py-3 px-2 text-center font-mono">15</td>
-                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">18</td>
+                  <td className="py-3 px-2 text-center font-mono">30</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">60</td>
                   <td className="py-3 px-2 text-center font-mono">Unlimited</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Cards per Deck</td>
-                  <td className="py-3 px-2 text-center font-mono">25</td>
-                  <td className="py-3 px-2 text-center font-mono">40</td>
-                  <td className="py-3 px-2 text-center font-mono">50</td>
-                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">60 (Tournament)</td>
-                  <td className="py-3 px-2 text-center font-mono">60 (Tournament)</td>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Cards per Deck (Ladder)</td>
+                  <td className="py-3 px-2 text-center font-mono font-medium text-[#0F172A]">60 (6, 30 &amp; 60)</td>
+                  <td className="py-3 px-2 text-center font-mono font-medium text-[#0F172A]">75 (+15 Sideboard)</td>
+                  <td className="py-3 px-2 text-center font-mono font-medium text-[#0F172A]">100 (Full GLC)</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">150 (Mega)</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold text-emerald-700">Unlimited (&infin;)*</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Wishlists</td>
-                  <td className="py-3 px-2 text-center font-mono">3</td>
-                  <td className="py-3 px-2 text-center font-mono">8</td>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Lists &amp; Wishlists</td>
+                  <td className="py-3 px-2 text-center font-mono">5</td>
                   <td className="py-3 px-2 text-center font-mono">15</td>
-                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">25</td>
+                  <td className="py-3 px-2 text-center font-mono">30</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">60</td>
                   <td className="py-3 px-2 text-center font-mono">Unlimited</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-semibold text-[#0F172A]">Items per List</td>
-                  <td className="py-3 px-2 text-center font-mono">20</td>
-                  <td className="py-3 px-2 text-center font-mono">50</td>
                   <td className="py-3 px-2 text-center font-mono">100</td>
-                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">200</td>
+                  <td className="py-3 px-2 text-center font-mono">300</td>
+                  <td className="py-3 px-2 text-center font-mono">750</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">1,500</td>
                   <td className="py-3 px-2 text-center font-mono">Unlimited</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Slab Cert Logging (PSA/BGS/CGC)</td>
-                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold bg-[#FFF0F3]/30">&check;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">PTCGL 1-Click Export</td>
+                  <td className="py-3 px-2 text-center text-emerald-600 font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-emerald-600 font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-emerald-600 font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-emerald-600 font-bold bg-[#FFF0F3]/30">&check;</td>
+                  <td className="py-3 px-2 text-center text-emerald-600 font-bold">&check;</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-[#0F172A]">PTCGL 1-Click Export</td>
-                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
-                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
-                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold bg-[#FFF0F3]/30">&check;</td>
-                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Slab Cert Logging (PSA/BGS/CGC)</td>
+                  <td className="py-3 px-2 text-center font-mono">25</td>
+                  <td className="py-3 px-2 text-center font-mono">100</td>
+                  <td className="py-3 px-2 text-center font-mono">300</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">1,000</td>
+                  <td className="py-3 px-2 text-center font-mono">Unlimited</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-semibold text-[#0F172A]">Sealed Vault Tracker</td>
+                  <td className="py-3 px-2 text-center font-mono">15</td>
+                  <td className="py-3 px-2 text-center font-mono">50</td>
+                  <td className="py-3 px-2 text-center font-mono">150</td>
+                  <td className="py-3 px-2 text-center font-mono font-bold bg-[#FFF0F3]/30 text-[#DC143C]">500</td>
+                  <td className="py-3 px-2 text-center font-mono">Unlimited</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Multi-Currency Conversion</td>
+                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold bg-[#FFF0F3]/30">&check;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">GLC &amp; Retro Legality Engine</td>
+                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
+                  <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold bg-[#FFF0F3]/30">&check;</td>
+                  <td className="py-3 px-2 text-center text-[#DC143C] font-bold">&check;</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-semibold text-[#0F172A]">Full Portfolio CSV Export</td>
                   <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
                   <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
                   <td className="py-3 px-2 text-center text-[#94A3B8]">&mdash;</td>
