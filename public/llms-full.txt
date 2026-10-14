@@ -146,7 +146,7 @@
 - [Gholdengo Ex](https://deckdivider.app/deck/gholdengo-ex): 60-card tournament list with live market cost
 - [Roaring Moon Ex](https://deckdivider.app/deck/roaring-moon-ex): 60-card tournament list with live market cost
 - [Iron Thorns Ex](https://deckdivider.app/deck/iron-thorns-ex): 60-card tournament list with live market cost
-- [Pao Chien Ex](https://deckdivider.app/deck/pao-chien-ex): 60-card tournament list with live market cost
+- [Chien Pao Ex](https://deckdivider.app/deck/chien-pao-ex): 60-card tournament list with live market cost
 - [Snorlax Stall](https://deckdivider.app/deck/snorlax-stall): 60-card tournament list with live market cost
 - [Ancient Box](https://deckdivider.app/deck/ancient-box): 60-card tournament list with live market cost
 - [Dialga Vstar](https://deckdivider.app/deck/dialga-vstar): 60-card tournament list with live market cost

@@ -9,6 +9,7 @@ import { SectionHeaderLine } from '../../components/landing/SectionHeaderLine';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PageHead } from '../../components/seo/PageHead';
 import { getHomepageSchema } from '../../components/seo/schemaData';
+import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
 
 // Lazy load below-the-fold interactive mockups and marketing panels for instant initial paint
 const CollectionMockup = lazy(() => import('../../components/landing/mockups/CollectionMockup').then(m => ({ default: m.CollectionMockup })));
@@ -110,8 +111,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative select-none">
       <PageHead
-        title="DECK / divider — Institutional Pokémon TCG Collection Tracker, Slab Vault & Deck Studio"
-        description="The ultimate Pokémon TCG collection tracker and tournament deck studio. Track raw cards, PSA/BGS/CGC slabs, and sealed booster boxes with live TCGplayer market prices and offline-first privacy."
+        title="DECK / divider — Ad-Free Pokémon TCG Collection Tracker &amp; Deckbuilder"
+        description="The ultimate ad-free Pokémon TCG collection tracker and tournament deck studio. Track raw cards, PSA/BGS/CGC slabs, and sealed booster boxes with live TCGplayer market prices and offline-first privacy."
         canonicalPath="/"
         keywords={[
           'pokemon card tracker',
@@ -380,7 +381,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         {/* Top Verified Reviews Strip */}
         <section className="py-12 bg-white border-y border-slate-100">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <VerifiedReviewsStrip maxItems={3} showStatsHeader={true} />
+            <ErrorBoundary fallback={null}>
+              <VerifiedReviewsStrip maxItems={3} showStatsHeader={true} />
+            </ErrorBoundary>
           </div>
         </section>
 
@@ -393,8 +396,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           subtitle="Our mission, security standards, and design philosophy behind DECK / divider."
         />
 
-        {/* Platform Philosophy Section */}
-        <PlatformPhilosophySection />
+        {/* Platform Philosophy / About Section */}
+        <div id="about" className="scroll-mt-16">
+          <PlatformPhilosophySection />
+        </div>
 
         {/* Section 04 Header Line: Pricing */}
         <SectionHeaderLine

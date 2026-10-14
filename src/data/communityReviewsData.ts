@@ -1,4 +1,4 @@
-import { CommunityReview } from '../lib/reviewsService';
+import type { CommunityReview } from '../types';
 
 /**
  * 1,000+ Realistic, Natural Community Trainer Reviews for DECK / divider
@@ -292,7 +292,7 @@ const TEMPLATES: TemplateReview[] = [
     titles: [
       'Zero ads, snappy UI, and works great on mobile Safari & Chrome',
       'Lightweight web app that loads faster than native apps',
-      'Incredible design aesthetics, feels like an institutional tool',
+      'Incredible design aesthetics, feels like a professional collector studio',
       'Offline-friendly and respects data privacy',
       'The search bar finds any Pokémon card in under 50 milliseconds'
     ],

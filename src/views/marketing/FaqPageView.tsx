@@ -379,7 +379,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
             <Layers className="w-5 h-5 text-[#DC143C]" />
             <h3 className="text-base font-bold text-[#0F172A]">How It Works</h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Explore the 4-step pipeline from raw card binder to institutional ledger.
+              Explore the 4-step workflow from raw card binder to master collection tracker.
             </p>
             <Link
               to="/how-it-works"

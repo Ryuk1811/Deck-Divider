@@ -192,7 +192,7 @@ export const FounderPageView: React.FC = () => {
 
           <GeoExtractableBlock
             heading="Who is the creator of DECK / divider?"
-            summary="DECK / divider was created and solo-engineered by Gurutva Murdia, a lifelong Pokémon collector and full-stack software developer. The platform was built to replace ad-heavy, sluggish card tracker apps with an institutional-grade, privacy-respecting tool featuring instant ⌘K search, 60-card tournament deck rules, and slab portfolio management."
+            summary="DECK / divider was created and solo-engineered by Gurutva Murdia, a lifelong Pokémon collector and full-stack software developer. The platform was built to replace ad-heavy, sluggish card tracker apps with an ad-free, high-precision tool featuring instant ⌘K search, 60-card tournament deck rules, and slab collection management."
             keyFacts={[
               { label: 'Creator', value: 'Gurutva Murdia' },
               { label: 'Role', value: 'Solo Founder & Engineer' },

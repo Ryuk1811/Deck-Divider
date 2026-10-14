@@ -97,7 +97,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
         {/* Section 3: Subscriptions, Billing & Cancellations */}
         <section className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
           <h2 className="text-xl font-bold text-[#0F172A] font-heading">
-            3. Subscription Plans, Billing &amp; 7-Day Guarantee
+            3. Subscription Plans, Billing &amp; 14-Day Guarantee
           </h2>
           <div className="space-y-3 text-sm text-[#475569] leading-relaxed">
             <p>
@@ -114,7 +114,8 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
             <ul className="space-y-2 font-mono text-xs text-[#334155] pt-2">
               <li>• <strong>Flexible Subscription Model:</strong> Standard plans are pay-per-period subscription passes (30-day Monthly or 365-day Annual). There are zero continuous forced mandates or locked recurring obligations. You can opt out or choose not to renew at any time.</li>
               <li>• <strong>Opt Out &amp; Graceful Reversion:</strong> If you choose not to renew a pass, your account safely reverts to the Free Starter tier upon period end. No cards, decks, or portfolio data are ever deleted.</li>
-              <li>• <strong>7-Day Money-Back Guarantee:</strong> First-time paid pass purchasers may request a full refund within 7 days of payment by emailing deckdivider@outlook.com.</li>
+              <li>• <strong>14-Day Money-Back Guarantee:</strong> First-time paid pass purchasers may request an unconditional 100% refund within 14 days of payment by emailing deckdivider@outlook.com.</li>
+              <li>• <strong>Sales Tax &amp; VAT:</strong> All displayed subscription prices exclude state or local sales taxes or VAT, which are calculated and disclosed transparently at payment checkout based on your jurisdiction.</li>
             </ul>
           </div>
         </section>

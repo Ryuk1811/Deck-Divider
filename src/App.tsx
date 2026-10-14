@@ -2168,11 +2168,8 @@ export default function App() {
               ) : (
                 <LandingPageView
                   onEnterApp={() => {
-                    if (user) {
-                      navigate('/app');
-                    } else {
-                      handleOpenAuth();
-                    }
+                    handleSetGuestMode(true);
+                    navigate('/app');
                   }}
                   onOpenAuth={handleOpenAuth}
                   onNavigateAbout={() => navigate('/about')}

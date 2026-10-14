@@ -32,6 +32,7 @@ import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { getPublicDeckSchema } from '../../components/seo/schemaData';
 import { generateDeckSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
 import { getTournamentDeckBySlug } from '../../data/tournamentDecks';
+import { evaluateCardLegality } from '../../utils/cardLegality';
 
 interface PublicDeckViewProps {
   deckId?: string;
@@ -566,13 +567,27 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                           Incomplete ({totalCardsCount}/60)
                         </span>
                       ) : isDeckStandardLegal ? (
-                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
-                          Standard Legal
-                        </span>
+                        <>
+                          <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/30">
+                            Standard Legal (Marks H, I, J · Effective April 10, 2026)
+                          </span>
+                          {(deck as any).tier && (
+                            <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-slate-50 text-slate-700 border-slate-300">
+                              {(deck as any).tier} · {(deck as any).tierSource || 'Limitless TCG Meta'}
+                            </span>
+                          )}
+                        </>
                       ) : (
-                        <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FFFBEB] text-[#D97706] border-[#D97706]/30">
-                          Expanded Legal (Rotated)
-                        </span>
+                        <>
+                          <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-[#FFFBEB] text-[#D97706] border-[#D97706]/30">
+                            Expanded Legal (Rotated from Standard)
+                          </span>
+                          {(deck as any).tier && (
+                            <span className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border bg-slate-50 text-slate-700 border-slate-300">
+                              {(deck as any).tier} · {(deck as any).tierSource || 'Limitless TCG Archive'}
+                            </span>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -692,6 +707,7 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
               <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B]">
                 <tr>
                   <th className="p-3">Card Name</th>
+                  <th className="p-3">Regulation &amp; Legality</th>
                   <th className="p-3">Set</th>
                   <th className="p-3">Qty</th>
                   <th className="p-3">Unit Value</th>
@@ -704,10 +720,26 @@ export const PublicDeckView: React.FC<PublicDeckViewProps> = ({
                   if (!card) return null;
                   const price = card.prices?.raw || 1.5;
                   const qty = entry.quantity || 1;
+                  const legality = evaluateCardLegality(card.name, card.id || card.set?.id, card.supertype);
                   return (
                     <tr key={card.id || `row-${idx}`} className="hover:bg-[#F8FAFC] transition-colors cursor-pointer" onClick={() => setQuickLookCard(card)}>
                       <td className="p-3 font-heading font-semibold text-[#0F172A]">
                         {card.name || 'Card'}
+                      </td>
+                      <td className="p-3">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`inline-flex items-center w-fit px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            legality.badgeColor === 'emerald' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                            legality.badgeColor === 'blue' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                            legality.badgeColor === 'amber' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                            'bg-slate-50 text-slate-700 border border-slate-200'
+                          }`}>
+                            {legality.regulationMark} • {legality.statusLabel}
+                          </span>
+                          {legality.reprintNote && (
+                            <span className="text-[9px] text-[#64748B]">{legality.reprintNote}</span>
+                          )}
+                        </div>
                       </td>
                       <td className="p-3 text-[#64748B]">{card.set?.name || 'Standard'}</td>
                       <td className="p-3 font-num font-bold">{qty}</td>

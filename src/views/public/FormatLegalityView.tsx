@@ -141,7 +141,7 @@ export const FormatLegalityView: React.FC = () => {
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <div className="bg-white border border-[#E2E8F0] rounded-2xl p-8 shadow-xs">
-              <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-4">Deck Construction</h3>
+              <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-4">Deck Construction Rules</h3>
               <ul className="space-y-3 text-[#64748B] text-sm">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-[#DC143C] shrink-0 mt-0.5" />
@@ -163,26 +163,58 @@ export const FormatLegalityView: React.FC = () => {
                     </li>
                   </>
                 ) : (
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-[#DC143C] shrink-0 mt-0.5" />
-                    <span>Maximum 4 copies of any card with the same name (excluding basic energy).</span>
-                  </li>
+                  <>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-[#DC143C] shrink-0 mt-0.5" />
+                      <span>Maximum 4 copies of any card with the same name (excluding basic energy).</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-[#DC143C] shrink-0 mt-0.5" />
+                      <span>Strictly 1 ACE SPEC card permitted per 60-card tournament deck.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-[#DC143C] shrink-0 mt-0.5" />
+                      <span>Maximum 1 Radiant Pokémon permitted per deck.</span>
+                    </li>
+                  </>
                 )}
               </ul>
             </div>
 
             <div className="bg-white border border-[#E2E8F0] rounded-2xl p-8 shadow-xs flex flex-col justify-between">
               <div>
-                <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-4">Build a {format.name} Deck</h3>
-                <p className="text-[#64748B] text-sm mb-6 leading-relaxed">
-                  Use our advanced deck builder to construct and validate your deck automatically against {format.name} legality rules.
-                </p>
+                <h3 className="text-xl font-bold text-[#0F172A] font-heading mb-4">Official Rotation &amp; Banned Cards</h3>
+                {format.id === 'standard' ? (
+                  <div className="space-y-3 text-xs text-[#64748B] leading-relaxed">
+                    <p>
+                      <strong>Rotation Effective Date:</strong> April 10, 2026 (Championship Series) &amp; March 26, 2026 (Pokémon TCG Live).
+                    </p>
+                    <p>
+                      <strong>Active Marks:</strong> Regulation Marks H, I, and J. Regulation Mark G has rotated out to Expanded format.
+                    </p>
+                    <p>
+                      <strong>Legal via Reprint:</strong> Older printings (including Mark G prints) remain tournament legal if an identical-name, identical-rules-text version exists with Mark H or later.
+                    </p>
+                    <p className="text-emerald-700 font-bold">
+                      ✓ Banned Cards: 0 cards currently banned in Standard format (2026–2027 Season).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 text-xs text-[#64748B] leading-relaxed">
+                    <p>
+                      <strong>Card Pool:</strong> Black &amp; White series (2011) to the present.
+                    </p>
+                    <p>
+                      <strong>Banned Cards:</strong> Standard Play! Pokémon banlist applies to abusive hand-disruption combos (e.g. Archeops, Forest of Giant Plants, Lysandre's Trump Card, Delinquent).
+                    </p>
+                  </div>
+                )}
               </div>
               <button 
-                onClick={() => navigate('/auth')}
-                className="w-full bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold text-xs py-3 rounded-xl transition-colors shadow-2xs"
+                onClick={() => navigate('/app')}
+                className="w-full mt-4 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold text-xs py-3 rounded-xl transition-colors shadow-2xs cursor-pointer"
               >
-                Launch Deck Builder
+                Launch Deck Builder in Guest Mode &rarr;
               </button>
             </div>
           </div>

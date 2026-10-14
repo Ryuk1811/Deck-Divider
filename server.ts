@@ -63,6 +63,7 @@ import {
   generateSitemapIndexXml,
   generateCoreSitemapXml,
   generateCardsSitemapXml,
+  generateDecksSitemapXml,
   generateSetsSitemapXml,
   generateToolsSitemapXml,
   generateFormatsSitemapXml,
@@ -92,6 +93,16 @@ async function startServer() {
   // JSON and URL-encoded body parser with explicit memory limits to prevent DoS
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+
+  // Strict 301 Trailing-Slash Normalization (e.g. /pricing/ -> /pricing)
+  app.use((req, res, next) => {
+    if (req.path.length > 1 && req.path.endsWith('/')) {
+      const query = req.url.slice(req.path.length);
+      const safePath = req.path.slice(0, -1);
+      return res.redirect(301, safePath + query);
+    }
+    next();
+  });
 
   // Security Headers
   app.use((req, res, next) => {
@@ -1190,28 +1201,24 @@ async function startServer() {
     res.send(generateRobotsTxt());
   });
 
-  // Unified Master XML Sitemap (Covers the entire app first and points to all splits)
-  app.get('/sitemap.xml', async (req, res) => {
+  // Primary XML Sitemap Index (<sitemapindex>) compliant with RFC standard
+  app.get(['/sitemap.xml', '/sitemap-index.xml'], (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateSitemapIndexXml());
+  });
+
+  // Full single-file sitemap backup
+  app.get('/sitemap-all.xml', async (req, res) => {
     try {
-      if (req.headers['if-none-match'] === `"${BUILD_HASH}"`) {
-        return res.status(304).end();
-      }
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-      res.setHeader('ETag', `"${BUILD_HASH}"`);
       const xml = await generateUnifiedSitemapXml();
       res.send(xml);
     } catch (e) {
       console.error('Error generating unified sitemap', e);
       res.status(500).send('Error generating unified sitemap');
     }
-  });
-
-  // Sitemap Index (<sitemapindex>)
-  app.get('/sitemap-index.xml', (req, res) => {
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
-    res.send(generateSitemapIndexXml());
   });
 
   // Split Sub-Sitemaps
@@ -1225,6 +1232,12 @@ async function startServer() {
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
     res.send(generateCardsSitemapXml());
+  });
+
+  app.get('/sitemap-decks.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.send(generateDecksSitemapXml());
   });
 
   app.get('/sitemap-tools.xml', (req, res) => {
@@ -1272,7 +1285,6 @@ async function startServer() {
   app.get([
     '/sitemap-main.xml',
     '/sitemap-topcards.xml',
-    '/sitemap-decks.xml',
     '/sitemap-best.xml'
   ], (req, res) => {
     res.redirect(301, '/sitemap.xml');
@@ -2818,10 +2830,23 @@ async function startServer() {
     return res.redirect(301, '/');
   });
 
-  // Trailing slash redirect for tools
+  // 301 Redirect unpadded set IDs (e.g. /set/sv8 -> /set/sv08, /set/sv7 -> /set/sv07)
+  app.get(/^\/set\/sv([1-9])(\/.*)?$/, (req, res) => {
+    const num = req.params[0];
+    const rest = req.params[1] || '';
+    return res.redirect(301, `/set/sv0${num}${rest}`);
+  });
+
+  // 301 Redirect Chien-Pao naming normalization (/deck/pao-chien-ex -> /deck/chien-pao-ex)
+  app.get('/deck/pao-chien-ex', (_req, res) => {
+    return res.redirect(301, '/deck/chien-pao-ex');
+  });
+
+  // Strict 301 Trailing-Slash Normalization for all non-root paths
   app.use((req, res, next) => {
-    if (req.path.startsWith('/tools/') && req.path.endsWith('/') && req.path.length > 7) {
-      return res.redirect(301, req.path.slice(0, -1));
+    if (req.path.length > 1 && req.path.endsWith('/')) {
+      const query = req.url.slice(req.path.length);
+      return res.redirect(301, req.path.slice(0, -1) + query);
     }
     next();
   });
@@ -2850,7 +2875,7 @@ async function startServer() {
       }
 
       try {
-        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
+        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
           res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
         const userAgent = (req.headers['user-agent'] as string) || '';
@@ -2866,6 +2891,14 @@ async function startServer() {
         vite.ssrFixStacktrace(err as Error);
         next(err);
       }
+    });
+
+    // Handle unhandled script requests gracefully so browsers never receive text/html for script module requests
+    app.use((req, res, next) => {
+      if (/\.(js|mjs|ts|tsx)$/.test(req.path)) {
+        return res.status(404).type('application/javascript').send(`/* Module not found: ${req.path} */\nthrow new Error("Module not found: ${req.path}");`);
+      }
+      next();
     });
   } else {
     const distPath = fs.existsSync(path.join(process.cwd(), 'dist'))
@@ -2894,7 +2927,7 @@ async function startServer() {
       }
 
       try {
-        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard')) {
+        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
           res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
 
@@ -2936,6 +2969,14 @@ async function startServer() {
           next(err);
         }
       }
+    });
+
+    // In production, ensure unhandled script module requests never return text/html
+    app.use((req, res, next) => {
+      if (/\.(js|mjs|ts|tsx)$/.test(req.path)) {
+        return res.status(404).type('application/javascript').send(`/* Module not found: ${req.path} */\nthrow new Error("Module not found: ${req.path}");`);
+      }
+      next();
     });
   }
 

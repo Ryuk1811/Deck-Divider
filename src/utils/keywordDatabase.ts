@@ -49,14 +49,14 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'PTCGL import deck list copy paste',
       'Charizard ex Pidgeot ex tournament deck list',
       'Gardevoir ex standard 60-card deck list',
-      'Lugia VSTAR Archeops deck list 2026',
+      'Dragapult ex competitive deck list',
       'Raging Bolt ex Ogerpon ex tournament deck'
     ],
     secondaryKeywords: [
       'Regulation mark H I J legality checker',
       '60-card Pokémon deck builder with prices',
-      'Regidrago VSTAR standard legal build',
-      'Dragapult ex competitive deck list',
+      'Lugia VSTAR Archeops Expanded deck list (Rotated)',
+      'Regidrago VSTAR Expanded deck list (Rotated)',
       'Budget competitive Pokémon TCG decks under $50',
       'ACE SPEC Trainer card rules'
     ],

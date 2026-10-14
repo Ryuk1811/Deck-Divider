@@ -21,20 +21,25 @@ export const VerifiedReviewsStrip: React.FC<VerifiedReviewsStripProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    getCommunityReviews().then(all => {
-      if (!mounted) return;
-      let pool = all;
-      if (categoryFilter && categoryFilter !== 'all') {
-        pool = all.filter(r => r.category === categoryFilter);
-      }
-      // Pick top-rated high detail reviews
-      const sorted = [...pool].sort((a, b) => {
-        if (b.rating !== a.rating) return b.rating - a.rating;
-        return (b.likesCount || 0) - (a.likesCount || 0);
+    getCommunityReviews()
+      .then(all => {
+        if (!mounted) return;
+        let pool = all;
+        if (categoryFilter && categoryFilter !== 'all') {
+          pool = all.filter(r => r.category === categoryFilter);
+        }
+        // Pick top-rated high detail reviews
+        const sorted = [...pool].sort((a, b) => {
+          if (b.rating !== a.rating) return b.rating - a.rating;
+          return (b.likesCount || 0) - (a.likesCount || 0);
+        });
+        setReviews(sorted.slice(0, maxItems));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn('Failed to load reviews in VerifiedReviewsStrip:', err);
+        if (mounted) setLoading(false);
       });
-      setReviews(sorted.slice(0, maxItems));
-      setLoading(false);
-    });
     return () => { mounted = false; };
   }, [categoryFilter, maxItems]);
 

@@ -123,8 +123,8 @@ const TOP_TRENDING_DECKS: any[] = [
   {
     id: 'regidrago-vstar',
     name: 'Regidrago VSTAR / Ogerpon',
-    tier: 'Tier 1.5 Meta',
-    format: 'Standard (H, I, J Marks)',
+    tier: 'Historic Top Cut Meta',
+    format: 'Expanded Format (Rotated Mark F)',
     topFinish: '2nd Place — Special Event 2026',
     avgCost: 145.00,
     ptcglExport: `Pokémon: 18\n3 Regidrago V SIT 135\n3 Regidrago VSTAR SIT 136\n4 Teal Mask Ogerpon ex TWM 25\n1 Dragapult ex TWM 130\n1 Giratina VSTAR LOR 131\n1 Kyurem SFA 47\n1 Hawlucha SVI 118\n1 Radiant Charizard PGO 11\n1 Fezandipiti ex SFA 38\n1 Mew ex MEW 151\n1 Squawkabilly ex PAL 169\n\nTrainer: 31\n4 Professor's Research SVI 189\n3 Iono PAL 185\n2 Boss's Orders PAL 172\n4 Ultra Ball SVI 196\n4 Nest Ball SVI 181\n3 Earthen Vessel PAR 163\n2 Energy Switch SVI 173\n2 Super Rod PAL 188\n1 Prime Catcher TEF 157\n1 Night Stretcher SFA 61\n3 PokéStop PGO 68\n2 Energy Retrieval SVI 171\n\nEnergy: 11\n7 Basic Grass Energy SVE 1\n4 Basic Fire Energy SVE 2`,
@@ -235,7 +235,7 @@ export const CommunityLeaderboardView: React.FC = () => {
               Pokémon TCG Collector Leaderboard
             </h1>
             <p className="text-base sm:text-lg text-[#64748B] max-w-3xl mx-auto">
-              Explore verified high-net-worth collections, tournament-winning 60-card decklists, and the most actively tracked holy grails on DECK / divider.
+              Explore verified premier collections, tournament-winning 60-card decklists, and the most actively tracked holy grails on DECK / divider.
             </p>
           </div>
 
@@ -340,7 +340,7 @@ export const CommunityLeaderboardView: React.FC = () => {
                   <div>
                     <h2 className="text-xl font-bold text-[#0F172A] font-heading flex items-center gap-2">
                       <Trophy className="w-5 h-5 text-amber-500" />
-                      Global High-Net-Worth Portfolios
+                      Premier Community Collections
                     </h2>
                     <p className="text-sm text-[#64748B] mt-1">
                       Ranked by verified catalog valuation with real-time TCGplayer market prices.

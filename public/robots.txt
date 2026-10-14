@@ -1,77 +1,49 @@
-# Titanium Search Engine & AI Crawler Policy
+# RFC 9309 Compliant Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
-# Generated: 2026-10-04T15:01:52.417Z
 
 User-agent: *
 Allow: /
-Allow: /cards
-Allow: /expansions
-Allow: /expansions/sets
-Allow: /sets
-Allow: /directory/
-Allow: /set/
-Allow: /deck/
-Allow: /portfolio/
-Allow: /compare/
-Allow: /best/
-Allow: /tools/
-Allow: /tool/
-Allow: /formats/
-Allow: /format/
-Allow: /pricing
-Allow: /about
-Allow: /how-it-works
-Allow: /faq
-Allow: /contact
-Allow: /leaderboard
-Allow: /changelog
-Allow: /sitemap.xml
-Allow: /sitemap-index.xml
-Allow: /sitemap-cards.xml
-Allow: /sitemap-sets.xml
-Allow: /sitemap-tools.xml
-Allow: /sitemap-formats.xml
-Allow: /sitemap-changelog.xml
-Allow: /feed.xml
-Allow: /llms.txt
-Allow: /llms-full.txt
-Allow: /llms-keywords.txt
-Allow: /search-matrix.json
-Allow: /og-*.png
-
-# Protect private authenticated state & internal APIs
+Allow: /api/og/
 Disallow: /api/
 Disallow: /app/
+Disallow: /dashboard/
 Disallow: /admin/
-Disallow: /auth/
+Disallow: /auth
 
-# Explicitly whitelist modern AI search discovery agents
+# Social Media Link Preview Crawlers (Rich OpenGraph Cards)
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: Slackbot
+User-agent: facebookexternalhit
+User-agent: Discordbot
+Allow: /
+Allow: /api/og/
+
+# AI Search Discovery & Research Crawlers
 User-agent: Googlebot
-Allow: /
 User-agent: Bingbot
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: GPTBot
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: Google-Extended
-Allow: /
 User-agent: Applebot-Extended
-Allow: /
 User-agent: anthropic-ai
-Allow: /
 User-agent: Omgili
 Allow: /
-User-agent: FacebookBot
-Allow: /
+Allow: /api/og/
+Disallow: /api/
+Disallow: /app/
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /auth
 
 # Sitemaps & Feeds
 Sitemap: https://deckdivider.app/sitemap.xml
-Sitemap: https://deckdivider.app/sitemap-index.xml
-Sitemap: https://deckdivider.app/sitemap-cards.xml
+Sitemap: https://deckdivider.app/sitemap-core.xml
 Sitemap: https://deckdivider.app/sitemap-sets.xml
+Sitemap: https://deckdivider.app/sitemap-decks.xml
 Sitemap: https://deckdivider.app/sitemap-tools.xml
 Sitemap: https://deckdivider.app/sitemap-formats.xml
+Sitemap: https://deckdivider.app/sitemap-compare.xml
+Sitemap: https://deckdivider.app/sitemap-portfolios.xml
 Sitemap: https://deckdivider.app/sitemap-changelog.xml

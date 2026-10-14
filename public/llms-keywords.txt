@@ -1,7 +1,7 @@
 # DECK / divider — Comprehensive Keyword & Search Parameter Index
 # The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Tournament Players
 # Canonical: https://deckdivider.app/llms-keywords.txt
-# Generated: 2026-10-04T15:01:52.527Z
+# Generated: 2026-10-12T07:37:25.660Z
 
 > DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
 
@@ -59,12 +59,13 @@
   - "PTCGL import deck list copy paste"
   - "Charizard ex Pidgeot ex tournament deck list"
   - "Gardevoir ex standard 60-card deck list"
-  - "Lugia VSTAR Archeops deck list 2026"
+  - "Dragapult ex competitive deck list"
 - **Secondary Terms**:
   - "Regulation mark H I J legality checker"
   - "60-card Pokémon deck builder with prices"
   - "Raging Bolt ex Ogerpon ex tournament list"
-  - "Regidrago VSTAR standard legal build"
+  - "Lugia VSTAR Archeops Expanded deck list (Rotated)"
+  - "Regidrago VSTAR Expanded deck list (Rotated)"
   - "Budget competitive Pokémon TCG decks under $50"
 - **Long-Tail Question Matches**:
   - "how to export deck list to Pokémon TCG Live text string"

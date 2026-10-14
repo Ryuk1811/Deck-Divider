@@ -82,7 +82,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
     },
     {
       q: 'Do you offer refunds?',
-      a: 'If you are unsatisfied with DECK / divider for any reason within the first 7 days of subscribing, contact our support team at deckdivider@outlook.com for a full refund.',
+      a: 'Yes. We offer an unconditional 14-day 100% money-back guarantee. If you are unsatisfied with DECK / divider for any reason within the first 14 days of subscribing, contact our support team at deckdivider@outlook.com for an immediate full refund.',
     },
   ];
 
@@ -261,6 +261,18 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
           <p className="text-[11px] font-mono text-[#64748B] text-center">
             Flexible pay-per-period subscription • Opt out or renew anytime with zero continuous mandates
           </p>
+          {onEnterApp && (
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={onEnterApp}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-300 font-mono text-xs font-bold hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <span>⚡ Try without an account (Full Guest Exploration)</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Pricing Cards Grid */}
@@ -346,6 +358,37 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               </motion.div>
             );
           })}
+        </section>
+
+        {/* Transparent Billing Disclosures: Tax, Refunds, Deck Limits & Multi-Currency */}
+        <section className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-[#475569]">
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 space-y-1.5 shadow-2xs">
+            <div className="font-bold text-[#0F172A] flex items-center gap-1.5">
+              <span className="text-[#16A34A] font-mono">🛡️</span>
+              <span>14-Day Money-Back Guarantee</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-[#64748B]">
+              Try any membership risk-free. If DECK / divider isn't right for you, contact deckdivider@outlook.com within 14 days for a prompt 100% refund.
+            </p>
+          </div>
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 space-y-1.5 shadow-2xs">
+            <div className="font-bold text-[#0F172A] flex items-center gap-1.5">
+              <span className="text-[#0284C7] font-mono">⚖️</span>
+              <span>Transparent Tax Notice</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-[#64748B]">
+              All listed rates exclude local state sales taxes or VAT. Applicable taxes are calculated transparently at checkout based on your billing region.
+            </p>
+          </div>
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 space-y-1.5 shadow-2xs">
+            <div className="font-bold text-[#0F172A] flex items-center gap-1.5">
+              <span className="text-[#DC143C] font-mono">🎴</span>
+              <span>Deck Capacity Explained</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-[#64748B]">
+              Standard tournaments require 60 cards. Laddered tiers allow 75 cards (60 + 15 testing sideboard), 100 cards (Gym Leader Challenge / Singleton), and 150 mega rosters.
+            </p>
+          </div>
         </section>
 
         {/* Horizontal Founder Lifetime Pass Element ($250, lifetime access, no reoccurring charges) */}

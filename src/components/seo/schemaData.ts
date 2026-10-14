@@ -52,7 +52,7 @@ export const getBaseOrganizationSchema = () => ({
   logo: 'https://deckdivider.app/logo.png',
   image: STANDARD_IMAGE,
   email: 'deckdivider@outlook.com',
-  description: 'Institutional-grade Pokémon TCG portfolio tracker, graded slab vault, and tournament deck studio.',
+  description: 'Ad-free Pokémon TCG collection tracker, graded slab vault, and tournament deckbuilder.',
   sameAs: [
     'https://www.reddit.com/r/DeckDivider/',
     'https://www.instagram.com/deckdivider/',
@@ -644,7 +644,7 @@ export const getPricingSchema = () => ({
         priceCurrency: 'USD',
         unitCode: 'MONTH'
       },
-      description: 'Unlimited capacity pay-per-period tier for master set completion, unlimited slabs, sealed vault, and institutional CSV exports.',
+      description: 'Unlimited capacity pay-per-period tier for master set completion, unlimited slabs, sealed vault, and comprehensive CSV ledger exports.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',
@@ -695,7 +695,7 @@ export const getCommunityLeaderboardSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'DECK / divider Community Leaderboards & Hall of Fame',
-  description: 'Verified high-net-worth Pokémon card portfolios, tournament winning decks, and public collection showcases.',
+  description: 'Verified premier Pokémon card collections, tournament winning decks, and public collection showcases.',
   url: 'https://deckdivider.app/leaderboard'
 });
 

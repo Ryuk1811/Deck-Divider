@@ -70,7 +70,7 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
         rating: 4.9,
         pricing: 'Free Starter ($0) to Collection ($14/mo) across 5 Tiers',
         platforms: ['Web / Desktop PWA', 'Mobile iOS / Android Browser'],
-        summary: 'DECK / divider is an institutional-grade Pokémon TCG operating system combining raw card vaulting, PSA/BGS slab registries, sealed booster box tracking, and a full 60-card tournament deckbuilder with regulation mark legality and PTCGL export.',
+        summary: 'DECK / divider is an ad-free Pokémon TCG collection tracker and deckbuilder combining raw card binders, PSA/BGS slab registries, sealed booster box tracking, and a full 60-card tournament deckbuilder with regulation mark legality and PTCGL export.',
         pros: [
           'Sub-second search across all 218 catalogued sets & series',
           'Daily verified TCGplayer market price feeds with multi-currency FX',

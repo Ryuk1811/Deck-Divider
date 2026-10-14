@@ -28,7 +28,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
         {/* Top Tagline Pill */}
         <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[9px] sm:text-xs font-semibold shadow-xs text-center max-w-[95vw]">
           <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-          <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">POKÉMON TCG COLLECTION TRACKER & DECK STUDIO</span>
+          <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">AD-FREE POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
         </div>
 
         {/* Singular Punchy Identifier Hero Title */}
@@ -45,7 +45,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 lg:gap-6 pt-1 sm:pt-2 text-[10px] sm:text-xs md:text-sm font-medium text-[#475569] px-2">
           <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A] shrink-0" />
-            <span className="whitespace-nowrap">PSA, BGS & CGC Slab Certs</span>
+            <span className="whitespace-nowrap">PSA, BGS &amp; CGC Slab Certs</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-[#E2E8F0] shadow-2xs hover:border-emerald-300 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#16A34A] shrink-0" />
@@ -71,7 +71,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-xl transition-all shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C] focus-visible:ring-offset-2"
               >
                 <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 fill-amber-300" />
-                <span>{user ? 'Launch Studio' : 'Start Your Collection'}</span>
+                <span>{user ? 'Launch Studio' : 'Try without an account'}</span>
                 <ArrowRight className="w-4 h-4 text-white/80" />
               </button>
             )}
@@ -83,7 +83,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-[#0F172A] bg-white hover:bg-slate-50 border border-[#CBD5E1] hover:border-[#DC143C]/50 rounded-xl transition-all shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC143C]"
               >
                 <LogIn className="w-4 h-4 text-[#DC143C]" />
-                <span>Sign In / Login</span>
+                <span>Sign In / Account</span>
               </button>
             )}
 

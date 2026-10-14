@@ -191,7 +191,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
   Collection: {
     id: 'Collection',
     name: 'Collection',
-    tagline: 'Institutional high-net-worth portfolio vault',
+    tagline: 'Complete master collector vault & limitless deckbuilder',
     popular: false,
     pricing: {
       monthly: 14,

@@ -101,15 +101,20 @@ export const ContactPageView = (props: any) => (
 export const SecurityPageView = (props: any) => (
   <PageTemplate
     title="Security Architecture"
-    subtitle="Data Protection"
+    subtitle="Three-Pillar Data Protection"
     icon={Shield}
     canonicalPath="/security"
-    description="Explore the institutional security architecture of DECK / divider: TLS 1.3 in-transit encryption, Google Cloud AES-256 at-rest storage, and zero ad trackers."
-    keywords={['deck divider security', 'pokemon collection privacy', 'encrypted card binder']}
+    description="Explore the three-pillar security architecture of DECK / divider: TLS 1.3 in-transit encryption, Google Cloud AES-256 at-rest storage, and client-side AES-GCM encrypted vault backups."
+    keywords={['deck divider security', 'pokemon collection privacy', 'encrypted card binder', 'aes-256 encryption']}
     {...props}
   >
-    <h3>Data Encryption &amp; Infrastructure</h3>
-    <p>Your portfolio is your private asset. We secure all data in transit utilizing industry-standard TLS 1.3 encryption. All database records (including your lists, decks, and collection data) are encrypted at rest using AES-256 via Google Cloud infrastructure.</p>
+    <h3>Three-Pillar Security Architecture</h3>
+    <p>Your card collection, transaction basis, and deck lists represent valuable personal assets. DECK / divider implements a strict three-pillar security framework to protect your data across every lifecycle stage:</p>
+    <ul>
+      <li><strong>Pillar 1 — Data in Transit (Enforced TLS 1.3):</strong> All network communications between your browser or mobile client and our servers are encrypted using TLS 1.3 with modern cipher suites and Strict-Transport-Security (HSTS) preloading.</li>
+      <li><strong>Pillar 2 — Cloud Data at Rest (Enterprise AES-256):</strong> User collections, wishlists, and deck registries stored in the cloud are encrypted at rest using AES-256 encryption managed by Google Cloud and Firebase. User identities are authenticated via secure OAuth and salted password hashing.</li>
+      <li><strong>Pillar 3 — Pro Client-Side Encrypted Vault Snapshots:</strong> Pro members can generate client-side encrypted backup snapshots using the browser's native Web Crypto API (AES-GCM 256-bit). The encryption passphrase is never transmitted to, processed by, or stored on our servers, ensuring zero-knowledge privacy for offline archives.</li>
+    </ul>
     <h3>Authentication Security</h3>
     <p>We utilize Firebase Authentication, providing robust resistance against brute-force attacks, credential stuffing, and session hijacking. We never store or transmit your raw passwords.</p>
     <h3>Payment Processing</h3>

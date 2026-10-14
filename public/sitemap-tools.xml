@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://deckdivider.app/tools</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/tool/psa-grade-calculator</loc>
-    <lastmod>2026-10-05</lastmod>
+    <loc>https://deckdivider.app/tools/psa-grade-calculator</loc>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://deckdivider.app/tool/deck-legality-checker</loc>
-    <lastmod>2026-10-05</lastmod>
+    <loc>https://deckdivider.app/tools/deck-legality-checker</loc>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>

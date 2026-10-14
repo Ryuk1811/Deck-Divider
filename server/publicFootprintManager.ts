@@ -65,7 +65,7 @@ export const DECK_SLUGS: string[] = [
   'gholdengo-ex',
   'roaring-moon-ex',
   'iron-thorns-ex',
-  'pao-chien-ex',
+  'chien-pao-ex',
   'snorlax-stall',
   'ancient-box',
   'dialga-vstar',
@@ -147,19 +147,7 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
   xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9\n`;
   xml += `        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n`;
 
-  // 1. Specialized Segmented Sub-Sitemaps at the very top of the major sitemap
-  const splits = [
-    { path: '/sitemap-index.xml', priority: '1.0', changefreq: 'daily' },
-    { path: '/sitemap-core.xml', priority: '0.95', changefreq: 'daily' },
-    { path: '/sitemap-sets.xml', priority: '0.95', changefreq: 'daily' },
-    { path: '/sitemap-formats.xml', priority: '0.90', changefreq: 'weekly' },
-    { path: '/sitemap-portfolios.xml', priority: '0.85', changefreq: 'daily' },
-    { path: '/sitemap-compare.xml', priority: '0.85', changefreq: 'weekly' },
-  ];
-
-  splits.forEach(split => {
-    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}${split.path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>${split.changefreq}</changefreq>\n    <priority>${split.priority}</priority>\n  </url>\n`;
-  });
+  // Comprehensive coverage of all canonical, indexable app routes (No child sitemaps inside urlset)
 
   // 2. Comprehensive coverage of all canonical app routes
   CORE_PAGES.forEach(page => {
@@ -187,9 +175,7 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
     if (sets && sets.length > 0) {
       sets.forEach(set => {
         if (set && set.id) {
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/top-cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/checklist</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id.toLowerCase()}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
         }
       });
     }
@@ -201,9 +187,9 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
 
 export function generateSitemapIndexXml(): string {
   const subSitemaps = [
-    '/sitemap.xml',
     '/sitemap-core.xml',
     '/sitemap-cards.xml',
+    '/sitemap-decks.xml',
     '/sitemap-sets.xml',
     '/sitemap-tools.xml',
     '/sitemap-formats.xml',
@@ -218,6 +204,17 @@ export function generateSitemapIndexXml(): string {
     xml += `  <sitemap>\n    <loc>${CANONICAL_ORIGIN}${path}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </sitemap>\n`;
   });
   xml += `</sitemapindex>`;
+  return xml;
+}
+
+export function generateDecksSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/decks</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+  DECK_SLUGS.forEach(slug => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/deck/${slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
   return xml;
 }
 
@@ -279,8 +276,7 @@ export async function generateSetsSitemapXml(): Promise<string> {
     if (sets && sets.length > 0) {
       sets.forEach(set => {
         if (set && set.id) {
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
-          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id}/top-cards</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.75</priority>\n  </url>\n`;
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id.toLowerCase()}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
         }
       });
     }
@@ -332,7 +328,7 @@ export function generateRssFeedXml(): string {
   <channel>
     <title>DECK / divider — Pokémon TCG Intelligence &amp; Tracker</title>
     <link>${CANONICAL_ORIGIN}/</link>
-    <description>Institutional-grade collection tracker, live TCGplayer market price comps, PSA slab cert registry, and 60-card tournament deck studio.</description>
+    <description>Ad-free Pokémon TCG collection tracker and deckbuilder, live TCGplayer market price comps, PSA slab cert registry, and 60-card tournament deck studio.</description>
     <language>en-US</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${CANONICAL_ORIGIN}/feed.xml" rel="self" type="application/rss+xml" />
@@ -438,82 +434,55 @@ ${COMPETITOR_SLUGS.map(c => `- [vs ${c.toUpperCase()}](${CANONICAL_ORIGIN}/compa
 }
 
 export function generateRobotsTxt(): string {
-  return `# Titanium Search Engine & AI Crawler Policy
+  return `# RFC 9309 Compliant Search Engine & AI Crawler Policy
 # Domain: https://deckdivider.app
 # Generated: ${BUILD_TIMESTAMP}
 
 User-agent: *
 Allow: /
-Allow: /cards
-Allow: /expansions
-Allow: /expansions/sets
-Allow: /sets
-Allow: /directory/
-Allow: /set/
-Allow: /deck/
-Allow: /portfolio/
-Allow: /compare/
-Allow: /best/
-Allow: /tools/
-Allow: /tool/
-Allow: /formats/
-Allow: /format/
-Allow: /pricing
-Allow: /about
-Allow: /how-it-works
-Allow: /faq
-Allow: /contact
-Allow: /leaderboard
-Allow: /changelog
-Allow: /sitemap.xml
-Allow: /sitemap-index.xml
-Allow: /sitemap-cards.xml
-Allow: /sitemap-sets.xml
-Allow: /sitemap-tools.xml
-Allow: /sitemap-formats.xml
-Allow: /sitemap-changelog.xml
-Allow: /feed.xml
-Allow: /llms.txt
-Allow: /llms-full.txt
-Allow: /llms-keywords.txt
-Allow: /search-matrix.json
-Allow: /og-*.png
-
-# Protect private authenticated state & internal APIs
+Allow: /api/og/
 Disallow: /api/
 Disallow: /app/
+Disallow: /dashboard/
 Disallow: /admin/
-Disallow: /auth/
+Disallow: /auth
 
-# Explicitly whitelist modern AI search discovery agents
+# Social Media Link Preview Crawlers (Rich OpenGraph Cards)
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: Slackbot
+User-agent: facebookexternalhit
+User-agent: Discordbot
+Allow: /
+Allow: /api/og/
+
+# AI Search Discovery & Research Crawlers
 User-agent: Googlebot
-Allow: /
 User-agent: Bingbot
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: GPTBot
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: Google-Extended
-Allow: /
 User-agent: Applebot-Extended
-Allow: /
 User-agent: anthropic-ai
-Allow: /
 User-agent: Omgili
 Allow: /
-User-agent: FacebookBot
-Allow: /
+Allow: /api/og/
+Disallow: /api/
+Disallow: /app/
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /auth
 
 # Sitemaps & Feeds
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-index.xml
-Sitemap: ${CANONICAL_ORIGIN}/sitemap-cards.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-core.xml
 Sitemap: ${CANONICAL_ORIGIN}/sitemap-sets.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-decks.xml
 Sitemap: ${CANONICAL_ORIGIN}/sitemap-tools.xml
 Sitemap: ${CANONICAL_ORIGIN}/sitemap-formats.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-compare.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-portfolios.xml
 Sitemap: ${CANONICAL_ORIGIN}/sitemap-changelog.xml
 `;
 }
@@ -541,10 +510,14 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const searchMatrix = generateSearchMatrixJson();
   const robots = generateRobotsTxt();
 
+  const decksSitemap = generateDecksSitemapXml();
+
   // Write Main & Segmented Sitemaps
-  fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), unifiedSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), sitemapIndex, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-index.xml'), sitemapIndex, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-all.xml'), unifiedSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-core.xml'), coreSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-decks.xml'), decksSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-cards.xml'), cardsSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-sets.xml'), setsSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-tools.xml'), toolsSitemap, 'utf-8');
