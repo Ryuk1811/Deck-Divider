@@ -582,7 +582,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
                         : 'bg-amber-50 border-amber-200 text-amber-700'
                     }`}>
-                      {user ? 'AUTHENTICATED' : 'GUEST / DEMO'}
+                      {user ? 'AUTHENTICATED' : 'GUEST SESSION'}
                     </span>
                   </div>
                   <p className="font-mono text-xs text-[#64748B] mt-1 leading-relaxed">

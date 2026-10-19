@@ -130,7 +130,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
-        title="How It Works — Pokémon TCG Collection Tracker & Deck Studio"
+        title="How DECK / divider Works — Features & Guide | Pokémon TCG Studio"
         description="Learn how DECK / divider streamlines rapid card intake, PSA/BGS slab certification logging, real-time TCGplayer market NAV valuation, and 60-card tournament deck building."
         canonicalPath="/how-it-works"
         keywords={[

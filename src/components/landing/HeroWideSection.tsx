@@ -28,7 +28,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
         {/* Top Tagline Pill */}
         <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[9px] sm:text-xs font-semibold shadow-xs text-center max-w-[95vw]">
           <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-          <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">AD-FREE POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
+          <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">DIGITAL SOFTWARE STUDIO · POKÉMON TCG BINDER TRACKER &amp; DECK BUILDER</span>
         </div>
 
         {/* Singular Punchy Identifier Hero Title */}
@@ -38,7 +38,7 @@ export const HeroWideSection: React.FC<HeroWideSectionProps> = ({
 
         {/* Subtitle with Grounded Hobby Precision */}
         <p className="text-xs sm:text-base md:text-lg lg:text-xl text-[#475569] max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto font-normal leading-relaxed text-balance px-2">
-          Log raw cards and graded certs, complete master sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL. Connect with the global community of collectors and players, analyze meta trends in real-time, and manage your entire sealed portfolio securely in one unified platform designed for the ultimate Pokémon TCG enthusiast.
+          A 100% digital web software application for Pokémon TCG collectors and competitive players. No physical plastic dividers—log raw cards and PSA certs, complete binder sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL with zero ads.
         </p>
 
         {/* Quick Proof Chips */}

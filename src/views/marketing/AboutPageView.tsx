@@ -66,8 +66,8 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
-        title="About DECK / divider — Solo Passion Project for Pokémon TCG"
-        description="Learn about DECK / divider, an independent ad-free platform created by Gurutva Murdia. Built for serious Pokémon TCG collectors, graded slab investors, and competitive tournament players."
+        title="About DECK / divider — Pokémon TCG Studio Architecture"
+        description="Learn about DECK / divider, an independent ad-free digital platform created by Gurutva Murdia. Built for serious Pokémon TCG collectors, graded slab registries, and competitive tournament players."
         canonicalPath="/about"
         keywords={[
           'about deck divider',
@@ -112,7 +112,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
               className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white border border-[#E2E8F0] text-[#DC143C] text-[9px] sm:text-xs font-semibold shadow-xs text-center max-w-[95vw]"
             >
               <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#DC143C] animate-pulse shrink-0"></span>
-              <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">ABOUT DECK / DIVIDER</span>
+              <span className="truncate sm:whitespace-normal font-mono tracking-tight uppercase">ABOUT DECK / DIVIDER · POKÉMON TCG STUDIO</span>
             </motion.div>
 
             <motion.h1

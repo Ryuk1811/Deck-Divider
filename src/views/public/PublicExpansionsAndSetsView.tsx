@@ -164,7 +164,7 @@ export const PublicExpansionsAndSetsView: React.FC = () => {
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Pokémon TCG Sets &amp; Master Set Checklists | DECK / divider"
+        title="Pokémon TCG Expansions &amp; Master Set Checklists | DECK / divider"
         description="Comprehensive directory of official Pokémon Trading Card Game expansions and sets. Browse all series eras from Scarlet &amp; Violet to Vintage, filter expansions, and view card checklists."
         canonicalPath="/sets"
         keywords={[

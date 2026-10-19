@@ -188,14 +188,19 @@ export async function generateUnifiedSitemapXml(): Promise<string> {
 export function generateSitemapIndexXml(): string {
   const subSitemaps = [
     '/sitemap-core.xml',
-    '/sitemap-cards.xml',
-    '/sitemap-decks.xml',
     '/sitemap-sets.xml',
+    '/sitemap-decks.xml',
     '/sitemap-tools.xml',
     '/sitemap-formats.xml',
-    '/sitemap-changelog.xml',
     '/sitemap-compare.xml',
     '/sitemap-portfolios.xml',
+    '/sitemap-changelog.xml',
+    '/sitemap-cards.xml',
+    '/sitemap-cards-1.xml',
+    '/sitemap-cards-2.xml',
+    '/sitemap-cards-3.xml',
+    '/sitemap-cards-4.xml',
+    '/sitemap-cards-5.xml',
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -326,9 +331,9 @@ export function generateRssFeedXml(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>DECK / divider — Pokémon TCG Intelligence &amp; Tracker</title>
+    <title>DECK / divider — Pokémon TCG Studio</title>
     <link>${CANONICAL_ORIGIN}/</link>
-    <description>Ad-free Pokémon TCG collection tracker and deckbuilder, live TCGplayer market price comps, PSA slab cert registry, and 60-card tournament deck studio.</description>
+    <description>Ad-free Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder. Digital software platform with live TCGplayer market price comps.</description>
     <language>en-US</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${CANONICAL_ORIGIN}/feed.xml" rel="self" type="application/rss+xml" />
@@ -377,8 +382,8 @@ export function generateRssFeedXml(): string {
 }
 
 export function generateLlmsTxt(): string {
-  return `# DECK / divider
-> DECK / divider is a specialized Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder. It features live TCGplayer market prices and offline-first IndexedDB privacy.
+  return `# DECK / divider — Pokémon TCG Studio
+> DECK / divider is an ad-free digital web software application, Pokémon TCG binder tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder with live TCGplayer market prices. It is 100% digital software—NOT a physical plastic card divider or storage box accessory.
 
 ## Core Capabilities
 - **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY, CAD, AUD), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.

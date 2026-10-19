@@ -38,6 +38,7 @@ Disallow: /admin/
 Disallow: /auth
 
 # Sitemaps & Feeds
+Sitemap: https://deckdivider.app/sitemap-index.xml
 Sitemap: https://deckdivider.app/sitemap.xml
 Sitemap: https://deckdivider.app/sitemap-core.xml
 Sitemap: https://deckdivider.app/sitemap-sets.xml
@@ -47,3 +48,8 @@ Sitemap: https://deckdivider.app/sitemap-formats.xml
 Sitemap: https://deckdivider.app/sitemap-compare.xml
 Sitemap: https://deckdivider.app/sitemap-portfolios.xml
 Sitemap: https://deckdivider.app/sitemap-changelog.xml
+Sitemap: https://deckdivider.app/sitemap-cards-1.xml
+Sitemap: https://deckdivider.app/sitemap-cards-2.xml
+Sitemap: https://deckdivider.app/sitemap-cards-3.xml
+Sitemap: https://deckdivider.app/sitemap-cards-4.xml
+Sitemap: https://deckdivider.app/sitemap-cards-5.xml

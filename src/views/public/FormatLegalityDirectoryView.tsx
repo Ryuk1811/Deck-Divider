@@ -38,7 +38,7 @@ export const FormatLegalityDirectoryView: React.FC = () => {
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Official Pokémon TCG Format Legality & Standard Rotation 2026 Guide"
+        title="2026 Standard Rotation & Regulation Marks | Pokémon TCG Studio"
         description="Complete tournament legality rules for Pokémon TCG Standard (Regulation Marks H, I, and J), Expanded, and Gym Leader Challenge (GLC). Verified rotation timelines and card pool limits."
         canonicalPath="/formats"
         keywords={[

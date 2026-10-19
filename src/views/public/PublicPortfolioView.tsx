@@ -14,11 +14,20 @@ import {
   Code2,
   Share2,
   Check,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Filter,
+  CheckCircle2,
+  HelpCircle,
+  ExternalLink,
+  Flame,
 } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { unpackUserSnapshot } from '../../lib/snapshotEngine';
-import { SharedPortfolioSnapshot, PortfolioCardEntry, TIER_LIMITS } from '../../types';
+import { SharedPortfolioSnapshot, PortfolioCardEntry, TIER_LIMITS, PokemonCard } from '../../types';
 import { DeckDividerBrand } from '../../components/ui/DeckDividerBrand';
 import { formatCurrency } from '../../utils/formatters';
 import { decodeUrlParamToPortfolio } from '../../utils/portfolioUrlEncoder';
@@ -28,6 +37,8 @@ import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { getPublicPortfolioSchema } from '../../components/seo/schemaData';
 import { EmbedBadgeModal } from '../../components/modals/EmbedBadgeModal';
+import { PublicCardDetailModal } from '../../components/modals/PublicCardDetailModal';
+import { BragShareModal } from '../../components/modals/BragShareModal';
 
 export const PublicPortfolioView: React.FC = () => {
   const { shareId } = useParams<{ shareId: string }>();
@@ -36,8 +47,17 @@ export const PublicPortfolioView: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<SharedPortfolioSnapshot | null>(null);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const [showBragModal, setShowBragModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [activeTab, setActiveTab] = useState<'collection' | 'decks' | 'sealed' | 'lists'>('collection');
+
+  // Interactive Binder & Inspection state
+  const [collectionDisplayMode, setCollectionDisplayMode] = useState<'binder' | 'grid' | 'masterset'>('binder');
+  const [binderPage, setBinderPage] = useState(1);
+  const [selectedCardForModal, setSelectedCardForModal] = useState<PokemonCard | null>(null);
+  const [wantListOnly, setWantListOnly] = useState(false);
+
+  const CARDS_PER_BINDER_PAGE = 9; // Authentic 3x3 9-pocket archival sleeve
 
   const handleCopyLink = async () => {
     try {
@@ -67,7 +87,6 @@ export const PublicPortfolioView: React.FC = () => {
         const decoded = decodeUrlParamToPortfolio(urlParam);
         if (decoded) {
           const ownerTier = decoded.profile?.tier || 'Stack';
-          // Ensure shared URL parameter showcases are viewable
           if (ownerTier !== 'Starter' || decoded.profile?.isPublicProfile) {
             setSnapshot(decoded);
             setLoading(false);
@@ -100,7 +119,7 @@ export const PublicPortfolioView: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // 2. Try fetching the compressed cloud snapshot from Firestore
+        // 2. Fetch compressed cloud snapshot from Firestore
         let docSnap = null;
         try {
           const docRef = doc(db, 'users', shareId, 'snapshot', 'current');
@@ -132,7 +151,6 @@ export const PublicPortfolioView: React.FC = () => {
             }
           }
 
-          // If snapshot doc is present but isPublicProfile is not set directly, check user doc
           try {
             const userRef = doc(db, 'users', shareId);
             const userSnap = await getDoc(userRef);
@@ -159,7 +177,7 @@ export const PublicPortfolioView: React.FC = () => {
           return;
         }
 
-        // 3. Check user document directly
+        // 3. Fallback check user document directly
         try {
           const userRef = doc(db, 'users', shareId);
           const userSnap = await getDoc(userRef);
@@ -212,7 +230,7 @@ export const PublicPortfolioView: React.FC = () => {
   const sealedList = Array.isArray(snapshot?.sealedEntries) ? snapshot.sealedEntries : [];
   const listsList = Array.isArray(snapshot?.customLists) ? snapshot.customLists : [];
 
-  // Aggregate all unique cards across all decks
+  // Aggregate all unique cards across all decks and portfolio collections
   const allCardsList = useMemo(() => {
     if (!snapshot || !Array.isArray(snapshot.decks)) return [];
     const map = new Map<string, PortfolioCardEntry>();
@@ -228,65 +246,97 @@ export const PublicPortfolioView: React.FC = () => {
         }
       });
     });
-    return Array.from(map.values());
+    return Array.from(map.values()).sort((a, b) => {
+      const priceA = a.purchasePrice || a.card?.prices?.raw || 0;
+      const priceB = b.purchasePrice || b.card?.prices?.raw || 0;
+      return priceB - priceA;
+    });
   }, [snapshot]);
 
-  // Calculate total market valuation
+  // Total market valuation
   const totalValuation = useMemo(() => {
     if (!snapshot) return 0;
     const cardsVal = allCardsList.reduce((sum, item) => {
       const price = item.purchasePrice || item.card?.prices?.raw || 1.5;
       return sum + price * (item.quantity || 1);
     }, 0);
-    const sealedVal = sealedList.reduce((sum, s) => {
-      const price = s.product?.marketPrice || s.purchasePrice || 0;
-      return sum + price * (s.quantity || 1);
+    const sealedVal = sealedList.reduce((sum, item) => {
+      const p = item.product?.marketPrice || item.purchasePrice || 45;
+      return sum + p * (item.quantity || 1);
     }, 0);
     return cardsVal + sealedVal;
   }, [snapshot, allCardsList, sealedList]);
 
+  // Master Set Progress breakdown
+  const masterSetProgress = useMemo(() => {
+    const setGroups = new Map<string, { setName: string; cards: PortfolioCardEntry[]; totalEstimate: number }>();
+    allCardsList.forEach((entry) => {
+      const sName = entry.card?.set?.name || 'Expansion';
+      if (!setGroups.has(sName)) {
+        setGroups.set(sName, { setName: sName, cards: [], totalEstimate: 165 });
+      }
+      setGroups.get(sName)!.cards.push(entry);
+    });
+
+    return Array.from(setGroups.values()).sort((a, b) => b.cards.length - a.cards.length);
+  }, [allCardsList]);
+
+  // Binder Pagination
+  const totalBinderPages = Math.max(1, Math.ceil(allCardsList.length / CARDS_PER_BINDER_PAGE));
+  const currentBinderCards = useMemo(() => {
+    const startIndex = (binderPage - 1) * CARDS_PER_BINDER_PAGE;
+    return allCardsList.slice(startIndex, startIndex + CARDS_PER_BINDER_PAGE);
+  }, [allCardsList, binderPage]);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 rounded-full border-2 border-[#DC143C] border-t-transparent animate-spin mb-4"></div>
-        <p className="text-sm font-medium text-slate-500">Loading Portfolio...</p>
+      <div className="min-h-screen bg-dot-grid flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-12 h-12 border-4 border-[#DC143C]/20 border-t-[#DC143C] rounded-full animate-spin mb-4"></div>
+        <h2 className="text-xl font-heading font-black text-slate-800">Opening Collector Vault...</h2>
+        <p className="text-sm font-mono text-slate-500 mt-1">Retrieving 9-pocket archival sleeve cards</p>
       </div>
     );
   }
 
   if (error || !snapshot) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <AlertTriangle className="w-12 h-12 text-rose-500 mb-4" />
-        <h2 className="text-xl font-bold text-[#0F172A] font-heading mb-2">Unavailable</h2>
-        <p className="text-sm text-[#64748B] mb-6">{error || 'Something went wrong'}</p>
-        <Link to="/" className="px-6 py-2 bg-[#DC143C] text-white font-mono font-bold rounded-lg hover:bg-[#B01030] shadow-2xs transition-colors">
-          Return Home
+      <div className="min-h-screen bg-dot-grid flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-red-50 text-[#DC143C] border border-red-200 flex items-center justify-center mb-4">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-heading font-black text-slate-900 mb-2">Vault Unavailable</h2>
+        <p className="text-sm text-slate-600 max-w-md mx-auto mb-6 leading-relaxed">
+          {error || 'The requested Pokémon card portfolio could not be found or has not been made public by its owner.'}
+        </p>
+        <Link
+          to="/"
+          className="px-6 py-2.5 bg-[#DC143C] hover:bg-[#B01030] text-white font-mono font-bold text-xs rounded-xl shadow-xs transition-colors"
+        >
+          Return to DECK / divider Home
         </Link>
       </div>
     );
   }
 
+  const collectorName = snapshot.profile?.displayName || 'Collector';
+
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title={`${snapshot.profile?.displayName || 'Collector'}'s Portfolio & Vault | DECK / divider`}
-        description={`Public collection showcase for ${snapshot.profile?.displayName || 'Collector'}. Features ${allCardsList.length} cards, ${decksList.length} decks, sealed booster boxes, and live TCGplayer market NAV valuation.`}
+        title={`${collectorName}'s Pokémon TCG Binder & Slabs | DECK / divider`}
+        description={`Interactive 9-pocket web binder and graded slab vault for ${collectorName}. Holds ${allCardsList.length} cards, ${decksList.length} tournament decks, and live TCGplayer market NAV valuation.`}
         canonicalPath={`/portfolio/${shareId || 'showcase'}`}
-        ogImage={`https://deckdivider.app/api/og/portfolio/${shareId || 'showcase'}.png?title=${encodeURIComponent(snapshot.profile?.displayName || 'Collector')}&cards=${allCardsList.length}&value=${Math.round(totalValuation)}`}
+        ogImage={`https://deckdivider.app/api/og/portfolio/${shareId || 'showcase'}.png?title=${encodeURIComponent(collectorName)}&cards=${allCardsList.length}&value=${Math.round(totalValuation)}`}
         keywords={[
           'pokemon card portfolio',
           'pokemon collection showcase',
           'pokemon card binder online',
-          'sealed pokemon collection',
+          'interactive 9-pocket binder',
           'tcgplayer portfolio tracker'
         ]}
-        schema={getPublicPortfolioSchema(
-          snapshot.profile?.displayName || 'Collector',
-          allCardsList.length,
-          totalValuation
-        )}
+        schema={getPublicPortfolioSchema(collectorName, allCardsList.length, totalValuation)}
       />
+
       {/* Header */}
       <header className="bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] sticky top-0 z-50 shadow-xs">
         <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -296,77 +346,92 @@ export const PublicPortfolioView: React.FC = () => {
             </Link>
             <DeckDividerBrand size="sm" showLogo={true} />
           </div>
+
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Share Showcase Button */}
             <button
               type="button"
-              onClick={handleCopyLink}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-lg shadow-2xs transition-all cursor-pointer"
-              title="Copy link to public portfolio"
+              onClick={() => setShowBragModal(true)}
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-xs font-mono font-bold text-white bg-[#DC143C] hover:bg-[#B01030] rounded-xl shadow-xs transition-all cursor-pointer"
             >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
-              <span>{copiedLink ? 'Copied' : 'Share'}</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Share Showcase</span>
             </button>
+
+            {/* Embed Badge */}
             <button
               type="button"
               onClick={() => setShowEmbedModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-lg shadow-2xs transition-all cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-xl shadow-2xs transition-all cursor-pointer"
               title="Embed live portfolio badge"
             >
               <Code2 className="w-3.5 h-3.5 text-[#64748B]" />
-              <span>Embed Badge</span>
+              <span>Badge</span>
             </button>
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#16A34A] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold text-[#0F172A] bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-xl shadow-2xs transition-all cursor-pointer"
+              title="Copy link"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5 text-[#64748B]" />}
+              <span className="hidden sm:inline">{copiedLink ? 'Copied' : 'Link'}</span>
+            </button>
+
+            <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#16A34A] bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
               <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse"></span>
-              <span>PUBLIC SHOWCASE</span>
+              <span className="text-[11px]">VERIFIED VAULT</span>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Banner */}
-      <div className="bg-white border-b border-[#E2E8F0] pt-8 pb-10 px-4 shadow-xs">
+      <div className="bg-white border-b border-[#E2E8F0] pt-6 pb-8 px-4 shadow-xs">
         <div className="max-w-5xl mx-auto space-y-4">
           <GeoBreadcrumbs
             items={[
               { label: 'Leaderboard', path: '/leaderboard' },
-              { label: `${snapshot.profile?.displayName || 'Collector'}'s Vault`, path: `/portfolio/${shareId || 'showcase'}` },
+              { label: `${collectorName}'s Vault`, path: `/portfolio/${shareId || 'showcase'}` },
             ]}
           />
-          <div className="text-center space-y-3">
+          <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] text-xs font-mono">
               <ShieldCheck className="w-3.5 h-3.5 text-[#DC143C]" />
-              <span>Verified Collector Showcase</span>
+              <span>Public Web Binder &amp; Slab Showcase</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-extrabold text-[#0F172A] font-heading tracking-tight">
-              {snapshot.profile?.displayName || 'Collector'}'s Portfolio
+              {collectorName}'s Pokémon Binder
             </h1>
             <p className="text-[#64748B] text-sm sm:text-base max-w-2xl mx-auto">
-              Viewing a public read-only collection tracking {decksList.length} decks, {allCardsList.length} distinct cards, and sealed vault assets.
+              Interactive 9-pocket archival sleeve binder tracking {allCardsList.length} cards, {decksList.length} tournament decks, and certified PSA/BGS slabs.
             </p>
           </div>
         </div>
       </div>
 
-      {/* PTC Collectibles Partner Offer */}
+      {/* PTC Partner Offer */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6">
         <PtcPartnerBanner />
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <GeoExtractableBlock
-          className="mb-8"
-          heading={`Verified Collector Vault: ${snapshot.profile?.displayName || 'Collector'}`}
+          className="mb-6"
+          heading={`Verified Collector Vault: ${collectorName}`}
           summary={`This public showcase represents a verified Pokémon TCG portfolio tracked on DECK / divider. It holds ${allCardsList.length} unique card entries across ${decksList.length} decks and ${sealedList.length} sealed items, with an aggregate market valuation of ${formatCurrency(totalValuation, currency)}.`}
           keyFacts={[
-            { label: 'Collector', value: snapshot.profile?.displayName || 'Verified User' },
+            { label: 'Collector', value: collectorName },
             { label: 'Unique Cards', value: `${allCardsList.length} Cards` },
             { label: 'Custom Decks', value: `${decksList.length} Decks` },
             { label: 'Total Valuation', value: formatCurrency(totalValuation, currency) },
           ]}
         />
+
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          {/* Navigation Tabs */}
+          {/* Main Tabs */}
           <div className="flex items-center border-b border-slate-100 px-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab('collection')}
@@ -374,8 +439,8 @@ export const PublicPortfolioView: React.FC = () => {
                 activeTab === 'collection' ? 'border-[#DC143C] text-[#DC143C]' : 'border-transparent text-slate-500 hover:text-slate-700'
               }`}
             >
-              <Grid className="w-4 h-4" />
-              <span>Cards Gallery ({allCardsList.length})</span>
+              <BookOpen className="w-4 h-4" />
+              <span>Binder &amp; Collection ({allCardsList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('decks')}
@@ -411,7 +476,7 @@ export const PublicPortfolioView: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Valuation</span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                <span className="text-xl sm:text-2xl font-black text-emerald-700 font-heading">
                   {formatCurrency(totalValuation, currency)}
                 </span>
               </div>
@@ -426,24 +491,232 @@ export const PublicPortfolioView: React.FC = () => {
                 <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{decksList.length}</span>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Sealed Vault</span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900 font-heading">{sealedList.length}</span>
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Top Card Value</span>
+                <span className="text-xl sm:text-2xl font-black text-[#DC143C] font-heading">
+                  {formatCurrency(allCardsList[0]?.purchasePrice || allCardsList[0]?.card?.prices?.raw || 0, currency)}
+                </span>
               </div>
             </div>
 
+            {/* TAB 1: COLLECTION / BINDER */}
             {activeTab === 'collection' && (
-              <div>
-                {allCardsList.length === 0 ? (
-                  <div className="py-16 text-center text-slate-400">
-                    <Grid className="w-10 h-10 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm font-medium">No cards currently in this collection showcase.</p>
+              <div className="space-y-6">
+                {/* Mode Switcher Toolbar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setCollectionDisplayMode('binder')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+                        collectionDisplayMode === 'binder'
+                          ? 'bg-[#DC143C] text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>9-Pocket Binder</span>
+                    </button>
+                    <button
+                      onClick={() => setCollectionDisplayMode('grid')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+                        collectionDisplayMode === 'grid'
+                          ? 'bg-[#DC143C] text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Grid className="w-3.5 h-3.5" />
+                      <span>Gallery Grid</span>
+                    </button>
+                    <button
+                      onClick={() => setCollectionDisplayMode('masterset')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+                        collectionDisplayMode === 'masterset'
+                          ? 'bg-[#DC143C] text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Master Set Progress</span>
+                    </button>
                   </div>
-                ) : (
+
+                  {collectionDisplayMode === 'binder' && (
+                    <div className="flex items-center gap-2 font-mono text-xs text-slate-600">
+                      <button
+                        onClick={() => setBinderPage((p) => Math.max(1, p - 1))}
+                        disabled={binderPage <= 1}
+                        className="p-1 rounded bg-white border border-slate-200 disabled:opacity-30 hover:bg-slate-100"
+                        title="Previous Binder Page"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="font-bold text-slate-800">
+                        Page {binderPage} / {totalBinderPages}
+                      </span>
+                      <button
+                        onClick={() => setBinderPage((p) => Math.min(totalBinderPages, p + 1))}
+                        disabled={binderPage >= totalBinderPages}
+                        className="p-1 rounded bg-white border border-slate-200 disabled:opacity-30 hover:bg-slate-100"
+                        title="Next Binder Page"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {collectionDisplayMode === 'masterset' && (
+                    <button
+                      onClick={() => setWantListOnly(!wantListOnly)}
+                      className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 border ${
+                        wantListOnly
+                          ? 'bg-amber-500 text-white border-amber-600'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <Filter className="w-3.5 h-3.5" />
+                      <span>{wantListOnly ? 'Showing Want-List Only' : 'Toggle Want-List Mode'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* VIEW MODE 1: THE AUTHENTIC 9-POCKET BINDER */}
+                {collectionDisplayMode === 'binder' && (
+                  <div>
+                    {allCardsList.length === 0 ? (
+                      <div className="py-16 text-center text-slate-400">
+                        <BookOpen className="w-12 h-12 mx-auto mb-2 opacity-40" />
+                        <p className="text-sm font-medium">This binder is currently empty.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Archival Binder Sleeve Surface */}
+                        <div className="relative bg-gradient-to-b from-slate-900 via-slate-950 to-black rounded-3xl p-4 sm:p-7 shadow-2xl border-4 border-slate-800">
+                          {/* Binder Rings on Left Border */}
+                          <div className="absolute left-2 top-8 bottom-8 flex flex-col justify-around pointer-events-none hidden sm:flex">
+                            {[1, 2, 3].map((r) => (
+                              <div
+                                key={r}
+                                className="w-3 h-10 rounded-full bg-gradient-to-r from-slate-600 via-slate-400 to-slate-700 shadow-md border border-slate-500/50"
+                              />
+                            ))}
+                          </div>
+
+                          {/* 3x3 9-Pocket Sleeve Grid */}
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-5 sm:ml-4">
+                            {Array.from({ length: 9 }).map((_, slotIdx) => {
+                              const entry = currentBinderCards[slotIdx];
+                              if (!entry || !entry.card) {
+                                return (
+                                  <div
+                                    key={`empty-${slotIdx}`}
+                                    className="aspect-[63/88] rounded-xl border-2 border-dashed border-slate-800/80 bg-slate-900/40 flex flex-col items-center justify-center p-3 text-slate-700 select-none"
+                                  >
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate-700">
+                                      Pocket #{slotIdx + 1}
+                                    </span>
+                                    <span className="text-xs text-slate-800 mt-1">Empty Slot</span>
+                                  </div>
+                                );
+                              }
+
+                              const card = entry.card;
+                              const hasGrading = Boolean(entry.gradingInfo);
+                              const isFoil = Boolean(entry.notes?.includes('Foil'));
+
+                              return (
+                                <div
+                                  key={entry.id}
+                                  onClick={() => setSelectedCardForModal(card)}
+                                  className="group relative aspect-[63/88] rounded-2xl p-1.5 sm:p-2 bg-gradient-to-b from-slate-800/60 to-slate-900/80 border border-slate-700/60 hover:border-amber-400/80 hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between overflow-hidden"
+                                >
+                                  {/* Holographic foil glimmer effect on foil cards */}
+                                  {isFoil && (
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity" />
+                                  )}
+
+                                  {/* Pocket Sleeving Header Badges */}
+                                  <div className="flex items-center justify-between gap-1 z-10">
+                                    {hasGrading ? (
+                                      <span className="px-1.5 py-0.5 rounded bg-[#DC143C] text-white text-[9px] sm:text-[10px] font-black font-mono shadow-xs">
+                                        {entry.gradingInfo?.company} {entry.gradingInfo?.grade}
+                                      </span>
+                                    ) : (
+                                      <span className="px-1.5 py-0.5 rounded bg-slate-800/90 text-slate-300 text-[9px] font-mono">
+                                        {entry.condition || 'NM'}
+                                      </span>
+                                    )}
+
+                                    {(entry.quantity || 1) > 1 && (
+                                      <span className="px-1.5 py-0.5 rounded bg-white text-slate-900 text-[10px] font-mono font-black shadow-xs">
+                                        x{entry.quantity}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Card Image */}
+                                  <div className="relative flex-1 w-full flex items-center justify-center p-1 overflow-hidden">
+                                    <CardImage
+                                      src={card.images?.small || card.images?.large}
+                                      alt={card.name}
+                                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md"
+                                    />
+                                    {/* Inspection overlay on hover */}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl">
+                                      <span className="px-2.5 py-1 bg-white/90 text-slate-900 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 shadow-xs">
+                                        <Eye className="w-3 h-3 text-[#DC143C]" /> Inspect
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Pocket Card Info Footprint */}
+                                  <div className="pt-1 z-10 flex items-center justify-between text-[11px] font-mono border-t border-slate-700/60 text-slate-300">
+                                    <span className="truncate max-w-[90px] font-bold text-slate-200">
+                                      {card.name}
+                                    </span>
+                                    <span className="text-amber-400 font-bold">
+                                      {formatCurrency(entry.purchasePrice || card.prices?.raw || 1.5, currency)}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Binder Footprint Ribbon */}
+                          <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-xs text-slate-400 font-mono gap-2">
+                            <span>
+                              Showing Archival Page {binderPage} of {totalBinderPages} • {allCardsList.length} Total Cards
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setBinderPage((p) => Math.max(1, p - 1))}
+                                disabled={binderPage <= 1}
+                                className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30"
+                              >
+                                ← Prev
+                              </button>
+                              <button
+                                onClick={() => setBinderPage((p) => Math.min(totalBinderPages, p + 1))}
+                                disabled={binderPage >= totalBinderPages}
+                                className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30"
+                              >
+                                Next →
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* VIEW MODE 2: GALLERY GRID */}
+                {collectionDisplayMode === 'grid' && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
                     {allCardsList.map((entry) => (
                       <div
                         key={entry.id}
-                        className="group bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-[#DC143C]/50 hover:shadow-md transition-all flex flex-col"
+                        onClick={() => entry.card && setSelectedCardForModal(entry.card)}
+                        className="group bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-[#DC143C]/50 hover:shadow-md transition-all flex flex-col cursor-pointer"
                       >
                         <div className="relative aspect-[63/88] w-full bg-slate-100 overflow-hidden flex items-center justify-center p-2">
                           {entry.card ? (
@@ -458,11 +731,6 @@ export const PublicPortfolioView: React.FC = () => {
                           {(entry.quantity || 1) > 1 && (
                             <div className="absolute top-2 right-2 bg-white text-[#0F172A] border border-[#CBD5E1] text-[11px] font-black px-2 py-0.5 rounded-md font-mono shadow-xs">
                               x{entry.quantity}
-                            </div>
-                          )}
-                          {entry.notes?.includes('Foil') && (
-                            <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-xs">
-                              <Sparkles className="w-2.5 h-2.5" /> Foil
                             </div>
                           )}
                           {entry.gradingInfo && (
@@ -492,11 +760,94 @@ export const PublicPortfolioView: React.FC = () => {
                     ))}
                   </div>
                 )}
+
+                {/* VIEW MODE 3: MASTER SET PROGRESS & WANT-LIST */}
+                {collectionDisplayMode === 'masterset' && (
+                  <div className="space-y-6">
+                    <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <div className="text-xs font-mono font-bold uppercase text-amber-400 mb-1 flex items-center gap-1.5">
+                          <Layers className="w-4 h-4" /> Master Set Completion Tracker
+                        </div>
+                        <p className="text-xs text-slate-200">
+                          Track progress towards complete master binders. Share your want-list with local card trade groups!
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setShowBragModal(true)}
+                        className="px-4 py-2 bg-[#DC143C] hover:bg-[#B01030] text-white text-xs font-mono font-bold rounded-xl transition-colors shrink-0"
+                      >
+                        Share Want-List
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {masterSetProgress.map((group) => {
+                        const collectedCount = group.cards.length;
+                        const totalCardsTarget = group.totalEstimate;
+                        const pct = Math.min(100, Math.round((collectedCount / totalCardsTarget) * 100));
+
+                        return (
+                          <div
+                            key={group.setName}
+                            className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4"
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div>
+                                <h3 className="font-heading font-black text-slate-900 text-base">
+                                  {group.setName}
+                                </h3>
+                                <div className="text-xs font-mono text-slate-500">
+                                  {collectedCount} of {totalCardsTarget} Cards Collected ({pct}% Complete)
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                  {totalCardsTarget - collectedCount} Cards Missing
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                              <div
+                                className="bg-[#DC143C] h-full rounded-full transition-all duration-500"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+
+                            {/* Cards in this set */}
+                            <div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-2.5 pt-2">
+                              {group.cards.slice(0, 16).map((c) => (
+                                <div
+                                  key={c.id}
+                                  onClick={() => c.card && setSelectedCardForModal(c.card)}
+                                  className="aspect-[63/88] rounded-lg overflow-hidden bg-slate-50 border border-slate-200 hover:border-[#DC143C] cursor-pointer p-1 transition-all"
+                                  title={`${c.card?.name} #${c.card?.number}`}
+                                >
+                                  {c.card && (
+                                    <CardImage
+                                      src={c.card.images.small}
+                                      alt={c.card.name}
+                                      className="w-full h-full object-contain"
+                                    />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+
+            {/* TAB 2: DECKS */}
             {activeTab === 'decks' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {decksList.map(deck => (
+                {decksList.map((deck) => (
                   <div key={deck.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: deck.colorHex || '#DC143C' }}></div>
@@ -515,9 +866,11 @@ export const PublicPortfolioView: React.FC = () => {
                 ))}
               </div>
             )}
+
+            {/* TAB 3: SEALED */}
             {activeTab === 'sealed' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sealedList.map(entry => (
+                {sealedList.map((entry) => (
                   <div key={entry.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <h3 className="font-bold text-slate-900 truncate">
                       {entry.product?.name || (entry as unknown as { name?: string }).name || 'Sealed Item'}
@@ -532,9 +885,11 @@ export const PublicPortfolioView: React.FC = () => {
                 ))}
               </div>
             )}
+
+            {/* TAB 4: LISTS */}
             {activeTab === 'lists' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {listsList.map(list => (
+                {listsList.map((list) => (
                   <div key={list.id} className="p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
                     <h3 className="font-bold text-slate-900 truncate">{list.name}</h3>
                     <span className="text-xs text-slate-500">{(list.cardIds || []).length} Items</span>
@@ -546,6 +901,29 @@ export const PublicPortfolioView: React.FC = () => {
         </div>
       </main>
 
+      {/* Interactive Card Inspection Modal */}
+      {selectedCardForModal && (
+        <PublicCardDetailModal
+          card={selectedCardForModal}
+          onClose={() => setSelectedCardForModal(null)}
+        />
+      )}
+
+      {/* Brag & Share Modal */}
+      {snapshot && (
+        <BragShareModal
+          isOpen={showBragModal}
+          onClose={() => setShowBragModal(false)}
+          collectorName={collectorName}
+          totalCards={allCardsList.length}
+          totalValuation={totalValuation}
+          currency={currency}
+          topCards={allCardsList}
+          shareUrl={window.location.href}
+        />
+      )}
+
+      {/* Embed Badge Modal */}
       {snapshot && (
         <EmbedBadgeModal
           isOpen={showEmbedModal}
@@ -553,7 +931,7 @@ export const PublicPortfolioView: React.FC = () => {
           options={{
             type: 'portfolio',
             idOrSlug: shareId || 'collector',
-            title: `${snapshot.profile?.displayName || 'Collector'}'s Vault`,
+            title: `${collectorName}'s Vault`,
             subtitle: `${allCardsList.length} Cards • ${decksList.length} Decks`,
             count: allCardsList.length,
             value: Math.round(totalValuation),

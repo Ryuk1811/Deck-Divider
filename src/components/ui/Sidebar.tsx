@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Globe,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
 import { AccountTier } from '../../types';
 import { useAuth } from '../../lib/AuthContext';
@@ -349,10 +350,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       type="button"
                       onClick={handleSignOut}
                       className="text-[10px] font-mono font-semibold text-slate-500 hover:text-[#DC143C] transition-colors cursor-pointer"
-                      title="Exit Demo"
+                      title="Clear Session"
                     >
-                      Exit Demo
+                      Clear Session
                     </button>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                    <Sparkles className="w-3 h-3 text-[#DC143C]" />
+                    <span>Showcase Portfolio Active</span>
                   </div>
                   <button
                     type="button"
@@ -442,8 +447,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     type="button"
                     onClick={handleSignOut}
                     className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#DC143C] hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C]/20 rounded-lg transition-all shrink-0 cursor-pointer"
-                    title="Exit Demo Session"
-                    aria-label="Exit Demo"
+                    title="Clear Session"
+                    aria-label="Clear Session"
                   >
                     <LogOut className="w-4.5 h-4.5" />
                   </button>

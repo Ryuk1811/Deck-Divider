@@ -56,6 +56,8 @@ import {
   generateShowcaseDecks,
   generateShowcaseSealed,
   generateShowcaseCustomLists,
+  generateShowcaseSoldEntries,
+  generateShowcaseRecentActivities,
   isMockDeck,
   isMockCardEntry,
   isMockCustomList,
@@ -118,7 +120,6 @@ const PayPalSubscriptionModal = lazy(() => import('./components/modals/PayPalSub
 const PayPalLifetimeCheckoutModal = lazy(() => import('./components/modals/PayPalLifetimeCheckoutModal').then(m => ({ default: m.PayPalLifetimeCheckoutModal })));
 const PayPalSuccessModal = lazy(() => import('./components/modals/PayPalSuccessModal').then(m => ({ default: m.PayPalSuccessModal })));
 const PayPalCancelModal = lazy(() => import('./components/modals/PayPalCancelModal').then(m => ({ default: m.PayPalCancelModal })));
-const AnalyticsFunnelModal = lazy(() => import('./components/modals/AnalyticsFunnelModal').then(m => ({ default: m.AnalyticsFunnelModal })));
 const BackupRecoveryModal = lazy(() => import('./components/modals/BackupRecoveryModal').then(m => ({ default: m.BackupRecoveryModal })));
 
 const RouteLoadingFallback = () => (
@@ -326,7 +327,6 @@ export default function App() {
   const [paypalSuccessData, setPaypalSuccessData] = useState<{ tier: AccountTier; subId: string } | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isLaunchingPayPal, setIsLaunchingPayPal] = useState(false);
-  const [isFunnelModalOpen, setIsFunnelModalOpen] = useState(false);
 
   // Track dashboard views when entering /app routes
   React.useEffect(() => {
@@ -823,40 +823,6 @@ export default function App() {
     }
   }, [user, saveCompressedCloudSnapshot]);
 
-  // Helper to load complete Showcase / Starter Sample Suite (Guest / Demo Mode ONLY)
-  const handleLoadShowcaseData = React.useCallback(async () => {
-    // Strictly tied to demo mode only - prohibited on authenticated user accounts
-    if (user) return;
-    const targetUid = 'guest_user';
-    const sampleDecks = generateShowcaseDecks(targetUid);
-    const sampleLists = generateShowcaseCustomLists(targetUid);
-    const sampleSealed = generateShowcaseSealed(targetUid);
-
-    setDecks(sampleDecks);
-    setCustomLists(sampleLists);
-    setSealedEntries(sampleSealed);
-
-    await Promise.all([
-      idbSaveUserDecks(sampleDecks, targetUid),
-      idbSaveCustomLists(sampleLists, targetUid),
-      idbSaveSealedVault(sampleSealed, targetUid),
-    ]);
-  }, [user]);
-
-  // Helper to load standard competitive sample deck (Guest / Demo Mode ONLY)
-  const handleLoadSampleDeck = React.useCallback(async () => {
-    // Strictly tied to demo mode only - prohibited on authenticated user accounts
-    if (user) return;
-    const targetUid = 'guest_user';
-    const sampleDecks = generateShowcaseDecks(targetUid).slice(0, 1); // Charizard Championship 60
-    
-    setDecks((prev) => {
-      const merged = [...sampleDecks, ...prev.filter(d => d.id !== sampleDecks[0].id)];
-      idbSaveUserDecks(merged, targetUid);
-      return merged;
-    });
-  }, [user]);
-
   // Load from Local Encrypted Storage on initial mount & strictly sanitize mock data
   React.useEffect(() => {
     if (authLoading) return;
@@ -1019,19 +985,50 @@ export default function App() {
           }
         }
 
-        // Filter out any mock items from accounts to guarantee a clean zero-state
-        const sanitizedDecks = currentDecks
-          .filter((d) => !isMockDeck(d))
-          .map((deck) => ({
-            ...deck,
-            entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
-          }));
-        const sanitizedLists = currentLists.filter((l) => !isMockCustomList(l));
-        const sanitizedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
+        if (user) {
+          // Strictly sanitize authenticated user accounts: eliminate any mock or showcase data
+          const sanitizedDecks = currentDecks
+            .filter((d) => !isMockDeck(d))
+            .map((deck) => ({
+              ...deck,
+              entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
+            }));
+          const sanitizedLists = currentLists.filter((l) => !isMockCustomList(l));
+          const sanitizedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
 
-        setDecks(sanitizedDecks);
-        setCustomLists(sanitizedLists);
-        setSealedEntries(sanitizedSealed);
+          setDecks(sanitizedDecks);
+          setCustomLists(sanitizedLists);
+          setSealedEntries(sanitizedSealed);
+        } else {
+          // GUEST / DEMO VIEW ONLY:
+          // Automatically load the showcase data set so guests immediately experience a rich, realistic portfolio
+          let guestDecks = currentDecks;
+          let guestLists = currentLists;
+          let guestSealed = currentSealed;
+          let guestSold = soldEntries;
+
+          if (guestDecks.length === 0) {
+            guestDecks = generateShowcaseDecks('guest_user');
+            guestLists = generateShowcaseCustomLists('guest_user');
+            guestSealed = generateShowcaseSealed('guest_user');
+            guestSold = generateShowcaseSoldEntries('guest_user');
+            const guestActivities = generateShowcaseRecentActivities(displayCurrency);
+            setRecentActivities(guestActivities);
+
+            await Promise.all([
+              idbSaveUserDecks(guestDecks, 'guest_user'),
+              idbSaveCustomLists(guestLists, 'guest_user'),
+              idbSaveSealedVault(guestSealed, 'guest_user'),
+            ]);
+          }
+
+          setDecks(guestDecks);
+          setCustomLists(guestLists);
+          setSealedEntries(guestSealed);
+          if (guestSold && guestSold.length > 0) {
+            setSoldEntries(guestSold);
+          }
+        }
       } catch (err) {
         console.error('Data initialization error (retaining existing data):', err);
         // Do NOT wipe out decks/lists on error! Fallback to existing memory or IDB
@@ -1969,8 +1966,6 @@ export default function App() {
               onAddCardToList={handleAddCardToList}
               onNavigateToSearch={() => setActiveTab('search')}
               onNavigateToTab={setActiveTab}
-              onLoadShowcase={!user ? handleLoadShowcaseData : undefined}
-              onAddSampleDeck={!user ? handleLoadSampleDeck : undefined}
             />
           )}
 
@@ -2014,8 +2009,6 @@ export default function App() {
               }
               initialSelectedDeckId={targetDeckIdForView}
               createDeckSignal={createDeckSignal}
-              onLoadShowcase={!user ? handleLoadShowcaseData : undefined}
-              onAddSampleDeck={!user ? handleLoadSampleDeck : undefined}
             />
           )}
 
@@ -2241,6 +2234,8 @@ export default function App() {
         <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/portfolios/:shareId" element={<Navigate to="/portfolio/:shareId" replace />} />
+        <Route path="/binder/:shareId" element={<PublicPortfolioView />} />
+        <Route path="/binder" element={<Navigate to="/portfolios" replace />} />
 
         {/* === LEGACY WRAPPERS & UTILITY REDIRECTS === */}
         <Route path="/collection" element={<Navigate to="/app" replace />} />
@@ -2360,11 +2355,6 @@ export default function App() {
           setIsCancelModalOpen(false);
           if (paypalModalTier) handleChangeTier(paypalModalTier);
         }}
-      />
-
-      <AnalyticsFunnelModal
-        isOpen={isFunnelModalOpen}
-        onClose={() => setIsFunnelModalOpen(false)}
       />
 
       <BackupRecoveryModal

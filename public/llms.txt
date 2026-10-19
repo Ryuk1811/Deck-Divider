@@ -1,5 +1,5 @@
-# DECK / divider
-> DECK / divider is a specialized Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder. It features live TCGplayer market prices and offline-first IndexedDB privacy.
+# DECK / divider — Pokémon TCG Studio
+> DECK / divider is an ad-free digital web software application, Pokémon TCG binder tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder with live TCGplayer market prices. It is 100% digital software—NOT a physical plastic card divider or storage box accessory.
 
 ## Core Capabilities
 - **Collection Tracker**: Multi-currency valuation (USD, EUR, GBP, JPY, CAD, AUD), master set checklists (Regular, Reverse Holo, Masterball Holo, SIRs), and sealed booster box tracking.

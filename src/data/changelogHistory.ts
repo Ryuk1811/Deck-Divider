@@ -717,8 +717,8 @@ export const ALL_RELEASES: ReleaseEntry[] = [
     badge: '27th Iteration',
     badgeColor: 'bg-sky-500/10 text-sky-600 border-sky-500/20',
     tag: 'Tools',
-    title: 'CSV & Collectr Export / Import Migration Wizard',
-    summary: 'Seamless one-click migration from Collectr, TCGplayer, and Dragon Shield via standardized CSV format.',
+    title: 'Portfolio CSV Export & Reporting Engine',
+    summary: 'Standardized portfolio data export for insurance schedules, spreadsheets, and inventory backups.',
     highlights: [
       {
         category: 'Data Portability',

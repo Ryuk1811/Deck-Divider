@@ -690,7 +690,7 @@ export async function renderSsrRoute(
 
   // 1.45 DEDICATED PUBLIC CARDS SEARCH & CATALOGUE ROUTE: /cards
   if (cleanPath === '/cards') {
-    const pageTitle = 'Pokémon Card Database & Search Catalog — DECK / divider';
+    const pageTitle = 'Pokémon TCG Card Database & Price Tracker | DECK / divider';
     const pageDesc = 'Search 18,400+ Pokémon cards with instant filtering by type, rarity, regulation mark, artist, and daily TCGplayer market prices.';
     const canonicalUrl = `${canonicalOrigin}/cards`;
 
@@ -1507,13 +1507,20 @@ export async function renderSsrRoute(
     return { bodyHtml, title: pageTitle, metaTags };
   }
 
-  // PUBLIC PORTFOLIO ROUTE: /portfolio/:shareId or /portfolios/:shareId
-  if (cleanPath.startsWith('/portfolio/') || cleanPath.startsWith('/portfolios/')) {
-    const shareId = cleanPath.startsWith('/portfolios/') ? cleanPath.replace('/portfolios/', '') : cleanPath.replace('/portfolio/', '');
+  // PUBLIC PORTFOLIO & BINDER ROUTE: /portfolio/:shareId, /portfolios/:shareId, /binder/:shareId
+  if (cleanPath.startsWith('/portfolio/') || cleanPath.startsWith('/portfolios/') || cleanPath.startsWith('/binder/')) {
+    const isBinder = cleanPath.startsWith('/binder/');
+    const shareId = isBinder 
+      ? cleanPath.replace('/binder/', '')
+      : (cleanPath.startsWith('/portfolios/') ? cleanPath.replace('/portfolios/', '') : cleanPath.replace('/portfolio/', ''));
     const collectorName = (queryParams.name as string) || 'Verified Collector';
-    const pageTitle = `${collectorName}'s Pokémon TCG Portfolio & Vault | DECK / divider`;
-    const pageDesc = `Explore ${collectorName}'s public Pokémon TCG collection vault with live TCGplayer market NAV valuation, graded PSA slabs, and full card inventory.`;
-    const canonicalUrl = `${canonicalOrigin}/portfolio/${shareId}`;
+    const pageTitle = isBinder
+      ? `${collectorName}'s Interactive 9-Pocket Pokémon TCG Web Binder | DECK / divider`
+      : `${collectorName}'s Pokémon TCG Portfolio & Vault | DECK / divider`;
+    const pageDesc = isBinder
+      ? `Inspect ${collectorName}'s interactive 9-pocket archival Pokémon TCG web binder, PSA/BGS slabs, and master set progress on DECK / divider.`
+      : `Explore ${collectorName}'s public Pokémon TCG collection vault with live TCGplayer market NAV valuation, graded PSA slabs, and full card inventory.`;
+    const canonicalUrl = isBinder ? `${canonicalOrigin}/binder/${shareId}` : `${canonicalOrigin}/portfolio/${shareId}`;
     const ogImageUrl = `${canonicalOrigin}/api/og/portfolio/${encodeURIComponent(shareId)}.png?title=${encodeURIComponent(collectorName)}`;
 
     const jsonLd = {
@@ -1685,7 +1692,7 @@ export async function renderSsrRoute(
   }
 
   if (cleanPath === '/sets') {
-    const pageTitle = 'Pokémon TCG Expansions Database & Checklists — DECK / divider';
+    const pageTitle = 'Pokémon TCG Expansions & Master Set Checklists | DECK / divider';
     const pageDesc = 'Browse our complete database of Pokémon Trading Card Game sets. View checklists, live TCGplayer market values, format legalities, and track your master sets.';
     const canonicalUrl = `${canonicalOrigin}/sets`;
 
@@ -1733,7 +1740,7 @@ export async function renderSsrRoute(
   }
 
   if (cleanPath === '/formats') {
-    const pageTitle = 'Pokémon TCG Formats & Standard Legality Guide | DECK / divider Tracker';
+    const pageTitle = '2026 Standard Rotation & Regulation Marks | Pokémon TCG Studio';
     const pageDesc = 'Check standard rotation schedules, build legal PTCGL tournament decks, and explore Standard, Expanded, and GLC card pools on DECK / divider.';
     const canonicalUrl = `${canonicalOrigin}/formats`;
 
@@ -2180,7 +2187,7 @@ export async function renderSsrRoute(
 
     // 1. PSA GRADE ROI CALCULATOR DEDICATED SEO DOCUMENT
     if (toolId === 'psa-grade-calculator') {
-      const pageTitle = 'Pokémon Card Grading ROI & Value Calculator (PSA, BGS, CGC) | DECK / divider';
+      const pageTitle = 'PSA & BGS Slab Grade Calculator | Pokémon TCG Studio';
       const pageDesc = 'Calculate whether grading your Pokémon cards with PSA, BGS, or CGC is profitable. Free Expected Value (EV) calculator modeling grading tiers, submission fees, shipping insurance, and PSA 10 vs 9 price multipliers.';
       const canonicalUrl = `${canonicalOrigin}/tools/psa-grade-calculator`;
 
@@ -2397,7 +2404,7 @@ export async function renderSsrRoute(
 
     // 2. DECK LEGALITY CHECKER DEDICATED SEO DOCUMENT
     if (toolId === 'deck-legality-checker') {
-      const pageTitle = 'Pokémon TCG Regulation Mark & Deck Legality Checker (2026 Standard) | DECK / divider';
+      const pageTitle = 'Standard & Expanded 60-Card Deck Checker | Pokémon TCG Studio';
       const pageDesc = 'Verify Pokémon TCG 60-card deck legality for the 2026 tournament season. Instant validation for Standard format (Regulation Marks H, I, J; Mark G rotated), ACE SPEC limits, and Radiant Pokémon restrictions.';
       const canonicalUrl = `${canonicalOrigin}/tools/deck-legality-checker`;
 
@@ -2617,7 +2624,7 @@ export async function renderSsrRoute(
     }
 
     // 3. GENERAL TOOLS DIRECTORY /tools
-    const pageTitle = 'Free Pokémon TCG Collector & Tournament Tools | DECK / divider';
+    const pageTitle = 'Pokémon TCG Collector & Tournament Tools | Pokémon TCG Studio';
     const pageDesc = 'Explore our suite of free interactive utilities for Pokémon card collectors and tournament players: PSA grade ROI calculators, 2026 regulation mark checkers, and export utilities.';
     const canonicalUrl = `${canonicalOrigin}/tools`;
 
@@ -3434,7 +3441,7 @@ export async function renderSsrRoute(
 
   // 5. PRICING PAGE ROUTE: /pricing
   if (cleanPath === '/pricing') {
-    const pageTitle = 'Pricing Plans & Subscriptions | DECK / divider Pokémon TCG Tracker';
+    const pageTitle = 'Pricing & Membership Plans | DECK / divider Pokémon TCG Studio';
     const pageDesc = 'Compare DECK / divider subscription tiers from free Starter to full Collection plan. 60-card tournament builder, PSA slab tracking, and live market pricing.';
     const canonicalUrl = `${canonicalOrigin}/pricing`;
     const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
@@ -4322,8 +4329,8 @@ export async function renderSsrRoute(
   }
 
   // 15. HOMEPAGE / LANDING ROUTE: /
-  const pageTitle = 'DECK / divider | Pokémon TCG Collection Tracker & Deck Builder';
-  const pageDesc = 'The ultimate ad-free Pokémon TCG app. Track raw cards, PSA/BGS/CGC slabs, and sealed boxes with live TCGplayer prices. Build standard legal 60-card decks.';
+  const pageTitle = 'DECK / divider — Pokémon TCG Binder Tracker & Deck Builder | Pokémon TCG Studio';
+  const pageDesc = 'DECK / divider is an ad-free Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.';
   const canonicalUrl = `${canonicalOrigin}/`;
   const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
@@ -4333,7 +4340,8 @@ export async function renderSsrRoute(
       {
         '@type': 'Organization',
         '@id': 'https://deckdivider.app/#organization',
-        name: 'DECK / divider',
+        name: 'DECK / divider — Pokémon TCG Studio',
+        alternateName: ['DECK / divider', 'DeckDivider Pokémon', 'DECK / divider Pokémon TCG Studio'],
         url: 'https://deckdivider.app',
         logo: {
           '@type': 'ImageObject',
@@ -4345,7 +4353,7 @@ export async function renderSsrRoute(
           caption: 'DECK / divider Logo',
         },
         image: 'https://deckdivider.app/og-image.png?v=2',
-        description: 'Collection tracking, 60-card deck building, and PSA slab management platform for Pokémon TCG collectors and tournament players.',
+        description: 'DECK / divider is an ad-free digital Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder. Digital software studio, not a physical plastic divider accessory.',
         sameAs: [
           'https://www.reddit.com/r/DeckDivider/',
           'https://www.instagram.com/deckdivider/',
@@ -4376,16 +4384,17 @@ export async function renderSsrRoute(
         },
       },
       {
-        '@type': 'SoftwareApplication',
+        '@type': ['WebApplication', 'SoftwareApplication'],
         '@id': 'https://deckdivider.app/#software',
-        name: 'DECK / divider',
+        name: 'DECK / divider — Pokémon TCG Studio',
+        alternateName: ['DeckDivider Pokémon', 'DECK / divider Pokémon TCG', 'DeckDivider App', 'DECK / divider'],
         url: 'https://deckdivider.app',
         image: 'https://deckdivider.app/og-image.png?v=2',
         brand: STANDARD_BRAND,
         sku: 'DD-SOFTWARE-2026',
-        applicationCategory: 'UtilityApplication, EntertainmentApplication',
-        operatingSystem: 'Web, iOS, Android',
-        description: pageDesc,
+        applicationCategory: 'Card Game Utility / Collector Tracker Software',
+        operatingSystem: 'Web, iOS, Android, PWA, Desktop',
+        description: 'Digital web application and deck builder for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
         publisher: {
           '@id': 'https://deckdivider.app/#organization',
         },
@@ -4523,7 +4532,7 @@ export async function renderSsrRoute(
     <meta property="og:image:alt" content="DECK / divider | Pokémon TCG Collection Tracker & Deck Builder" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="DECK / divider" />
+  <meta property="og:site_name" content="DECK / divider — Pokémon TCG Studio" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@deckdivider" />
   <meta name="twitter:creator" content="@deckdivider" />
@@ -4554,12 +4563,12 @@ export async function renderSsrRoute(
   <main style="font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
     <!-- Hero Section -->
     <section style="max-width:1100px;margin:0 auto;padding:64px 20px 48px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">AD-FREE POKÉMON TCG COLLECTION TRACKER &amp; DECKBUILDER</span>
+      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">DIGITAL SOFTWARE STUDIO · POKÉMON TCG BINDER TRACKER &amp; DECK BUILDER</span>
       <h1 style="font-size:52px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 24px;color:#0F172A;">
-        The Binder Tracker, Slab Registry, and Deckbuilder for Pokémon TCG Collectors
+        The Digital Pokémon TCG Binder Tracker, Slab Registry, and Deckbuilder
       </h1>
       <p style="font-size:20px;color:#64748B;max-width:820px;margin:0 auto 36px;line-height:1.5;">
-        Live TCGplayer price comps, 60-card tournament deck legality, PSA/BGS/CGC subgrade certification tracking, and master set checklists in 15+ currencies. Zero ads.
+        A 100% digital web software application for Pokémon TCG collectors and competitive players. No physical plastic dividers—log raw cards and PSA certs, complete binder sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL with zero ads.
       </p>
       <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:32px;">
         <a href="/app" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);display:inline-flex;align-items:center;gap:8px;">⚡ Try without an account (Instant Guest Demo) &rarr;</a>

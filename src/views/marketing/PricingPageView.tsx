@@ -89,7 +89,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
-        title="Pokémon Card Prices &amp; Collection Value Tracker | DECK / divider"
+        title="Pricing & Membership Plans | DECK / divider Pokémon TCG Studio"
         description="Transparent membership plans for Pokémon TCG collectors and tournament players. Free forever Starter plan, graded slab tracking, 60-card tournament deck builders, and sealed vault."
         canonicalPath="/pricing"
         keywords={[

@@ -15,15 +15,15 @@ export interface CanonicalRouteMeta {
 export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/',
-    title: 'DECK / divider — Pokémon TCG Collection Tracker, Slab Registry & Deckbuilder',
-    description: 'Track Pokémon cards, PSA/BGS slabs, and sealed booster boxes with live TCGplayer prices. Build standard 60-card tournament decks with real-time valuation.',
+    title: 'DECK / divider — Pokémon TCG Binder Tracker & Deck Builder',
+    description: 'Ad-free Pokémon TCG binder tracker, master set checklist, PSA slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.',
     category: 'core',
     priority: '1.0',
     changefreq: 'daily',
   },
   {
     path: '/cards',
-    title: 'Pokémon Card Database & Search Catalog — DECK / divider',
+    title: 'Pokémon TCG Card Database & Price Tracker | DECK / divider',
     description: 'Search 18,400+ Pokémon cards with instant filtering by type, rarity, regulation mark, artist, and daily TCGplayer market prices.',
     category: 'catalog',
     priority: '1.0',
@@ -31,7 +31,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/sets',
-    title: 'Pokémon TCG Expansions & Master Set Checklists — DECK / divider',
+    title: 'Pokémon TCG Expansions & Master Set Checklists | DECK / divider',
     description: 'Browse all 218 catalogued sets & series across Scarlet & Violet, Sword & Shield, and Vintage with reverse holo binder completion checklists.',
     category: 'catalog',
     priority: '0.95',
@@ -39,7 +39,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory',
-    title: 'Pokémon TCG Directory & Knowledge Base — DECK / divider',
+    title: 'Pokémon TCG Directory & Knowledge Base | DECK / divider',
     description: 'Comprehensive Pokémon TCG index of 100+ expansion sets, competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.',
     category: 'directory',
     priority: '0.90',
@@ -47,7 +47,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory/sets-index',
-    title: 'All Pokémon TCG Expansion Sets & Master Checklists Index — DECK / divider',
+    title: 'All Pokémon TCG Expansion Sets & Master Checklists Index | DECK / divider',
     description: 'Complete catalog of 100+ Pokémon TCG expansions with binder completion checklists and live card counts.',
     category: 'directory',
     priority: '0.85',
@@ -55,7 +55,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory/decks-index',
-    title: 'Competitive 60-Card Meta Decks Index — DECK / divider',
+    title: 'Competitive 60-Card Meta Decks Index | Pokémon TCG Studio',
     description: 'Standard format legal tournament deck lists with 2026 regulation marks H/I/J compliance and 1-click PTCGL export strings.',
     category: 'directory',
     priority: '0.85',
@@ -63,7 +63,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory/slabs-index',
-    title: 'Graded Slab Registry & Valuation Multipliers Guide — DECK / divider',
+    title: 'Graded Slab Registry & Valuation Multipliers Guide | Pokémon TCG Studio',
     description: 'PSA, BGS Beckett, and CGC condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.',
     category: 'directory',
     priority: '0.85',
@@ -71,7 +71,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory/glossary',
-    title: 'Pokémon TCG Terminology & Card Mechanics Glossary — DECK / divider',
+    title: 'Pokémon TCG Terminology & Card Mechanics Glossary | Pokémon TCG Studio',
     description: 'Definitive dictionary of Pokémon TCG terminology: ACE SPEC, Secret Illustration Rares, Regulation Marks, Lost Zone, and more.',
     category: 'directory',
     priority: '0.85',
@@ -79,15 +79,23 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/portfolios',
-    title: 'Public Collector Portfolios & Slab Showcases — DECK / divider',
+    title: 'Public Collector Portfolios & Slab Showcases | Pokémon TCG Studio',
     description: 'Explore verified Pokémon card collections, graded slab vaults, and master sets shared by trainers worldwide.',
     category: 'catalog',
     priority: '0.85',
     changefreq: 'daily',
   },
   {
+    path: '/binder',
+    title: 'Interactive 9-Pocket Pokémon TCG Web Binder | Pokémon TCG Studio',
+    description: 'Explore interactive 9-pocket archival web binders, card inspection sleeves, master set completion rings, and certified PSA slabs.',
+    category: 'catalog',
+    priority: '0.85',
+    changefreq: 'daily',
+  },
+  {
     path: '/pricing',
-    title: 'Pricing & Pro Subscription Tiers — DECK / divider',
+    title: 'Pricing & Membership Plans | DECK / divider Pokémon TCG Studio',
     description: 'Explore Starter, Bunch, Stack, Deck, and Collection tiers. Unlimited deck building, slab certificate registry, and encrypted cloud backups.',
     category: 'core',
     priority: '0.90',
@@ -95,7 +103,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/leaderboard',
-    title: 'Collector Community Leaderboard — DECK / divider',
+    title: 'Collector Community Leaderboard | Pokémon TCG Studio',
     description: 'Top verified Pokémon TCG portfolios, biggest master set completionists, and premier graded slab vaults.',
     category: 'core',
     priority: '0.80',
@@ -103,7 +111,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/formats',
-    title: 'Pokémon TCG Format Legality Directory — DECK / divider',
+    title: '2026 Standard Rotation & Regulation Marks | Pokémon TCG Studio',
     description: 'Official rotation guide for Standard (Regulation H, I, J), Expanded, Gym Leader Challenge (GLC), and Retro formats.',
     category: 'guide',
     priority: '0.85',
@@ -111,7 +119,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/tools',
-    title: 'High-Intent Pokémon TCG Collector & Tournament Tools — DECK / divider',
+    title: 'Pokémon TCG Collector & Tournament Tools | Pokémon TCG Studio',
     description: 'PSA Grade Multiplier Calculator, 60-Card Standard Deck Legality Checker, and PTCGL export utilities.',
     category: 'tool',
     priority: '0.90',
@@ -119,7 +127,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/tools/psa-grade-calculator',
-    title: 'PSA/BGS Grade Value & Multiplier Calculator — DECK / divider',
+    title: 'PSA & BGS Slab Grade Calculator | Pokémon TCG Studio',
     description: 'Calculate expected market value multipliers for PSA 10, PSA 9, and BGS Black Label cards compared to raw Near Mint copies.',
     category: 'tool',
     priority: '0.85',
@@ -127,7 +135,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/tools/deck-legality-checker',
-    title: '60-Card Deck Legality & Regulation Mark Checker — DECK / divider',
+    title: 'Standard & Expanded 60-Card Deck Checker | Pokémon TCG Studio',
     description: 'Validate standard format legal cards (H, I, J regulation marks; G rotated), 4-copy rule, Radiant limits, and ACE SPEC restrictions.',
     category: 'tool',
     priority: '0.85',
@@ -135,7 +143,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/compare',
-    title: 'Pokémon Card Tracker Comparisons Matrix — DECK / divider',
+    title: 'Pokémon Card Tracker Comparisons Matrix | Pokémon TCG Studio',
     description: 'Feature comparison: DECK / divider vs Collectr, Pokellector, PriceCharting, Dex, TCG Collector, and Dragon Shield.',
     category: 'compare',
     priority: '0.85',
@@ -143,7 +151,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/socials',
-    title: 'Official Community, Socials & Verified Reviews — DECK / divider',
+    title: 'Official Community, Socials & Verified Reviews | Pokémon TCG Studio',
     description: 'Join our Discord, X, and YouTube communities. Read verified trainer reviews and collector testimonials.',
     category: 'core',
     priority: '0.85',
@@ -151,7 +159,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/about',
-    title: 'About DECK / divider — Architecture & Philosophy',
+    title: 'About DECK / divider — Pokémon TCG Studio Architecture',
     description: 'Learn about our offline-first local-storage engine, client-side encryption, and verified TCGplayer price sync.',
     category: 'core',
     priority: '0.60',
@@ -159,7 +167,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/founder',
-    title: 'Meet the Founder: Gurutva Murdia — DECK / divider Story',
+    title: 'Meet the Founder: Gurutva Murdia | DECK / divider Story',
     description: 'The story behind DECK / divider: Solo engineered by lifelong Pokémon collector Gurutva Murdia to build the fastest, ad-free card and deck management platform.',
     category: 'core',
     priority: '0.75',
@@ -167,7 +175,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/data-methodology',
-    title: 'Data & Valuation Methodology — DECK / divider',
+    title: 'Data & Valuation Methodology | DECK / divider Pokémon TCG Studio',
     description: 'Comprehensive methodology breakdown for 218 catalogued sets, daily TCGplayer & eBay market pricing, condition formulas, and 2026 tournament legality rules.',
     category: 'core',
     priority: '0.80',
@@ -175,7 +183,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/how-it-works',
-    title: 'How DECK / divider Works — Features & Guide',
+    title: 'How DECK / divider Works — Features & Guide | Pokémon TCG Studio',
     description: 'Step-by-step walkthrough of collection tracking, 60-card deck building, PSA slab logging, and backup synchronization.',
     category: 'core',
     priority: '0.70',
@@ -183,7 +191,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/privacy',
-    title: 'Privacy Policy — DECK / divider',
+    title: 'Privacy Policy | DECK / divider Pokémon TCG Studio',
     description: 'How your collection records, price basis, and authentication credentials are encrypted and protected.',
     category: 'legal',
     priority: '0.50',
@@ -191,7 +199,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/terms',
-    title: 'Terms of Service — DECK / divider',
+    title: 'Terms of Service | DECK / divider Pokémon TCG Studio',
     description: 'Usage policies, subscription terms, and terms of service for DECK / divider.',
     category: 'legal',
     priority: '0.50',
@@ -199,7 +207,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/security',
-    title: 'Security Architecture & Encryption Standards — DECK / divider',
+    title: 'Security Architecture & Encryption Standards | Pokémon TCG Studio',
     description: 'Zero-knowledge client-side encryption, RFC 9116 security policies, and vulnerability disclosure.',
     category: 'legal',
     priority: '0.50',
@@ -207,7 +215,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/contact',
-    title: 'Contact Support & Feedback — DECK / divider',
+    title: 'Contact Support & Feedback | DECK / divider Pokémon TCG Studio',
     description: 'Get support from the DECK / divider engineering team or request new expansion set syncs.',
     category: 'core',
     priority: '0.50',
@@ -215,7 +223,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/faq',
-    title: 'Frequently Asked Questions (FAQ) — DECK / divider',
+    title: 'Frequently Asked Questions (FAQ) | DECK / divider Pokémon TCG Studio',
     description: 'Common questions regarding pricing, offline mode, PSA slab tracking, PTCGL export, and data privacy.',
     category: 'core',
     priority: '0.60',
@@ -223,7 +231,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/changelog',
-    title: 'Platform Changelog & Release Notes — DECK / divider',
+    title: 'Platform Changelog & Release Notes | Pokémon TCG Studio',
     description: 'Recent feature releases, expansion catalog updates, and engine optimizations.',
     category: 'core',
     priority: '0.80',

@@ -1,177 +1,150 @@
-# Technical Remediation Plan: Legality Accuracy, Legal Policies & SEO Architecture
+# Complete Traffic Growth & User Acquisition Engine
 
-A unified engineering specification to resolve tournament legality inaccuracies, export discrepancies, privacy/terms gaps, encryption claim inconsistencies, robots.txt crawler misconfigurations, circular sitemap structures, and conflicting cross-page claims across **DECK / divider**.
+## Executive Diagnosis: Why DECK / divider Lacks Substantial Traffic
 
----
+Based on deep web research into the competitive landscape (Collectr, TCG Collector, Pokellector, PriceCharting, Dex, Limitless TCG) and an exhaustive audit of DECK / divider's existing digital footprint, five structural bottlenecks currently choke inbound traffic:
 
-## User Review & Critical Decisions
-
-> [!IMPORTANT]
-> The following strategic decisions were confirmed during the planning clarification phase and govern this implementation plan:
-
-- **Confirmed Decision 1 (Deck Archetype Tiers)**: Retain competitive Tier classifications (e.g., Tier 1, Tier 1.5, Tier 2) on deck pages, but attribute each tier with an explicit date stamp and community meta source: `Tier 1 (Limitless TCG · 2026 Meta)`.
-- **Confirmed Decision 2 (AI Search Crawlers in robots.txt)**: Allow major AI search and discovery crawlers (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`) to crawl public pages for organic indexation and AI overview citation, while strictly disallowing private and administrative routes (`/app/`, `/dashboard/`, `/admin/`, `/auth`).
-- **Confirmed Decision 3 (Encryption Claims Standardization)**: Standardize all security copy to clearly delineate the two distinct security layers: **Provider-managed AES-256 encryption at rest** across all tiers (via Google Cloud / Firebase), and **Optional client-side AES-GCM 256-bit passphrase encryption** for Pro exported vault backups where passphrases are never sent to or recoverable by DECK / divider.
-
----
-
-## 1. Overview & Core Concept
-
-**DECK / divider** is an ad-free web platform for competitive Pokémon TCG players and collectors. This update resolves critical compliance, algorithmic SEO, and legal shortcomings:
-- **Legality & Tournament Engine**: Enforce Play! Pokémon 2026 Standard regulation marks (**Marks H, I, J**; G rotated April 10, 2026). Display a per-card regulation mark and "Legal via Reprint" indicator with parenthetical H+ printings, dated rotation stamps, and aligned PTCG Live export strings.
-- **Privacy & Terms Overhaul**: Upgrade privacy and terms policies to full GDPR, UK GDPR, and California CCPA/CPRA compliance with named data controller, retention limits, deletion rights, third-party sub-processors, children's protections (13+), and clear billing/refund rules.
-- **Technical SEO & Crawlers**: Overhaul `robots.txt` under RFC 9309 rules, enable `/api/og/` dynamic preview image indexing for social bots, eliminate circular sitemap indexes, standardize trailing-slash redirects, and feed every page from a single configuration truth module.
+1. **The 99.9% Programmatic Indexation Void**:
+   - Competitors generate 75%–85% of their organic Google search volume through long-tail single-card queries (e.g. *"umbreon vmax alt art 215/203 price"*, *"charizard ex obsidian flames sir value"*, *"pikachu with grey felt hat promo psa 10"*).
+   - While DECK / divider has catalog data for 18,400+ cards, its current sitemaps list only **4 single cards** (`public/sitemap-cards.xml` has only `base1-4`, `sv03pt5-199`, `sv08-252`, `swsh7-215`). The entire site exposes fewer than 280 total URLs to Google. Search engines simply do not know the app contains 18,400+ cards.
+2. **Missing Viral Sharing Weapon (The Collector Brag Loop)**:
+   - Collectors and competitive players do not share homepages; they share their **cards, binders, and tournament decks** on Reddit (`r/PokemonTCG` with 3.5M members, `r/pkmntcg`, `r/PokemonCardValue`), Discord servers, and X/Twitter.
+   - Currently, users cannot generate a dedicated public link for their **interactive 9-pocket digital binder** or create rich visual snapshot cards to showcase their master set progress.
+3. **High Switching Costs (The "I Already Have 500 Cards in Collectr" Barrier)**:
+   - Pokémon collectors frequently state on Reddit that re-entering hundreds of cards prevents them from adopting new platforms. Without a prominent 1-click import for Collectr, TCGplayer, and standard spreadsheet CSVs, visitor conversion drops sharply.
+4. **New Domain Sandbox & Backlink Deficit**:
+   - Google search returns zero indexation records for `site:deckdivider.app`. As an un-established domain, Google will not prioritize crawl budgets without an RFC-compliant chunked sitemap index, rapid edge SSR response times, and authoritative internal linking.
+5. **Brand vs Accessory Search Confusion** *(Previously resolved in code, now needs programmatic scaling)*:
+   - Now that `DECK / divider — Pokémon TCG Studio` is established, search engines need thousands of indexable card landing pages to firmly anchor the entity as digital software rather than plastic divider boxes.
 
 ---
 
-## 2. Technical Architecture & System Flow
+## Strategic Roadmap: The 4-Pillar Traffic Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        SINGLE SOURCE OF TRUTH PLATFORM ARCHITECTURE                     │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-
-    ┌─────────────────────────┐          ┌─────────────────────────┐
-    │  src/config/            │          │  src/config/            │
-    │  platformTruth.ts       │          │  legalityRules.ts       │
-    │  • 148+ Expansions      │          │  • Standard: Marks H,I,J│
-    │  • 15+ Currencies       │          │  • Rotation: 2026-04-10 │
-    │  • Daily TCGplayer Sync │          │  • Legal Reprints Index │
-    │  • Tier Limits & Perks  │          │  • Banned Cards List    │
-    └───────────┬─────────────┘          └───────────┬─────────────┘
-                │                                    │
-                ├─────────────────┬──────────────────┤
-                ▼                 ▼                  ▼
-      ┌──────────────────┐ ┌───────────────┐ ┌──────────────────┐
-      │ Client UI Views  │ │ SSR Renderer  │ │ Footprint Engine │
-      │ • LandingPage    │ │ • ssrRenderer │ │ • robots.txt     │
-      │ • About / FAQ    │ │ • Deck Pages  │ │ • sitemap.xml    │
-      │ • FormatLegality │ │ • Set Pages   │ │ • llms.txt       │
-      │ • Privacy/Terms  │ │ • Meta Tags   │ │ • 301 Redirects  │
-      └──────────────────┘ └───────────────┘ └──────────────────┘
+                               ┌──────────────────────────────────────────────────────────┐
+                               │       DECK / divider Traffic Engine                      │
+                               └────────────────────────────┬─────────────────────────────┘
+                                                            │
+         ┌───────────────────────────┬──────────────────────┴───────┬───────────────────────────┐
+         ▼                           ▼                              ▼                           ▼
+┌──────────────────┐       ┌──────────────────┐           ┌──────────────────┐        ┌──────────────────┐
+│  Pillar 1: SEO   │       │ Pillar 2: Viral  │           │ Pillar 3: Switch │        │ Pillar 4: Tools  │
+│ 18,400+ Card SSR │       │ Shareable Web    │           │ 1-Click Collectr │        │ PSA Calc & Deck  │
+│ & Chunked Sitemap│       │ Binder Showcase  │           │ & TCGplayer CSV  │        │ Legality Checkers│
+└──────────────────┘       └──────────────────┘           └──────────────────┘        └──────────────────┘
 ```
 
 ---
 
-## 3. Detailed Engineering Workstreams
+## Workstream 1: Complete Programmatic SEO & Card Indexation Engine (All 18,400+ Cards)
 
-### Workstream 1: Single Source of Truth & Standard Legality Accuracy
-1. **Central Configuration Modules (`src/config/platformTruth.ts` & `src/config/legalityRules.ts`)**:
-   - Define exact Standard regulation marks: `STANDARD_REGULATION_MARKS = ['H', 'I', 'J']`.
-   - Define rotation effective date: `STANDARD_ROTATION_DATE = 'April 10, 2026'`.
-   - Define canonical reprint dictionary for G-mark cards with legal H+ prints (e.g., *Ultra Ball (SVI)*, *Nest Ball (SVI)*, *Super Rod (PAL)*, *Arven (SVI)*, *Rare Candy (SVI)*, *Professor's Research (SVI)*, *Buddy-Buddy Poffin (TEF)*, *Counter Catcher (PAR)*, *Iono (PAL)*, *Boss's Orders (PAL)*).
-   - Define canonical platform figures: `148+` expansions, `15+` currencies, `Daily sync` from verified TCGplayer market comps, tier limits (Free: 3 wishlists; Stack: 10 wishlists; Deck: unlimited wishlists + CSV; Pro: unlimited + client-encrypted vault snapshots).
-2. **Standardize All Copy**:
-   - Update `/about`, `/faq`, `/methodology`, `/changelog`, `llms.txt`, and `llms-keywords.txt` to strictly reference Marks H, I, J.
-   - In `/format/standard`, prominently render:
-     - Active Regulation Marks: **H, I, J**.
-     - Status: `Standard Format (2026–2027 Season) · Effective April 10, 2026`.
-     - Rule explanation: G-mark prints remain legal only if an identical-name card exists with Regulation Mark H or later.
-     - Official Play! Pokémon Banned Cards list.
-3. **Deck Page Tournament Accuracy (`/deck/:slug` & `tournamentDecks.ts`)**:
-   - Update every card row in the deck table to display:
-     - Card Name, Set, Number, Quantity, Category.
-     - **Regulation Mark Badge** (e.g. `Mark H`, `Mark I`, `Mark G`).
-     - **Reprint Legality Pill / Text**: For Mark G cards with legal H+ prints, display `Legal via H+ Reprint (SVI/TEF/PAL)` with verified status.
-   - Source Tier labels: `Tier 1 (Limitless TCG · 2026 Meta)` or `Expanded Format (Rotated from Standard)`.
-   - Update `llms-keywords.txt` and homepage archetype strip:
-     - Change Regidrago VSTAR and Lugia VSTAR entries to explicit `Expanded Format Archetype (Rotated from Standard)`.
-     - Ensure all homepage archetypes showcase 2026 Standard legal builds (*Charizard ex, Gardevoir ex, Dragapult ex, Miraidon ex, Raging Bolt ex, Gholdengo ex, Roaring Moon ex, Terapagos ex*).
-4. **PTCG Live Export Bug Resolution**:
-   - Align Gardevoir ex card set codes in table and export string:
-     - *Buddy-Buddy Poffin*: `TEF 144` in both table and export block.
-     - *Super Rod*: `PAL 188` in both table and export block.
-     - *Unfair Stamp*: `TWM 165` in both table and export block.
-     - *Arven*: `SVI 166` in both table and export block.
-   - Verify export strings adhere to official PTCGL format: `4 Buddy-Buddy Poffin TEF 144`.
+### 1.1 Scalable Chunked Sitemap Architecture
+Google enforces a hard ceiling of 50,000 URLs or 50MB per sitemap file. For 18,400+ cards, we will construct an automated sitemap index with paginated card sitemaps:
+- `public/sitemap-index.xml`: Master sitemap referencing:
+  - `sitemap-core.xml` (Homepage, pricing, formats, tools, about)
+  - `sitemap-sets.xml` (All 218 expansion sets and checklist hubs)
+  - `sitemap-decks.xml` (Tournament meta archetypes)
+  - `sitemap-cards-1.xml` to `sitemap-cards-5.xml` (All 18,400+ cards divided into clean ~4,000-card segments with canonical `<loc>`, `<lastmod>`, `<changefreq>daily</changefreq>`, and `<priority>0.85</priority>`).
+- Update `public/robots.txt` to declare the primary `sitemap-index.xml`.
 
----
+### 1.2 Dedicated Crawler-Ready SSR Card Landing Pages (`/card/:cardId`)
+Enhance `server/ssrRenderer.ts` to server-render every single Pokémon card URL with:
+- **Exact High-Intent Title Pattern**:
+  - Pattern: `[Card Name] #[Number] ([Set Name]) Card Price & Slabs | DECK / divider`
+  - Example: `Charizard ex #199 (151) Card Price & Slabs | DECK / divider` (56 chars, strictly 50–60 chars).
+- **Compelling Meta Description**:
+  - Example: `Current market price, PSA 10 slab value, reverse holo checklist, and format legality for Charizard ex #199 from Pokémon 151 on DECK / divider.` (148 chars).
+- **Schema.org Structured Data**:
+  - `@type: ["Product", "IndividualProduct"]` with `offers` (TCGplayer Market, Low, Mid), `sku: card.id`, and `brand: "Pokémon"`.
+  - `@type: "BreadcrumbList"` linking `Home > Sets > [Set Name] > [Card Name]`.
+- **Pre-rendered HTML Body**:
+  - High-resolution card artwork with semantic `alt` attributes.
+  - Live TCGplayer market prices, foil variations (Normal, Reverse Holo, Masterball), estimated PSA 10 / BGS 9.5 values, regulation mark legality badge, and attacks/abilities table.
+  - Adjacent related cards from the same set and 1-click CTA: *"Add to Digital Binder"* or *"Add to 60-Card Deck"*.
 
-### Workstream 2: Privacy Policy & Terms of Service Overhaul
-1. **Privacy Policy (`src/views/public/PrivacyPolicyView.tsx` & SSR in `server/ssrRenderer.ts`)**:
-   - **Data Controller & Contact**: DECK / divider Ltd., privacy team contact at `privacy@deckdivider.app`.
-   - **Data Retention**: Account collection data retained for the active account lifetime plus 30 days post-deletion; local cache data cleared on demand.
-   - **User Rights (GDPR & CCPA/CPRA)**: Explicit Right of Access, Rectification, Erasure (Right to be Forgotten), Restriction of Processing, Data Portability (one-click JSON/CSV export), and California "Do Not Sell or Share My Personal Information" notices.
-   - **Cookies & Analytics**: Disclose session storage, local storage authentication tokens, PayPal checkout session cookies, and Microsoft Clarity telemetry with user input and PII masking.
-   - **International Transfers**: Cloud infrastructure hosted in US regions under Standard Contractual Clauses (SCCs).
-   - **Named Third-Party Processors**:
-     - *Google LLC / Firebase* (Authentication & Firestore Database, USA)
-     - *Cloudflare, Inc.* (DNS & Edge Security, USA)
-     - *PayPal Holdings, Inc.* (Payment processing & subscription billing, USA)
-   - **Children's Privacy**: Explicit 13+ age requirement (COPPA / GDPR Art. 8); policy for parental deletion requests.
-   - **Public Portfolios & Shared Links**: Clear disclosure that sharing a portfolio URL publishes that specific binder/deck list to a public URL crawlable by search engines.
-2. **Terms of Service (`src/views/public/TermsOfServiceView.tsx` & SSR in `server/ssrRenderer.ts`)**:
-   - **Billing, Cancellation & Refunds**: Subscriptions (Monthly $4/$8/$14 or Annual) renew automatically until canceled in Account Settings or PayPal. 14-day refund policy for initial payments upon request.
-   - **Acceptable Use Policy**: Prohibits automated scrapers, denial-of-service attempts, reverse engineering, and abusive API calls.
-   - **Termination & Governing Law**: Account termination rights for policy breaches; governing law and jurisdiction specified.
-   - **Minimum Age**: 13 years of age or older required for account registration.
-   - **User Content License**: Users retain ownership of deck lists and collection records; grant non-exclusive license to DECK / divider to host and display shared showcases.
+### 1.3 Bidirectional Internal Cross-Linking Mesh
+Search crawlers rank pages by internal link depth. We will embed automated interlink grids:
+- On each set page (`/set/:setId`), add full crawlable links to all cards in the set.
+- On each card page, add links to the parent set checklist, related cards of the same Pokémon species, and competitive decks featuring the card.
 
 ---
 
-### Workstream 3: Encryption & Security Messaging Alignment
-1. **Standardized Three-Pillar Security Framework**:
-   - **Pillar 1 (Data in Transit)**: Enforced TLS 1.3 / HTTPS encryption for all client-server communications.
-   - **Pillar 2 (Cloud Data at Rest - Free & Pro)**: Enterprise AES-256 encryption at rest managed by Google Cloud / Firebase infrastructure. Google sign-in and password resets manage identity authentication.
-   - **Pillar 3 (Pro Client-Side Encrypted Vault Snapshots)**: Optional user-passphrase encrypted backup export. The file is encrypted entirely in the browser using the Web Crypto API (AES-GCM 256-bit) before download. The passphrase is never transmitted to or stored by DECK / divider; lost passphrases cannot be recovered by support.
-2. **Align Copy Across All Pages**:
-   - Update `/security`, `/pricing`, `/faq`, `/about`, `LandingPageView.tsx`, and `server/ssrRenderer.ts` to strictly reflect this 3-pillar truth.
+## Workstream 2: Public Shareable Web Binder & Interactive Card Showcase
+
+The user selected: **"Public shareable web binder with interactive card inspection"**. This is the single strongest organic growth loop in the card collecting hobby.
+
+### 2.1 The Digital 9-Pocket Web Binder (`/binder/:username` or `/portfolio/:id/binder`)
+- **Visual Presentation**:
+  - Render an authentic 9-pocket black archival binder grid ($3 \times 3$ grid per page) with realistic tactile page turns and flip animations.
+  - High-res card cards with authentic holographic foil gleam, grading company certification slabs (PSA, BGS, CGC badges), and reverse holo/masterball foil indicators.
+- **Interactive Inspection Modal**:
+  - Clicking any card opens a high-contrast inspection drawer displaying:
+    - Card number, rarity, artist, release date, and regulation mark.
+    - Live TCGplayer market comp, purchase cost basis, and calculated gain/loss percentage.
+    - Slab cert verification lookup linking directly to PSA/BGS/CGC databases.
+- **Master Set Completion Ring**:
+  - For collectors building specific sets (e.g., 151, Crown Zenith, Surging Sparks, Prismatic Evolutions), render an interactive radial completion gauge (e.g. `162 / 165 Cards · 98.2% Complete · 3 Cards Missing`).
+- **Missing Card Want-List Mode**:
+  - One-click toggle transforms the binder into a **"Missing Cards Want-List"** that collectors can share in trade communities or card shows: *"Here are the 3 cards I need to finish my 151 binder!"*
+
+### 2.2 Viral Social Share & Brag Cards
+- **1-Click Share Button**:
+  - Direct share to Reddit, Discord, X/Twitter, and WhatsApp with pre-formatted snippets:
+    - Reddit Markdown: `[DECK / divider] My 151 Master Set (98.2% Complete) — Value: $1,420 USD [Interactive Binder Link]`
+    - Discord Embed: OpenGraph card featuring the collector's top 3 cards and overall portfolio badge.
+- **Downloadable Social Card Generator**:
+  - Client-side Canvas rendering that outputs a crisp $1200 \times 630\text{px}$ image of the user's binder showcase or graded slab vault with the branded watermark `deckdivider.app`.
 
 ---
 
-### Workstream 4: robots.txt & Social Preview Crawler Architecture
-1. **RFC 9309 Compliant Structure**:
-   - Define clean, non-conflicting user-agent groups:
-     - `User-agent: *`:
-       - `Allow: /`
-       - `Allow: /api/og/` (explicitly unblock dynamic social card generation)
-       - `Disallow: /api/`
-       - `Disallow: /app/`
-       - `Disallow: /dashboard/`
-       - `Disallow: /admin/`
-       - `Disallow: /auth`
-     - Social Preview Bots (`Twitterbot`, `LinkedInBot`, `Slackbot`, `facebookexternalhit`, `Discordbot`):
-       - `Allow: /`
-       - `Allow: /api/og/`
-     - AI Search Crawlers (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`, `anthropic-ai`):
-       - `Allow: /`
-       - `Disallow: /api/`
-       - `Disallow: /app/`
-       - `Disallow: /admin/`
-       - `Disallow: /auth`
-2. **Sitemap Index Directives**:
-   - Reference all sub-sitemaps in `robots.txt`:
-     - `Sitemap: https://deckdivider.app/sitemap.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-core.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-sets.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-decks.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-tools.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-compare.xml`
-     - `Sitemap: https://deckdivider.app/sitemap-portfolios.xml`
+## Workstream 3: Frictionless "Switch from Competitors" 1-Click Importer
+
+To solve the high switching cost for active collectors:
+
+### 3.1 Universal Multi-Platform CSV Importer
+- Support 1-click drag-and-drop import for:
+  - **Collectr CSV**: Map card name, set, quantity, condition, and purchase price directly.
+  - **TCGplayer App Export**: Parse standard TCGplayer collection spreadsheets.
+  - **Dragon Shield / Pokellector CSV**: Automated column matching and ID normalization.
+  - **Plain Text Card Lists**: Paste a list of card names and quantities for automated catalog matching.
+- **Instant Switcher Landing Page & Banner**:
+  - Prominent banner on `/`, `/cards`, and `/app`: *"Import your collection from Collectr or TCGplayer in 30 seconds — free, ad-free, unlimited local storage."*
 
 ---
 
-### Workstream 5: Sitemap Index Restructuring & Trailing Slash Redirection
-1. **Proper `<sitemapindex>` Root (`/sitemap.xml`)**:
-   - Remove circular `<url>` entries from `/sitemap.xml`.
-   - Structure `/sitemap.xml` as a true `<sitemapindex>` containing `<sitemap>` elements pointing to sub-sitemaps.
-   - Retain sub-sitemaps as valid `<urlset>` feeds with genuine `<lastmod>` timestamps based on set release dates or stable build versions.
-2. **Set ID Lowercase Normalization**:
-   - Ensure sitemap URLs use lowercase normalized paths (`/set/a1`, `/set/p-a`, `/set/a2a`) to match canonical tags.
-3. **Strict 301 Trailing-Slash Normalization**:
-   - In `server.ts`, enforce a global middleware: any path ending in `/` (length > 1) 301-redirects to its non-trailing slash equivalent (e.g. `/pricing/` $\rightarrow$ `/pricing`).
-   - Sync all internal navigation links, canonical tags, and sitemaps to non-trailing slash URLs.
+## Workstream 4: Viral Community Growth & Utility Tools Amplification
+
+### 4.1 High-Intent Interactive Tools as Inbound Lead Magnets
+- **PSA/BGS Grade ROI Calculator (`/tools/psa-grade-calculator`)**:
+  - Add a **"Share Grading Report"** CTA that lets users post their Expected Value (EV) calculation directly to Reddit `r/PokemonCardValue` or Discord: *"Should I grade my Charizard? Here's the DECK / divider EV breakdown: 72% profit margin at PSA 9+."*
+- **Standard & Expanded Deck Legality Checker (`/tools/deck-legality-checker`)**:
+  - Enable instant paste of any PTCGL export string. The tool checks regulation marks (H, I, J; G rotated) and generates a one-click shareable roster link.
+
+### 4.2 Structured Data & Entity Grounding
+- Ensure all pages use `font-variant-numeric: tabular-nums` for prices and percentages.
+- Avoid mechanical code comment prefixes or generic buzzwords, upholding the Universal Frontend Design Constitution.
 
 ---
 
-## 4. Verification & Validation Protocol
+## Verification & Validation Plan
 
-1. **Format Legality & Export Verification**:
-   - Verify Gardevoir ex, Charizard ex, and Dragapult ex deck pages render regulation marks, reprint notices, and "as of April 10, 2026" stamps.
-   - Test PTCGL export string formatting: copy deck text and verify valid syntax (`4 Buddy-Buddy Poffin TEF 144`).
-2. **SEO & Crawler Validation**:
-   - Test `curl -s http://localhost:3000/robots.txt` and verify RFC 9309 syntax, `/api/og/` allowance, and lack of duplicate rules.
-   - Test `curl -s http://localhost:3000/sitemap.xml` and verify valid `<sitemapindex>` root without circular references.
-   - Test `curl -I http://localhost:3000/pricing/` and verify `HTTP 301 Moved Permanently` to `/pricing`.
-3. **Build & Linter Integrity**:
-   - Execute `compile_applet` (`npm run build`) and `lint_applet` (`tsc --noEmit`) to verify 0 build and typing errors.
+### Automated Build & Code Quality
+1. `compile_applet`: Verify clean compilation with zero build errors.
+2. `lint_applet`: Verify strict TypeScript type checking (`tsc --noEmit`).
+
+### SEO & Indexation Verification
+3. **Sitemap Index Audit**: Verify `public/sitemap-index.xml` correctly references all segmented sitemaps and accounts for all 18,400+ cards.
+4. **Card SSR Verification**: Test curl requests against sample cards from different eras:
+   - Modern chase card: `/card/sv03pt5-199` (Charizard ex 151)
+   - Vintage staple: `/card/base1-4` (Base Set Charizard)
+   - Illustration Rare: `/card/sv08-252` (Surging Sparks Pikachu ex)
+   - Confirm `<title>`, `<meta name="description">`, `og:image`, and Schema.org `Product` JSON-LD are strictly populated.
+
+### User Experience & Viral Loop Verification
+5. **Interactive Binder Flow**:
+   - Create a sample collection, generate a public share link, and verify that guest users (incognito/unauthenticated) can browse 9-pocket pages, flip pages, and inspect cards without errors.
+6. **Import Flow**:
+   - Upload sample CSVs (Collectr and TCGplayer formats) to ensure 100% card match rates and zero data loss.
+7. **Mobile Responsiveness**:
+   - Verify 9-pocket binder scales gracefully to 2-column or 3-column layouts on touch devices with smooth touch swiping.

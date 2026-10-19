@@ -2,38 +2,54 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://deckdivider.app/sitemap-core.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-cards.xml</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-17</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://deckdivider.app/sitemap-sets.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-tools.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-formats.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-changelog.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-compare.xml</loc>
-    <lastmod>2026-10-12</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://deckdivider.app/sitemap-portfolios.xml</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-17</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://deckdivider.app/sitemap-decks.xml</loc>
-    <lastmod>2026-10-13</lastmod>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-tools.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-formats.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-compare.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-portfolios.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-changelog.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-cards-1.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-cards-2.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-cards-3.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-cards-4.xml</loc>
+    <lastmod>2026-10-17</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://deckdivider.app/sitemap-cards-5.xml</loc>
+    <lastmod>2026-10-17</lastmod>
   </sitemap>
 </sitemapindex>

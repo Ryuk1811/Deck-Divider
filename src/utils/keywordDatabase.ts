@@ -254,7 +254,7 @@ export function generateDeckSeoMetadata(deck: Deck | null, deckId?: string) {
   const targetId = deck.id || deckId || 'deck';
   const canonicalPath = `/deck/${targetId}`;
   const canonical = `https://deckdivider.app${canonicalPath}`;
-  const title = `${deckName} — Pokémon TCG 60-Card Deck Roster`;
+  const title = `${deckName} — Pokémon TCG Deck | DECK / divider`;
   const description = `View ${deckName} (${cardCount} cards) with real-time TCGplayer deck pricing, full card counts, tournament legality checks, and 1-click PTCGL export.`;
 
   return {

@@ -61,8 +61,6 @@ interface CollectionViewProps {
   onAddCardToList?: (listId: string, cardId: string) => void;
   onNavigateToSearch?: () => void;
   onNavigateToTab?: (tab: ActiveTab) => void;
-  onLoadShowcase?: () => void;
-  onAddSampleDeck?: () => void;
   onExportCSV?: () => void;
 }
 
@@ -111,8 +109,6 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onAddCardToList,
   onNavigateToSearch,
   onNavigateToTab,
-  onLoadShowcase,
-  onAddSampleDeck,
   onExportCSV,
 }) => {
   const isSuperUser = userEmail?.toLowerCase() === 'deckdivider@outlook.com' || userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
@@ -768,16 +764,6 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               >
                 <Search className="w-4 h-4" />
                 <span>Search Card Catalog</span>
-              </button>
-            )}
-            {onLoadShowcase && (
-              <button
-                type="button"
-                onClick={onLoadShowcase}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer border border-[#E2E8F0]"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
-                <span>Load Sample Collection</span>
               </button>
             )}
           </div>

@@ -14,7 +14,12 @@ import {
   TrendingUp,
   Percent,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  Share2,
+  Copy,
+  Check,
+  FileText,
+  Twitter,
 } from 'lucide-react';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
@@ -32,7 +37,7 @@ export const HighIntentToolsView: React.FC = () => {
   useEffect(() => {
     if (currentTool === 'deck-legality-checker') {
       updatePageSeo({
-        title: 'Pokémon TCG Regulation Mark & Standard Legality Checker | DECK / divider',
+        title: 'Standard & Expanded 60-Card Deck Checker | Pokémon TCG Studio',
         description: 'Verify Pokémon TCG regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with official deck construction rules.',
         canonicalPath: '/tools/deck-legality-checker',
         jsonLd: {
@@ -93,7 +98,7 @@ export const HighIntentToolsView: React.FC = () => {
       });
     } else {
       updatePageSeo({
-        title: 'Pokémon Card Grading ROI & Value Calculator (PSA/BGS/CGC) | DECK / divider',
+        title: 'PSA & BGS Slab Grade Calculator | Pokémon TCG Studio',
         description: 'Calculate expected value (EV), grading fees, and net profit before submitting cards to PSA, BGS, or CGC. Live grade multipliers and probability simulator.',
         canonicalPath: '/tools/psa-grade-calculator',
         jsonLd: {
@@ -165,9 +170,16 @@ export const HighIntentToolsView: React.FC = () => {
   const [psa9Value, setPsa9Value] = useState<number>(55);
   const [psa8Value, setPsa8Value] = useState<number>(35);
 
-  // Deck Legality State
   const [selectedMark, setSelectedMark] = useState<string>('H');
   const [cardSearchQuery, setCardSearchQuery] = useState<string>('');
+  const [reportCopied, setReportCopied] = useState<string | null>(null);
+  const [ptcglText, setPtcglText] = useState<string>('');
+  const [validatedDeckResult, setValidatedDeckResult] = useState<{
+    totalCards: number;
+    legalCardsCount: number;
+    rotatedCardsCount: number;
+    cards: Array<{ name: string; set: string; number: string; qty: number; isLegal: boolean; mark: string }>;
+  } | null>(null);
 
   // Calculations
   const totalCost = rawPrice + gradingFee + shippingCost;
@@ -181,6 +193,74 @@ export const HighIntentToolsView: React.FC = () => {
   const isWorthIt = netProfit > 15;
 
   const isDeckChecker = currentTool === 'deck-legality-checker';
+
+  const handleCopyReport = async (text: string, type: string) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setReportCopied(type);
+      setTimeout(() => setReportCopied(null), 2500);
+    } catch (e) {
+      console.warn('Copy failed:', e);
+    }
+  };
+
+  const handleValidatePtcglDeck = () => {
+    if (!ptcglText.trim()) return;
+    const lines = ptcglText
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('#') && !l.toLowerCase().includes('pokémon:') && !l.toLowerCase().includes('trainer:') && !l.toLowerCase().includes('energy:'));
+
+    let totalCards = 0;
+    let legalCardsCount = 0;
+    let rotatedCardsCount = 0;
+    const cards: Array<{ name: string; set: string; number: string; qty: number; isLegal: boolean; mark: string }> = [];
+
+    const rotatedSets = ['BST', 'CRE', 'EVS', 'FST', 'BRS', 'ASR', 'PGO', 'LOR', 'SIT', 'CRZ', 'SHF', 'DAA', 'VIV', 'CPA'];
+
+    for (const line of lines) {
+      const match = line.match(/^(\d+)\s+(.+?)(?:\s+([A-Za-z0-9]+)\s+(\d+))?$/);
+      if (match) {
+        const qty = parseInt(match[1], 10) || 1;
+        const name = match[2].trim();
+        const setCode = (match[3] || '').toUpperCase();
+        const number = match[4] || '';
+        totalCards += qty;
+
+        const isBasicEnergy = name.toLowerCase().includes('basic') && name.toLowerCase().includes('energy');
+        const isRotated = !isBasicEnergy && rotatedSets.includes(setCode);
+        const isLegal = isBasicEnergy || !isRotated;
+
+        if (isLegal) legalCardsCount += qty;
+        else rotatedCardsCount += qty;
+
+        cards.push({
+          name,
+          set: setCode || 'TCG',
+          number,
+          qty,
+          isLegal,
+          mark: isLegal ? 'Mark H/I/J' : 'Mark G/F/E (Rotated)',
+        });
+      }
+    }
+
+    setValidatedDeckResult({
+      totalCards,
+      legalCardsCount,
+      rotatedCardsCount,
+      cards,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
@@ -480,6 +560,44 @@ export const HighIntentToolsView: React.FC = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* Share Grading Report Section */}
+                      <div className="mt-4 p-3 bg-white border border-[#CBD5E1] rounded-xl space-y-2">
+                        <div className="flex items-center justify-between text-xs font-mono font-bold text-[#0F172A]">
+                          <span className="flex items-center gap-1.5 text-[#DC143C]">
+                            <Share2 className="w-3.5 h-3.5" /> Share Report
+                          </span>
+                          <span className="text-[10px] text-[#64748B]">r/PokemonCardValue &amp; Discord</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopyReport(
+                                `**[DECK / divider PSA Calculator] Card Analysis**\n• Raw NM Price: $${rawPrice}\n• Grading + Shipping Fees: $${gradingFee + shippingCost}\n• Projected Expected Value (EV): $${expectedValue.toFixed(2)}\n• Net ROI: ${netProfit >= 0 ? '+' : ''}$${netProfit.toFixed(2)} (${roiPercentage.toFixed(1)}%)\n• Verdict: ${isWorthIt ? 'Mathematically Favorable to Grade' : 'High Risk — Keep Raw'}\n\nCalculate yours at https://deckdivider.app/tools/psa-grade-calculator`,
+                                'reddit'
+                              )
+                            }
+                            className="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-colors"
+                          >
+                            {reportCopied === 'reddit' ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                            <span>{reportCopied === 'reddit' ? 'Copied Reddit' : 'Copy Reddit'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopyReport(
+                                `**✨ Pokémon Grading EV Breakdown**\nRaw: $${rawPrice} ➔ Expected Value: $${expectedValue.toFixed(2)} (${netProfit >= 0 ? '+' : ''}${roiPercentage.toFixed(1)}% ROI)\nVerdict: ${isWorthIt ? 'Favorable' : 'High Risk'}\nInspect at: https://deckdivider.app/tools/psa-grade-calculator`,
+                                'discord'
+                              )
+                            }
+                            className="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-colors"
+                          >
+                            {reportCopied === 'discord' ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                            <span>{reportCopied === 'discord' ? 'Copied Discord' : 'Copy Discord'}</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-[#E2E8F0] text-center">
@@ -656,6 +774,157 @@ export const HighIntentToolsView: React.FC = () => {
                     </Link>
                   </div>
                 </div>
+              </div>
+
+              {/* PTCGL Deck List Validator */}
+              <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 mb-10 shadow-xs space-y-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-bold text-[#0F172A] font-heading flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-[#DC143C]" />
+                      PTCGL Deck List Importer &amp; Rotation Validator
+                    </h3>
+                    <p className="text-xs text-[#64748B] mt-1">
+                      Paste your Pokémon TCG Live export string to inspect 2026 Standard legality, regulation marks, and card count restrictions.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPtcglText(`Pokémon: 8
+4 Charmander MEW 4
+1 Charmeleon MEW 5
+3 Charizard ex MEW 199
+
+Trainer: 34
+4 Arven OBF 186
+4 Ultra Ball SVI 196
+2 Rare Candy SVI 191
+4 Buddy-Poffin TEF 144
+1 Prime Catcher TEF 157
+
+Energy: 10
+10 Basic Fire Energy SVE 2`)
+                    }
+                    className="text-xs font-mono font-bold text-[#DC143C] hover:underline"
+                  >
+                    Paste Sample Deck
+                  </button>
+                </div>
+
+                <textarea
+                  value={ptcglText}
+                  onChange={(e) => setPtcglText(e.target.value)}
+                  placeholder={`Paste Pokémon TCG Live export string here...\n\nExample:\nPokémon: 8\n4 Charmander MEW 4\n3 Charizard ex MEW 199\nTrainer: 28\n4 Arven OBF 186`}
+                  rows={6}
+                  className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl p-3 text-xs font-mono text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors"
+                />
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleValidatePtcglDeck}
+                    disabled={!ptcglText.trim()}
+                    className="px-5 py-2.5 bg-[#DC143C] hover:bg-[#B01030] disabled:bg-slate-300 text-white font-mono font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Validate 2026 Standard Legality
+                  </button>
+                </div>
+
+                {/* Validation Results Display */}
+                {validatedDeckResult && (
+                  <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-4 animate-in fade-in">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="p-3 bg-white border border-[#E2E8F0] rounded-lg">
+                        <div className="text-[10px] font-mono font-bold text-[#64748B] uppercase">Deck Size</div>
+                        <div
+                          className={`text-lg font-black font-mono ${
+                            validatedDeckResult.totalCards === 60 ? 'text-[#16A34A]' : 'text-[#DC143C]'
+                          }`}
+                        >
+                          {validatedDeckResult.totalCards} / 60 Cards
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white border border-[#E2E8F0] rounded-lg">
+                        <div className="text-[10px] font-mono font-bold text-[#64748B] uppercase">Standard Legal</div>
+                        <div className="text-lg font-black font-mono text-[#16A34A]">
+                          {validatedDeckResult.legalCardsCount} Cards
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white border border-[#E2E8F0] rounded-lg">
+                        <div className="text-[10px] font-mono font-bold text-[#64748B] uppercase">Rotated (Illegal)</div>
+                        <div
+                          className={`text-lg font-black font-mono ${
+                            validatedDeckResult.rotatedCardsCount > 0 ? 'text-[#DC143C]' : 'text-[#16A34A]'
+                          }`}
+                        >
+                          {validatedDeckResult.rotatedCardsCount} Cards
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status Verdict */}
+                    <div
+                      className={`p-3 rounded-lg border flex items-center justify-between text-xs font-mono font-bold ${
+                        validatedDeckResult.totalCards === 60 && validatedDeckResult.rotatedCardsCount === 0
+                          ? 'bg-[#F0FDF4] border-[#86EFAC] text-[#166534]'
+                          : 'bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {validatedDeckResult.totalCards === 60 && validatedDeckResult.rotatedCardsCount === 0 ? (
+                          <>
+                            <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
+                            100% TOURNAMENT LEGAL IN 2026 STANDARD
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="w-4 h-4 text-[#DC143C]" />
+                            NOT TOURNAMENT LEGAL ({validatedDeckResult.rotatedCardsCount} rotated cards, {validatedDeckResult.totalCards}/60 size)
+                          </>
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCopyReport(
+                            `[DECK / divider Tournament Validator] Deck Status: ${
+                              validatedDeckResult.totalCards === 60 && validatedDeckResult.rotatedCardsCount === 0
+                                ? '✅ 100% Legal in 2026 Standard (Marks H, I, J)'
+                                : `⚠️ NOT Legal (${validatedDeckResult.rotatedCardsCount} Rotated Cards, Total: ${validatedDeckResult.totalCards}/60)`
+                            }\nCheck regulation marks: https://deckdivider.app/tools/deck-legality-checker`,
+                            'deckReport'
+                          )
+                        }
+                        className="px-2.5 py-1 bg-white border border-slate-300 rounded text-[11px] hover:bg-slate-50 transition-colors flex items-center gap-1"
+                      >
+                        {reportCopied === 'deckReport' ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                        <span>{reportCopied === 'deckReport' ? 'Copied' : 'Copy Verification'}</span>
+                      </button>
+                    </div>
+
+                    {/* Card Breakdown List */}
+                    <div className="max-h-48 overflow-y-auto divide-y divide-[#E2E8F0] border border-[#E2E8F0] rounded-lg bg-white">
+                      {validatedDeckResult.cards.map((card, i) => (
+                        <div key={i} className="py-2 px-3 flex items-center justify-between text-xs font-mono">
+                          <div className="flex items-center gap-2 truncate">
+                            <span className="font-bold text-[#0F172A]">{card.qty}x</span>
+                            <span className="truncate">{card.name}</span>
+                            <span className="text-[#64748B] text-[11px]">({card.set} #{card.number})</span>
+                          </div>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                              card.isLegal ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+                            }`}
+                          >
+                            {card.mark}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Tournament Deck Construction Rules Table */}

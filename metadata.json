@@ -1,6 +1,6 @@
 {
   "name": "DECK / divider",
-  "description": "Track your Pokémon TCG collection value, check 2026 Standard legality, browse master set checklists across 218+ auto-provisioned sets, and manage PSA slabs with DECK / divider. Flexible subscription plans from $4/month.",
+  "description": "DECK / divider is an ad-free Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

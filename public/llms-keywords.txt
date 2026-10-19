@@ -3,11 +3,26 @@
 # Canonical: https://deckdivider.app/llms-keywords.txt
 # Generated: 2026-10-12T07:37:25.660Z
 
-> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
+> DECK / divider — Pokémon TCG Studio is an ad-free digital web application and tournament software studio for Pokémon Trading Card Game (TCG) collectors and competitors, NOT a physical plastic card divider or storage box accessory.
 
 ---
 
 ## 1. Core Semantic Keyword Clusters
+
+### Category: Brand Disambiguation & Digital Software Studio
+- **Description**: Digital web software disambiguation from physical plastic card dividers, deck box accessories, and generic storage trays.
+- **Primary Search Queries**:
+  - "DECK / divider Pokémon TCG studio"
+  - "Pokémon TCG binder tracker & deck builder"
+  - "DECK / divider Pokémon card tracker"
+  - "DeckDivider Pokémon"
+  - "digital Pokémon TCG deck builder"
+  - "Pokémon TCG binder tracker app"
+- **Secondary Terms**:
+  - "DECK divider digital card software"
+  - "DeckDivider online portfolio"
+  - "DeckDivider web application"
+- **Canonical App Endpoint**: [DECK / divider Pokémon TCG Studio](https://deckdivider.app/)
 
 ### Category: Expansion Sets & Master Binders
 - **Description**: Complete binder checklists, set card numbers, reverse holos, and secret illustration rare trackers for every Pokémon TCG expansion.

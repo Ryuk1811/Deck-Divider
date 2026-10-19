@@ -73,7 +73,7 @@ export const PublicInterlinkMesh: React.FC<PublicInterlinkMeshProps> = ({
       color: 'text-amber-600 bg-amber-50 border-amber-200/60 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-800/40',
       description: 'Objective feature matrices and curated collector software guides.',
       links: [
-        { path: '/compare', label: 'Competitor Comparison Index', badge: 'Verified' },
+        { path: '/compare', label: 'App Comparison Index', badge: 'Verified' },
         { path: '/compare/collectr', label: 'DECK/divider vs Collectr', badge: 'Matrix' },
         { path: '/compare/pricecharting', label: 'DECK/divider vs PriceCharting', badge: 'Matrix' },
         { path: '/best', label: 'Curated Buyer Guides & Software Picks', badge: '2026' },

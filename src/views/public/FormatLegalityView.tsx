@@ -19,7 +19,7 @@ export const FormatLegalityView: React.FC = () => {
   useEffect(() => {
     if (format) {
       updatePageSeo({
-        title: `${format.name} Rules & Regulation Mark Legality | DECK / divider`,
+        title: `${format.name} Rules & Regulation Mark Legality | Pokémon TCG Studio`,
         description: `Complete ${format.name} tournament rules, legal regulation marks, rotation schedule, and 60-card deck restrictions for Pokémon TCG competitive play.`,
         canonicalPath: `/format/${format.id}`,
         jsonLd: {

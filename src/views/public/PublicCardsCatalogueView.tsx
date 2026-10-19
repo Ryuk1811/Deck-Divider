@@ -237,7 +237,7 @@ export const PublicCardsCatalogueView: React.FC = () => {
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Pokémon Card Database — Search & Filter Every Card | DECK / divider"
+        title="Pokémon TCG Card Database & Price Tracker | DECK / divider"
         description="Comprehensive public catalogue of Pokémon Trading Card Game cards. Search and filter by name, energy type, rarity, set, HP, and attacks with high-resolution visual scans."
         canonicalPath="/cards"
         keywords={[
