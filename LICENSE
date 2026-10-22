@@ -1,0 +1,152 @@
+STRICT PROPRIETARY COMMERCIAL SOURCE-AVAILABLE LICENSE
+================================================================================
+SOFTWARE PRODUCT: DECK / divider (including web application, server components,
+data pipelines, markdown content negotiation engines, styling, and design systems)
+COPYRIGHT © 2026 DECK / divider. ALL RIGHTS RESERVED.
+================================================================================
+
+IMPORTANT — READ CAREFULLY BEFORE ACCESSING, VIEWING, COPYING, OR USING THIS
+SOURCE CODE REPOSITORY.
+
+This repository and its source code, documentation, graphics, data schemas,
+architectural designs, and build artifacts (collectively, the "Software") are the
+exclusive intellectual property and proprietary trade secrets of DECK / divider
+("Licensor", "We", "Us", or "Our").
+
+By accessing, cloning, viewing, downloading, or inspecting any portion of the
+Software, you ("You" or "Licensee") agree to be strictly bound by the terms and
+scrutinizing conditions of this Strict Proprietary Commercial Source-Available
+License (the "License"). If you do not agree to these terms, you must not access,
+clone, inspect, or retain any copies of this Software.
+
+--------------------------------------------------------------------------------
+1. GRANT OF LIMITED INSPECTION LICENSE
+--------------------------------------------------------------------------------
+Subject to the strict restrictions and conditions set forth herein, Licensor
+grants You a personal, non-exclusive, non-transferable, non-sublicensable,
+revocable, limited license solely to:
+
+  (a) View and inspect the human-readable source code for educational, security
+      audit, or personal technical evaluation purposes; and
+  (b) Compile and run a single, local, non-public instance of the Software
+      strictly on Your personal development workstation for private testing
+      and non-commercial code evaluation.
+
+NO OTHER RIGHTS OR LICENSES ARE GRANTED, EXPRESS OR IMPLIED, BY ESTOPPEL OR
+OTHERWISE.
+
+--------------------------------------------------------------------------------
+2. SCRUTINIZING COMMERCIAL & HOSTING PROHIBITIONS
+--------------------------------------------------------------------------------
+Under no circumstances may the Software, in whole or in part, in source, binary,
+or compiled form, be used for any commercial purpose or public deployment. You
+shall NOT, directly or indirectly:
+
+  (a) COMMERCIAL EXPLOITATION: Sell, rent, lease, license, sublicense, monetize,
+      distribute, assign, or financially exploit the Software, or charge any fee
+      or collect any revenue for access to, use of, or integration with the
+      Software.
+  (b) HOSTED SERVICE & SAAS CLONING: Host, deploy, run, or make available the
+      Software (or any modified or derived version thereof) as a public web
+      application, hosted service, Software-as-a-Service (SaaS), Platform-as-a-
+      Service (PaaS), application service provider (ASP), or internet accessible
+      endpoint, whether for profit, non-profit, or free public access.
+  (c) WHITE-LABELING & REBRANDING: Rebrand, repackage, fork, or redistribute the
+      Software under another product name, brand, domain, or organization.
+  (d) DERIVATIVE COMPETITOR CREATION: Create, develop, or assist in the creation
+      of any competing Pokémon Trading Card Game (TCG) collection tracking,
+      binder management, grading slab registry, or tournament deck builder
+      software that incorporates substantial portions of the Software's
+      architectural structure, proprietary UI components, or custom algorithms.
+
+--------------------------------------------------------------------------------
+3. ANTI-SCRAPING, AI TRAINING & SYNTHESIS RESTRICTIONS
+--------------------------------------------------------------------------------
+Licensor expressly prohibits the unauthorized ingestion and training of machine
+learning or artificial intelligence models on the Software's proprietary code:
+
+  (a) You shall NOT use, ingest, index, or parse any portion of the Software's
+      source code, internal schemas, holographic shader algorithms, or pricing
+      heuristics to train, fine-tune, evaluate, validate, or generate weights for
+      any commercial or proprietary artificial intelligence, large language
+      model (LLM), neural network, or synthetic code generation system without
+      express prior written authorization from Licensor.
+  (b) Standard public search engine indexation and public AI grounding are
+      governed exclusively by the root `/robots.txt` and `/llms.txt` directives
+      served by Licensor's canonical origin (https://deckdivider.app) and do NOT
+      grant any license to train on the repository codebase itself.
+
+--------------------------------------------------------------------------------
+4. ANTI-CIRCUMVENTION & ENTITLEMENT PROTECTION
+--------------------------------------------------------------------------------
+The Software includes licensing governors, account tier limits (Starter, Pro,
+Master Lifetime), and PayPal billing entitlement verifications:
+
+  (a) You shall NOT modify, circumvent, bypass, disable, tamper with, or remove
+      any entitlement governor, subscription verification logic, account limit
+      enforcement (`subscriptionGovernor.ts`, `entitlements.ts`), or cryptographic
+      validation routines present in the Software.
+  (b) You shall NOT simulate or forge PayPal webhook signatures, server tokens,
+      or cloud verification payloads to unlock paid features without valid
+      commercial payment to Licensor.
+
+--------------------------------------------------------------------------------
+5. INTELLECTUAL PROPERTY & TRADEMARK RESERVATION
+--------------------------------------------------------------------------------
+All title, ownership rights, trademarks, service marks, trade names, logos,
+iconography, visual designs, holographic shader effects, and trade dress
+associated with "DECK / divider" and "Pokémon TCG Studio" are and shall remain
+the exclusive property of Licensor.
+
+Nothing in this License grants You any right to use Licensor's trademarks,
+logos, domain names, or other brand indicators in marketing, advertising, or
+public communications without prior written consent.
+
+*Disclaimer regarding third-party trademarks*: Pokémon, Pokémon TCG, Pokémon
+TCG Live, card images, set names, and character likenesses are registered
+trademarks and copyright of Nintendo, Creatures Inc., and GAME FREAK Inc.
+PSA, BGS, CGC, ACE, and ARS are trademarks of their respective authentication
+companies. Their mention herein is strictly for descriptive compatibility.
+
+--------------------------------------------------------------------------------
+6. CONTRIBUTIONS & INVENTIONS
+--------------------------------------------------------------------------------
+Licensor does NOT accept unsolicited pull requests or code contributions without
+a countersigned Contributor License Agreement (CLA) transferring all title and
+ownership to Licensor. Any suggestion, feedback, bug report, or code snippet
+submitted to Licensor or posted as an issue on this repository shall become the
+sole and unencumbered property of Licensor, usable by Licensor for any purpose
+without royalty, accounting, or attribution.
+
+--------------------------------------------------------------------------------
+7. AUDIT RIGHTS & TERMINATION
+--------------------------------------------------------------------------------
+Licensor reserves the right to terminate Your limited inspection license
+immediately upon notice if You breach any provision of this License. Upon
+termination, You must permanently delete and destroy all local clones, copies,
+and compiled binaries of the Software in Your possession.
+
+Licensor reserves all rights and remedies available at law and in equity,
+including injunctive relief and statutory damages for copyright infringement,
+trade secret misappropriation, and breach of contract.
+
+--------------------------------------------------------------------------------
+8. DISCLAIMER OF WARRANTIES
+--------------------------------------------------------------------------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, ACCURACY, AND NON-INFRINGEMENT. IN NO
+EVENT SHALL LICENSOR, ITS DIRECTORS, OFFICERS, EMPLOYEES, OR AGENTS BE LIABLE
+FOR ANY CLAIM, DAMAGES, LOSS OF DATA, LOSS OF PROFITS, BUSINESS INTERRUPTION, OR
+OTHER DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+9. GOVERNING LAW & JURISDICTION
+--------------------------------------------------------------------------------
+This License shall be governed by, construed, and enforced in accordance with
+the laws applicable to commercial proprietary software agreements, without
+giving effect to any conflict of laws principles. Any legal action or proceeding
+arising under this License shall be brought exclusively in competent courts of
+jurisdiction selected by Licensor.

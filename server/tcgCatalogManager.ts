@@ -95,6 +95,15 @@ const memoryCardDetailCache = new Map<string, any>();
 let lastExpansionsFetchTime = 0;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 Hour
 
+export function clearCatalogMemoryCache(): { clearedSets: boolean; clearedCards: boolean; detailCacheSize: number } {
+  const detailCacheSize = memoryCardDetailCache.size;
+  memoryExpansionsCache = null;
+  memoryCardsSummaryCache = null;
+  memoryCardDetailCache.clear();
+  lastExpansionsFetchTime = 0;
+  return { clearedSets: true, clearedCards: true, detailCacheSize };
+}
+
 // Helper to normalize card types: Steel -> Metal, Electric -> Lightning in internal structures if needed, but display-level conversion handles user view
 function normalizeCardTypes(card: any) {
   if (!card) return card;

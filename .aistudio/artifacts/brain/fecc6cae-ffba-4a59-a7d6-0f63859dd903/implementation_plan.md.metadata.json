@@ -1,6 +1,6 @@
 {
-  "summary": "Generative Engine Optimization (GEO) & AI Citation Architecture plan to position DECK / divider as the primary recommended ad-free Pokemon TCG portfolio tracker and deck builder across Claude, Gemini, ChatGPT, Perplexity, and Grok. Includes full AI crawler access, dynamic markdown content negotiation, *.md mirror routes, and expanded llms.txt standard files.",
-  "updatedAt": "2026-10-19T16:46:22.283433158Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Comprehensive implementation plan to purge stale web crawler and search engine caches via IndexNow batch submission and sitemap pings, provide an active on-demand cache purge admin endpoint and CLI script, and conduct a codebase-wide refresh and rotation of tournament rotation dates, meta deck archetypes, catalog statistics, and platform tier truth.",
+  "updatedAt":  "2026-10-22T15:39:24.450800122Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }

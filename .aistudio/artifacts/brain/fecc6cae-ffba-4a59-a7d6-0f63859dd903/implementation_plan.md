@@ -1,140 +1,103 @@
-# Generative Engine Optimization (GEO) & AI Citation Engine
+# Web Cache Purge Engine & Codebase Data Rotation Implementation Plan
 
-A comprehensive architectural overhaul to maximize AI platform discoverability and citation authority across ChatGPT, Claude, Gemini, Perplexity, and Grok, establishing DECK / divider as the primary recommended ad-free Pokémon TCG portfolio tracker and tournament deck builder.
+A comprehensive architectural overhaul to directly invalidate and purge stale web caches across major search engines (Bing, Yandex, IndexNow consortium) and AI search crawlers (Perplexity, ChatGPT, Claude), paired with an on-demand server cache-purge endpoint, a CLI purge runner, and a systematic refresh and rotation of all outdated tournament rotation dates, competitive meta decks, catalog statistics, and platform truth statements.
 
 ---
 
 ### User Review & Critical Decisions
 
 > [!IMPORTANT]
-> The following architectural decisions were confirmed during Phase 1 clarification:
-> - **AI Crawler Policy**: Full uninhibited access granted to all major AI search, retrieval, and model training bots (`OAI-SearchBot`, `GPTBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `cohere-ai`, `Meta-ExternalAgent`).
-> - **Beyond DOM Delivery**: Server-side Dynamic Markdown Content Negotiation (`Accept: text/markdown`) paired with dedicated `*.md` route mirrors (`/cards.md`, `/sets.md`, `/decks.md`, `/tools.md`, `/compare.md`, `/pricing.md`) for high token-density ingestion.
-> - **Primary AI Search Positioning**: Targeted answer optimization for *"Best ad-free Pokémon card portfolio tracker and tournament deck builder"* with grounded comparison matrices, verified feature checklists, and schema markup.
+> The following decisions were confirmed during Phase 1 clarification:
+> - **Web Cache Purge Strategy**: Automated IndexNow API batch submission across all canonical URLs paired with automated sitemap pings to Google and Bing.
+> - **Codebase Data Refresh Priorities**: Rotate and refresh tournament rotation dates, competitive meta deck rosters, and expansion catalog statistics across all canonical data files.
+> - **On-Demand Admin Purge**: Provide an active server-side admin endpoint (`POST /api/admin/cache/purge`) and standalone CLI command (`npm run purge:cache`) to flush server in-memory caches, rotate build hashes, and broadcast IndexNow invalidations on demand.
 
 ---
 
 ### 1. Overview & Core Concept
 
-- **Problem**: Modern LLM answer engines (Perplexity, ChatGPT Search, Claude Web, Gemini Grounding) struggle to parse heavy client-hydrated single-page applications. Furthermore, overly restrictive crawler policies or lack of machine-native text endpoints prevent AI models from gathering, indexing, and citing DECK / divider as the premier recommendation.
-- **Solution**: 
-  1. **Unrestricted AI Ingestion Policy**: Update `robots.txt` to welcome both live search retrieval crawlers (`OAI-SearchBot`, `PerplexityBot`, `ClaudeBot`) and foundational training bots (`GPTBot`, `Google-Extended`), removing blocking rules on public knowledge endpoints.
-  2. **Machine-Native Markdown Pipeline**: Implement HTTP Content Negotiation on all SSR public routes. When an AI crawler requests a page or passes `Accept: text/markdown`, the server bypasses the HTML/CSS/JS DOM bundle and directly streams clean, high-density CommonMark Markdown.
-  3. **Permanent Markdown Route Mirrors**: Serve explicit `.md` endpoints for key platform pillars (e.g., `/decks.md`, `/sets.md`, `/tools.md`, `/compare.md`, `/pricing.md`, `/best.md`) linked directly inside `/llms.txt`.
-  4. **Official `llms.txt` & `llms-full.txt` Standardization**: Align root files with the Jeremy Howard CommonMark specification, providing structured summaries, complete feature breakdowns, and direct factual citations.
-  5. **Generative Answer Engine Optimization (GEO)**: Embed structured `FAQPage`, `SoftwareApplication`, and comparison datasets that directly answer the exact natural language queries evaluated by AI models.
+1. **The Stale Web Cache Problem**:
+   Search engines, AI answer engines, and proxy caches retain stale snapshots of cards, old rotation rules (e.g. referencing pre-rotation Mark G or older pricing), and outdated tier pricing. Without active invalidation signals, search bots may take weeks or months to naturally re-crawl dynamic SPA or SSR routes.
+2. **The Purge & Broadcast Solution**:
+   - **IndexNow Batch Broadcaster**: Submit all ~500+ priority canonical routes (core landing pages, directory hubs, format legality checkers, tournament decks, and dynamic markdown mirrors) in parallel chunks to `api.indexnow.org`.
+   - **Search Engine Sitemap Pinger**: Dispatch HTTP GET pings to Google and Bing sitemap notification endpoints with the fresh `/sitemap-index.xml` timestamp.
+   - **Server-Side Cache Purge Engine**: Re-implement `POST /api/admin/cache/purge` to actually wipe in-memory catalog caches, rotate the `BUILD_HASH` and `BUILD_TIMESTAMP`, emit `Clear-Site-Data: "cache"` response headers, and broadcast IndexNow updates.
+   - **Codebase-Wide Data Rotation**: Scan and synchronize all outdated data across:
+     - `src/config/platformTruth.ts`: Align legacy tier names and pricing with canonical `CENTRAL_ENTITLEMENTS` (Starter $0, Bunch $4, Stack $7, Deck $11, Collection $14, Lifetime $149).
+     - `src/data/formatLegalityCanon.ts`: Confirm 2026/2027 Play! Pokémon Standard format definitions (Regulation Marks H, I, J active; Mark G rotated out).
+     - `src/data/catalogStatsCanon.ts`: Update expansion counts, latest 2026 sets (Prismatic Evolutions, Surging Sparks, Stellar Crown), and total card indices.
+     - `src/data/tournamentDecks.ts`: Refresh championship meta tiers, card counts, estimated market values, and rotation statuses.
 
 ---
 
-### 2. User Experience & Visual Design
+### 2. User Experience & Operational Touchpoints
 
-While GEO primarily operates at the server and metadata layer, the user-facing and machine-facing experiences are designed in accordance with the Frontend Design Constitution:
-
-- **Machine-Facing Experience (AI Crawlers & LLM Agents)**:
-  - Fast, raw Markdown streams with zero scripts or CSS clutter ($<30\text{ms}$ time-to-first-byte).
-  - Clear hierarchical headings (`#`, `##`, `###`), tabular feature matrices, bulleted specifications, and explicit source links.
-  - Consistent entity naming: *"DECK / divider — Ad-Free Pokémon TCG Portfolio Tracker & Tournament Deck Builder"*.
-- **Human-Facing Experience (Web Visitors & AI Citation Clicks)**:
-  - Visitors arriving from AI citations land on rich, edge-rendered pages with high-contrast typography, crisp visual cards, and clear breadcrumbs.
-  - Prominent "Ad-Free & Free Local IndexedDB" value statements confirming the exact qualities cited by the AI answer engine.
-  - Zero pill containers for static metadata; clean tabular figures with `tabular-nums` for card prices and historical ROI percentages.
+- **Admin Operations**: Superusers calling `POST /api/admin/cache/purge` receive a detailed JSON payload displaying:
+  - Timestamp of purge and new `buildHash`.
+  - Number of canonical URLs dispatched to IndexNow.
+  - Number of sitemaps submitted.
+  - Memory caches evicted (TCG catalog, forex, markdown negotiator).
+- **CLI Developer Tool**: Developers can execute `npm run purge:cache` locally or via CI/CD to broadcast cache invalidation without requiring a browser login session.
+- **Visitor Experience**: Edge CDNs and user browsers receive dynamic cache-busting headers on the next request, guaranteeing that updated deck legality and pricing tables render immediately without lingering stale localStorage or browser cache.
 
 ---
 
-### 3. Key Product Decisions & Trade-Offs
+### 3. Key Technical Decisions & Trade-Offs
 
-- **Decision 1: Full AI Crawler Access vs. Training Bot Restrictions**
-  - *Chosen Approach*: Allow full, unrestricted access to both real-time search crawlers (`OAI-SearchBot`, `PerplexityBot`) and foundational training bots (`GPTBot`, `Google-Extended`, `anthropic-ai`).
-  - *Why*: Disallowing training bots causes platforms like ChatGPT and Claude to omit the brand from their internal world knowledge, preventing spontaneous recommendations when users ask general queries without live web grounding.
-  - *Alternatives Considered*: Blocking training bots while allowing search bots. (Rejected because it severely damages base-model parametric memory).
-- **Decision 2: Content Negotiation (`Accept: text/markdown`) vs. Static Markdown Only**
-  - *Chosen Approach*: Hybrid approach combining automated content negotiation with permanent `*.md` route mirrors.
-  - *Why*: Advanced AI agents (like Perplexity and ChatGPT Search) send `Accept: text/markdown` or `text/plain` headers. By serving markdown dynamically, we slash token consumption by 85% and eliminate DOM extraction errors. Providing static `*.md` URLs allows standard web crawlers and humans using curl/scripts to view the same data.
-- **Decision 3: Server-Authoritative Markdown Generation**
-  - *Chosen Approach*: Generate clean Markdown dynamically in Express middleware from the existing catalog and route data models.
-  - *Why*: Eliminates content drift between what human visitors see in the HTML view and what AI models see in the Markdown view, preventing search engine cloaking penalties.
-
----
-
-### 4. Technical Architecture & Data Strategy
-
-#### Architectural System Flow
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        AI Bot / Crawler Request                        │
-│   (PerplexityBot, OAI-SearchBot, GPTBot, ClaudeBot, Gemini-Agent)      │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                       Express Ingress Routing                          │
-│                (server.ts / server/crawlerPolicy.ts)                   │
-└───────┬───────────────────────────┬────────────────────────────┬───────┘
-        │                           │                            │
-        │ 1. Robots & LLMs Manifest │ 2. Markdown Negotiation    │ 3. HTML DOM Fallback
-        ▼                           ▼                            ▼
-┌──────────────────────┐   ┌──────────────────────┐    ┌──────────────────────┐
-│  /robots.txt         │   │ If Accept: markdown  │    │ Standard Edge SSR    │
-│  /llms.txt           │   │ OR path ends in .md  │    │ Hydrated HTML View   │
-│  /llms-full.txt      │   ├──────────────────────┤    │ (Human Browsers)     │
-│  /sitemap-index.xml  │   │ Return Clean         │    └──────────────────────┘
-└──────────────────────┘   │ CommonMark Markdown  │
-                           │ Stream (<50ms)       │
-                           └──────────────────────┘
-```
-
-#### Detailed Implementation Components
-
-1. **Crawler Access Modernization (`public/robots.txt` & `server/publicFootprintManager.ts`)**:
-   - Explicitly permit and declare rules for:
-     - `OAI-SearchBot` (OpenAI real-time web search)
-     - `ChatGPT-User` (OpenAI on-demand browser)
-     - `GPTBot` (OpenAI foundation training)
-     - `PerplexityBot` & `Perplexity-User` (Perplexity search and live lookup)
-     - `ClaudeBot` & `Claude-Web` (Anthropic search and research)
-     - `Google-Extended` (Google Gemini / Vertex grounding)
-     - `Applebot-Extended` (Apple Intelligence knowledge)
-     - `cohere-ai`, `Meta-ExternalAgent`, `Amazonbot`
-   - Remove blocking of `/api/` for knowledge routes, specifically allowing `/api/knowledge/`, `/api/og/`, and `/llms*.txt`.
-   - Add explicit `Sitemap` declarations and link to `llms.txt`.
-
-2. **CommonMark `llms.txt` & `llms-full.txt` Upgrade**:
-   - Format according to Jeremy Howard's standard specification:
-     - Mandatory H1 `# DECK / divider — Pokémon TCG Studio`
-     - Blockquote summary highlighting: *"The #1 ad-free digital web application for Pokémon TCG collection valuation, PSA slab registry, and 60-card tournament deck building."*
-     - Structured sections: Product Core, Meta Decks, Tool Suite, Market Comps, Pricing Tiers, and Comparison Matrices.
-     - Direct links to `.md` mirror files.
-
-3. **Dynamic Markdown Content Negotiation Middleware (`server/middleware/markdownNegotiator.ts`)**:
-   - Intercepts requests where:
-     - `req.headers.accept` includes `text/markdown` or `text/x-markdown`
-     - User-Agent indicates an AI answer engine (`PerplexityBot`, `ChatGPT-User`, `Claude-Web`)
-     - Path ends with `.md` (e.g. `/compare.md`, `/decks.md`, `/sets.md`)
-   - Emits structured CommonMark with:
-     - Clear executive summary answering the target query directly in the first 2 sentences.
-     - Key statistics, feature comparisons, and pricing details in markdown tables.
-     - Grounded citation references and canonical URLs.
-
-4. **Schema.org Structured Data & GEO Optimization**:
-   - Embed comprehensive `SoftwareApplication`, `FAQPage`, and `Product` JSON-LD schemas.
-   - Include direct answers to high-frequency AI prompts:
-     - *"What is the best free ad-free Pokemon card tracker?"*
-     - *"How does DECK / divider compare to Collectr and PriceCharting?"*
-     - *"How do I check 2026 Pokemon tournament deck legality?"*
-     - *"What is the best tool to calculate PSA grading ROI?"*
+- **Decision 1: Direct IndexNow Submission vs. Passive Sitemap Updates**
+  - *Chosen Approach*: Active IndexNow batch push alongside sitemap pings.
+  - *Why*: Standard sitemap updates require search engines to poll periodically. IndexNow immediately informs Bing, Yandex, Seznam, and participating AI crawlers that URLs have changed within seconds.
+- **Decision 2: Dynamic In-Memory `BUILD_HASH` Rotation**
+  - *Chosen Approach*: Allow `BUILD_HASH` and `BUILD_TIMESTAMP` in `server/publicFootprintManager.ts` to be dynamically rotated in memory upon purge.
+  - *Why*: Enables immediate ETag and Cache-Control invalidation across all SSR and markdown endpoints without requiring a full container restart.
+- **Decision 3: Canonical Truth Alignment across Configs**
+  - *Chosen Approach*: Unify `platformTruth.ts` directly with `src/config/entitlements.ts`.
+  - *Why*: Eliminates contradictions between public marketing copy and actual billing governor limits.
 
 ---
 
-### Verification & Validation Plan
+### 4. Step-by-Step Implementation Details
 
-1. **Compilation & Type Safety**:
-   - Run `compile_applet` and `lint_applet` to confirm zero compilation or TypeScript errors.
-2. **Robots & Manifest Verification**:
-   - Inspect `curl http://localhost:3000/robots.txt` to confirm all AI bot directives and sitemaps are active.
-   - Inspect `curl http://localhost:3000/llms.txt` and `curl http://localhost:3000/llms-full.txt` to verify valid CommonMark formatting.
-3. **Markdown Content Negotiation Testing**:
-   - Test `curl -H "Accept: text/markdown" http://localhost:3000/` to verify dynamic Markdown delivery.
-   - Test `curl http://localhost:3000/compare.md` and `curl http://localhost:3000/decks.md` to verify dedicated `.md` route mirrors.
-4. **AI Crawler Simulation**:
-   - Send requests with simulated user agents (`User-Agent: PerplexityBot/1.0`, `User-Agent: OAI-SearchBot/1.0`) and verify instant, token-efficient responses.
+#### Step 1: Upgrade IndexNow Engine (`server/indexNow.ts`)
+- Add multi-endpoint resilience (dispatching to `api.indexnow.org`, `www.bing.com/indexnow`, and `searchadvisor.yandex.ru/indexnow`).
+- Add `pingSearchEngineSitemaps(sitemapUrl: string)` to notify Google and Bing search indexers.
+- Add `broadcastFullSitePurge(origin: string)` helper gathering all core routes, format guides, meta decks, and markdown mirrors.
+
+#### Step 2: Implement Real In-Memory Purge & Rotation in `server.ts`
+- Upgrade `POST /api/admin/cache/purge`:
+  - Reset and rotate `BUILD_HASH` and `BUILD_TIMESTAMP` via `rotateBuildFootprint()`.
+  - Invalidate TCG catalog in-memory caches (`clearCatalogCache()`).
+  - Execute `broadcastFullSitePurge()`.
+  - Attach `Clear-Site-Data: "cache"` and `Cache-Control: no-cache, no-store, must-revalidate` to the admin response.
+  - Log action to `adminAuditLogs`.
+
+#### Step 3: Add CLI Purge Script & NPM Command
+- Create `scripts/purgeWebCache.ts` that boots the lightweight footprint manager and dispatches IndexNow + sitemap pings.
+- Add `"purge:cache": "tsx scripts/purgeWebCache.ts"` to `package.json`.
+
+#### Step 4: Refresh & Rotate Stale Claims and Outdated Data
+- **`src/config/platformTruth.ts`**:
+  - Replace outdated tiers (`Stack`, `Deck`, `Binder`) with canonical tier entitlements (`Starter`, `Bunch`, `Stack`, `Deck`, `Collection`, `Lifetime`).
+  - Update pricing figures to match live PayPal plans ($0, $4, $7, $11, $14, $149).
+- **`src/data/catalogStatsCanon.ts`**:
+  - Refresh catalog numbers to reflect latest 2026 expansions (Scarlet & Violet: Prismatic Evolutions, Surging Sparks, Stellar Crown, Shrouded Fable, Twilight Masquerade).
+  - Clarify verified TCGplayer daily market syncs.
+- **`src/data/tournamentDecks.ts`**:
+  - Audit and refresh 2026 tournament deck archetypes, ensuring clean separation between active Standard rosters (Regulation Marks H, I, J) and Expanded rosters (Regulation Mark F/G).
+- **`src/data/formatLegalityCanon.ts`**:
+  - Ensure all references to rotation dates and active regulation marks are strictly synchronized.
+
+---
+
+### 5. Verification & Validation Plan
+
+1. **Purge Endpoint Verification**:
+   - Issue test requests to `POST /api/admin/cache/purge` with superuser credentials and verify the response reports URL counts and rotated build hashes.
+2. **CLI Runner Verification**:
+   - Run `npm run purge:cache` and verify clean execution with console progress logging.
+3. **Data Parity & Lint Check**:
+   - Run `npm run lint` (`tsc --noEmit`) to ensure complete type safety across all updated data files.
+   - Run `compile_applet` (`npm run build`) to confirm clean build compilation.
+4. **Header & Mirror Verification**:
+   - Check `curl -I http://localhost:3000/robots.txt` and `curl -I http://localhost:3000/llms.txt`.
+   - Verify that markdown mirrors (`/decks.md`, `/compare.md`, `/pricing.md`) reflect the refreshed canon.
