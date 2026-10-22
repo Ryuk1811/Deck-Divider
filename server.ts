@@ -2,8 +2,9 @@ import express from 'express';
 import compression from 'compression';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
-import { pingIndexNow, broadcastFullSitePurge, pingSearchEngineSitemaps } from './server/indexNow.js';
+import { pingIndexNow } from './server/indexNow.js';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
@@ -55,13 +56,9 @@ import {
   triggerBackgroundSync,
   getLazyChunk,
   searchCardsServer,
-  clearCatalogMemoryCache,
 } from './server/tcgCatalogManager.js';
 import {
   BUILD_HASH,
-  rotateBuildFootprint,
-  getAllPublicUrls,
-  CANONICAL_ORIGIN,
   generateUnifiedSitemapXml,
   generateSitemapIndexXml,
   generateCoreSitemapXml,
@@ -980,61 +977,23 @@ async function startServer() {
     }
   });
 
-  // Cache Purge Control & Web-Wide IndexNow Invalidation Broadcaster
+  // Cache Purge Control
   app.post('/api/admin/cache/purge', requireSuperUser, async (req: AuthenticatedRequest, res) => {
     try {
-      const userEmail = req.userEmail || 'system';
-      const { scope = 'all', skipIndexNow = false } = req.body || {};
+      const userEmail = req.userEmail!;
 
-      // 1. Evict in-memory TCG catalog caches
-      const catalogEviction = clearCatalogMemoryCache();
-
-      // 2. Rotate dynamic deployment footprint & build hash (forces cache-busting on SSR / asset headers)
-      const footprint = rotateBuildFootprint();
-
-      // 3. Collect all canonical public URLs and markdown mirror endpoints
-      const reqHost = req.headers.host || 'deckdivider.app';
-      const origin = reqHost.includes('localhost') ? `http://${reqHost}` : CANONICAL_ORIGIN;
-      const allUrls = await getAllPublicUrls(origin);
-
-      // 4. Broadcast full site invalidation to IndexNow & search engine sitemap pingers
-      let broadcastResult = null;
-      if (!skipIndexNow) {
-        broadcastResult = await broadcastFullSitePurge(allUrls, `${origin}/sitemap-index.xml`);
-      }
-
-      // 5. Emit HTTP cache busting & Clear-Site-Data headers to flush client browser caches
-      res.setHeader('Clear-Site-Data', '"cache"');
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+      const { scope = 'all' } = req.body || {};
 
       adminAuditLogs.unshift({
         id: 'log_' + Date.now(),
         timestamp: new Date().toISOString(),
         adminEmail: userEmail,
-        action: 'WEB_CACHE_PURGED_AND_BROADCASTED',
-        details: {
-          scope,
-          buildHash: footprint.buildHash,
-          buildTimestamp: footprint.buildTimestamp,
-          urlsBroadcasted: allUrls.length,
-          catalogEviction,
-          indexNowSubmitted: broadcastResult?.totalUrls ?? 0,
-        }
+        action: 'CACHE_PURGED',
+        details: { scope, timestamp: new Date().toISOString() }
       });
 
-      return res.json({
-        success: true,
-        message: 'Web cache and in-memory caches purged successfully across all endpoints.',
-        scope,
-        buildFootprint: footprint,
-        catalogCacheEviction: catalogEviction,
-        urlsCollectedCount: allUrls.length,
-        broadcastResult,
-      });
+      return res.json({ success: true, message: `Cache (${scope}) purged successfully.` });
     } catch (err: any) {
-      console.error('[CachePurge] Error during cache purge & broadcast:', err);
       return res.status(500).json({ error: err.message || 'Error purging cache' });
     }
   });
