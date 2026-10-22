@@ -3,11 +3,22 @@ import path from 'path';
 import { getExpansions, TCGSet } from './tcgCatalogManager.js';
 import { generateLlmsKeywordsTxt, generateSearchMatrixJson } from './keywordCatalogManager.js';
 
-// Global Build / Deployment Footprint Stamp
-export const BUILD_TIMESTAMP = new Date().toISOString();
-export const BUILD_DATE = BUILD_TIMESTAMP.split('T')[0]; // YYYY-MM-DD
-export const BUILD_HASH = Math.random().toString(36).substring(2, 10);
+// Global Build / Deployment Footprint Stamp (Dynamic & Rotatable on Cache Purge)
+export let BUILD_TIMESTAMP = new Date().toISOString();
+export let BUILD_DATE = BUILD_TIMESTAMP.split('T')[0]; // YYYY-MM-DD
+export let BUILD_HASH = Math.random().toString(36).substring(2, 10);
 export const CANONICAL_ORIGIN = 'https://deckdivider.app';
+
+export function rotateBuildFootprint() {
+  BUILD_TIMESTAMP = new Date().toISOString();
+  BUILD_DATE = BUILD_TIMESTAMP.split('T')[0];
+  BUILD_HASH = Math.random().toString(36).substring(2, 10);
+  return {
+    buildTimestamp: BUILD_TIMESTAMP,
+    buildDate: BUILD_DATE,
+    buildHash: BUILD_HASH,
+  };
+}
 
 export interface RouteEntry {
   path: string;
@@ -95,33 +106,60 @@ export const TOOL_SLUGS: string[] = [
   'deck-legality-checker',
 ];
 
-export async function getAllPublicUrls(): Promise<string[]> {
+export async function getAllPublicUrls(origin: string = CANONICAL_ORIGIN): Promise<string[]> {
   const urls: string[] = [];
   
   // Static Core
   CORE_PAGES.forEach(page => {
-    urls.push(`${CANONICAL_ORIGIN}${page.path}`);
+    urls.push(`${origin}${page.path}`);
   });
 
-  // Decks
+  // Markdown Mirrors for Core Pages
+  urls.push(`${origin}/index.md`);
+  urls.push(`${origin}/decks.md`);
+  urls.push(`${origin}/compare.md`);
+  urls.push(`${origin}/pricing.md`);
+  urls.push(`${origin}/best.md`);
+  urls.push(`${origin}/tools.md`);
+  urls.push(`${origin}/tools/psa-grade-calculator.md`);
+  urls.push(`${origin}/tools/deck-legality-checker.md`);
+
+  // Decks (HTML + Markdown)
   DECK_SLUGS.forEach(slug => {
-    urls.push(`${CANONICAL_ORIGIN}/deck/${slug}`);
+    urls.push(`${origin}/deck/${slug}`);
+    urls.push(`${origin}/deck/${slug}.md`);
   });
 
-  // Compare
+  // Compare (HTML + Markdown)
   COMPETITOR_SLUGS.forEach(slug => {
-    urls.push(`${CANONICAL_ORIGIN}/compare/${slug}`);
+    urls.push(`${origin}/compare/${slug}`);
+    urls.push(`${origin}/compare/${slug}.md`);
   });
 
   // Best
   BEST_OF_SLUGS.forEach(slug => {
-    urls.push(`${CANONICAL_ORIGIN}/best/${slug}`);
+    urls.push(`${origin}/best/${slug}`);
   });
 
   // Tools
   TOOL_SLUGS.forEach(slug => {
-    urls.push(`${CANONICAL_ORIGIN}/tools/${slug}`);
+    urls.push(`${origin}/tools/${slug}`);
   });
+
+  // Sitemaps & Manifests
+  urls.push(`${origin}/robots.txt`);
+  urls.push(`${origin}/llms.txt`);
+  urls.push(`${origin}/llms-full.txt`);
+  urls.push(`${origin}/sitemap-index.xml`);
+  urls.push(`${origin}/sitemap.xml`);
+  urls.push(`${origin}/sitemap-core.xml`);
+  urls.push(`${origin}/sitemap-decks.xml`);
+  urls.push(`${origin}/sitemap-sets.xml`);
+  urls.push(`${origin}/sitemap-tools.xml`);
+  urls.push(`${origin}/sitemap-formats.xml`);
+  urls.push(`${origin}/sitemap-compare.xml`);
+  urls.push(`${origin}/sitemap-portfolios.xml`);
+  urls.push(`${origin}/sitemap-changelog.xml`);
 
   // Dynamic Expansion Sets (Top 100 for footprint speed)
   try {
@@ -130,8 +168,8 @@ export async function getAllPublicUrls(): Promise<string[]> {
       const targetSets = sets.slice(0, 100);
       targetSets.forEach(set => {
         if (set && set.id) {
-          urls.push(`${CANONICAL_ORIGIN}/set/${set.id}`);
-          urls.push(`${CANONICAL_ORIGIN}/set/${set.id}/top-cards`);
+          urls.push(`${origin}/set/${set.id}`);
+          urls.push(`${origin}/set/${set.id}/top-cards`);
         }
       });
     }

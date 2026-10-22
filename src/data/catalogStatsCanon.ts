@@ -11,14 +11,14 @@ export const CATALOG_STATS = {
   mainlineMasterExpansionsLabel: '148+ mainline master-set checklists',
   specialSubsetsAndPromos: 70,
   setsExplanation:
-    '218 catalogued Pokémon TCG sets & product series: 148 mainline master-set expansions (Base Set through modern Scarlet & Violet) plus 70 promotional series, McDonald\'s collections, Trainer Kits, and special subsets.',
+    '218 catalogued Pokémon TCG sets & series: 148 mainline master-set expansions (Base Set through 2026 Scarlet & Violet: Prismatic Evolutions, Surging Sparks, Stellar Crown, Shrouded Fable, Twilight Masquerade, Temporal Forces) plus 70 promotional series and special subsets.',
 
   // Cards
   totalCardsIndexed: '18,400+',
   totalCardsNumber: 18400,
   totalCardsLabel: '18,400+ card records in full database',
   cardsExplanation:
-    '18,400+ individual Pokémon card records indexed across Vintage (1999–2003), Mid-Era (2003–2019), and Modern (2019–Present) eras with real-time TCGplayer market prices.',
+    '18,400+ individual Pokémon card records indexed across Vintage (1999–2003), Mid-Era (2003–2019), and Modern (2019–2026+) eras with real-time TCGplayer market prices.',
   
   // Public Catalogue Spotlight
   publicSpotlightCount: 301,

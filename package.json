@@ -14,6 +14,7 @@
     "start": "NODE_ENV=production node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js dist/server.cjs",
+    "purge:cache": "tsx scripts/purgeWebCache.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

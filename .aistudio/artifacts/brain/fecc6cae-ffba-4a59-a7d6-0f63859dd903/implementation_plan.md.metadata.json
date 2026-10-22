@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan for creating a comprehensive public repository documentation suite for DECK / divider. Covers a strict proprietary commercial source-available LICENSE with rigorous scrutinizing clauses, an industry-standard README.md with architecture and feature overviews, an in-depth ARCHITECTURE.md system breakdown, SECURITY.md vulnerability policy aligned with RFC 9116, CONTRIBUTING.md governance restricting external PRs while welcoming bug reports, CODE_OF_CONDUCT.md community standards, and DEVELOPMENT.md developer manual.",
-  "updatedAt":  "2026-10-22T15:24:04.773035739Z",
+  "summary":  "Comprehensive implementation plan to purge stale web crawler and search engine caches via IndexNow batch submission and sitemap pings, provide an active on-demand cache purge admin endpoint and CLI script, and conduct a codebase-wide refresh and rotation of tournament rotation dates, meta deck archetypes, catalog statistics, and platform tier truth.",
+  "updatedAt":  "2026-10-22T15:39:24.450800122Z",
   "requestFeedback":  true,
   "userFacing":  true
 }
