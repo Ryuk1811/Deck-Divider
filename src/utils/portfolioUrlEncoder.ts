@@ -179,7 +179,7 @@ export function decodeUrlParamToPortfolio(encodedStr: string): SharedPortfolioSn
         releaseDate: '2024',
         msrp: s.m || 0,
         marketPrice: s.m || s.p || 0,
-        imageUrl: s.img || 'https://images.pokemontcg.io/cardback.png',
+        imageUrl: s.img || undefined,
         packCount: 36,
       },
       quantity: s.q || 1,

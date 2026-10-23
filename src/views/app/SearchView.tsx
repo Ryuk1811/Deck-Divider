@@ -16,7 +16,7 @@ import {
   DisplayCurrency,
 } from '../../types';
 import { HolographicCard } from '../../components/ui/HolographicCard';
-import { searchCards, mapToPokemonCard } from '../../lib/searchEngine';
+import { searchCards, mapToPokemonCard, spoolCardsByName } from '../../lib/searchEngine';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
 
 interface SearchViewProps {
@@ -78,7 +78,19 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const isUserTypingRef = useRef(false);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_CHUNK_SIZE);
+  const [catalogRevision, setCatalogRevision] = useState(0);
   const [, startTransition] = useTransition();
+
+  // Listen to background search index updates and dynamic card spooling
+  useEffect(() => {
+    const handleCatalogUpdate = () => {
+      setCatalogRevision((r) => r + 1);
+    };
+    window.addEventListener('deckdivider:search-index-updated', handleCatalogUpdate);
+    return () => {
+      window.removeEventListener('deckdivider:search-index-updated', handleCatalogUpdate);
+    };
+  }, []);
 
   // Sync when savedFilters changes from an external reset (not from user typing)
   useEffect(() => {
@@ -95,6 +107,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       isUserTypingRef.current = false;
+      const cleanQuery = searchInputText.trim();
       if ((activeFiltersRef.current.query || '') !== searchInputText) {
         const updated = { ...activeFiltersRef.current, query: searchInputText };
         startTransition(() => {
@@ -102,6 +115,11 @@ export const SearchView: React.FC<SearchViewProps> = ({
           setVisibleCount(PAGE_CHUNK_SIZE);
         });
         onUpdateFilters(updated);
+
+        // Dynamic spooling for named queries
+        if (cleanQuery.length >= 2) {
+          spoolCardsByName(cleanQuery);
+        }
       }
     }, 120);
 
@@ -172,14 +190,22 @@ export const SearchView: React.FC<SearchViewProps> = ({
     const rawResults = searchCards(activeFilters);
     const mapped = rawResults.map(mapToPokemonCard);
 
-    return mapped.sort((a, b) => {
+    // Explicitly guarantee that only cards with valid front artwork are displayed
+    const artworkValid = mapped.filter((c) => {
+      if (!c.images?.small && !c.images?.large) return false;
+      const img = c.images?.small || c.images?.large || '';
+      if (img.includes('cardback') || img.includes('undefined')) return false;
+      return true;
+    });
+
+    return artworkValid.sort((a, b) => {
       if (activeFilters.sortBy === 'price-desc') return b.prices.raw - a.prices.raw;
       if (activeFilters.sortBy === 'price-asc') return a.prices.raw - b.prices.raw;
       if (activeFilters.sortBy === 'name') return a.name.localeCompare(b.name);
       if (activeFilters.sortBy === 'hp') return (b.hp || 0) - (a.hp || 0);
       return 0;
     });
-  }, [activeFilters]);
+  }, [activeFilters, catalogRevision]);
 
   // Paginated window for optimal frame-rate
   const displayedCards = useMemo(() => {

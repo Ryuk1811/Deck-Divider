@@ -55,6 +55,28 @@ export const addDynamicCardsToSearchEngine = (newCards: TCGdexCard[]) => {
       miniSearch = setupMiniSearch(allDocsData);
     }
   }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('deckdivider:search-index-updated', { detail: { count: allDocsData.length } }));
+  }
+};
+
+// Spool cards on-demand by name directly from backend
+export const spoolCardsByName = async (name: string): Promise<TCGdexCard[]> => {
+  const clean = (name || '').trim();
+  if (clean.length < 2) return [];
+
+  try {
+    const res = await fetch(`/api/tcgdex/cards?name=${encodeURIComponent(clean)}`);
+    if (res.ok) {
+      const cards = await res.json();
+      if (Array.isArray(cards) && cards.length > 0) {
+        addDynamicCardsToSearchEngine(cards);
+        return cards;
+      }
+    }
+  } catch (err) {}
+  return [];
 };
 
 export const initSearchEngine = async (): Promise<void> => {
@@ -88,7 +110,7 @@ export const initSearchEngine = async (): Promise<void> => {
       // 2. Fetch fresh catalog in background if expired or empty with a 6-second timeout
       if (!data || !lastFetchTime || (now - lastFetchTime > CACHE_DURATION_MS)) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         try {
           const response = await fetch('/api/tcgdex/index-data', { signal: controller.signal });
@@ -100,8 +122,13 @@ export const initSearchEngine = async (): Promise<void> => {
               allDocsData = fetchedCards;
               await yieldToMainThread();
               miniSearch = setupMiniSearch(fetchedCards);
-              if (hasIDB) { try { set(CACHE_KEY, fetchedCards).catch(() => {}); } catch(e) {}
-              try { set(CACHE_TIME_KEY, now).catch(() => {}); } catch(e) {} }
+              if (hasIDB) {
+                try { set(CACHE_KEY, fetchedCards).catch(() => {}); } catch(e) {}
+                try { set(CACHE_TIME_KEY, now).catch(() => {}); } catch(e) {}
+              }
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('deckdivider:search-index-updated', { detail: { count: fetchedCards.length } }));
+              }
             }
           }
         } catch (fetchErr) {
@@ -123,6 +150,60 @@ import { PokemonCard, EnergyType, CardRarity, CardSet } from '../types';
 import { normalizeSet, sortSetsChronologically } from '../utils/setCategorizer';
 import { getPokemonSpeciesTypes } from '../data/pokemonSpeciesTypes';
 
+const SET_CODE_REMAP: Record<string, string> = {
+  '2011bw': 'mcd11',
+  '2012bw': 'mcd12',
+  '2016xy': 'mcd16',
+  '2019sm': 'mcd19',
+  '2021swsh': 'mcd21',
+  '2022swsh': 'mcd22',
+  'swsh9tg': 'swsh9tg',
+  'swsh10tg': 'swsh10tg',
+  'swsh11tg': 'swsh11tg',
+  'swsh12tg': 'swsh12tg',
+  'swsh12.5gg': 'swsh12pt5gg',
+  'swsh12pt5gg': 'swsh12pt5gg',
+};
+
+const UNKNOWN_ARTWORK_SETS = new Set([
+  '2014xy', '2015xy', '2017sm', '2018sm', '2023sv', '2024sv',
+  'bog', 'ex5.5', 'exu', 'mee', 'mep', 'mfb', 'sve', 'xya', 'tk-hs-g'
+]);
+
+export function cardHasValidArtwork(doc: any): boolean {
+  if (!doc) return false;
+  const setId = (doc.set?.id || '').toLowerCase().trim();
+  if (UNKNOWN_ARTWORK_SETS.has(setId)) return false;
+  if (!doc.image && !doc.images?.small && !doc.images?.large) return false;
+  const imgStr = String(doc.image || doc.images?.small || doc.images?.large || '');
+  if (imgStr.includes('cardback') || imgStr.includes('undefined')) return false;
+  return true;
+}
+
+export const formatCardImageUrl = (
+  img?: string,
+  setId?: string,
+  localId?: string | number,
+  quality: 'low' | 'high' = 'low'
+): string => {
+  if (img && typeof img === 'string') {
+    if (/\.(webp|png|jpg|jpeg|gif)$/i.test(img)) return img;
+    if (/\/low\.(webp|png)$/i.test(img) || /\/high\.(webp|png)$/i.test(img)) {
+      return quality === 'high' ? img.replace('/low.', '/high.') : img;
+    }
+    const cleanImg = img.replace(/\/$/, '');
+    return `${cleanImg}/${quality}.webp`;
+  }
+  if (setId && localId) {
+    const rawSet = String(setId).toLowerCase().trim();
+    if (UNKNOWN_ARTWORK_SETS.has(rawSet)) return '';
+    const cleanSet = SET_CODE_REMAP[rawSet] || rawSet;
+    const cleanNum = String(localId).trim();
+    return `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+  }
+  return 'https://images.pokemontcg.io/base1/4.png';
+};
+
 export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
   const isTrainerOrEnergy = card.category && ['trainer', 'energy', 'item', 'supporter', 'stadium'].some(c => card.category?.toLowerCase().includes(c));
   const speciesTypes = isTrainerOrEnergy
@@ -132,6 +213,9 @@ export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
   const normalizedTypes = speciesTypes && speciesTypes.length > 0
     ? speciesTypes
     : card.types ? (Array.from(new Set(card.types)) as EnergyType[]) : undefined;
+
+  const smallImage = formatCardImageUrl(card.image, card.set?.id, card.localId, 'low');
+  const largeImage = formatCardImageUrl(card.image, card.set?.id, card.localId, 'high');
 
   return {
     id: card.id,
@@ -173,16 +257,8 @@ export const mapToPokemonCard = (card: TCGdexCard): PokemonCard => {
     artist: card.illustrator || 'Unknown',
     number: card.localId,
     images: {
-      small: card.image
-        ? (card.image.startsWith('http')
-            ? card.image
-            : `https://assets.tcgdex.net${card.image}/low.webp`)
-        : 'https://images.pokemontcg.io/cardback.png',
-      large: card.image
-        ? (card.image.startsWith('http')
-            ? card.image
-            : `https://assets.tcgdex.net${card.image}/high.webp`)
-        : 'https://images.pokemontcg.io/cardback.png',
+      small: smallImage,
+      large: largeImage,
     },
     prices: {
       raw: generateRealisticCardPrice(card.id, card),
@@ -359,6 +435,7 @@ export const searchCards = (filters: SearchFilters): TCGdexCard[] => {
   // Robust filter function applied to documents
   const filterFn = (doc: any): boolean => {
     if (!doc) return false;
+    if (!cardHasValidArtwork(doc)) return false;
 
     // 1. Type matching (Species types and energy types)
     if (filters.types && filters.types.length > 0) {

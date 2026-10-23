@@ -158,25 +158,25 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
 
       {/* Analytics Summary Widget */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
-        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1">
+        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1 min-w-0">
           <span className="text-[10px] text-[#64748B] uppercase tracking-wider font-bold">Total Vault Value</span>
-          <div className="text-xl font-bold text-[#0F172A]">
+          <div className="text-lg sm:text-xl font-bold text-[#0F172A] truncate" title={formatCurrency(totalMarketValueUSD, currency)}>
             {formatCurrency(totalMarketValueUSD, currency)}
           </div>
           <span className="text-[11px] text-[#64748B]">{activeEntries.length} Items Vaulted</span>
         </div>
 
-        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1">
+        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1 min-w-0">
           <span className="text-[10px] text-[#64748B] uppercase tracking-wider font-bold">Total Cost Basis</span>
-          <div className="text-xl font-bold text-[#0F172A]">
+          <div className="text-lg sm:text-xl font-bold text-[#0F172A] truncate" title={formatCurrency(totalCostBasisUSD, currency)}>
             {formatCurrency(totalCostBasisUSD, currency)}
           </div>
           <span className="text-[11px] text-[#64748B]">Invested Capital</span>
         </div>
 
-        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1">
+        <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-1 min-w-0">
           <span className="text-[10px] text-[#64748B] uppercase tracking-wider font-bold">Unrealized Profit / Loss</span>
-          <div className={`text-xl font-bold ${totalPnlUSD >= 0 ? 'text-[#16A34A]' : 'text-[#FF4500]'}`}>
+          <div className={`text-lg sm:text-xl font-bold truncate ${totalPnlUSD >= 0 ? 'text-[#16A34A]' : 'text-[#FF4500]'}`} title={`${totalPnlUSD >= 0 ? '+' : ''}${formatCurrency(totalPnlUSD, currency)} (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(1)}%)`}>
             {totalPnlUSD >= 0 ? '+' : ''}
             {formatCurrency(totalPnlUSD, currency)} ({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(1)}%)
           </div>
@@ -185,10 +185,10 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-2 font-mono text-xs">
+      <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-2 font-mono text-xs overflow-x-auto">
         <button
           onClick={() => setActiveTab('ACTIVE')}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'ACTIVE'
               ? 'bg-[#0F172A] text-white font-bold'
               : 'bg-[#F8FAFC] text-[#64748B] hover:text-[#0F172A]'
@@ -198,7 +198,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('SOLD')}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'SOLD'
               ? 'bg-[#0F172A] text-white font-bold'
               : 'bg-[#F8FAFC] text-[#64748B] hover:text-[#0F172A]'
@@ -218,8 +218,8 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left font-mono text-xs">
+        <div className="overflow-x-auto w-full -mx-2 sm:mx-0">
+          <table className="w-full min-w-[700px] text-left font-mono text-xs">
             <thead>
               <tr className="border-b border-[#E2E8F0] text-[#64748B] text-[10px] uppercase tracking-wider">
                 <th className="py-2.5 px-3">Product Name & Type</th>
@@ -240,22 +240,22 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                 return (
                   <tr key={entry.id} className="hover:bg-[#F8FAFC] transition-colors">
                     <td className="py-3 px-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         {entry.product.imageUrl && (
                           <div className="w-10 h-10 flex-shrink-0 bg-white border border-[#E2E8F0] rounded p-1 shadow-2xs">
                             <img src={entry.product.imageUrl} alt={entry.product.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
                           </div>
                         )}
-                        <div>
-                          <div className="font-bold text-[#0F172A]">{entry.product.name}</div>
-                          <div className="text-[10px] text-[#64748B] flex items-center gap-2 mt-1">
+                        <div className="min-w-0 max-w-[200px] sm:max-w-xs">
+                          <div className="font-bold text-[#0F172A] truncate" title={entry.product.name}>{entry.product.name}</div>
+                          <div className="text-[10px] text-[#64748B] flex items-center gap-2 mt-1 flex-wrap">
                             <span className="px-1.5 py-0.5 bg-[#E2E8F0] rounded text-[#0F172A] font-bold">
                               {entry.product.type}
                             </span>
                             {entry.product.set.logoUrl && (
                               <img src={entry.product.set.logoUrl} alt={entry.product.set.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-3 object-contain" />
                             )}
-                            <span>{entry.product.set.name}</span>
+                            <span className="truncate max-w-[120px]">{entry.product.set.name}</span>
                           </div>
                         </div>
                       </div>
@@ -297,8 +297,8 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
 
       {/* Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl max-w-lg w-full p-6 space-y-5 animate-fade-in font-mono text-xs">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl max-w-lg w-full p-5 sm:p-6 space-y-4 animate-fade-in font-mono text-xs max-h-[90vh] overflow-y-auto my-auto">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
               <h3 className="font-heading font-bold text-base text-[#0F172A] flex items-center gap-2">
                 <Package className="w-5 h-5 text-[#DC143C]" /> Add Sealed Product to Vault
@@ -312,7 +312,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
             </div>
 
             <form onSubmit={handleAddSubmit} className="space-y-4">
-              <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] pb-2">
+              <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] pb-2 flex-wrap">
                 <span className="font-bold text-[#0F172A]">Entry Mode:</span>
                 <div className="flex bg-[#F1F5F9] p-0.5 rounded-lg">
                   <button
@@ -349,23 +349,25 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                       className="w-full pl-8 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs focus:outline-none focus:border-[#DC143C]"
                     />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 min-w-0">
                     {activeProduct?.imageUrl && (
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-white border border-[#E2E8F0] rounded-xl p-2 shadow-sm flex items-center justify-center">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-white border border-[#E2E8F0] rounded-xl p-1.5 shadow-xs flex items-center justify-center mx-auto sm:mx-0">
                         <img src={activeProduct.imageUrl} alt={activeProduct.name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="max-w-full max-h-full object-contain" />
                       </div>
                     )}
-                    <select
-                      value={selectedProductId}
-                      onChange={(e) => handleProductChange(e.target.value)}
-                      className="flex-1 h-fit p-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs focus:outline-none focus:border-[#DC143C]"
-                    >
-                      {filteredCatalog.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.language}) - Market: ${p.marketPrice}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex-1 min-w-0">
+                      <select
+                        value={selectedProductId}
+                        onChange={(e) => handleProductChange(e.target.value)}
+                        className="w-full p-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs focus:outline-none focus:border-[#DC143C] truncate"
+                      >
+                        {filteredCatalog.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} ({p.language}) - Market: ${p.marketPrice}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -381,7 +383,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                       className="w-full p-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-xs focus:outline-none focus:border-[#DC143C]"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[#0F172A] font-bold mb-1">Type:</label>
                       <select
@@ -428,7 +430,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[#0F172A] font-bold mb-1">Quantity:</label>
                   <input
@@ -454,7 +456,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[#0F172A] font-bold mb-1">Box / Seal Condition:</label>
                   <select

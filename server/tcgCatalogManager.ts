@@ -91,6 +91,7 @@ let syncProgress = {
 // Memory Cache
 let memoryExpansionsCache: TCGSet[] | null = null;
 let memoryCardsSummaryCache: TCGCardSummary[] | null = null;
+let memoryIndexCardsCache: any[] | null = null;
 const memoryCardDetailCache = new Map<string, any>();
 let lastExpansionsFetchTime = 0;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 Hour
@@ -99,6 +100,7 @@ export function clearCatalogMemoryCache(): { clearedSets: boolean; clearedCards:
   const detailCacheSize = memoryCardDetailCache.size;
   memoryExpansionsCache = null;
   memoryCardsSummaryCache = null;
+  memoryIndexCardsCache = null;
   memoryCardDetailCache.clear();
   lastExpansionsFetchTime = 0;
   return { clearedSets: true, clearedCards: true, detailCacheSize };
@@ -460,7 +462,165 @@ export async function getLazyChunk(offset = 0, limit = 50): Promise<{ cards: TCG
   };
 }
 
-// 6. Server Search Engine supporting dual-type mapping & filters
+const SET_CODE_REMAP: Record<string, string> = {
+  '2011bw': 'mcd11',
+  '2012bw': 'mcd12',
+  '2016xy': 'mcd16',
+  '2019sm': 'mcd19',
+  '2021swsh': 'mcd21',
+  '2022swsh': 'mcd22',
+  'swsh9tg': 'swsh9tg',
+  'swsh10tg': 'swsh10tg',
+  'swsh11tg': 'swsh11tg',
+  'swsh12tg': 'swsh12tg',
+  'swsh12.5gg': 'swsh12pt5gg',
+  'swsh12pt5gg': 'swsh12pt5gg',
+};
+
+const UNKNOWN_ARTWORK_SETS = new Set([
+  '2014xy', '2015xy', '2017sm', '2018sm', '2023sv', '2024sv',
+  'bog', 'ex5.5', 'exu', 'mee', 'mep', 'mfb', 'sve', 'xya', 'tk-hs-g'
+]);
+
+function formatCardImage(img?: string, setId?: string, localId?: string): string {
+  if (img && typeof img === 'string') {
+    if (/\.(webp|png|jpg|jpeg|gif)$/i.test(img)) return img;
+    if (/\/low\.(webp|png)$/i.test(img) || /\/high\.(webp|png)$/i.test(img)) return img;
+    return `${img.replace(/\/$/, '')}/low.webp`;
+  }
+  if (setId && localId) {
+    const rawSet = String(setId).toLowerCase().trim();
+    if (UNKNOWN_ARTWORK_SETS.has(rawSet)) return '';
+    const cleanSet = SET_CODE_REMAP[rawSet] || rawSet;
+    const cleanNum = String(localId).trim();
+    return `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+  }
+  return '';
+}
+
+// 5.5. Comprehensive Search Index Cards
+export async function getIndexDataCards(): Promise<any[]> {
+  if (memoryIndexCardsCache && memoryIndexCardsCache.length > 0) {
+    return memoryIndexCardsCache;
+  }
+
+  const indexFile = path.join(CACHE_DIR, 'index_cards.json');
+  if (fs.existsSync(indexFile)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(indexFile, 'utf-8'));
+      if (Array.isArray(data) && data.length > 0) {
+        // Filter out any cached cards that belong to UNKNOWN_ARTWORK_SETS or have empty image
+        const validData = data.filter((c: any) => {
+          if (!c || !c.image || c.image === '') return false;
+          const sId = (c.set?.id || '').toLowerCase().trim();
+          if (UNKNOWN_ARTWORK_SETS.has(sId)) return false;
+          return true;
+        });
+        memoryIndexCardsCache = validData;
+        return validData;
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached index_cards.json', e);
+    }
+  }
+
+  // Build index on the fly from sets and cards_summary
+  try {
+    const expansions = await getExpansions();
+    const setMap = new Map<string, any>();
+    expansions.forEach((s) => setMap.set(s.id, s));
+
+    const cardMap = new Map<string, any>();
+    if (fs.existsSync(CACHE_DIR)) {
+      const files = fs.readdirSync(CACHE_DIR).filter((f) => f.startsWith('set_'));
+      for (const f of files) {
+        try {
+          const setDetail = JSON.parse(fs.readFileSync(path.join(CACHE_DIR, f), 'utf-8'));
+          const setMeta = setMap.get(setDetail.id) || { id: setDetail.id, name: setDetail.name };
+          if (Array.isArray(setDetail.cards)) {
+            for (const c of setDetail.cards) {
+              if (!c.id) continue;
+              const sId = (setMeta.id || '').toLowerCase().trim();
+              if (UNKNOWN_ARTWORK_SETS.has(sId)) continue;
+
+              const imgUrl = formatCardImage(c.image, setMeta.id, c.localId);
+              if (!imgUrl) continue;
+
+              cardMap.set(c.id, {
+                id: c.id,
+                localId: c.localId,
+                name: c.name,
+                hp: c.hp,
+                types: c.types,
+                rarity: c.rarity,
+                illustrator: c.illustrator,
+                image: imgUrl,
+                category: c.category || 'Pokemon',
+                stage: c.stage,
+                regulationMark: c.regulationMark,
+                legal: c.legal,
+                variants: c.variants,
+                set: {
+                  id: setMeta.id,
+                  name: setMeta.name,
+                  symbol: setMeta.symbol,
+                  logo: setMeta.logo,
+                },
+              });
+            }
+          }
+        } catch (err) {}
+      }
+    }
+
+    const summaryCards = await getAllCardsSummary();
+    for (const c of summaryCards) {
+      if (!c.id || cardMap.has(c.id)) continue;
+      const lastHyphen = c.id.lastIndexOf('-');
+      const derivedSetId = lastHyphen > 0 ? c.id.substring(0, lastHyphen) : '';
+      if (UNKNOWN_ARTWORK_SETS.has(derivedSetId.toLowerCase().trim())) continue;
+
+      const setMeta = setMap.get(derivedSetId) || { id: derivedSetId, name: derivedSetId };
+
+      const inferredCategory = c.category || (
+        c.name.toLowerCase().includes(' energy') || c.name.toLowerCase().endsWith('energy')
+          ? 'Energy'
+          : (/(?:ball|professor|orders|switch|poffin|vessel|rod|catcher|belt|stadium|supporter|candy|potion|board|vacuum|hammer|specs|research|iono|arven|colress|cynthia|n\b|marnie|guzma|boss)/i.test(c.name)
+            ? 'Trainer'
+            : 'Pokemon')
+      );
+
+      const imgUrl = formatCardImage(c.image, derivedSetId, c.localId);
+      if (!imgUrl) continue;
+
+      cardMap.set(c.id, {
+        id: c.id,
+        localId: c.localId,
+        name: c.name,
+        image: imgUrl,
+        category: inferredCategory,
+        set: {
+          id: setMeta.id,
+          name: setMeta.name,
+          symbol: setMeta.symbol,
+          logo: setMeta.logo,
+        },
+      });
+    }
+
+    const allCards = Array.from(cardMap.values());
+    memoryIndexCardsCache = allCards;
+    try {
+      fs.writeFileSync(indexFile, JSON.stringify(allCards));
+    } catch (e) {}
+    return allCards;
+  } catch (err) {
+    console.error('Failed to compile getIndexDataCards:', err);
+    return memoryIndexCardsCache || [];
+  }
+}
+
+// 6. Server Search Engine supporting comprehensive card querying & live name fallback
 export async function searchCardsServer(queryObj: {
   q?: string;
   category?: string;
@@ -471,17 +631,63 @@ export async function searchCardsServer(queryObj: {
   offset?: number;
   limit?: number;
 }) {
-  const allCards = await getAllCardsSummary();
+  const allCards = await getIndexDataCards();
   let filtered = allCards;
 
   if (queryObj.q && queryObj.q.trim()) {
     const qLower = queryObj.q.toLowerCase().trim();
-    filtered = filtered.filter((c) => c.name.toLowerCase().includes(qLower) || c.id.toLowerCase().includes(qLower) || c.localId.toLowerCase().includes(qLower));
+    filtered = filtered.filter(
+      (c) =>
+        (c.name || '').toLowerCase().includes(qLower) ||
+        (c.id || '').toLowerCase().includes(qLower) ||
+        (c.localId || '').toLowerCase().includes(qLower) ||
+        (c.set?.name || '').toLowerCase().includes(qLower)
+    );
+
+    // If few results found in initial set index, query TCGdex direct name endpoint to dynamically augment
+    if (filtered.length < 5 && qLower.length >= 2) {
+      try {
+        const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(queryObj.q.trim())}`, {
+          signal: AbortSignal.timeout(3000),
+        });
+        if (res.ok) {
+          const fetchedCards = await res.json();
+          if (Array.isArray(fetchedCards)) {
+            const existingIds = new Set(filtered.map((c) => c.id));
+            const newCards = fetchedCards.filter((c) => c && c.id && !existingIds.has(c.id));
+            if (newCards.length > 0) {
+              filtered = [...filtered, ...newCards];
+            }
+          }
+        }
+      } catch (err) {}
+    }
   }
 
   if (queryObj.category && queryObj.category !== 'All') {
     const catLower = queryObj.category.toLowerCase();
-    filtered = filtered.filter((c) => (c.category || '').toLowerCase() === catLower);
+    filtered = filtered.filter((c) => {
+      const cardCat = (c.category || 'pokemon').toLowerCase();
+      if (catLower === 'pokemon' && (cardCat === 'pokémon' || cardCat === 'pokemon')) return true;
+      return cardCat === catLower;
+    });
+  }
+
+  if (queryObj.stage && queryObj.stage !== 'All') {
+    const stageLower = queryObj.stage.toLowerCase();
+    filtered = filtered.filter((c) => (c.stage || '').toLowerCase().includes(stageLower));
+  }
+
+  if (queryObj.type && queryObj.type !== 'All') {
+    const typeLower = queryObj.type.toLowerCase();
+    filtered = filtered.filter((c) =>
+      Array.isArray(c.types) && c.types.some((t: string) => t.toLowerCase() === typeLower)
+    );
+  }
+
+  if (queryObj.regulationMark) {
+    const regUpper = queryObj.regulationMark.toUpperCase();
+    filtered = filtered.filter((c) => (c.regulationMark || '').toUpperCase() === regUpper);
   }
 
   const offset = queryObj.offset || 0;

@@ -206,6 +206,16 @@ export default function App() {
     }
   }, [location.pathname]);
 
+  const [catalogUpdateRevision, setCatalogUpdateRevision] = useState(0);
+
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      setCatalogUpdateRevision((r) => r + 1);
+    };
+    window.addEventListener('deckdivider:search-index-updated', handleUpdate);
+    return () => window.removeEventListener('deckdivider:search-index-updated', handleUpdate);
+  }, []);
+
   React.useEffect(() => {
     initSearchEngine()
       .then(() => setEngineReady(true))
@@ -222,11 +232,11 @@ export default function App() {
 
   const allCards = React.useMemo(
     () => (engineReady ? searchCards({}).slice(0, 300).map(mapToPokemonCard) : []),
-    [engineReady]
+    [engineReady, catalogUpdateRevision]
   );
   const allSets = React.useMemo(
     () => (liveSets.length > 0 ? liveSets : engineReady ? getAvailableSets() : []),
-    [engineReady, liveSets]
+    [engineReady, liveSets, catalogUpdateRevision]
   );
   const effectiveCards = allCards;
 

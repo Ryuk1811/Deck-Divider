@@ -9,12 +9,13 @@
     "build": "tsx scripts/generateAllIcons.ts && vite build && tsx scripts/prerender.ts && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "build:pages": "tsx scripts/generateAllIcons.ts && vite build && tsx scripts/prerender.ts",
     "build:worker": "vite build",
-    "deploy:pages": "tsx scripts/generateAllIcons.ts && vite build && tsx scripts/prerender.ts && wrangler pages deploy dist --project-name=deck-divider",
+    "deploy:pages": "tsx scripts/generateAllIcons.ts && vite build && tsx scripts/prerender.ts && wrangler pages deploy dist --project-name=\"deck divider\"",
     "deploy:worker": "vite build && wrangler deploy",
     "start": "NODE_ENV=production node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js dist/server.cjs",
     "purge:cache": "tsx scripts/purgeWebCache.ts",
+    "verify:cloudflare": "tsx scripts/verifyCloudflare.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

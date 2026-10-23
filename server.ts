@@ -56,6 +56,7 @@ import {
   getLazyChunk,
   searchCardsServer,
   clearCatalogMemoryCache,
+  getIndexDataCards,
 } from './server/tcgCatalogManager.js';
 import {
   BUILD_HASH,
@@ -2630,51 +2631,11 @@ async function startServer() {
   
   app.get('/api/tcgdex/index-data', async (req, res) => {
     try {
-      const response = await fetch('https://api.tcgdex.net/v2/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip' },
-        body: JSON.stringify({
-          query: `
-            query {
-              cards {
-                id
-                localId
-                name
-                hp
-                types
-                rarity
-                illustrator
-                image
-                category
-                stage
-                regulationMark
-                legal {
-                  standard
-                  expanded
-                }
-                variants {
-                  normal
-                  reverse
-                  holo
-                  firstEdition
-                }
-                set {
-                  id
-                  name
-                  symbol
-                  logo
-                }
-              }
-            }
-          `
-        })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch from TCGDex GraphQL');
-      }
-      const data = await response.json();
-      res.json(data);
+      const cards = await getIndexDataCards();
+      res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+      res.json({ data: { cards } });
     } catch (err: any) {
+      console.error('[index-data] Error serving cards index:', err);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });

@@ -36,8 +36,20 @@ function notifySyncListeners(state: SyncProgressState) {
 }
 
 // Helper to format image URLs
-function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low'): string {
-  if (!imageStr) return 'https://images.pokemontcg.io/cardback.png';
+function formatTCGdexImage(imageStr?: string, quality: 'low' | 'high' = 'low', setId?: string, localId?: string): string {
+  if (!imageStr && setId && localId) {
+    const rawSet = String(setId).toLowerCase().trim();
+    const cleanNum = String(localId).trim();
+    const SET_CODE_REMAP: Record<string, string> = {
+      '2011bw': 'mcd11', '2012bw': 'mcd12', '2016xy': 'mcd16',
+      '2019sm': 'mcd19', '2021swsh': 'mcd21', '2022swsh': 'mcd22',
+      'swsh9tg': 'swsh9tg', 'swsh10tg': 'swsh10tg', 'swsh11tg': 'swsh11tg',
+      'swsh12tg': 'swsh12tg', 'swsh12.5gg': 'swsh12pt5gg', 'swsh12pt5gg': 'swsh12pt5gg',
+    };
+    const cleanSet = SET_CODE_REMAP[rawSet] || rawSet;
+    return `https://images.pokemontcg.io/${cleanSet}/${cleanNum}.png`;
+  }
+  if (!imageStr) return '';
   let url = String(imageStr).trim();
   if (!url.startsWith('http') && url.startsWith('/')) {
     url = `https://assets.tcgdex.net${url}`;
@@ -79,8 +91,8 @@ export function mapTCGdexCard(card: any): PokemonCard {
 
   const hpVal = typeof card.hp === 'number' ? card.hp : parseInt(String(card.hp || 0), 10) || undefined;
 
-  const smallImage = formatTCGdexImage(card.image, 'low');
-  const largeImage = formatTCGdexImage(card.image, 'high');
+  const smallImage = formatTCGdexImage(card.image, 'low', card.set?.id, card.localId);
+  const largeImage = formatTCGdexImage(card.image, 'high', card.set?.id, card.localId);
 
   return {
     id: card.id,
@@ -356,8 +368,8 @@ export async function startFullCatalogBackgroundSync() {
     const expansions = await getExpansionsCatalog();
     await idbSaveExpansions(expansions);
 
-    // Spool top 8 newest sets non-blockingly into local cache
-    const prioritySets = expansions.slice(0, 8);
+    // Spool top 16 newest sets non-blockingly into local cache
+    const prioritySets = expansions.slice(0, 16);
     for (let i = 0; i < prioritySets.length; i++) {
       const s = prioritySets[i];
       if (s && s.id) {

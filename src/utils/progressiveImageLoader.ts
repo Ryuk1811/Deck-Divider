@@ -37,6 +37,18 @@ const SET_PATH_MAPPINGS: Record<string, { tcgdexSeries?: string; tcgdexSet?: str
   b1a: { tcgdexSeries: 'tcgp', tcgdexSet: 'B1a', pokemontcgSet: 'b1a' },
   b2: { tcgdexSeries: 'tcgp', tcgdexSet: 'B2', pokemontcgSet: 'b2' },
   b2a: { tcgdexSeries: 'tcgp', tcgdexSet: 'B2a', pokemontcgSet: 'b2a' },
+  '2011bw': { tcgdexSeries: 'bw', tcgdexSet: '2011bw', pokemontcgSet: 'mcd11' },
+  '2012bw': { tcgdexSeries: 'bw', tcgdexSet: '2012bw', pokemontcgSet: 'mcd12' },
+  '2016xy': { tcgdexSeries: 'xy', tcgdexSet: '2016xy', pokemontcgSet: 'mcd16' },
+  '2019sm': { tcgdexSeries: 'sm', tcgdexSet: '2019sm', pokemontcgSet: 'mcd19' },
+  '2021swsh': { tcgdexSeries: 'swsh', tcgdexSet: '2021swsh', pokemontcgSet: 'mcd21' },
+  '2022swsh': { tcgdexSeries: 'swsh', tcgdexSet: '2022swsh', pokemontcgSet: 'mcd22' },
+  'swsh9tg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh09', pokemontcgSet: 'swsh9tg' },
+  'swsh10tg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh10', pokemontcgSet: 'swsh10tg' },
+  'swsh11tg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh11', pokemontcgSet: 'swsh11tg' },
+  'swsh12tg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12', pokemontcgSet: 'swsh12tg' },
+  'swsh12.5gg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12.5', pokemontcgSet: 'swsh12pt5gg' },
+  'swsh12pt5gg': { tcgdexSeries: 'swsh', tcgdexSet: 'swsh12.5', pokemontcgSet: 'swsh12pt5gg' },
   sv3pt5: { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
   'sv03.5': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
   '151': { tcgdexSeries: 'sv', tcgdexSet: 'sv03.5', pokemontcgSet: 'sv3pt5' },
@@ -157,23 +169,28 @@ export function getOptimizedCardImageCandidates(
     }
   }
 
-  // 2. Direct src if provided (prioritize standard non-hires)
+  // 2. Direct src if provided (prioritize standard non-hires with proper image extension)
   if (src && !src.includes('cardback.png') && !src.includes('undefined')) {
-    if (src.startsWith('http://') || src.startsWith('https://')) {
+    let formattedSrc = src;
+    if (src.includes('tcgdex.net') && !/\.(webp|png|jpg|jpeg|avif)$/i.test(src) && !/\/(low|high)\.(webp|png|avif)$/i.test(src)) {
+      formattedSrc = `${src.replace(/\/$/, '')}/${preferHighRes ? 'high' : 'low'}.webp`;
+    }
+
+    if (formattedSrc.startsWith('http://') || formattedSrc.startsWith('https://')) {
       if (preferHighRes) {
-        if (src.includes('.png') && !src.includes('_hires.png') && src.includes('pokemontcg.io')) {
-          candidates.push(src.replace('.png', '_hires.png'));
+        if (formattedSrc.includes('.png') && !formattedSrc.includes('_hires.png') && formattedSrc.includes('pokemontcg.io')) {
+          candidates.push(formattedSrc.replace('.png', '_hires.png'));
         }
-        candidates.push(src);
+        candidates.push(formattedSrc);
       } else {
-        if (src.includes('_hires.png')) {
-          candidates.push(src.replace('_hires.png', '.png'));
+        if (formattedSrc.includes('_hires.png')) {
+          candidates.push(formattedSrc.replace('_hires.png', '.png'));
         } else {
-          candidates.push(src);
+          candidates.push(formattedSrc);
         }
       }
-    } else if (src.startsWith('/')) {
-      candidates.push(src);
+    } else if (formattedSrc.startsWith('/')) {
+      candidates.push(formattedSrc);
     }
   }
 

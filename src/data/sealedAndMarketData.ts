@@ -56,9 +56,9 @@ export function generateSealedProductsFromSets(sets: any[]): SealedProduct[] {
         imageUrl: set.logoUrl || set.symbolUrl || undefined,
         packCount: 36,
         priceHistory: [
-          { date: '2026-05-01', price: Number((estMarket * 0.9).toFixed(2)) },
-          { date: '2026-06-15', price: Number((estMarket * 0.95).toFixed(2)) },
-          { date: '2026-08-06', price: estMarket },
+          { date: new Date(Date.now() - 90 * 86400000).toISOString().split('T')[0], price: Number((estMarket * 0.90).toFixed(2)) },
+          { date: new Date(Date.now() - 45 * 86400000).toISOString().split('T')[0], price: Number((estMarket * 0.95).toFixed(2)) },
+          { date: new Date().toISOString().split('T')[0], price: estMarket },
         ],
       });
     }
@@ -90,8 +90,8 @@ export function generateSealedProductsFromSets(sets: any[]): SealedProduct[] {
         imageUrl: set.logoUrl || undefined,
         packCount: isSpecialSet ? 11 : 9,
         priceHistory: [
-          { date: '2026-05-01', price: Number((estEtbMarket * 0.88).toFixed(2)) },
-          { date: '2026-08-06', price: estEtbMarket },
+          { date: new Date(Date.now() - 90 * 86400000).toISOString().split('T')[0], price: Number((estEtbMarket * 0.88).toFixed(2)) },
+          { date: new Date().toISOString().split('T')[0], price: estEtbMarket },
         ],
       });
     }
@@ -120,8 +120,8 @@ export function generateSealedProductsFromSets(sets: any[]): SealedProduct[] {
         imageUrl: set.logoUrl || undefined,
         packCount: 6,
         priceHistory: [
-          { date: '2026-05-01', price: Number((estBundleMarket * 0.9).toFixed(2)) },
-          { date: '2026-08-06', price: estBundleMarket },
+          { date: new Date(Date.now() - 90 * 86400000).toISOString().split('T')[0], price: Number((estBundleMarket * 0.9).toFixed(2)) },
+          { date: new Date().toISOString().split('T')[0], price: estBundleMarket },
         ],
       });
     }
@@ -150,8 +150,8 @@ export function generateSealedProductsFromSets(sets: any[]): SealedProduct[] {
         imageUrl: set.logoUrl || undefined,
         packCount: 16,
         priceHistory: [
-          { date: '2026-05-01', price: Number((estUpcMarket * 0.92).toFixed(2)) },
-          { date: '2026-08-06', price: estUpcMarket },
+          { date: new Date(Date.now() - 90 * 86400000).toISOString().split('T')[0], price: Number((estUpcMarket * 0.92).toFixed(2)) },
+          { date: new Date().toISOString().split('T')[0], price: estUpcMarket },
         ],
       });
     }

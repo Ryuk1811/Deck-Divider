@@ -3,6 +3,8 @@ import { Search, Layers, BookOpen, X, ArrowRight } from 'lucide-react';
 import { PokemonCard, Deck, CardSet } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 
+import { CardImage } from './CardImage';
+
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
@@ -131,11 +133,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     className="flex items-center justify-between p-2 rounded-md bg-white hover:bg-[#FFF0F3] border border-transparent hover:border-[#DC143C] cursor-pointer transition-all"
                   >
                     <div className="flex items-center gap-3">
-                      <img
-                        src={card.images.small || 'https://images.pokemontcg.io/cardback.png'}
-                        alt={card.name}
-                        className="w-8 h-11 object-cover rounded-md border border-[#E2E8F0]"
-                      />
+                      <div className="w-8 h-11 shrink-0 rounded-md border border-[#E2E8F0] overflow-hidden">
+                        <CardImage
+                          src={card.images.small}
+                          alt={card.name}
+                          cardName={card.name}
+                          cardNumber={card.number}
+                          setName={card.set?.name}
+                          setId={card.set?.id}
+                        />
+                      </div>
                       <div>
                         <div className="font-heading font-semibold text-xs text-[#0F172A]">
                           {card.name}

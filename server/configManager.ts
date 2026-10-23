@@ -21,6 +21,16 @@ export interface AppCredentials {
     projectId: string;
     clientEmail: string;
   };
+  cloudflare: {
+    accountId: string;
+    apiToken: string;
+    r2: {
+      accessKeyId: string;
+      secretAccessKey: string;
+      endpoint: string;
+      bucketName?: string;
+    };
+  };
   updatedAt?: string;
 }
 
@@ -48,6 +58,18 @@ export async function getAppCredentials(): Promise<AppCredentials> {
     firebase: {
       projectId: process.env.FIREBASE_PROJECT_ID || 'deckdivider1',
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+    },
+    cloudflare: {
+      accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '82194e5cb26731579613ad66f0af25e1',
+      projectId: process.env.CLOUDFLARE_PROJECT_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
+      projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck divider',
+      apiToken: process.env.CLOUDFLARE_API_TOKEN || 'cfat_aR5MC6GHUaWR12in1ZbwTUNyVeMIsVk0095B7Ws3af33bc58',
+      r2: {
+        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || process.env.CLOUDFLARE_ACCESS_KEY_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
+        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '0fcca8338eb37f34e19e980c49611f770f7a93a9fc41bab9bfc09f0a0de46741',
+        endpoint: process.env.CLOUDFLARE_R2_ENDPOINT || 'https://82194e5cb26731579613ad66f0af25e1.r2.cloudflarestorage.com',
+        bucketName: process.env.CLOUDFLARE_R2_BUCKET || 'deckdivider-vault',
+      },
     },
     updatedAt: new Date().toISOString(),
   };
