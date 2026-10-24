@@ -93,7 +93,7 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
         releaseDate: purchaseDate,
         msrp: priceInUSD,
         marketPrice: customUsdMarket,
-        imageUrl: undefined,
+        imageUrl: '',
         packCount: customType === 'Booster Box' ? 36 : customType === 'Elite Trainer Box' ? 9 : 6,
       };
     } else {
@@ -109,9 +109,11 @@ export const SealedPortfolioManager: React.FC<SealedPortfolioManagerProps> = ({
       purchaseCurrency: currency,
       purchaseDate,
       condition,
-      notes: notes.trim() || undefined,
       isSold: false,
     };
+    if (notes.trim()) {
+      newEntry.notes = notes.trim();
+    }
 
     onAddSealedEntry(newEntry);
     setIsModalOpen(false);

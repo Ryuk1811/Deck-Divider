@@ -63,7 +63,7 @@ import {
   isMockCustomList,
   isMockSealedEntry,
 } from './lib/showcaseSeeder';
-import { db, auth, handleFirestoreError, OperationType } from './lib/firebase';
+import { db, auth, handleFirestoreError, OperationType, cleanFirestoreData, safeSetDoc } from './lib/firebase';
 import { signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 
@@ -411,8 +411,8 @@ export default function App() {
       };
 
       try {
-        await setDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
-        await setDoc(doc(db, 'users', uid), { tier, updatedAt: now.toISOString() }, { merge: true });
+        await safeSetDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
+        await safeSetDoc(doc(db, 'users', uid), { tier, updatedAt: now.toISOString() }, { merge: true });
       } catch (dbErr) {
         console.warn('Direct Firestore subscription binding warning:', dbErr);
       }
@@ -476,8 +476,8 @@ export default function App() {
       };
 
       try {
-        await setDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
-        await setDoc(doc(db, 'users', uid), { tier: 'Collection', isLifetime: true, updatedAt: now.toISOString() }, { merge: true });
+        await safeSetDoc(doc(db, 'subscriptions', uid), subDocData, { merge: true });
+        await safeSetDoc(doc(db, 'users', uid), { tier: 'Collection', isLifetime: true, updatedAt: now.toISOString() }, { merge: true });
       } catch (dbErr) {
         console.warn('Direct Firestore lifetime binding warning:', dbErr);
       }
@@ -713,16 +713,16 @@ export default function App() {
       const rawLists = overrideState?.customLists ?? stateRef.current.customLists;
       const rawSealed = overrideState?.sealedEntries ?? stateRef.current.sealedEntries;
 
-      const sanitizedDecks = curUser
+      const sanitizedDecks = (curUser
         ? rawDecks
             .filter((d) => !isMockDeck(d))
             .map((deck) => ({
               ...deck,
               entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
             }))
-        : rawDecks;
-      const sanitizedLists = curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
-      const sanitizedSealed = curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
+        : rawDecks).map((d) => cleanFirestoreData(d));
+      const sanitizedLists = (curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists).map((l) => cleanFirestoreData(l));
+      const sanitizedSealed = (curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed).map((s) => cleanFirestoreData(s));
 
       // SAFETY GUARD 1: Never write snapshots if initial data load from cloud/IDB is still running (unless explicitly provided)
       if (curUser && !isDataInitializedRef.current && !overrideState) {
@@ -760,8 +760,8 @@ export default function App() {
         decks: sanitizedDecks,
         customLists: sanitizedLists,
         sealedEntries: sanitizedSealed,
-        soldEntries: stateRef.current.soldEntries,
-        recentActivities: stateRef.current.recentActivities,
+        soldEntries: cleanFirestoreData(stateRef.current.soldEntries || []),
+        recentActivities: cleanFirestoreData(stateRef.current.recentActivities || []),
       };
 
       const packed = await packageUserSnapshot(stateToCompress);
@@ -769,16 +769,16 @@ export default function App() {
       const snapRef = doc(db, 'users', curUser.uid, 'snapshot', 'current');
       
       // Strict overwrite (merge: false) to prevent historical document bloat
-      await setDoc(snapRef, packed, { merge: false });
+      await safeSetDoc(snapRef, packed, { merge: false });
 
       // Save rolling timestamped point-in-time cloud and local backup
       await createCloudBackupPoint(stateToCompress);
 
       // Async multi-tier subcollection redundancy sync (guarantees cross-device durability)
-      Promise.all([
-        ...sanitizedDecks.map((d) => setDoc(doc(db, 'users', curUser.uid, 'decks', d.id), d).catch(() => {})),
-        ...sanitizedLists.map((l) => setDoc(doc(db, 'users', curUser.uid, 'customLists', l.id), l).catch(() => {})),
-        ...sanitizedSealed.map((s) => setDoc(doc(db, 'users', curUser.uid, 'sealedVault', s.id), s).catch(() => {})),
+      await Promise.all([
+        ...sanitizedDecks.map((d) => safeSetDoc(doc(db, 'users', curUser.uid, 'decks', d.id), d).catch(() => {})),
+        ...sanitizedLists.map((l) => safeSetDoc(doc(db, 'users', curUser.uid, 'customLists', l.id), l).catch(() => {})),
+        ...sanitizedSealed.map((s) => safeSetDoc(doc(db, 'users', curUser.uid, 'sealedVault', s.id), s).catch(() => {})),
       ]).catch(() => {});
 
       setLastSyncedTimestamp(packed.updatedAt);
@@ -1270,7 +1270,7 @@ export default function App() {
 
     if (user) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'decks', newDeckId), newDeck);
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', newDeckId), newDeck);
         saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck save notice:', err);
@@ -1286,7 +1286,7 @@ export default function App() {
 
     if (user) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'decks', updatedDeck.id), updatedDeck, { merge: true });
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', updatedDeck.id), updatedDeck, { merge: true });
         saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck update notice:', err);
@@ -1362,8 +1362,8 @@ export default function App() {
 
     if (user) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'decks', updatedSourceDeck.id), updatedSourceDeck);
-        await setDoc(doc(db, 'users', user.uid, 'decks', newSplitDeckId), newSplitDeck);
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', updatedSourceDeck.id), updatedSourceDeck);
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', newSplitDeckId), newSplitDeck);
         saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck split save notice:', err);
@@ -1457,7 +1457,7 @@ export default function App() {
 
     if (user && targetDeck) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
         saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck add-card notice:', err);
@@ -1517,7 +1517,7 @@ export default function App() {
 
     if (user && targetDeck) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
         saveCompressedCloudSnapshot({ decks: newDecks });
       } catch (err) {
         console.warn('Firestore deck mark-sold notice:', err);
@@ -1568,7 +1568,7 @@ export default function App() {
 
     if (user) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'customLists', newListId), newList);
+        await safeSetDoc(doc(db, 'users', user.uid, 'customLists', newListId), newList);
         saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list create notice:', err);
@@ -1620,7 +1620,7 @@ export default function App() {
 
     if (user && updatedList) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+        await safeSetDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
         saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list add-card notice:', err);
@@ -1645,7 +1645,7 @@ export default function App() {
 
     if (user && updatedList) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
+        await safeSetDoc(doc(db, 'users', user.uid, 'customLists', updatedList.id), updatedList);
         saveCompressedCloudSnapshot({ customLists: newLists });
       } catch (err) {
         console.warn('Firestore list remove-card notice:', err);
@@ -1676,7 +1676,7 @@ export default function App() {
 
     if (user) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'sealedVault', entry.id), entry);
+        await safeSetDoc(doc(db, 'users', user.uid, 'sealedVault', entry.id), entry);
         saveCompressedCloudSnapshot({ sealedEntries: newSealed });
       } catch (err) {
         console.warn('Firestore sealed entry save notice:', err);
@@ -1748,7 +1748,7 @@ export default function App() {
 
     if (user && updatedItem) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'sealedVault', (updatedItem as PortfolioSealedEntry).id), updatedItem);
+        await safeSetDoc(doc(db, 'users', user.uid, 'sealedVault', (updatedItem as PortfolioSealedEntry).id), updatedItem);
         saveCompressedCloudSnapshot({ sealedEntries: newSealed });
       } catch (err) {
         console.warn('Firestore sealed mark-sold notice:', err);
@@ -1805,7 +1805,7 @@ export default function App() {
       if (user) {
         try {
           const userRef = doc(db, 'users', user.uid);
-          await setDoc(userRef, { isPublicProfile: isPublic }, { merge: true });
+          await safeSetDoc(userRef, { isPublicProfile: isPublic }, { merge: true });
         } catch (e) {
           console.warn('Firestore user doc public flag update:', e);
         }

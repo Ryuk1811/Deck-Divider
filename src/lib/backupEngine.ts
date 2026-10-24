@@ -6,7 +6,7 @@
  */
 
 import { doc, setDoc, getDocs, collection, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, safeSetDoc } from './firebase';
 import { UserCompressedSnapshotState, packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc } from './snapshotEngine';
 import { Deck, CustomList, PortfolioSealedEntry, PortfolioCardEntry } from '../types';
 
@@ -114,7 +114,7 @@ export async function createCloudBackupPoint(
     const backupDocId = `backup_${Date.now()}`;
     const backupRef = doc(db, 'users', state.userId, 'backups', backupDocId);
 
-    await setDoc(backupRef, packed);
+    await safeSetDoc(backupRef, packed);
 
     // Prune old cloud backups if over MAX_CLOUD_BACKUPS
     pruneOldCloudBackups(state.userId);

@@ -8,7 +8,7 @@ import {
   browserPopupRedirectResolver
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { auth, db, safeSetDoc } from './firebase';
 import { UserProfile, SubscriptionRecord } from '../types';
 import { evaluateSubscriptionGovernor } from '../utils/subscriptionGovernor';
 
@@ -96,10 +96,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (nameChanged) updateObj.displayName = googleName;
           if (photoChanged) updateObj.avatar = googlePhoto;
           if (superUserNeedsUpdate) updateObj.isSuperUser = true;
-          await setDoc(userRef, updateObj, { merge: true });
+          await safeSetDoc(userRef, updateObj, { merge: true });
         }
       } else {
-        await setDoc(userRef, defaultProf, { merge: true });
+        await safeSetDoc(userRef, defaultProf, { merge: true });
         setProfile(defaultProf);
       }
 
@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const governed = evaluateSubscriptionGovernor(rawSubData, isSuperUser);
         
         if (isSuperUser) {
-          await setDoc(subRef, { 
+          await safeSetDoc(subRef, { 
             tierName: 'Collection', 
             effectiveTier: 'Collection', 
             isSuperUser: true, 
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }, { merge: true });
         } else if (governed.isExpired && rawSubData.billingStatus !== 'expired') {
           // Sync expired status back to Firestore doc so all sessions reflect it
-          await setDoc(subRef, { 
+          await safeSetDoc(subRef, { 
             billingStatus: 'expired',
             effectiveTier: 'Starter',
             updatedAt: new Date().toISOString()
@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSubscription(governed);
       } else {
         const governedDefault = evaluateSubscriptionGovernor(defaultSub, isSuperUser);
-        await setDoc(subRef, governedDefault, { merge: true });
+        await safeSetDoc(subRef, governedDefault, { merge: true });
         setSubscription(governedDefault);
       }
     } catch (err) {
@@ -217,7 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       try {
         const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, data, { merge: true });
+        await safeSetDoc(userRef, data, { merge: true });
       } catch (err) {
         console.warn('Failed to update user profile in Firestore:', err);
       }

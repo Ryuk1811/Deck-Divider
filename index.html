@@ -3,12 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      window.addEventListener('unhandledrejection', function(e) {
-        var msg = String(e && (e.reason || e.message || e));
-        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('@vite/client') !== -1) {
-          e.preventDefault();
+      (function() {
+        function isViteOrWsError(e, reason) {
+          var msg = String((e && (e.message || (e.error && e.error.message))) || reason || '');
+          var file = String((e && e.filename) || '');
+          return (
+            file.indexOf('@vite/client') !== -1 ||
+            msg.indexOf('WebSocket') !== -1 ||
+            msg.indexOf('websocket') !== -1 ||
+            msg.indexOf('@vite/client') !== -1 ||
+            msg.indexOf('failed to connect to websocket') !== -1
+          );
         }
-      });
+        window.addEventListener('error', function(e) {
+          if (isViteOrWsError(e)) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            if (e.stopPropagation) e.stopPropagation();
+            e.preventDefault();
+            return true;
+          }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+          var r = e && e.reason;
+          var msg = String((r && (r.message || r.stack)) || r || '');
+          if (isViteOrWsError(null, msg)) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            if (e.stopPropagation) e.stopPropagation();
+            e.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DECK / divider — Pokémon TCG Binder Tracker &amp; Deck Builder | Pokémon TCG Studio</title>

@@ -1,4 +1,4 @@
-name = "deck divider"
+name = "deck-divider"
 account_id = "82194e5cb26731579613ad66f0af25e1"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
@@ -7,7 +7,7 @@ pages_build_output_dir = "./dist"
 [vars]
 CLOUDFLARE_ACCOUNT_ID = "82194e5cb26731579613ad66f0af25e1"
 CLOUDFLARE_PROJECT_ID = "a2f80e6a6d6c8a2a0392a43911d72f37"
-CLOUDFLARE_PROJECT_NAME = "deck divider"
+CLOUDFLARE_PROJECT_NAME = "deck-divider"
 CLOUDFLARE_R2_ACCESS_KEY_ID = "a2f80e6a6d6c8a2a0392a43911d72f37"
 CLOUDFLARE_R2_ENDPOINT = "https://82194e5cb26731579613ad66f0af25e1.r2.cloudflarestorage.com"
 PAYPAL_MODE = "live"

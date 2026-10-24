@@ -13,7 +13,10 @@ import {
   persistentLocalCache, 
   persistentMultipleTabManager,
   doc, 
-  getDocFromServer 
+  getDocFromServer,
+  setDoc,
+  type SetOptions,
+  type DocumentReference
 } from "firebase/firestore";
 import firebaseConfigJson from "../../firebase-applet-config.json";
 
@@ -145,3 +148,46 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   console.warn('Firestore Error Context: ', JSON.stringify(errInfo));
   return errInfo;
 }
+
+/**
+ * Recursively removes all keys with `undefined` values from an object or array.
+ * Firestore strictly rejects documents containing `undefined` at any depth.
+ */
+export function cleanFirestoreData<T>(data: T): T {
+  if (data === null || data === undefined) {
+    return data;
+  }
+  if (Array.isArray(data)) {
+    return data
+      .filter((item) => item !== undefined)
+      .map((item) => cleanFirestoreData(item)) as unknown as T;
+  }
+  if (typeof data === 'object') {
+    const proto = Object.getPrototypeOf(data);
+    if (proto !== Object.prototype && proto !== null) {
+      return data;
+    }
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data as Record<string, any>)) {
+      if (value !== undefined) {
+        result[key] = cleanFirestoreData(value);
+      }
+    }
+    return result as T;
+  }
+  return data;
+}
+
+/**
+ * Robust wrapper around Firestore setDoc that automatically purges all `undefined`
+ * fields to guarantee compliance with Firestore's strict data model.
+ */
+export async function safeSetDoc<T extends Record<string, any>>(
+  reference: DocumentReference,
+  data: T,
+  options?: SetOptions
+) {
+  const cleaned = cleanFirestoreData(data);
+  return options ? setDoc(reference, cleaned, options) : setDoc(reference, cleaned);
+}
+

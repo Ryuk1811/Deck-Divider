@@ -14,7 +14,7 @@ async function main() {
   const config = getR2Config();
   console.log(`[Account ID]:      ${config.accountId}`);
   console.log(`[Project ID]:      ${config.projectId || 'a2f80e6a6d6c8a2a0392a43911d72f37'}`);
-  console.log(`[Pages Name]:      ${config.projectName || 'deck divider'}`);
+  console.log(`[Pages Name]:      ${config.projectName || 'deck-divider'}`);
   console.log(`[API Token]:       ${config.apiToken.slice(0, 10)}...${config.apiToken.slice(-6)}`);
   console.log(`[R2 Access Key]:   ${config.accessKeyId.slice(0, 8)}...${config.accessKeyId.slice(-4)}`);
   console.log(`[R2 S3 Endpoint]:  ${config.endpoint}`);

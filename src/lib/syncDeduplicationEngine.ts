@@ -188,14 +188,20 @@ export function reconcileSealedVault(
       sealedMap.set(item.id, item);
     } else {
       // Keep most up-to-date sold status and notes
-      sealedMap.set(item.id, {
+      const mergedSalePrice = item.salePrice !== undefined ? item.salePrice : existing.salePrice;
+      const mergedEntry: PortfolioSealedEntry = {
         ...existing,
         ...item,
         quantity: Math.max(existing.quantity || 1, item.quantity || 1),
         isSold: item.isSold !== undefined ? item.isSold : existing.isSold,
-        salePrice: item.salePrice !== undefined ? item.salePrice : existing.salePrice,
         notes: item.notes || existing.notes,
-      });
+      };
+      if (mergedSalePrice !== undefined) {
+        mergedEntry.salePrice = mergedSalePrice;
+      } else {
+        delete mergedEntry.salePrice;
+      }
+      sealedMap.set(item.id, mergedEntry);
     }
   }
 

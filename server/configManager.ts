@@ -62,7 +62,7 @@ export async function getAppCredentials(): Promise<AppCredentials> {
     cloudflare: {
       accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '82194e5cb26731579613ad66f0af25e1',
       projectId: process.env.CLOUDFLARE_PROJECT_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
-      projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck divider',
+      projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck-divider',
       apiToken: process.env.CLOUDFLARE_API_TOKEN || 'cfat_aR5MC6GHUaWR12in1ZbwTUNyVeMIsVk0095B7Ws3af33bc58',
       r2: {
         accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || process.env.CLOUDFLARE_ACCESS_KEY_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',

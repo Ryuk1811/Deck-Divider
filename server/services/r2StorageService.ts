@@ -33,7 +33,7 @@ export function getR2Config(): R2Config {
   return {
     accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '82194e5cb26731579613ad66f0af25e1',
     projectId: process.env.CLOUDFLARE_PROJECT_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
-    projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck divider',
+    projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck-divider',
     apiToken: process.env.CLOUDFLARE_API_TOKEN || 'cfat_aR5MC6GHUaWR12in1ZbwTUNyVeMIsVk0095B7Ws3af33bc58',
     accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || process.env.CLOUDFLARE_ACCESS_KEY_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
     secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '0fcca8338eb37f34e19e980c49611f770f7a93a9fc41bab9bfc09f0a0de46741',
@@ -93,11 +93,11 @@ export async function verifyCloudflareIntegration(): Promise<CloudflareVerificat
     if (apiRes.status >= 200 && apiRes.status < 300) {
       const parsed = JSON.parse(apiRes.body);
       const projects = parsed.result || [];
-      const deckdividerProject = projects.find((p: any) => p.name === 'deck divider' || p.name === 'deckdivider' || p.name === 'deck-divider' || p.id === 'a2f80e6a6d6c8a2a0392a43911d72f37') || projects[0];
+      const deckdividerProject = projects.find((p: any) => p.name === 'deck-divider' || p.name === 'deck divider' || p.name === 'deckdivider' || p.id === 'a2f80e6a6d6c8a2a0392a43911d72f37') || projects[0];
 
       result.success = true;
       result.apiTokenStatus = 'VERIFIED';
-      result.pagesProjectName = deckdividerProject?.name || config.projectName || 'deck divider';
+      result.pagesProjectName = deckdividerProject?.name || config.projectName || 'deck-divider';
       result.pagesDomains = deckdividerProject?.domains || ['deckdivider.pages.dev', 'deckdivider.app'];
       result.message = `Successfully authenticated with Cloudflare Account (${config.accountId}). Verified Pages project: ${result.pagesProjectName}.`;
     } else {
