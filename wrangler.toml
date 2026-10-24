@@ -1,5 +1,4 @@
 name = "deck-divider"
-account_id = "82194e5cb26731579613ad66f0af25e1"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "./dist"
