@@ -346,7 +346,9 @@ export async function getCardDetail(cardId: string): Promise<any> {
   }
 
   try {
-    const res = await fetch(`https://api.tcgdex.net/v2/en/cards/${encodeURIComponent(cardId)}`);
+    const res = await fetch(`https://api.tcgdex.net/v2/en/cards/${encodeURIComponent(cardId)}`, {
+      signal: AbortSignal.timeout(3000)
+    });
     if (!res.ok) return null;
     const cardData = await res.json();
     const normalized = normalizeCardTypes(cardData);
@@ -373,7 +375,9 @@ export async function getSetDetail(setId: string): Promise<any> {
   }
 
   try {
-    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`);
+    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`, {
+      signal: AbortSignal.timeout(3000)
+    });
     if (!res.ok) return null;
     const setDetail = await res.json();
     if (setDetail && Array.isArray(setDetail.cards)) {

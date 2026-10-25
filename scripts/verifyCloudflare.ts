@@ -4,6 +4,9 @@
  * Usage: npx tsx scripts/verifyCloudflare.ts
  */
 
+import dotenv from 'dotenv';
+dotenv.config({ override: true });
+
 import { verifyCloudflareIntegration, getR2Config } from '../server/services/r2StorageService.js';
 
 async function main() {
@@ -13,7 +16,7 @@ async function main() {
 
   const config = getR2Config();
   console.log(`[Account ID]:      ${config.accountId}`);
-  console.log(`[Project ID]:      ${config.projectId || 'a2f80e6a6d6c8a2a0392a43911d72f37'}`);
+  console.log(`[Project ID]:      ${config.projectId || '6c7c073314ae56896262e79b3119a7ad'}`);
   console.log(`[Pages Name]:      ${config.projectName || 'deck-divider'}`);
   console.log(`[API Token]:       ${config.apiToken.slice(0, 10)}...${config.apiToken.slice(-6)}`);
   console.log(`[R2 Access Key]:   ${config.accessKeyId.slice(0, 8)}...${config.accessKeyId.slice(-4)}`);

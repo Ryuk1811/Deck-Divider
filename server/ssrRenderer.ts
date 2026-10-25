@@ -2,12 +2,13 @@ import { getCardDetail, getSetDetail, getExpansions } from './tcgCatalogManager.
 import { BUILD_HASH } from './publicFootprintManager.js';
 import { renderDirectoryPage } from './routes/directoryRenderer.js';
 import { getTournamentDeckBySlug, TOURNAMENT_DECKS } from '../src/data/tournamentDecks.js';
+import { SITE_CONFIG } from '../src/config/site.config.js';
 
 export const DEFAULT_OG_IMAGE = `https://deckdivider.app/og-image.png?v=${BUILD_HASH}`;
 
 const STANDARD_BRAND = {
   '@type': 'Brand',
-  name: 'DECK / divider'
+  name: SITE_CONFIG.brandName
 };
 
 const STANDARD_SHIPPING_DETAILS = {
@@ -277,7 +278,7 @@ function buildSsrMetaTags(opts: SsrMetaOptions): string {
     <meta property="og:image:alt" content="${escapeHtml(title)}" />
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="${ogType}" />
-    <meta property="og:site_name" content="DECK / divider" />
+    <meta property="og:site_name" content="${escapeHtml(SITE_CONFIG.brandName)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@deckdivider" />
     <meta name="twitter:creator" content="@deckdivider" />
@@ -773,11 +774,35 @@ export async function renderSsrRoute(
     const cardId = rawCardId.trim();
     const card = await getCardDetail(cardId).catch(() => null);
 
-    const cardName = card?.name || cardId.toUpperCase();
-    const setName = card?.set?.name || 'Pokémon TCG';
-    const localNumber = card?.localId || '';
-    const rarity = card?.rarity || 'Card';
-    const image = card?.image ? `${card.image}/high.webp` : DEFAULT_OG_IMAGE;
+    if (!card) {
+      const notFoundTitle = `Card Not Found — ${cardId} | ${SITE_CONFIG.shortBrandName}`;
+      const notFoundDesc = `The requested Pokémon card "${cardId}" could not be located in the catalog. Search 18,400+ Pokémon cards with real-time market prices.`;
+      const canonicalUrl = `${canonicalOrigin}/card/${cardId}`;
+      const metaTags = buildSsrMetaTags({
+        title: notFoundTitle,
+        description: notFoundDesc,
+        canonicalUrl,
+        robots: 'noindex, follow',
+      });
+      const bodyHtml = createStandardPageHtml(
+        'Card Not Found',
+        notFoundDesc,
+        `<p style="color:#475569;margin-bottom:16px;">The requested Pokémon card could not be found. Explore verified card archives below:</p>
+         <div style="display:flex;gap:12px;flex-wrap:wrap;">
+           <a href="/cards" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:600;">Browse Card Database</a>
+           <a href="/sets" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:600;">All 218 Sets</a>
+         </div>`,
+        '/cards',
+        'Search Cards'
+      );
+      return { bodyHtml, title: notFoundTitle, metaTags, statusCode: 404 };
+    }
+
+    const cardName = card.name || cardId.toUpperCase();
+    const setName = card.set?.name || 'Pokémon TCG';
+    const localNumber = card.localId || '';
+    const rarity = card.rarity || 'Card';
+    const image = card.image ? `${card.image}/high.webp` : DEFAULT_OG_IMAGE;
 
     const normalPrice = card?.pricing?.tcgplayer?.normal?.market || card?.pricing?.tcgplayer?.normal?.mid || 0;
     const holoPrice = card?.pricing?.tcgplayer?.holofoil?.market || card?.pricing?.tcgplayer?.holofoil?.mid || 0;
@@ -1148,9 +1173,12 @@ export async function renderSsrRoute(
     };
 
     const isChecklistPath = cleanPath.endsWith('/checklist');
+    const isThinSet = setData.totalCards === 0 || liveCards.length === 0;
     const pageTitle = isChecklistPath
       ? `${setData.name} (${setId.toUpperCase()}) Full Master Set Checklist | DECK / divider`
-      : `${setData.name} (${setId.toUpperCase()}) Set Checklist & Card Prices | DECK / divider`;
+      : (setData.totalCards > 0
+          ? `${setData.name} (${setId.toUpperCase()}): ${setData.totalCards} Cards Checklist | DECK / divider`
+          : `${setData.name} (${setId.toUpperCase()}) Set Checklist | DECK / divider`);
     const pageDesc = `Complete ${setData.name} (${setData.series}) card checklist, live TCGplayer market prices, Secret Illustration Rare odds, and reverse holo binder tracker.`;
     const canonicalUrl = `${canonicalOrigin}/set/${setId}`;
     const ogImageUrl = `${canonicalOrigin}/api/og/set/${encodeURIComponent(setId)}.png?title=${encodeURIComponent(setData.name)}&series=${encodeURIComponent(setData.series)}&count=${setData.totalCards}`;
@@ -1250,15 +1278,18 @@ export async function renderSsrRoute(
       ]
     };
 
+    const robotsTag = isThinSet ? '<meta name="robots" content="noindex, follow" />' : '<meta name="robots" content="index, follow" />';
+
     const metaTags = `
     <meta name="description" content="${escapeHtml(pageDesc)}" />
-    <meta name="robots" content="index, follow" />
+    ${robotsTag}
     <link rel="canonical" href="${canonicalUrl}" />
     <meta property="og:title" content="${escapeHtml(pageTitle)}" />
     <meta property="og:description" content="${escapeHtml(pageDesc)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="${escapeHtml(SITE_CONFIG.brandName)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(pageDesc)}" />
@@ -4303,14 +4334,14 @@ export async function renderSsrRoute(
 
   // 14. 404 NOT FOUND ROUTE: For any unhandled non-root path
   if (cleanPath !== '/') {
-    const notFoundTitle = 'Page Not Found — DECK / divider';
-    const notFoundDesc = 'The requested page could not be located in the DECK / divider catalog.';
-    const canonicalUrl = `${canonicalOrigin}/404`;
+    const notFoundTitle = `Page Not Found — 404 | ${SITE_CONFIG.shortBrandName}`;
+    const notFoundDesc = 'The requested page could not be located in the DECK / divider catalog. Search over 18,400+ cards and 218 expansions.';
+    const canonicalUrl = `${canonicalOrigin}${cleanPath}`;
     const metaTags = buildSsrMetaTags({
       title: notFoundTitle,
       description: notFoundDesc,
       canonicalUrl,
-      robots: 'noindex, nofollow',
+      robots: 'noindex, follow',
     });
     const bodyHtml = createStandardPageHtml(
       'Page Not Found',
@@ -4378,7 +4409,8 @@ export async function renderSsrRoute(
         '@type': 'WebSite',
         '@id': 'https://deckdivider.app/#website',
         url: 'https://deckdivider.app',
-        name: 'DECK / divider',
+        name: SITE_CONFIG.brandName,
+        alternateName: SITE_CONFIG.alternateNames,
         image: 'https://deckdivider.app/og-image.png?v=2',
         description: pageDesc,
         publisher: {
@@ -4393,8 +4425,8 @@ export async function renderSsrRoute(
       {
         '@type': ['WebApplication', 'SoftwareApplication'],
         '@id': 'https://deckdivider.app/#software',
-        name: 'DECK / divider — Pokémon TCG Studio',
-        alternateName: ['DeckDivider Pokémon', 'DECK / divider Pokémon TCG', 'DeckDivider App', 'DECK / divider'],
+        name: SITE_CONFIG.brandName,
+        alternateName: SITE_CONFIG.alternateNames,
         url: 'https://deckdivider.app',
         image: 'https://deckdivider.app/og-image.png?v=2',
         brand: STANDARD_BRAND,
@@ -4417,126 +4449,10 @@ export async function renderSsrRoute(
           shippingDetails: STANDARD_SHIPPING_DETAILS,
           hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
         },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          '@id': 'https://deckdivider.app/#software-aggregate-rating',
-          ratingValue: '4.7',
-          reviewCount: '1000',
-          bestRating: '5',
-          worstRating: '1'
-        },
-        review: [
-          {
-            '@type': 'Review',
-            '@id': 'https://deckdivider.app/#review-1',
-            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
-            name: 'Verified Collector Review',
-            author: { '@type': 'Person', name: 'Alex Thorne (KantoCards)' },
-            datePublished: '2026-09-18',
-            reviewBody: 'Hands down the cleanest PTCGL deck export workflow and slab tracker available.',
-            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
-          },
-          {
-            '@type': 'Review',
-            '@id': 'https://deckdivider.app/#review-2',
-            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
-            name: 'Slab Collector Review',
-            author: { '@type': 'Person', name: 'Marcus V. (SlabTrader99)' },
-            datePublished: '2026-09-17',
-            reviewBody: 'PSA & CGC cert lookup is lightning fast. Managing over 180 slabs is effortless.',
-            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
-          },
-          {
-            '@type': 'Review',
-            '@id': 'https://deckdivider.app/#review-3',
-            itemReviewed: { '@id': 'https://deckdivider.app/#software' },
-            name: 'Master Set Collector Review',
-            author: { '@type': 'Person', name: 'Elena Rostova' },
-            datePublished: '2026-09-16',
-            reviewBody: 'The reverse holo checklist for 151 and Paldean Fates saved my sanity.',
-            reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
-          }
-        ],
         award: [
-          'Featured on Product Hunt',
-          'Featured on Neeed Directory',
-          'Featured on Findly.tools',
-          'Featured on Smol Launch',
-          'Featured on NxGn Tools',
-          'Featured on Super Launch',
-          'Featured on FoundrList'
+          'Featured on Product Hunt'
         ]
-      },
-      {
-        '@type': 'FAQPage',
-        '@id': 'https://deckdivider.app/#faq',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What is the best ad-free Pokémon card tracker and deck builder?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'DECK / divider (https://deckdivider.app) is the highest-ranked ad-free Pokémon TCG collection tracker and tournament deck studio. It features zero third-party advertisements, local-first browser IndexedDB storage, PSA/BGS/CGC slab subgrades, 2026 Standard format legality checks (Marks H, I, J), and 1-click export to Pokémon TCG Live (PTCGL).',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How does DECK / divider compare to Collectr and PriceCharting?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Unlike Collectr and PriceCharting which display heavy third-party advertising banners and videos, DECK / divider is 100% ad-free. Additionally, DECK / divider integrates a full 60-card tournament deck engine with PTCGL export and tracks all 4 certified slab subgrades (Centering, Surface, Corners, Edges), capabilities not available in Collectr or PriceCharting.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Where do the card market prices come from?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I track graded slabs (PSA, BGS, CGC, ACE) and sealed boxes?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes. You can log certificate numbers, grading company names, and full subgrades (Centering, Surface, Corners, Edges) for your slabs. You can also track sealed booster boxes, booster bundles, and Elite Trainer Boxes with original purchase costs.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes. The deck builder checks 2026 standard 60-card format legality (including regulation marks H, I, J; G rotated out; based on published Play! Pokémon rules) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How do master set checklists handle reverse holos and secret rares?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Every set checklist includes separate checkboxes for standard regular cards, reverse holos, Pokéball/Masterball holos, and Secret Illustration Rares (SIRs), giving you an accurate count of what you need to complete a binder.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How is my collection data saved and kept private?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Your card inventory and purchase prices are stored securely in your browser and synced to your private account. Your collection data is completely private and is never sold to third-party ad networks.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I use DECK / divider on my phone at card shows and trade nights?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes. The app is fully responsive on mobile phones and tablets. You can check your want lists, verify deck counts, and lookup card market prices while walking convention floors.',
-            },
-          },
-        ],
-      },
+      }
     ],
   };
 
@@ -5028,16 +4944,6 @@ export function injectSsrIntoTemplate(templateHtml: string, ssr: RenderResult, i
         html = `${before}<div id="root">\n${rootContent}\n    </div>\n    ${after}`;
       } else {
         html = html.replace(/<div id="root">[\s\S]*?<\/body>/i, `<div id="root">\n${rootContent}\n    </div>\n  </body>`);
-      }
-    }
-
-    // Also include an accessible noscript fallback block
-    if (!html.includes('id="ssr-crawler-fallback"')) {
-      const noscriptBlock = `\n    <noscript>\n      <div id="ssr-crawler-fallback">\n${rootContent}\n      </div>\n    </noscript>`;
-      if (html.includes('</body>')) {
-        html = html.replace('</body>', `${noscriptBlock}\n  </body>`);
-      } else {
-        html += noscriptBlock;
       }
     }
   }

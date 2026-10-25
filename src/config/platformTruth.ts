@@ -6,7 +6,8 @@
 
 export const PLATFORM_TRUTH = {
   // Brand & Identity
-  brandName: 'DECK / divider',
+  brandName: 'DECK / divider — Pokémon TCG Studio',
+  shortBrandName: 'DECK / divider',
   tagline: 'Pokémon TCG Collection Tracker, Graded Slab Registry & 60-Card Deckbuilder',
   founder: 'Alex Thorne',
   founderTitle: 'Founder & Lead Architect',
@@ -22,7 +23,7 @@ export const PLATFORM_TRUTH = {
   supportedCurrenciesCount: 20,
   supportedCurrenciesLabel: '20+ Global Currencies',
   supportedCurrenciesList: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SEK', 'NOK', 'DKK', 'NZD', 'SGD', 'HKD', 'BRL', 'MXN', 'INR', 'CNY', 'KRW', 'PLN', 'TRY'],
-  priceRefreshCadence: 'Daily automatic sync from verified TCGplayer market comps',
+  priceRefreshCadence: 'Daily automatic sync from verified public market sales',
   
   // Format Legality Constants
   standardRotationDate: 'April 10, 2026',

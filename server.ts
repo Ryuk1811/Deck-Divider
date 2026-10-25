@@ -81,6 +81,8 @@ import {
 } from './server/publicFootprintManager.js';
 import { generateOgImageSvg, generateOgImagePng } from './server/ogImageGenerator.js';
 import { createMarkdownNegotiationMiddleware } from './server/markdownNegotiator.js';
+import { SITE_CONFIG } from './src/config/site.config.js';
+import { evaluateRouteGate } from './server/seoGate.js';
 
 async function startServer() {
   const app = express();
@@ -89,17 +91,40 @@ async function startServer() {
   // Security: Disable X-Powered-By fingerprinting
   app.disable('x-powered-by');
 
-  // Trust reverse proxy headers (Cloud Run / Nginx)
+  // Trust reverse proxy headers (Cloud Run / Nginx / Cloudflare)
   app.set('trust proxy', 1);
 
-  // Gzip/Brotli Response Compression
-  app.use(compression());
+  // 1. Strict 301 Apex Domain Enforcement (e.g. www.deckdivider.app -> deckdivider.app)
+  app.use((req, res, next) => {
+    const host = (req.headers.host || '').toLowerCase();
+    if (host.startsWith('www.')) {
+      const cleanHost = host.replace(/^www\./, '');
+      const proto = req.headers['x-forwarded-proto'] === 'http' ? 'https' : (req.protocol || 'https');
+      return res.redirect(301, `${proto}://${cleanHost}${req.url}`);
+    }
+    next();
+  });
 
-  // JSON and URL-encoded body parser with explicit memory limits to prevent DoS
-  app.use(express.json({ limit: '2mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+  // 2. Strict 301 HTTP to HTTPS redirect for production reverse proxy environments
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] === 'http' && !req.headers.host?.includes('localhost')) {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
 
-  // Strict 301 Trailing-Slash Normalization (e.g. /pricing/ -> /pricing)
+  // 3. Fast 301 Canonical Alias Redirects (Single source of truth from site.config.ts)
+  app.use((req, res, next) => {
+    const cleanPath = req.path.replace(/\/$/, '') || '/';
+    const aliasTarget = (SITE_CONFIG.seoGate.supportedAliases as Record<string, string>)[cleanPath];
+    if (aliasTarget) {
+      const query = req.url.slice(req.path.length);
+      return res.redirect(301, aliasTarget + query);
+    }
+    next();
+  });
+
+  // 4. Strict 301 Trailing-Slash Normalization (e.g. /pricing/ -> /pricing)
   app.use((req, res, next) => {
     if (req.path.length > 1 && req.path.endsWith('/')) {
       const query = req.url.slice(req.path.length);
@@ -108,6 +133,13 @@ async function startServer() {
     }
     next();
   });
+
+  // Gzip/Brotli Response Compression
+  app.use(compression());
+
+  // JSON and URL-encoded body parser with explicit memory limits to prevent DoS
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   // Security Headers
   app.use((req, res, next) => {
@@ -2916,9 +2948,23 @@ async function startServer() {
       }
 
       try {
-        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
-          res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        const cleanPath = req.path.split('?')[0].replace(/\/$/, '') || '/';
+        const gate = await evaluateRouteGate(cleanPath, req.query);
+
+        if (gate.statusCode === 301 && gate.redirectTarget) {
+          return res.redirect(301, gate.redirectTarget);
         }
+
+        if (gate.robots.includes('noindex') || req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
+          res.setHeader('X-Robots-Tag', gate.robots || 'noindex, nofollow');
+        } else {
+          res.setHeader('X-Robots-Tag', 'index, follow');
+        }
+
+        // Cache control & conditional headers (Tier 1 #4)
+        res.setHeader('Cache-Control', 'public, max-age=120, s-maxage=300, stale-while-revalidate=86400');
+        res.setHeader('Last-Modified', new Date(BUILD_TIMESTAMP).toUTCString());
+
         const userAgent = (req.headers['user-agent'] as string) || '';
         const bot = isBot(userAgent);
         const rawTemplate = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
@@ -2926,7 +2972,7 @@ async function startServer() {
         const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
         const transformedHtml = await vite.transformIndexHtml(req.originalUrl, populatedHtml);
 
-        const statusCode = ssr.statusCode || 200;
+        const statusCode = gate.statusCode === 404 || ssr.statusCode === 404 ? 404 : (ssr.statusCode || 200);
         res.status(statusCode).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(transformedHtml);
       } catch (err) {
         vite.ssrFixStacktrace(err as Error);
@@ -2968,20 +3014,31 @@ async function startServer() {
       }
 
       try {
-        if (req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
-          res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        const cleanPath = req.path.split('?')[0].replace(/\/$/, '') || '/';
+        const gate = await evaluateRouteGate(cleanPath, req.query);
+
+        if (gate.statusCode === 301 && gate.redirectTarget) {
+          return res.redirect(301, gate.redirectTarget);
         }
+
+        if (gate.robots.includes('noindex') || req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path === '/auth') {
+          res.setHeader('X-Robots-Tag', gate.robots || 'noindex, nofollow');
+        } else {
+          res.setHeader('X-Robots-Tag', 'index, follow');
+        }
+
+        // Cache control & conditional headers (Tier 1 #4)
+        res.setHeader('Cache-Control', 'public, max-age=120, s-maxage=300, stale-while-revalidate=86400');
+        res.setHeader('Last-Modified', new Date(BUILD_TIMESTAMP).toUTCString());
 
         const userAgent = (req.headers['user-agent'] as string) || '';
         const bot = isBot(userAgent);
 
         // For non-bot human visitors, if a pre-rendered static HTML file exists for sub-routes, serve it
-        const cleanRoute = req.path.split('?')[0].replace(/\/$/, '') || '/';
-        if (!bot && cleanRoute !== '/') {
-          const candidateStaticHtml = path.join(distPath, cleanRoute.replace(/^\//, ''), 'index.html');
+        if (!bot && cleanPath !== '/' && gate.statusCode === 200) {
+          const candidateStaticHtml = path.join(distPath, cleanPath.replace(/^\//, ''), 'index.html');
           if (fs.existsSync(candidateStaticHtml)) {
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
-            res.setHeader('Cache-Control', 'no-cache');
             return res.sendFile(candidateStaticHtml);
           }
         }
@@ -2995,10 +3052,9 @@ async function startServer() {
         const ssr = await renderSsrRoute(req.path, req.query, req.headers.host || 'deckdivider.app');
         const populatedHtml = injectSsrIntoTemplate(rawTemplate, ssr, bot);
 
-        const statusCode = ssr.statusCode || 200;
+        const statusCode = gate.statusCode === 404 || ssr.statusCode === 404 ? 404 : (ssr.statusCode || 200);
         res.status(statusCode).set({
           'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'no-cache',
         }).send(populatedHtml);
       } catch (err) {
         const fallbackPath = path.join(distPath, 'index.html');

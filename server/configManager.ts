@@ -61,12 +61,12 @@ export async function getAppCredentials(): Promise<AppCredentials> {
     },
     cloudflare: {
       accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '82194e5cb26731579613ad66f0af25e1',
-      projectId: process.env.CLOUDFLARE_PROJECT_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
+      projectId: process.env.CLOUDFLARE_PROJECT_ID || '6c7c073314ae56896262e79b3119a7ad',
       projectName: process.env.CLOUDFLARE_PROJECT_NAME || 'deck-divider',
-      apiToken: process.env.CLOUDFLARE_API_TOKEN || 'cfat_aR5MC6GHUaWR12in1ZbwTUNyVeMIsVk0095B7Ws3af33bc58',
+      apiToken: process.env.CLOUDFLARE_API_TOKEN || 'cfat_Mzz9F3R1GjdjEE5ygwM4k8wi2ULKU9tB4wU81mf025c0a4ff',
       r2: {
-        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || process.env.CLOUDFLARE_ACCESS_KEY_ID || 'a2f80e6a6d6c8a2a0392a43911d72f37',
-        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '0fcca8338eb37f34e19e980c49611f770f7a93a9fc41bab9bfc09f0a0de46741',
+        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || process.env.CLOUDFLARE_ACCESS_KEY_ID || '6c7c073314ae56896262e79b3119a7ad',
+        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '97723b12f979780e467e8058522d899ba20a6bcb0dcf7d559b3c316062ba3673',
         endpoint: process.env.CLOUDFLARE_R2_ENDPOINT || 'https://82194e5cb26731579613ad66f0af25e1.r2.cloudflarestorage.com',
         bucketName: process.env.CLOUDFLARE_R2_BUCKET || 'deckdivider-vault',
       },

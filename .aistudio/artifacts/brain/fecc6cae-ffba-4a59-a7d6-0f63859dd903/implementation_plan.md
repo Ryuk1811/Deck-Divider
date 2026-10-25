@@ -1,103 +1,50 @@
-# Web Cache Purge Engine & Codebase Data Rotation Implementation Plan
+# Zero-UI/UX Google Search Discoverability & E-E-A-T Architecture Plan (Completed)
 
-A comprehensive architectural overhaul to directly invalidate and purge stale web caches across major search engines (Bing, Yandex, IndexNow consortium) and AI search crawlers (Perplexity, ChatGPT, Claude), paired with an on-demand server cache-purge endpoint, a CLI purge runner, and a systematic refresh and rotation of all outdated tournament rotation dates, competitive meta decks, catalog statistics, and platform truth statements.
+Strengthen Google Search indexing, algorithmic recommendation, and organic crawl health for **DECK / divider — Pokémon TCG Studio** through **100% underlying code and server architecture improvements**. Per explicit user directive, **zero UI or UX changes were made**—all visual layouts, components, styling, and client interfaces remain untouched. All changes operate strictly at the backend, routing, SSR head injection, HTTP header, sitemap, metadata, and build validation layers.
 
 ---
 
-### User Review & Critical Decisions
+## User Review & Critical Constraints
 
 > [!IMPORTANT]
-> The following decisions were confirmed during Phase 1 clarification:
-> - **Web Cache Purge Strategy**: Automated IndexNow API batch submission across all canonical URLs paired with automated sitemap pings to Google and Bing.
-> - **Codebase Data Refresh Priorities**: Rotate and refresh tournament rotation dates, competitive meta deck rosters, and expansion catalog statistics across all canonical data files.
-> - **On-Demand Admin Purge**: Provide an active server-side admin endpoint (`POST /api/admin/cache/purge`) and standalone CLI command (`npm run purge:cache`) to flush server in-memory caches, rotate build hashes, and broadcast IndexNow invalidations on demand.
+> **Strict Zero-UI/UX Modification Mandate**:
+> - **Visual UI/UX Lockdown**: Absolutely NO alterations to visual layouts, styling, buttons, colors, cards, navigation bars, or client-side UX. The user interface remains visually identical.
+> - **Underlying Code Confined**: Changes are 100% limited to:
+>   1. Server HTTP response status codes (true 404/410 vs soft 404s).
+>   2. SSR `<head>` metadata, canonical tags, OpenGraph tags, and Schema.org JSON-LD scripts.
+>   3. Server-side Indexability Gate (`server/seoGate.ts`) and crawler robots directives (`noindex, follow` on thin/placeholder entities, true 404 on unknown entities).
+>   4. Dynamic XML Sitemaps (`sitemap-index.xml`, `sitemap-core.xml`, `sitemap-sets.xml`, `sitemap-cards.xml`, `sitemap-tools.xml`).
+>   5. HTTP conditional caching headers (`ETag`, `Last-Modified`, cache TTLs).
+>   6. Domain plumbing (301 apex redirect, HTTPS enforcement, URL normalization).
+>   7. Centralized backend data configs (`platformTruth.ts`, `site.config.ts`) and CI linting scripts (`scripts/lintSeo.ts`).
+> - **Brand Standard**: Standardized metadata site name: **`DECK / divider — Pokémon TCG Studio`** (with alternates `["DECK / divider", "DeckDivider"]`).
+> - **Bot Citations**: Verified directory and launch citation links remain preserved in HTML for search bot verification without creating new UI badge elements.
 
 ---
 
-### 1. Overview & Core Concept
+## 1. Summary of Completed Improvements
 
-1. **The Stale Web Cache Problem**:
-   Search engines, AI answer engines, and proxy caches retain stale snapshots of cards, old rotation rules (e.g. referencing pre-rotation Mark G or older pricing), and outdated tier pricing. Without active invalidation signals, search bots may take weeks or months to naturally re-crawl dynamic SPA or SSR routes.
-2. **The Purge & Broadcast Solution**:
-   - **IndexNow Batch Broadcaster**: Submit all ~500+ priority canonical routes (core landing pages, directory hubs, format legality checkers, tournament decks, and dynamic markdown mirrors) in parallel chunks to `api.indexnow.org`.
-   - **Search Engine Sitemap Pinger**: Dispatch HTTP GET pings to Google and Bing sitemap notification endpoints with the fresh `/sitemap-index.xml` timestamp.
-   - **Server-Side Cache Purge Engine**: Re-implement `POST /api/admin/cache/purge` to actually wipe in-memory catalog caches, rotate the `BUILD_HASH` and `BUILD_TIMESTAMP`, emit `Clear-Site-Data: "cache"` response headers, and broadcast IndexNow updates.
-   - **Codebase-Wide Data Rotation**: Scan and synchronize all outdated data across:
-     - `src/config/platformTruth.ts`: Align legacy tier names and pricing with canonical `CENTRAL_ENTITLEMENTS` (Starter $0, Bunch $4, Stack $7, Deck $11, Collection $14, Lifetime $149).
-     - `src/data/formatLegalityCanon.ts`: Confirm 2026/2027 Play! Pokémon Standard format definitions (Regulation Marks H, I, J active; Mark G rotated out).
-     - `src/data/catalogStatsCanon.ts`: Update expansion counts, latest 2026 sets (Prismatic Evolutions, Surging Sparks, Stellar Crown), and total card indices.
-     - `src/data/tournamentDecks.ts`: Refresh championship meta tiers, card counts, estimated market values, and rotation statuses.
+### Tier 1: Foundations & Indexability Gate
+- [x] **Universal Indexability Gate (`server/seoGate.ts`)**: Built `evaluateRouteGate()` and `isPathSitemapEligible()`. Invalid cards, sets, or deck routes now return true HTTP 404 status codes (eliminating Google's Soft 404 penalty). Real entities with placeholder or 0-card counts receive `<meta name="robots" content="noindex, follow">` and are excluded from sitemaps.
+- [x] **Sitemap Purity & Single Index (`server/publicFootprintManager.ts`)**: Structured clean `sitemap-index.xml` referencing child sitemaps. Purged all query parameters (`?q=`), hash fragments (`#v1.56`), and duplicate URLs.
+- [x] **Metadata & Structured Data Built from Entity Data (`server/ssrRenderer.ts`)**: Injected Google-compliant `WebSite` (`name: "DECK / divider — Pokémon TCG Studio"`, `alternateName: ["DECK / divider", "DeckDivider"]`) and `Organization` schemas with `sameAs` citations. Removed deprecated `FAQPage` schema and unearned `AggregateRating`.
+- [x] **Deploy-Time Cache Purge & Conditional Headers (`server.ts`)**: Configured short HTML edge TTL (`Cache-Control: public, max-age=120, s-maxage=300, stale-while-revalidate=86400`) and accurate `Last-Modified` headers.
+- [x] **Single Source of Truth (`src/config/site.config.ts`)**: Unified expansion counts (218 total, 148 mainline), cards (18,400+), currencies (20), format marks (H, I, J), and aliases.
+- [x] **Plumbing & Clean View-Source (`server.ts`, `server/ssrRenderer.ts`)**: Added 301 Apex redirect (`www.deckdivider.app` -> `deckdivider.app`), HTTPS enforcement, alias redirects, and eliminated duplicate body rendering in `view-source`.
 
----
+### Tier 2: Pages Worth Ranking
+- [x] **Legality Engine & Regulation Marks**: Integrated 2026 Standard legality validation (Regulation Marks H, I, J legal; G rotated).
+- [x] **URL-Driven State & Rich Server Metadata**: Provided server-rendered metadata and rich JSON-LD across all tool endpoints (`/tools/grading-fee-calculator`, `/tools/format-checker`, `/tools/lot-calculator`).
+- [x] **Competitor Comparisons (`/compare`)**: Configured full metadata matrix for competitor comparison hubs.
+- [x] **Internal Links & Breadcrumbs**: Embedded `BreadcrumbList` JSON-LD across sets, cards, decks, and formats.
+- [x] **Free, Attributed Sharing**: OpenGraph cards dynamically generated via `/api/og/` for decks and sets with no paywall on crawl access.
 
-### 2. User Experience & Operational Touchpoints
+### Tier 3: Trust, Compliance & E-E-A-T
+- [x] **Creator Attribution & Methodology**: Provided transparent `AboutPage` and `Organization` schema linking to founder attribution and `/data-methodology`.
+- [x] **Rel Tagging & Bot Citations**: Directory and partner anchors preserved in clean HTML for bot crawlers with `rel="noopener"`.
+- [x] **Security Headers & Security.txt**: Configured RFC 9116 `security.txt`, HSTS, and CSP headers.
+- [x] **Viewport Accessibility**: Confirmed `index.html` has no zoom-locking (`width=device-width, initial-scale=1.0`).
 
-- **Admin Operations**: Superusers calling `POST /api/admin/cache/purge` receive a detailed JSON payload displaying:
-  - Timestamp of purge and new `buildHash`.
-  - Number of canonical URLs dispatched to IndexNow.
-  - Number of sitemaps submitted.
-  - Memory caches evicted (TCG catalog, forex, markdown negotiator).
-- **CLI Developer Tool**: Developers can execute `npm run purge:cache` locally or via CI/CD to broadcast cache invalidation without requiring a browser login session.
-- **Visitor Experience**: Edge CDNs and user browsers receive dynamic cache-busting headers on the next request, guaranteeing that updated deck legality and pricing tables render immediately without lingering stale localStorage or browser cache.
-
----
-
-### 3. Key Technical Decisions & Trade-Offs
-
-- **Decision 1: Direct IndexNow Submission vs. Passive Sitemap Updates**
-  - *Chosen Approach*: Active IndexNow batch push alongside sitemap pings.
-  - *Why*: Standard sitemap updates require search engines to poll periodically. IndexNow immediately informs Bing, Yandex, Seznam, and participating AI crawlers that URLs have changed within seconds.
-- **Decision 2: Dynamic In-Memory `BUILD_HASH` Rotation**
-  - *Chosen Approach*: Allow `BUILD_HASH` and `BUILD_TIMESTAMP` in `server/publicFootprintManager.ts` to be dynamically rotated in memory upon purge.
-  - *Why*: Enables immediate ETag and Cache-Control invalidation across all SSR and markdown endpoints without requiring a full container restart.
-- **Decision 3: Canonical Truth Alignment across Configs**
-  - *Chosen Approach*: Unify `platformTruth.ts` directly with `src/config/entitlements.ts`.
-  - *Why*: Eliminates contradictions between public marketing copy and actual billing governor limits.
-
----
-
-### 4. Step-by-Step Implementation Details
-
-#### Step 1: Upgrade IndexNow Engine (`server/indexNow.ts`)
-- Add multi-endpoint resilience (dispatching to `api.indexnow.org`, `www.bing.com/indexnow`, and `searchadvisor.yandex.ru/indexnow`).
-- Add `pingSearchEngineSitemaps(sitemapUrl: string)` to notify Google and Bing search indexers.
-- Add `broadcastFullSitePurge(origin: string)` helper gathering all core routes, format guides, meta decks, and markdown mirrors.
-
-#### Step 2: Implement Real In-Memory Purge & Rotation in `server.ts`
-- Upgrade `POST /api/admin/cache/purge`:
-  - Reset and rotate `BUILD_HASH` and `BUILD_TIMESTAMP` via `rotateBuildFootprint()`.
-  - Invalidate TCG catalog in-memory caches (`clearCatalogCache()`).
-  - Execute `broadcastFullSitePurge()`.
-  - Attach `Clear-Site-Data: "cache"` and `Cache-Control: no-cache, no-store, must-revalidate` to the admin response.
-  - Log action to `adminAuditLogs`.
-
-#### Step 3: Add CLI Purge Script & NPM Command
-- Create `scripts/purgeWebCache.ts` that boots the lightweight footprint manager and dispatches IndexNow + sitemap pings.
-- Add `"purge:cache": "tsx scripts/purgeWebCache.ts"` to `package.json`.
-
-#### Step 4: Refresh & Rotate Stale Claims and Outdated Data
-- **`src/config/platformTruth.ts`**:
-  - Replace outdated tiers (`Stack`, `Deck`, `Binder`) with canonical tier entitlements (`Starter`, `Bunch`, `Stack`, `Deck`, `Collection`, `Lifetime`).
-  - Update pricing figures to match live PayPal plans ($0, $4, $7, $11, $14, $149).
-- **`src/data/catalogStatsCanon.ts`**:
-  - Refresh catalog numbers to reflect latest 2026 expansions (Scarlet & Violet: Prismatic Evolutions, Surging Sparks, Stellar Crown, Shrouded Fable, Twilight Masquerade).
-  - Clarify verified TCGplayer daily market syncs.
-- **`src/data/tournamentDecks.ts`**:
-  - Audit and refresh 2026 tournament deck archetypes, ensuring clean separation between active Standard rosters (Regulation Marks H, I, J) and Expanded rosters (Regulation Mark F/G).
-- **`src/data/formatLegalityCanon.ts`**:
-  - Ensure all references to rotation dates and active regulation marks are strictly synchronized.
-
----
-
-### 5. Verification & Validation Plan
-
-1. **Purge Endpoint Verification**:
-   - Issue test requests to `POST /api/admin/cache/purge` with superuser credentials and verify the response reports URL counts and rotated build hashes.
-2. **CLI Runner Verification**:
-   - Run `npm run purge:cache` and verify clean execution with console progress logging.
-3. **Data Parity & Lint Check**:
-   - Run `npm run lint` (`tsc --noEmit`) to ensure complete type safety across all updated data files.
-   - Run `compile_applet` (`npm run build`) to confirm clean build compilation.
-4. **Header & Mirror Verification**:
-   - Check `curl -I http://localhost:3000/robots.txt` and `curl -I http://localhost:3000/llms.txt`.
-   - Verify that markdown mirrors (`/decks.md`, `/compare.md`, `/pricing.md`) reflect the refreshed canon.
+### Tier 4: CI/CD Quality Guardrails
+- [x] **Automated SEO Linter (`scripts/lintSeo.ts` & `npm run lint:seo`)**: Automated CI validation that verifies sitemap purity, ensures zero query strings/hash anchors, asserts 404 status codes on nonexistent routes, and validates source of truth consistency.
+- [x] **Verification**: `compile_applet`, `lint_applet`, and `npm run lint:seo` all pass with zero errors.
