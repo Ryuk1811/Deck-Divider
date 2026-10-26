@@ -108,7 +108,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands capacity to ${nextLimit.maxItemsPerList === Infinity ? 'Unlimited' : nextLimit.maxItemsPerList} cards per list!`;
   } else if (attemptedAction === 'LOG_CERT_SLAB') {
     title = `Certified Graded Slab Limit Hit (${currentLimit.maxGradedSlabs} Slabs)`;
-    description = `You currently have ${attemptedDetails?.currentCount || currentLimit.maxGradedSlabs} verified slabs. Your ${currentTier} tier supports up to ${currentLimit.maxGradedSlabs} certified slabs across PSA, BGS, and CGC.`;
+    description = `You currently have ${attemptedDetails?.currentCount || currentLimit.maxGradedSlabs} verified slabs. Your ${currentTier} tier supports up to ${currentLimit.maxGradedSlabs} certified slabs across PSA, BGS, CGC, and ACE.`;
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your slab registry to ${nextLimit.maxGradedSlabs === Infinity ? 'Unlimited' : nextLimit.maxGradedSlabs} certified slabs!`;
   } else if (attemptedAction === 'ADD_SEALED_VAULT') {
     title = `Sealed Product Vault Limit Hit (${currentLimit.maxSealedItems} Items)`;

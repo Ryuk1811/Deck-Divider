@@ -222,7 +222,7 @@ export const CENTRAL_ENTITLEMENTS: Record<AccountTier, TierEntitlement> = {
       'Unlimited binder lists & wishlists (∞)',
       'Unlimited items per list (∞)',
       'Unlimited graded slabs & sealed vault products (∞)',
-      'Priority sub-second market sync',
+      'Daily automated market pricing updates',
       'Advanced subgrade delta analytics',
       'Full automated cloud backups & CSV exports',
     ],

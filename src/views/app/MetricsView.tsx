@@ -25,7 +25,7 @@ import {
   CardSet,
 } from '../../types';
 import { CardImage } from '../../components/ui/CardImage';
-import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatCompactCurrency } from '../../utils/formatters';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface MetricsViewProps {
@@ -67,51 +67,67 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
   const setValueMap: Record<string, { value: number; count: number; name: string }> = {};
 
   decks.forEach((deck) => {
-    deck.entries.forEach((entry) => {
+    (deck.entries || []).forEach((entry) => {
       if (!entry.isSold) {
-        const val = entry.card.prices.raw * entry.quantity;
-        const cost = entry.purchasePrice * entry.quantity;
+        const rawUnitPrice = Number(entry.card?.prices?.raw) || 0;
+        let effectiveUnitPrice = rawUnitPrice;
+
+        // Apply Slab Multiplier if Graded
+        if (entry.gradingInfo?.grade) {
+          const g = parseFloat(String(entry.gradingInfo.grade)) || 10;
+          const mult = g >= 10 ? 3.2 : g >= 9.5 ? 2.4 : g >= 9 ? 1.6 : g >= 8 ? 1.2 : 1.1;
+          effectiveUnitPrice = rawUnitPrice > 0 ? rawUnitPrice * mult : (Number(entry.purchasePrice) || 10) * mult;
+        } else if (effectiveUnitPrice === 0 && entry.purchasePrice) {
+          effectiveUnitPrice = Number(entry.purchasePrice) || 0;
+        }
+
+        const qty = Number(entry.quantity) || 1;
+        const val = Number((effectiveUnitPrice * qty).toFixed(2)) || 0;
+        const cost = Number(((Number(entry.purchasePrice) || 0) * qty).toFixed(2)) || 0;
+
         totalHoldingsValue += val;
         totalCostBasis += cost;
-        totalCardsCount += entry.quantity;
+        totalCardsCount += qty;
 
         // Breakdown by Primary Energy Type
-        const primaryType = entry.card.types?.[0] || 'Trainer/Energy';
+        const primaryType = entry.card?.types?.[0] || 'Trainer/Energy';
         if (!typeValueMap[primaryType]) {
           typeValueMap[primaryType] = { value: 0, count: 0 };
         }
         typeValueMap[primaryType].value += val;
-        typeValueMap[primaryType].count += entry.quantity;
+        typeValueMap[primaryType].count += qty;
 
         // Breakdown by Rarity
-        const rarity = entry.card.rarity || 'Common';
+        const rarity = entry.card?.rarity || 'Common';
         if (!rarityValueMap[rarity]) {
           rarityValueMap[rarity] = { value: 0, count: 0 };
         }
         rarityValueMap[rarity].value += val;
-        rarityValueMap[rarity].count += entry.quantity;
+        rarityValueMap[rarity].count += qty;
 
         // Breakdown by Set
-        const setId = entry.card.set.id;
+        const setId = entry.card?.set?.id || 'unknown';
+        const setName = entry.card?.set?.name || 'Unknown Expansion';
         if (!setValueMap[setId]) {
-          setValueMap[setId] = { value: 0, count: 0, name: entry.card.set.name };
+          setValueMap[setId] = { value: 0, count: 0, name: setName };
         }
         setValueMap[setId].value += val;
-        setValueMap[setId].count += entry.quantity;
+        setValueMap[setId].count += qty;
       }
     });
   });
 
   const unrealizedGainLoss = totalHoldingsValue - totalCostBasis;
   const unrealizedGainPercent =
-    totalCostBasis > 0 ? (unrealizedGainLoss / totalCostBasis) * 100 : 0;
+    totalCostBasis > 0 ? ((unrealizedGainLoss / totalCostBasis) * 100) : 0;
 
   // Realized Profit from Sold Cards
   let totalRealizedProfit = 0;
-  soldEntries.forEach((entry) => {
+  (soldEntries || []).forEach((entry) => {
     if (entry.isSold && entry.salePrice !== undefined) {
-      const cost = entry.purchasePrice * entry.quantity;
-      const sale = entry.salePrice * entry.quantity;
+      const qty = Number(entry.quantity) || 1;
+      const cost = (Number(entry.purchasePrice) || 0) * qty;
+      const sale = (Number(entry.salePrice) || 0) * qty;
       totalRealizedProfit += sale - cost;
     }
   });
@@ -119,10 +135,12 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
   // Calculate Extra Metrics
   let totalSealedValue = 0;
   let totalSealedItems = 0;
-  sealedEntries.forEach((entry) => {
+  (sealedEntries || []).forEach((entry) => {
     if (!entry.isSold) {
-      totalSealedValue += entry.product.marketPrice * entry.quantity;
-      totalSealedItems += entry.quantity;
+      const qty = Number(entry.quantity) || 1;
+      const mkt = Number(entry.product?.marketPrice) || 0;
+      totalSealedValue += mkt * qty;
+      totalSealedItems += qty;
     }
   });
   
@@ -347,7 +365,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
                   stroke="#64748B"
                   fontSize={11}
                   fontFamily="JetBrains Mono"
-                  tickFormatter={(v) => `$${v}`}
+                  tickFormatter={(v) => formatCompactCurrency(Number(v) || 0, currency)}
                 />
                 <Tooltip
                   content={({ active, payload }) => {

@@ -34,7 +34,7 @@ export const AboutPageView: React.FC<AboutPageViewProps> = ({
       icon: <Database className="w-5 h-5 text-[#DC143C]" />,
       title: 'Real-Time Market Prices',
       tagline: 'TCGplayer Comps & Currency Sync',
-      description: 'Traditional spreadsheets become outdated within days. DECK / divider updates prices daily from verified TCGplayer market averages and completed eBay sales, with instant currency conversion across USD, EUR, GBP, JPY, CAD, and 10+ global currencies.',
+      description: 'Traditional spreadsheets become outdated within days. DECK / divider updates prices daily from verified TCGplayer market averages and completed eBay sales, with instant currency conversion across USD, EUR, GBP, JPY, CAD, and 20 global currencies.',
       highlight: 'Live card prices, raw vs graded value comparison, and purchase break-even tracking.',
     },
     {

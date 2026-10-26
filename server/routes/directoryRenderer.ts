@@ -26,7 +26,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
   // 1. DIRECTORY MASTER HUB: /directory
   if (cleanPath === '/directory') {
     const pageTitle = 'Pokémon TCG Directory & Knowledge Base — DECK / divider';
-    const pageDesc = 'Comprehensive Pokémon TCG index of 100+ expansion sets, competitive 60-card tournament decklists, PSA/BGS slab valuations, and card mechanics glossary.';
+    const pageDesc = 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), competitive 60-card tournament decklists, PSA/BGS slab valuations, and card mechanics glossary.';
     const canonicalUrl = `${CANONICAL_ORIGIN}/directory`;
 
     const jsonLd = {
@@ -87,7 +87,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
       <div style="margin-bottom:40px;text-align:center;">
         <span style="background:#FFF0F3;color:#DC143C;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Knowledge Base &amp; Discovery Hub</span>
         <h1 style="font-size:36px;font-weight:800;color:#0F172A;margin:16px 0 12px;letter-spacing:-0.8px;">Pokémon TCG Knowledge &amp; Directory</h1>
-        <p style="font-size:16px;color:#64748B;max-width:700px;margin:0 auto;line-height:1.6;">Explore structured indices of 100+ expansion sets, competitive 60-card meta decks, PSA slab certificate guides, and game mechanics.</p>
+        <p style="font-size:16px;color:#64748B;max-width:700px;margin:0 auto;line-height:1.6;">Explore structured indices of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA slab certificate guides, and game mechanics.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;margin-bottom:48px;">
@@ -145,7 +145,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
   // 2. SETS INDEX: /directory/sets-index
   if (cleanPath === '/directory/sets-index') {
     const pageTitle = 'All Pokémon TCG Expansion Sets & Master Checklists Index — DECK / divider';
-    const pageDesc = 'Complete catalog of 100+ Pokémon TCG expansions across Scarlet & Violet, Sword & Shield, Sun & Moon, XY, Black & White, and Vintage eras with binder completion checklists.';
+    const pageDesc = 'Complete catalog of 218 catalogued sets (148+ master expansions) across Scarlet & Violet, Sword & Shield, Sun & Moon, XY, Black & White, and Vintage eras with binder completion checklists.';
     const canonicalUrl = `${CANONICAL_ORIGIN}/directory/sets-index`;
     const expansions = (await getExpansions()) || [];
 

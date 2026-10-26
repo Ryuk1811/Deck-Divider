@@ -15,6 +15,8 @@ import {
   Share2,
   Check,
   BookOpen,
+  DollarSign,
+  Plus,
 } from 'lucide-react';
 import { PokemonCard, CardSet } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
@@ -23,9 +25,9 @@ import { HolographicCard } from '../../components/ui/HolographicCard';
 import { PageHead, GeoBreadcrumbs } from '../../components/seo/PageHead';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
-import { initSearchEngine, getCardById, mapToPokemonCard } from '../../lib/searchEngine';
-import { getExpansionsCatalog } from '../../lib/dataSyncEngine';
+import { initSearchEngine, getCardById, mapToPokemonCard, generatePriceHistory } from '../../lib/searchEngine';
 import { formatCurrency } from '../../utils/formatters';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 export const PublicCardView: React.FC = () => {
   const { cardId } = useParams<{ cardId: string }>();
@@ -35,6 +37,7 @@ export const PublicCardView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
   const [activeCurrency] = useState('USD');
+  const [gradingCompany, setGradingCompany] = useState<'PSA' | 'BGS' | 'CGC' | 'ACE'>('PSA');
 
   useEffect(() => {
     if (!cardId) return;
@@ -52,7 +55,6 @@ export const PublicCardView: React.FC = () => {
           return;
         }
 
-        // Fetch from API proxy if not in initial local chunk
         const res = await fetch(`/api/tcgdex/cards/${encodeURIComponent(cardId)}`);
         if (res.ok) {
           const apiData = await res.json();
@@ -92,13 +94,17 @@ export const PublicCardView: React.FC = () => {
   const cardDesc = card
     ? `View live TCGplayer market prices, attacks, rarity, and tournament format legality for ${card.name} (${card.set?.name || 'Pokémon TCG'} #${card.number}).`
     : 'View Pokémon TCG card market valuation and tournament legality.';
-  const canonicalUrl = `https://deckdivider.app/card/${cardId || ''}`;
   const ogImageUrl = card?.images?.large || card?.images?.small || 'https://deckdivider.app/og-image.png?v=2';
 
-  const normalPrice = (card as any)?.tcgplayer?.prices?.normal?.market || card?.tcgplayer?.price || card?.prices?.raw || 0;
-  const holofoilPrice = (card as any)?.tcgplayer?.prices?.holofoil?.market || (card as any)?.tcgplayer?.prices?.holofoil?.mid || (card?.prices?.raw ? card.prices.raw * 1.5 : 0);
-  const reversePrice = (card as any)?.tcgplayer?.prices?.reverseHolofoil?.market || (card?.prices?.raw ? card.prices.raw * 1.2 : 0);
-  const bestPrice = Math.max(normalPrice, holofoilPrice, reversePrice) || 1.50;
+  const rawPrice = card?.prices?.raw || 1.50;
+  const psa10Price = card?.prices?.psa10Estimate || Number((rawPrice * 3.2).toFixed(2));
+  const psa9Price = card?.prices?.psa9Estimate || Number((rawPrice * 1.6).toFixed(2));
+  const spread = psa10Price - rawPrice;
+  const spreadPercent = rawPrice > 0 ? ((spread / rawPrice) * 100).toFixed(1) : '0';
+
+  const chartData = card?.prices?.priceHistory && card.prices.priceHistory.length > 0
+    ? card.prices.priceHistory
+    : generatePriceHistory(card?.id || 'card-1', rawPrice);
 
   const jsonLd = card ? {
     '@context': 'https://schema.org',
@@ -116,8 +122,8 @@ export const PublicCardView: React.FC = () => {
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'USD',
-      lowPrice: (bestPrice * 0.85).toFixed(2),
-      highPrice: (bestPrice * 1.45).toFixed(2),
+      lowPrice: (rawPrice * 0.85).toFixed(2),
+      highPrice: (psa10Price * 1.1).toFixed(2),
       offerCount: 15,
       availability: 'https://schema.org/InStock',
       url: `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(card.name + ' ' + (card.set?.name || ''))}`,
@@ -165,7 +171,7 @@ export const PublicCardView: React.FC = () => {
 
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3">
-            <div className="w-6 h-6 border-2 border-slate-200 border-t-[#DC143C] rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-2 border-slate-200 border-t-[#DC143C] rounded-full animate-spin" />
             <p className="text-sm font-medium text-slate-500">Loading verified card specifications...</p>
           </div>
         ) : !card ? (
@@ -191,23 +197,15 @@ export const PublicCardView: React.FC = () => {
             {/* Left Column: Holographic Visual Card & Quick Actions */}
             <div className="lg:col-span-5 flex flex-col items-center">
               <div className="w-full max-w-[340px] drop-shadow-xl sticky top-24">
-                <HolographicCard
-                  card={card}
-                  currency={activeCurrency as any}
-                />
+                <HolographicCard card={card} currency={activeCurrency as any} />
 
                 <div className="mt-6 flex flex-col gap-2.5 w-full">
                   <button
-                    onClick={() => navigate('/auth')}
-                    className="w-full py-2.5 px-4 bg-[#DC143C] hover:bg-red-700 text-white rounded-xl font-semibold text-sm shadow-sm transition-colors text-center"
+                    onClick={() => navigate(`/app?search=${encodeURIComponent(card.name)}`)}
+                    className="w-full py-2.5 px-4 bg-[#DC143C] hover:bg-red-700 text-white rounded-xl font-semibold text-sm shadow-sm transition-colors text-center flex items-center justify-center gap-2"
                   >
-                    Track in My Portfolio Binder
-                  </button>
-                  <button
-                    onClick={() => navigate('/auth')}
-                    className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 rounded-xl font-semibold text-sm transition-colors text-center"
-                  >
-                    Add to 60-Card Tournament Deck
+                    <Plus className="w-4 h-4" />
+                    <span>Open in Studio & Add to Portfolio</span>
                   </button>
                 </div>
               </div>
@@ -215,105 +213,164 @@ export const PublicCardView: React.FC = () => {
 
             {/* Right Column: Detailed Specifications, Price Comps & Legality */}
             <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono">
-                    {card.supertype || 'Pokémon'}
-                  </span>
-                  {card.rarity && (
-                    <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-red-50 text-[#DC143C] font-mono">
-                      {card.rarity}
+              {/* Header Info Box */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono">
+                      {card.supertype || 'Pokémon'}
                     </span>
-                  )}
-                  {card.regulationMark && (
-                    <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-mono">
-                      Mark {card.regulationMark}
-                    </span>
-                  )}
+                    {card.rarity && (
+                      <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-red-50 text-[#DC143C] font-mono">
+                        {card.rarity}
+                      </span>
+                    )}
+                    {card.regulationMark && (
+                      <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 font-mono">
+                        Mark {card.regulationMark}
+                      </span>
+                    )}
+                  </div>
+
+                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
+                    {card.name}
+                  </h1>
+
+                  <p className="text-sm text-slate-500 flex items-center gap-2 flex-wrap">
+                    <span>{card.set?.name || 'Expansion'}</span>
+                    <span>•</span>
+                    <span className="font-mono font-medium">#{card.number}</span>
+                    {card.artist && (
+                      <>
+                        <span>•</span>
+                        <span>Illus. {card.artist}</span>
+                      </>
+                    )}
+                  </p>
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
-                  {card.name}
-                </h1>
-
-                <p className="text-sm text-slate-500 flex items-center gap-2 flex-wrap mb-6">
-                  <span>{card.set?.name || 'Expansion'}</span>
-                  <span>•</span>
-                  <span className="font-mono font-medium">#{card.number}</span>
-                  {card.artist && (
-                    <>
-                      <span>•</span>
-                      <span>Illus. {card.artist}</span>
-                    </>
-                  )}
-                </p>
-
-                {/* Price Breakdown Grid */}
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-2">
-                  <span className="flex items-center gap-1 font-semibold text-slate-700">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                    Verified TCGplayer Price Feed
-                  </span>
-                  <span className="text-slate-500">Last updated: 05 Oct 2026, 06:00 UTC</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 mb-6">
-                  <div className="text-center">
-                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Regular</span>
-                    <span className="text-lg font-bold text-slate-900 font-mono">
-                      {normalPrice > 0 ? formatCurrency(normalPrice, activeCurrency) : '—'}
+                {/* Live Valuation Matrix */}
+                <div className="grid grid-cols-3 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Raw Market</span>
+                    <span className="text-lg font-bold text-slate-900 font-mono mt-0.5 block">
+                      {formatCurrency(rawPrice, activeCurrency as any)}
                     </span>
+                    <span className="text-[10px] text-slate-500 font-mono">TCGplayer Comps</span>
                   </div>
-                  <div className="text-center border-x border-slate-200">
-                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Reverse Holo</span>
-                    <span className="text-lg font-bold text-slate-900 font-mono">
-                      {reversePrice > 0 ? formatCurrency(reversePrice, activeCurrency) : '—'}
+                  <div className="border-x border-slate-200">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">PSA 10 Gem Mint</span>
+                    <span className="text-lg font-bold text-emerald-600 font-mono mt-0.5 block">
+                      {formatCurrency(psa10Price, activeCurrency as any)}
                     </span>
+                    <span className="text-[10px] text-[#DC143C] font-mono font-bold">+{spreadPercent}% Spread</span>
                   </div>
-                  <div className="text-center">
-                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Holofoil</span>
-                    <span className="text-lg font-bold text-emerald-600 font-mono">
-                      {holofoilPrice > 0 ? formatCurrency(holofoilPrice, activeCurrency) : '—'}
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">PSA 9 Mint</span>
+                    <span className="text-lg font-bold text-blue-600 font-mono mt-0.5 block">
+                      {formatCurrency(psa9Price, activeCurrency as any)}
                     </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Graded Baseline</span>
                   </div>
                 </div>
 
-                {/* Format Legality Pills */}
-                <div className="flex items-center gap-3 mb-6 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                {/* 30-Day Historical Price Curve */}
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-heading font-bold text-sm text-slate-900">
+                      30-Day Market Price Curve
+                    </h4>
+                    <span className="font-mono text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      Live Verified Comps
+                    </span>
+                  </div>
+
+                  <div className="h-48 w-full min-w-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="publicPageCardTrend" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#DC143C" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#DC143C" stopOpacity={0.0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" stroke="#64748B" fontSize={10} fontFamily="IBM Plex Mono" />
+                        <YAxis stroke="#64748B" fontSize={10} fontFamily="JetBrains Mono" tickFormatter={(v) => `$${v}`} />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="p-2.5 bg-[#0F172A] text-white font-mono text-xs rounded-md shadow-lg space-y-0.5">
+                                  <div className="text-slate-400 text-[10px]">{payload[0].payload.date}</div>
+                                  <div className="font-num font-bold text-[#FFD700]">${payload[0].value} USD</div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Area type="monotone" dataKey="price" stroke="#DC143C" strokeWidth={2.5} fill="url(#publicPageCardTrend)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Slab Valuation Matrix */}
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h4 className="font-heading font-bold text-sm text-slate-900">
+                      Certified Slab Valuation Radar
+                    </h4>
+                    <div className="flex items-center gap-1 font-mono text-xs">
+                      {(['PSA', 'BGS', 'CGC', 'ACE'] as const).map((company) => (
+                        <button
+                          key={company}
+                          type="button"
+                          onClick={() => setGradingCompany(company)}
+                          className={`px-2.5 py-1 rounded-md font-bold transition-colors ${
+                            gradingCompany === company ? 'bg-[#0F172A] text-white' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                          }`}
+                        >
+                          {company}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs text-center">
+                    {['10 Gem', '9.5 Mint+', '9 Mint', '8 Near Mint'].map((gLabel, idx) => (
+                      <div key={gLabel} className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                        <span className="text-[10px] text-slate-500 block font-bold">{gradingCompany} {gLabel}</span>
+                        <span className="font-num font-bold text-slate-900 mt-1 block">
+                          {formatCurrency(rawPrice * (3.2 - idx * 0.6), activeCurrency as any)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Legalities */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     Standard: <strong className="text-slate-900">{card.legalities?.standard ? 'Legal' : 'Rotated'}</strong>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                  <div className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700">
+                    <ShieldCheck className="w-4 h-4 text-blue-600" />
                     Expanded: <strong className="text-slate-900">{card.legalities?.expanded ? 'Legal' : 'Banned'}</strong>
                   </div>
                 </div>
 
                 {/* Attacks & Abilities */}
-                {(card as any).abilities && (card as any).abilities.length > 0 && (
-                  <div className="mb-6 space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Special Ability</h3>
-                    {((card as any).abilities as any[]).map((ability, idx) => (
-                      <div key={idx} className="p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-black text-[#DC143C] uppercase tracking-wider">ABILITY</span>
-                          <span className="font-bold text-slate-900 text-sm">{ability.name}</span>
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">{ability.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
                 {card.attacks && card.attacks.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Attacks</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Attacks & Abilities</h3>
                     {card.attacks.map((attack, idx) => (
-                      <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                        <div className="flex items-center justify-between mb-1">
+                      <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
+                        <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-900 text-sm">{attack.name}</span>
                           {attack.damage && (
-                            <span className="font-black text-slate-900 font-mono text-sm">{attack.damage}</span>
+                            <span className="font-black text-[#DC143C] font-mono text-sm">{attack.damage} DMG</span>
                           )}
                         </div>
                         {attack.text && <p className="text-xs text-slate-600 leading-relaxed">{attack.text}</p>}

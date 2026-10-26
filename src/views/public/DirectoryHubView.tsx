@@ -74,11 +74,11 @@ export const DirectoryHubView: React.FC = () => {
 
   const getSectionDesc = () => {
     switch (currentSection) {
-      case 'sets-index': return 'Complete catalog of 100+ official Pokémon TCG expansions across Scarlet & Violet, Sword & Shield, and Vintage eras with master set completion checklists.';
+      case 'sets-index': return 'Complete catalog of 218 catalogued sets (148+ master expansions) across Scarlet & Violet, Sword & Shield, and Vintage eras with master set completion checklists.';
       case 'decks-index': return 'Standard format legal tournament decklists with 2026 regulation marks H/I/J compliance, energy curves, and 1-click PTCGL export strings.';
-      case 'slabs-index': return 'PSA, BGS Beckett, and CGC condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.';
+      case 'slabs-index': return 'PSA, BGS Beckett, CGC, and ACE condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.';
       case 'glossary': return 'Definitive dictionary of Pokémon TCG terminology: ACE SPEC, Secret Illustration Rares, Regulation Marks, Lost Zone, and more.';
-      default: return 'Comprehensive Pokémon TCG index of 100+ expansion sets, competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.';
+      default: return 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.';
     }
   };
 
@@ -184,7 +184,7 @@ export const DirectoryHubView: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Graded Slabs &amp; Multipliers</h3>
                 <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-                  PSA, BGS Beckett, and CGC condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.
+                  PSA, BGS Beckett, CGC, and ACE condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.
                 </p>
                 <Link to="/directory/slabs-index" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#DC143C] hover:underline">
                   Grading &amp; Slab Guides <ChevronRight className="w-4 h-4" />

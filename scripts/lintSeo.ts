@@ -113,6 +113,7 @@ async function runSeoLint() {
     process.exit(1);
   } else {
     console.log('\n✅ [SEO Linter] SUCCESS: All Google Search discoverability and indexability criteria passed.');
+    process.exit(0);
   }
 }
 

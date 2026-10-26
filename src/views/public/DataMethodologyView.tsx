@@ -161,7 +161,7 @@ export const DataMethodologyView: React.FC = () => {
                 <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-2">
                   <div className="font-bold text-[#0F172A] text-xs font-mono uppercase text-indigo-700">Instant Portfolio NAV Recalculation</div>
                   <p className="text-xs text-[#64748B] leading-relaxed">
-                    While market price feeds update daily, your collection's Net Asset Value (NAV) recalculates <strong>instantly in-browser</strong> whenever you add cards, change conditions, log slabs, or toggle among 15+ live fiat currencies.
+                    While market price feeds update daily, your collection's Net Asset Value (NAV) recalculates <strong>instantly in-browser</strong> whenever you add cards, change conditions, log slabs, or toggle among 20 global fiat currencies.
                   </p>
                 </div>
               </div>

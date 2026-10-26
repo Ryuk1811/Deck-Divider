@@ -60,6 +60,7 @@ import {
 } from './server/tcgCatalogManager.js';
 import {
   BUILD_HASH,
+  BUILD_TIMESTAMP,
   rotateBuildFootprint,
   getAllPublicUrls,
   CANONICAL_ORIGIN,

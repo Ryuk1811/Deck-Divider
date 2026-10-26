@@ -7,6 +7,7 @@
 
 import { Deck, CustomList, PortfolioSealedEntry, PortfolioCardEntry } from '../types';
 import { isMockDeck, isMockCustomList, isMockSealedEntry, isMockCardEntry } from './showcaseSeeder';
+import { isTombstoned } from './tombstoneEngine';
 
 export interface ReconciledCollectionState {
   decks: Deck[];
@@ -18,13 +19,27 @@ export interface ReconciledCollectionState {
 /**
  * Deduplicate card entries within a single deck container
  */
-export function deduplicateDeckEntries(entries: PortfolioCardEntry[]): PortfolioCardEntry[] {
+export function deduplicateDeckEntries(
+  entries: PortfolioCardEntry[],
+  deckId?: string,
+  tombstoneSet?: Set<string>
+): PortfolioCardEntry[] {
   if (!entries || !Array.isArray(entries)) return [];
 
   const entryMap = new Map<string, PortfolioCardEntry>();
 
   for (const entry of entries) {
-    if (!entry || !entry.cardId || isMockCardEntry(entry)) continue;
+    if (!entry || (!entry.cardId && !entry.id) || isMockCardEntry(entry)) continue;
+
+    // Check tombstone registry
+    if (tombstoneSet && tombstoneSet.size > 0) {
+      if (
+        (deckId && isTombstoned('card_entry', deckId, entry.id, tombstoneSet)) ||
+        isTombstoned('card_entry', entry.cardId || '', entry.id, tombstoneSet)
+      ) {
+        continue;
+      }
+    }
 
     // Compound key for identifying logically identical card copies
     const certKey = entry.gradingInfo?.certNumber?.trim() || '';
@@ -52,15 +67,21 @@ export function deduplicateDeckEntries(entries: PortfolioCardEntry[]): Portfolio
 /**
  * Reconcile and deduplicate Decks between local cache and cloud snapshot
  */
-export function reconcileDecks(localDecks: Deck[], remoteDecks: Deck[], isAuthenticated: boolean = true): Deck[] {
+export function reconcileDecks(
+  localDecks: Deck[],
+  remoteDecks: Deck[],
+  isAuthenticated: boolean = true,
+  tombstoneSet?: Set<string>
+): Deck[] {
   const deckMap = new Map<string, Deck>();
 
   // Process remote decks first (cloud baseline)
   for (const deck of remoteDecks || []) {
     if (!deck || !deck.id) continue;
     if (isAuthenticated && isMockDeck(deck)) continue;
+    if (tombstoneSet && isTombstoned('deck', deck.id, undefined, tombstoneSet)) continue;
 
-    const cleanedEntries = deduplicateDeckEntries(deck.entries || []);
+    const cleanedEntries = deduplicateDeckEntries(deck.entries || [], deck.id, tombstoneSet);
     deckMap.set(deck.id, {
       ...deck,
       entries: cleanedEntries,
@@ -71,13 +92,15 @@ export function reconcileDecks(localDecks: Deck[], remoteDecks: Deck[], isAuthen
   for (const deck of localDecks || []) {
     if (!deck || !deck.id) continue;
     if (isAuthenticated && isMockDeck(deck)) continue;
+    if (tombstoneSet && isTombstoned('deck', deck.id, undefined, tombstoneSet)) continue;
 
+    const cleanedLocalEntries = deduplicateDeckEntries(deck.entries || [], deck.id, tombstoneSet);
     const existing = deckMap.get(deck.id);
     if (!existing) {
       // Unique local deck not yet in remote snapshot -> preserve
       deckMap.set(deck.id, {
         ...deck,
-        entries: deduplicateDeckEntries(deck.entries || []),
+        entries: cleanedLocalEntries,
       });
     } else {
       // Both exist: compare timestamps and entry count
@@ -88,20 +111,19 @@ export function reconcileDecks(localDecks: Deck[], remoteDecks: Deck[], isAuthen
         // Local is newer: use local deck state
         deckMap.set(deck.id, {
           ...deck,
-          entries: deduplicateDeckEntries(deck.entries || []),
+          entries: cleanedLocalEntries,
         });
       } else if (remoteUpdated > localUpdated) {
         // Remote is newer: keep remote deck state
         // (already in deckMap)
       } else {
-        // Timestamps identical or missing: union entries to prevent data loss
-        const combinedEntries = [...(existing.entries || []), ...(deck.entries || [])];
+        // Timestamps identical: use local entries if different to honor deletions
         deckMap.set(deck.id, {
           ...existing,
           name: deck.name || existing.name,
           description: deck.description || existing.description,
           colorHex: deck.colorHex || existing.colorHex,
-          entries: deduplicateDeckEntries(combinedEntries),
+          entries: cleanedLocalEntries,
         });
       }
     }
@@ -116,7 +138,8 @@ export function reconcileDecks(localDecks: Deck[], remoteDecks: Deck[], isAuthen
 export function reconcileCustomLists(
   localLists: CustomList[],
   remoteLists: CustomList[],
-  isAuthenticated: boolean = true
+  isAuthenticated: boolean = true,
+  tombstoneSet?: Set<string>
 ): CustomList[] {
   const listMap = new Map<string, CustomList>();
 
@@ -124,6 +147,7 @@ export function reconcileCustomLists(
   for (const list of remoteLists || []) {
     if (!list || !list.id) continue;
     if (isAuthenticated && isMockCustomList(list)) continue;
+    if (tombstoneSet && isTombstoned('list', list.id, undefined, tombstoneSet)) continue;
 
     const uniqueCardIds = Array.from(new Set((list.cardIds || []).filter(Boolean)));
     listMap.set(list.id, {
@@ -136,6 +160,7 @@ export function reconcileCustomLists(
   for (const list of localLists || []) {
     if (!list || !list.id) continue;
     if (isAuthenticated && isMockCustomList(list)) continue;
+    if (tombstoneSet && isTombstoned('list', list.id, undefined, tombstoneSet)) continue;
 
     const existing = listMap.get(list.id);
     if (!existing) {
@@ -144,9 +169,8 @@ export function reconcileCustomLists(
         cardIds: Array.from(new Set((list.cardIds || []).filter(Boolean))),
       });
     } else {
-      // Union unique card IDs across devices so no added cards disappear
       const mergedCardIds = Array.from(
-        new Set([...(existing.cardIds || []), ...(list.cardIds || [])].filter(Boolean))
+        new Set([...(list.cardIds || [])].filter(Boolean))
       );
       listMap.set(list.id, {
         ...existing,
@@ -167,7 +191,8 @@ export function reconcileCustomLists(
 export function reconcileSealedVault(
   localSealed: PortfolioSealedEntry[],
   remoteSealed: PortfolioSealedEntry[],
-  isAuthenticated: boolean = true
+  isAuthenticated: boolean = true,
+  tombstoneSet?: Set<string>
 ): PortfolioSealedEntry[] {
   const sealedMap = new Map<string, PortfolioSealedEntry>();
 
@@ -175,6 +200,7 @@ export function reconcileSealedVault(
   for (const item of remoteSealed || []) {
     if (!item || !item.id) continue;
     if (isAuthenticated && isMockSealedEntry(item)) continue;
+    if (tombstoneSet && isTombstoned('sealed', item.id, undefined, tombstoneSet)) continue;
     sealedMap.set(item.id, item);
   }
 
@@ -182,17 +208,17 @@ export function reconcileSealedVault(
   for (const item of localSealed || []) {
     if (!item || !item.id) continue;
     if (isAuthenticated && isMockSealedEntry(item)) continue;
+    if (tombstoneSet && isTombstoned('sealed', item.id, undefined, tombstoneSet)) continue;
 
     const existing = sealedMap.get(item.id);
     if (!existing) {
       sealedMap.set(item.id, item);
     } else {
-      // Keep most up-to-date sold status and notes
       const mergedSalePrice = item.salePrice !== undefined ? item.salePrice : existing.salePrice;
       const mergedEntry: PortfolioSealedEntry = {
         ...existing,
         ...item,
-        quantity: Math.max(existing.quantity || 1, item.quantity || 1),
+        quantity: item.quantity || existing.quantity || 1,
         isSold: item.isSold !== undefined ? item.isSold : existing.isSold,
         notes: item.notes || existing.notes,
       };
@@ -213,16 +239,23 @@ export function reconcileSealedVault(
  */
 export function reconcileSoldEntries(
   localSold: PortfolioCardEntry[],
-  remoteSold: PortfolioCardEntry[]
+  remoteSold: PortfolioCardEntry[],
+  tombstoneSet?: Set<string>
 ): PortfolioCardEntry[] {
   const soldMap = new Map<string, PortfolioCardEntry>();
 
   for (const item of remoteSold || []) {
-    if (item && item.id) soldMap.set(item.id, item);
+    if (item && item.id) {
+      if (tombstoneSet && isTombstoned('card_entry', item.cardId || '', item.id, tombstoneSet)) continue;
+      soldMap.set(item.id, item);
+    }
   }
 
   for (const item of localSold || []) {
-    if (item && item.id) soldMap.set(item.id, item);
+    if (item && item.id) {
+      if (tombstoneSet && isTombstoned('card_entry', item.cardId || '', item.id, tombstoneSet)) continue;
+      soldMap.set(item.id, item);
+    }
   }
 
   return Array.from(soldMap.values());
@@ -244,12 +277,13 @@ export function reconcileFullCollectionState(
     sealedEntries: PortfolioSealedEntry[];
     soldEntries?: PortfolioCardEntry[];
   },
-  isAuthenticated: boolean = true
+  isAuthenticated: boolean = true,
+  tombstoneSet?: Set<string>
 ): ReconciledCollectionState {
-  const decks = reconcileDecks(local.decks || [], remote.decks || [], isAuthenticated);
-  const customLists = reconcileCustomLists(local.customLists || [], remote.customLists || [], isAuthenticated);
-  const sealedEntries = reconcileSealedVault(local.sealedEntries || [], remote.sealedEntries || [], isAuthenticated);
-  const soldEntries = reconcileSoldEntries(local.soldEntries || [], remote.soldEntries || []);
+  const decks = reconcileDecks(local.decks || [], remote.decks || [], isAuthenticated, tombstoneSet);
+  const customLists = reconcileCustomLists(local.customLists || [], remote.customLists || [], isAuthenticated, tombstoneSet);
+  const sealedEntries = reconcileSealedVault(local.sealedEntries || [], remote.sealedEntries || [], isAuthenticated, tombstoneSet);
+  const soldEntries = reconcileSoldEntries(local.soldEntries || [], remote.soldEntries || [], tombstoneSet);
 
   return {
     decks,
@@ -258,3 +292,4 @@ export function reconcileFullCollectionState(
     soldEntries,
   };
 }
+

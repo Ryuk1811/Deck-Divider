@@ -52,6 +52,7 @@ import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
 import { reconcileFullCollectionState } from './lib/syncDeduplicationEngine';
+import { getLocalTombstones, recordTombstone, buildTombstoneSet, Tombstone } from './lib/tombstoneEngine';
 import {
   generateShowcaseDecks,
   generateShowcaseSealed,
@@ -69,6 +70,7 @@ import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnaps
 
 // Lazy-loaded Views for ultra-fast PageSpeed (sub-90KB initial entrypoint)
 const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
+const MasterSetBinderView = lazy(() => import('./components/app/MasterSetBinderView').then(m => ({ default: m.MasterSetBinderView })));
 const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
 const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
 const SearchView = lazy(() => import('./views/app/SearchView').then(m => ({ default: m.SearchView })));
@@ -246,7 +248,7 @@ export default function App() {
       if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) {
         const params = new URLSearchParams(window.location.search);
         const tab = params.get('tab') as ActiveTab | null;
-        const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+        const validTabs: ActiveTab[] = ['collection', 'master_binder', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
         if (tab && validTabs.includes(tab)) return tab;
       }
     } catch (e) {}
@@ -258,7 +260,7 @@ export default function App() {
     if (location.pathname.startsWith('/app')) {
       const searchParams = new URLSearchParams(location.search);
       const tabParam = searchParams.get('tab') as ActiveTab | null;
-      const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+      const validTabs: ActiveTab[] = ['collection', 'master_binder', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
       if (tabParam && validTabs.includes(tabParam) && tabParam !== activeTab) {
         setActiveTab(tabParam);
       }
@@ -863,23 +865,40 @@ export default function App() {
       }
 
       try {
-        const [savedDecks, savedLists, savedSealed] = await Promise.all([
+        const [savedDecks, savedLists, savedSealed, localTombstones] = await Promise.all([
           idbGetUserDecks(activeUid),
           idbGetCustomLists(activeUid),
           idbGetSealedVault(activeUid),
+          getLocalTombstones(activeUid),
         ]);
 
         let currentDecks = savedDecks || [];
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
+        const tombstonesList: Tombstone[] = [...localTombstones];
 
-        // If authenticated, check Firestore snapshot AND query subcollections to guarantee cross-device persistence
+        // If authenticated, check Firestore snapshot AND query subcollections & tombstones
         if (user) {
           let remoteSnapshotState: UserCompressedSnapshotState | null = null;
           try {
-            const snapRef = doc(db, 'users', user.uid, 'snapshot', 'current');
-            const snapDoc = await getDoc(snapRef);
-            if (snapDoc.exists()) {
+            const [snapDoc, subDecksSnap, subListsSnap, subSealedSnap, tombstonesSnap] = await Promise.all([
+              getDoc(doc(db, 'users', user.uid, 'snapshot', 'current')).catch(() => null),
+              getDocs(collection(db, 'users', user.uid, 'decks')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/decks`);
+                return null;
+              }),
+              getDocs(collection(db, 'users', user.uid, 'customLists')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/customLists`);
+                return null;
+              }),
+              getDocs(collection(db, 'users', user.uid, 'sealedVault')).catch((e) => {
+                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/sealedVault`);
+                return null;
+              }),
+              getDocs(collection(db, 'users', user.uid, 'tombstones')).catch(() => null),
+            ]);
+
+            if (snapDoc && snapDoc.exists()) {
               const docData = snapDoc.data() as CompressedSnapshotDoc;
               setLastSyncedTimestamp(docData.updatedAt);
               setSnapshotMetrics({
@@ -898,21 +917,13 @@ export default function App() {
               }
             }
 
-            // Subcollection multi-tier query fallback (guarantees items added on mobile/desktop exist across devices)
-            const [subDecksSnap, subListsSnap, subSealedSnap] = await Promise.all([
-              getDocs(collection(db, 'users', user.uid, 'decks')).catch((e) => {
-                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/decks`);
-                return null;
-              }),
-              getDocs(collection(db, 'users', user.uid, 'customLists')).catch((e) => {
-                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/customLists`);
-                return null;
-              }),
-              getDocs(collection(db, 'users', user.uid, 'sealedVault')).catch((e) => {
-                handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/sealedVault`);
-                return null;
-              }),
-            ]);
+            if (tombstonesSnap && !tombstonesSnap.empty) {
+              tombstonesSnap.docs.forEach((d) => {
+                tombstonesList.push(d.data() as Tombstone);
+              });
+            }
+
+            const tombstoneSet = buildTombstoneSet(tombstonesList);
 
             const subDecks = subDecksSnap && !subDecksSnap.empty ? (subDecksSnap.docs.map((d) => d.data() as Deck)) : [];
             const subLists = subListsSnap && !subListsSnap.empty ? (subListsSnap.docs.map((d) => d.data() as CustomList)) : [];
@@ -922,7 +933,7 @@ export default function App() {
               hasKnownRemoteDataRef.current = true;
             }
 
-            // Combine remote snapshot and remote subcollections first
+            // Combine remote snapshot and remote subcollections with tombstone filtering
             const remoteConsolidated = reconcileFullCollectionState(
               {
                 decks: remoteSnapshotState?.decks || [],
@@ -936,7 +947,8 @@ export default function App() {
                 sealedEntries: subSealed,
                 soldEntries: [],
               },
-              true
+              true,
+              tombstoneSet
             );
 
             // Now reconcile local IDB state with the remote consolidated state
@@ -948,7 +960,8 @@ export default function App() {
                 soldEntries: [],
               },
               remoteConsolidated,
-              true
+              true,
+              tombstoneSet
             );
 
             currentDecks = reconciled.decks;
@@ -1181,6 +1194,7 @@ export default function App() {
 
   const sectionMeta: Record<ActiveTab, { tag: string; title: string }> = {
     collection: { tag: 'Global Inventory', title: 'Global Collection' },
+    master_binder: { tag: 'Virtual Binder', title: 'Pokédex Master Set Engine' },
     metrics: { tag: 'Portfolio Analytics', title: 'Metrics & Performance' },
     decks: { tag: 'Deck Command', title: 'Decks & Binder Studio' },
     sealed_vault: { tag: 'Vault Inventory', title: 'Sealed Product Vault' },
@@ -1296,6 +1310,7 @@ export default function App() {
 
   const handleDeleteDeck = async (deckId: string) => {
     triggerSyncPulse();
+    await recordTombstone('deck', deckId, undefined, user?.uid || 'guest_user');
     const newDecks = decks.filter((d) => d.id !== deckId);
     setDecks(newDecks);
     idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
@@ -1578,6 +1593,7 @@ export default function App() {
 
   const handleDeleteList = async (listId: string) => {
     triggerSyncPulse();
+    await recordTombstone('list', listId, undefined, user?.uid || 'guest_user');
     const newLists = customLists.filter((l) => l.id !== listId);
     setCustomLists(newLists);
     idbSaveCustomLists(newLists, user?.uid || 'guest_user');
@@ -1718,6 +1734,7 @@ export default function App() {
 
   const handleDeleteSealedEntry = async (id: string) => {
     triggerSyncPulse();
+    await recordTombstone('sealed', id, undefined, user?.uid || 'guest_user');
     const newSealed = sealedEntries.filter((e) => e.id !== id);
     setSealedEntries(newSealed);
     idbSaveSealedVault(newSealed, user?.uid || 'guest_user');
@@ -1778,6 +1795,19 @@ export default function App() {
     const extraSolds = soldEntries.filter((s) => !ids.has(s.id));
     return [...deckSolds, ...extraSolds];
   }, [decks, soldEntries]);
+
+  // Fast map of cardId -> quantity across active user decks
+  const userDecksCardsMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    decks.forEach((deck) => {
+      (deck.entries || []).forEach((entry) => {
+        if (!entry.isSold && entry.cardId) {
+          map[entry.cardId] = (map[entry.cardId] || 0) + (entry.quantity || 1);
+        }
+      });
+    });
+    return map;
+  }, [decks]);
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
     if (!user) {
@@ -1977,6 +2007,24 @@ export default function App() {
               onNavigateToSearch={() => setActiveTab('search')}
               onNavigateToTab={setActiveTab}
             />
+          )}
+
+          {activeTab === 'master_binder' && (
+            <div className="app-view-container">
+              <MasterSetBinderView
+                sets={allSets}
+                allCards={effectiveCards}
+                userDecksCardsMap={userDecksCardsMap}
+                currency={displayCurrency}
+                currentTier={currentTier}
+                onSelectCard={(card) => setSelectedDetailCard(card)}
+                onTriggerUpgradeModal={(action) => setLimitModalConfig({ isOpen: true, action: action as any })}
+                onNavigateToSearch={(query) => {
+                  if (query) setSavedFilters((prev) => ({ ...prev, query }));
+                  setActiveTab('search');
+                }}
+              />
+            </div>
           )}
 
           {activeTab === 'metrics' && (

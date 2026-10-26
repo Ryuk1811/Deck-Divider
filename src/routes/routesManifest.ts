@@ -40,7 +40,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/directory',
     title: 'Pokémon TCG Directory & Knowledge Base | DECK / divider',
-    description: 'Comprehensive Pokémon TCG index of 100+ expansion sets, competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.',
+    description: 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.',
     category: 'directory',
     priority: '0.90',
     changefreq: 'daily',
@@ -48,7 +48,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/directory/sets-index',
     title: 'All Pokémon TCG Expansion Sets & Master Checklists Index | DECK / divider',
-    description: 'Complete catalog of 100+ Pokémon TCG expansions with binder completion checklists and live card counts.',
+    description: 'Complete catalog of 218 catalogued sets (148+ master expansions) with binder completion checklists and live card counts.',
     category: 'directory',
     priority: '0.85',
     changefreq: 'weekly',
@@ -64,7 +64,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/directory/slabs-index',
     title: 'Graded Slab Registry & Valuation Multipliers Guide | Pokémon TCG Studio',
-    description: 'PSA, BGS Beckett, and CGC condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.',
+    description: 'PSA, BGS Beckett, CGC, and ACE condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.',
     category: 'directory',
     priority: '0.85',
     changefreq: 'weekly',

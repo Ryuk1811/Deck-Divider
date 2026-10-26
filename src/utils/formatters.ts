@@ -29,20 +29,27 @@ export function convertUSDToCurrency(amountInUSD: number, targetCurrency: Displa
 }
 
 export function convertCurrencyToUSD(amountInTargetCurrency: number, targetCurrency: DisplayCurrency = 'USD'): number {
+  const num = typeof amountInTargetCurrency === 'number' && !isNaN(amountInTargetCurrency) ? amountInTargetCurrency : parseFloat(String(amountInTargetCurrency)) || 0;
   const rate = getCurrencyRate(targetCurrency);
-  if (!rate || rate === 0) return amountInTargetCurrency;
-  return Number((amountInTargetCurrency / rate).toFixed(2));
+  if (!rate || rate === 0) return num;
+  return Number((num / rate).toFixed(2));
 }
 
 export function formatCurrency(
   amountInUSD: number,
   targetCurrency: DisplayCurrency = 'USD'
 ): string {
-  const safeAmount = typeof amountInUSD === 'number' && !isNaN(amountInUSD) ? amountInUSD : 0;
+  const rawNum = typeof amountInUSD === 'number' ? amountInUSD : parseFloat(String(amountInUSD));
+  const safeAmount = isFinite(rawNum) ? rawNum : 0;
   const code = (targetCurrency || 'USD').toUpperCase();
   const rate = CURRENCY_RATES[code] ?? 1.0;
   const converted = safeAmount * rate;
   const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
+
+  // If astronomical valuation (> 100 Billion), auto-format with compact notation to avoid text clipping
+  if (Math.abs(converted) >= 1e11) {
+    return formatCompactCurrency(safeAmount, targetCurrency);
+  }
 
   if (code === 'JPY' || code === 'KRW') {
     return `${symbol}${Math.round(converted).toLocaleString()}`;
@@ -53,10 +60,41 @@ export function formatCurrency(
   })}`;
 }
 
-export function formatPercent(value: number): string {
-  const prefix = value >= 0 ? '+' : '';
-  return `${prefix}${value.toFixed(1)}%`;
+export function formatCompactCurrency(
+  amountInUSD: number,
+  targetCurrency: DisplayCurrency = 'USD'
+): string {
+  const rawNum = typeof amountInUSD === 'number' ? amountInUSD : parseFloat(String(amountInUSD));
+  const safeAmount = isFinite(rawNum) ? rawNum : 0;
+  const code = (targetCurrency || 'USD').toUpperCase();
+  const rate = CURRENCY_RATES[code] ?? 1.0;
+  const converted = safeAmount * rate;
+  const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
+
+  const abs = Math.abs(converted);
+  if (abs >= 1e12) {
+    return `${symbol}${(converted / 1e12).toFixed(2)}T`;
+  }
+  if (abs >= 1e9) {
+    return `${symbol}${(converted / 1e9).toFixed(2)}B`;
+  }
+  if (abs >= 1e6) {
+    return `${symbol}${(converted / 1e6).toFixed(2)}M`;
+  }
+  if (abs >= 1e3) {
+    return `${symbol}${(converted / 1e3).toFixed(1)}K`;
+  }
+  return formatCurrency(amountInUSD, targetCurrency);
 }
+
+export function formatPercent(value: number): string {
+  const num = typeof value === 'number' && isFinite(value) ? value : 0;
+  // Cap percentage display to prevent astronomical +1000000000% string overflow
+  const clamped = Math.max(-9999.9, Math.min(99999.9, num));
+  const prefix = clamped >= 0 ? '+' : '';
+  return `${prefix}${clamped.toFixed(1)}%`;
+}
+
 
 export const ENERGY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   // 18 National Dex Pokémon Species Types

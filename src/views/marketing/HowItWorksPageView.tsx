@@ -54,7 +54,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       title: 'Daily Market Pricing',
       subtitle: 'Automatic Price Updates',
       description: 'The app automatically updates card values using daily verified market price feeds. Your total collection value recalculates instantly in your chosen currency without manual calculations.',
-      tags: ['Daily Market Prices', '15+ Currencies', 'Value History'],
+      tags: ['Daily Market Prices', '20 Currencies', 'Value History'],
       details: [
         'Daily market prices based on verified marketplace sales.',
         'Instant currency conversion across USD, EUR, GBP, JPY, CAD, and more.',
@@ -205,7 +205,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="How does DECK / divider organize Pokémon collections?"
-            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 218 catalogued sets & series (148+ master checklists) with ⌘K search, 2) Automatic market valuation calculated from daily TCGplayer comps in 15+ currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
+            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 218 catalogued sets & series (148+ master checklists) with ⌘K search, 2) Automatic market valuation calculated from daily TCGplayer comps in 20 global currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
             keyFacts={[
               { label: 'Step 1', value: 'Card Intake & Cert Tracking' },
               { label: 'Step 2', value: 'Daily Pricing & Currency Sync' },

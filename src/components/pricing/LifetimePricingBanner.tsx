@@ -129,7 +129,7 @@ export const LifetimePricingBanner: React.FC<LifetimePricingBannerProps> = ({
               <div className="w-4 h-4 rounded-full bg-[#FFF0F3] text-[#DC143C] flex items-center justify-center shrink-0">
                 <Check className="w-3 h-3 text-[#DC143C]" />
               </div>
-              <span className="font-medium">15+ live fiat currencies FX conversion &amp; CSV export</span>
+              <span className="font-medium">20 global fiat currencies FX conversion &amp; CSV export</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-[#FFF0F3] text-[#DC143C] flex items-center justify-center shrink-0">

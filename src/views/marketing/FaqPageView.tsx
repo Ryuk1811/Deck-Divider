@@ -47,7 +47,7 @@ const FAQ_COLLECTION: FaqData[] = [
     answer:
       'Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values.',
     highlights: [
-      'Multi-currency conversions across 15+ fiat currencies (USD, EUR, GBP, JPY, CAD, AUD).',
+      'Multi-currency conversions across 20 global fiat currencies (USD, EUR, GBP, JPY, CAD, AUD, etc.).',
       'Weighted averages for raw conditions (NM, LP, MP, HP, DMG) and graded slabs (PSA 10, PSA 9, BGS, CGC).',
       'Historical price delta trends over 7-day, 30-day, and all-time windows.',
     ],
@@ -234,7 +234,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
 
         <GeoExtractableBlock
           heading="Frequently Asked Questions: Key Facts & Platform Overview"
-          summary="DECK / divider is an ad-free Pokémon TCG collection manager and tournament deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 15+ fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck builder provides 1-click PTCGL export and published Play! Pokémon regulation mark legality verification."
+          summary="DECK / divider is an ad-free Pokémon TCG collection manager and tournament deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 20 global fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck builder provides 1-click PTCGL export and published Play! Pokémon regulation mark legality verification."
           keyFacts={[
             { label: 'Market Comps', value: 'TCGplayer & eBay Daily Sync' },
             { label: 'Supported Grading', value: 'PSA, BGS, CGC, ACE, ARS' },

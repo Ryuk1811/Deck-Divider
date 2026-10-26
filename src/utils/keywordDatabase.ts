@@ -125,7 +125,7 @@ export function generateSetSeoMetadata(set: CardSet | null, cards: PokemonCard[]
   if (!set) {
     return {
       title: 'Pokémon Expansion Checklists & Market Values | DECK / divider',
-      description: 'Explore 100+ Pokémon TCG expansion checklists, secret illustration rares, and live TCGplayer market prices.',
+      description: 'Explore 218 catalogued sets (148+ master checklists), secret illustration rares, and live TCGplayer market prices.',
       canonical: 'https://deckdivider.app/sets',
       canonicalPath: '/sets',
       keywords: [

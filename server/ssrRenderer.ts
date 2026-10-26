@@ -1699,7 +1699,7 @@ export async function renderSsrRoute(
             <span style="color:#94A3B8;font-size:12px;">June 2026</span>
           </div>
           <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">PSA, BGS &amp; CGC Subgrade Tracking &amp; Multi-Currency Engine</h2>
-          <p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 12px;">Introduced slab certification logging with individual subgrades, historical grade multipliers, and real-time currency conversion across 15+ global currencies.</p>
+          <p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 12px;">Introduced slab certification logging with individual subgrades, historical grade multipliers, and real-time currency conversion across 20 global currencies.</p>
           <ul style="color:#334155;font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
             <li>Beckett BGS quad-subgrade tracking: Centering, Corners, Edges, and Surface breakdown.</li>
             <li>Grading Expected Value (EV) calculator modeling break-even submission costs against PSA 10/9 market premiums.</li>
@@ -3175,10 +3175,10 @@ export async function renderSsrRoute(
           </div>
           <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
             <strong style="color:#60A5FA;display:block;font-size:14px;margin-bottom:6px;">Multi-Currency Exchange</strong>
-            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Daily forex exchange feeds support USD, EUR, GBP, JPY, CAD, AUD, and 10+ currencies so international values stay accurate.</p>
+            <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Daily forex exchange feeds support USD, EUR, GBP, JPY, CAD, AUD, and 20 global currencies so international values stay accurate.</p>
           </div>
           <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
-            <strong style="color:#FBBF24;display:block;font-size:14px;margin-bottom:6px;">148+ Set Checklists</strong>
+            <strong style="color:#FBBF24;display:block;font-size:14px;margin-bottom:6px;">218 Sets &amp; Expansions</strong>
             <p style="color:#CBD5E1;font-size:13px;line-height:1.5;margin:0;">Comprehensive checklists spanning Vintage (Base Set 1999) to Scarlet &amp; Violet with reverse holo and secret rare tracking.</p>
           </div>
           <div style="background:#1E293B;padding:20px;border-radius:12px;border:1px solid #334155;">
@@ -3197,7 +3197,7 @@ export async function renderSsrRoute(
             <div style="color:#DC143C;font-weight:700;font-family:monospace;font-size:12px;margin-bottom:8px;">01 / 04</div>
             <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;">Real-Time Market Prices</h3>
             <span style="color:#DC143C;font-size:12px;font-family:monospace;display:block;margin-bottom:12px;">TCGplayer Comps &amp; Currency Sync</span>
-            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Interfaces directly with market valuation endpoints across USD, JPY, EUR, GBP, and 10+ global currencies simultaneously.</p>
+            <p style="color:#64748B;font-size:13px;line-height:1.5;margin:0;">Interfaces directly with market valuation endpoints across USD, JPY, EUR, GBP, and 20 global currencies simultaneously.</p>
           </div>
 
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
@@ -3270,7 +3270,7 @@ export async function renderSsrRoute(
           '@type': 'HowToStep',
           position: 1,
           name: 'Rapid Cataloging & Certification',
-          text: 'Search cards seamlessly across 148+ expansions. Choose between logging raw copies or registering authenticated slabs with verified certification numbers and subgrades.',
+          text: 'Search cards seamlessly across 218 catalogued sets & series (148+ master checklists). Choose between logging raw copies or registering authenticated slabs with verified certification numbers and subgrades.',
         },
         {
           '@type': 'HowToStep',
@@ -3344,7 +3344,7 @@ export async function renderSsrRoute(
           <div>
             <h2 style="font-size:22px;font-weight:800;margin:0 0 6px;">Rapid Cataloging & Certification</h2>
             <div style="color:#DC143C;font-size:13px;font-weight:600;margin-bottom:12px;">Raw Binders & Graded Slabs</div>
-            <p style="color:#64748B;font-size:15px;margin-bottom:12px;">Search cards seamlessly across 148+ expansions. Choose between logging raw copies or registering authenticated slabs with verified certification numbers, grading house standards (PSA, BGS, CGC), and individual subgrades.</p>
+            <p style="color:#64748B;font-size:15px;margin-bottom:12px;">Search cards seamlessly across 218 catalogued sets & series (148+ master checklists). Choose between logging raw copies or registering authenticated slabs with verified certification numbers, grading house standards (PSA, BGS, CGC, ACE), and individual subgrades.</p>
             <div style="display:flex;flex-wrap:wrap;gap:8px;">
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Multi-Attribute Search</span>
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Subgrade Breakdown</span>
@@ -3361,7 +3361,7 @@ export async function renderSsrRoute(
             <p style="color:#64748B;font-size:15px;margin-bottom:12px;">The engine continuously pulls real-time verified market prices for raw and graded cards. Your total Net Asset Value (NAV) automatically updates in your preferred fiat currency with zero manual input.</p>
             <div style="display:flex;flex-wrap:wrap;gap:8px;">
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Live Market APIs</span>
-              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">15+ Currencies</span>
+              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">20 Currencies</span>
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Capital Gains Delta</span>
             </div>
           </div>
@@ -3389,7 +3389,7 @@ export async function renderSsrRoute(
             <p style="color:#64748B;font-size:15px;margin-bottom:12px;">Manage sealed booster boxes, booster bundles, Elite Trainer Boxes (ETBs), and exclusive promo tins in your secure vault while monitoring visual completion percentages for every master set.</p>
             <div style="display:flex;flex-wrap:wrap;gap:8px;">
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Sealed Box Matrix</span>
-              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">148+ Set Checklists</span>
+              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">218 Sets &amp; Series</span>
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Secure Vault Ledger</span>
             </div>
           </div>
@@ -3634,7 +3634,7 @@ export async function renderSsrRoute(
             <span>✓ What's 100% Free?</span>
           </div>
           <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;">Starter Plan ($0 Free Forever)</h3>
-          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Search 148+ expansions with live USD TCGplayer pricing, build up to 6 custom decks (full 60-card decks), and create 5 wishlists with no credit card required.</p>
+          <p style="color:#64748B;font-size:13px;margin:0;line-height:1.5;">Search 218 catalogued sets &amp; series (148+ mainline master sets) with live USD TCGplayer pricing, build up to 6 custom decks (full 60-card decks), and create 5 wishlists with no credit card required.</p>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
@@ -3721,7 +3721,7 @@ export async function renderSsrRoute(
           <ul style="color:#CBD5E1;font-size:13px;padding-left:18px;margin:0 0 20px;display:flex;flex-direction:column;gap:6px;">
             <li>Unlimited decks &amp; wishlists (&infin;)</li>
             <li>Unlimited cards per deck (&infin; - 6, 30, 60, 100, &infin;)</li>
-            <li>Priority sub-second market sync</li>
+            <li>Daily automated market pricing updates</li>
             <li>Full CSV export &amp; cloud backup</li>
           </ul>
           <a href="/auth" style="display:block;text-align:center;background:#FFFFFF;color:#0F172A;padding:10px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Choose Collection</a>
@@ -3754,7 +3754,7 @@ export async function renderSsrRoute(
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
             <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">What's 100% free, and do I need a credit card?</h3>
-            <p style="color:#64748B;font-size:13px;margin:0;">The Starter plan is $0 free forever. Search 148+ expansions, build up to 6 custom decks (60 cards/deck), 5 binder lists, and 3 wishlists with no credit card required.</p>
+            <p style="color:#64748B;font-size:13px;margin:0;">The Starter plan is $0 free forever. Search 218 catalogued sets &amp; series (148+ mainline master sets), build up to 6 custom decks (60 cards/deck), 5 binder lists, and 5 wishlists with no credit card required.</p>
           </div>
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;">
             <h3 style="font-size:15px;font-weight:700;margin:0 0 8px;">What happens right after I sign up?</h3>
@@ -3905,7 +3905,7 @@ export async function renderSsrRoute(
       <section style="display:flex;flex-direction:column;gap:16px;margin-bottom:48px;">
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
           <h2 style="font-size:18px;font-weight:700;margin:0 0 8px;color:#0F172A;">Where do the card market prices come from?</h2>
-          <p style="color:#64748B;font-size:14px;margin:0;">Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values across 15+ fiat currencies.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">Card values update from verified TCGplayer market prices and recent completed eBay sales. Prices update automatically so your collection total and deck costs reflect current market values across 20 global currencies.</p>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
@@ -4517,15 +4517,15 @@ export async function renderSsrRoute(
       <!-- Quick Platform Stats -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;max-width:800px;margin:0 auto 48px;">
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
-          <div style="font-size:28px;font-weight:900;color:#0F172A;">148+</div>
-          <div style="font-size:12px;color:#64748B;font-weight:600;">Master Expansions</div>
+          <div style="font-size:28px;font-weight:900;color:#0F172A;">218</div>
+          <div style="font-size:12px;color:#64748B;font-weight:600;">Catalogued Sets &amp; Series</div>
         </div>
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
-          <div style="font-size:28px;font-weight:900;color:#0F172A;">15+</div>
-          <div style="font-size:12px;color:#64748B;font-weight:600;">Currencies Supported</div>
+          <div style="font-size:28px;font-weight:900;color:#0F172A;">20</div>
+          <div style="font-size:12px;color:#64748B;font-weight:600;">Global Currencies</div>
         </div>
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
-          <div style="font-size:28px;font-weight:900;color:#0F172A;">PSA • BGS • CGC</div>
+          <div style="font-size:28px;font-weight:900;color:#0F172A;">PSA • BGS • CGC • ACE</div>
           <div style="font-size:12px;color:#64748B;font-weight:600;">Slab Cert Verification</div>
         </div>
       </div>
@@ -4769,7 +4769,7 @@ export async function renderSsrRoute(
         <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">About DECK / divider</span>
         <h2 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin:8px 0 16px;">Built by Collectors, Engineered for Competitors</h2>
         <p style="color:#475569;font-size:15px;line-height:1.7;max-width:760px;margin:0 auto 20px;">
-          DECK / divider was created to replace slow spreadsheet templates, invasive ad networks, and clunky mobile apps with a fast, ad-free operating system for Pokémon TCG enthusiasts. From live market portfolio valuations across 15+ currencies to tournament-legal 60-card rosters and graded PSA cert audits, every feature is tailored for precision hobbyists.
+          DECK / divider was created to replace slow spreadsheet templates, invasive ad networks, and clunky mobile apps with a fast, ad-free operating system for Pokémon TCG enthusiasts. From live market portfolio valuations across 20 global currencies to tournament-legal 60-card rosters and graded PSA cert audits, every feature is tailored for precision hobbyists.
         </p>
         <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
           <a href="/about" style="color:#DC143C;font-weight:600;text-decoration:none;font-size:14px;">Read Full Team &amp; Mission Story &rarr;</a>
@@ -4845,7 +4845,7 @@ export async function renderSsrRoute(
           <a href="/set/swsh11" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Lost Origin (SWSH11)</a>
           <a href="/set/swsh7" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Evolving Skies (SWSH7)</a>
           <a href="/set/base1" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Base Set 1999 (Base1)</a>
-          <a href="/sets" style="background:#DC143C;color:#FFFFFF;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">All 148+ Expansions &rarr;</a>
+          <a href="/sets" style="background:#DC143C;color:#FFFFFF;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">All 218 Sets &amp; Expansions &rarr;</a>
         </div>
 
         <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Tournament Deck Archetypes</h2>

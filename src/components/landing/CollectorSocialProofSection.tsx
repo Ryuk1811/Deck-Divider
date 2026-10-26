@@ -43,8 +43,8 @@ export const CollectorSocialProofSection: React.FC<CollectorSocialProofSectionPr
       icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />,
     },
     {
-      stat: '15+',
-      label: 'Fiat Currencies',
+      stat: '20',
+      label: 'Global Currencies',
       sub: 'Daily forex market exchange sync',
       icon: <Coins className="w-5 h-5 text-sky-500" />,
     },

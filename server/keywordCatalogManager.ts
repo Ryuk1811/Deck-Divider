@@ -59,7 +59,7 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'all secret illustration rares in Surging Sparks with market prices'
     ],
     targetUrl: 'https://deckdivider.app/sets',
-    ctaText: 'Browse All 100+ Expansion Set Checklists'
+    ctaText: 'Browse All 218 Catalogued Sets (148+ Master Expansions)'
   },
   {
     id: 'graded-slabs-psa-bgs',
@@ -321,7 +321,7 @@ export function generateLlmsKeywordsTxt(): string {
 # Canonical: ${origin}/llms-keywords.txt
 # Generated: ${new Date().toISOString()}
 
-> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 100+ expansion sets, 60-card standard tournament decklists, PSA/BGS slab certification logging, and real-time TCGplayer market pricing.
+> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 218 catalogued sets & series (148+ mainline master sets), 60-card standard tournament decklists, PSA/BGS/CGC/ACE slab certification logging, and daily automated market pricing updates.
 
 ---
 
