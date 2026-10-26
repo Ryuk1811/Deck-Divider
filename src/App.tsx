@@ -70,7 +70,6 @@ import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnaps
 
 // Lazy-loaded Views for ultra-fast PageSpeed (sub-90KB initial entrypoint)
 const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
-const MasterSetBinderView = lazy(() => import('./components/app/MasterSetBinderView').then(m => ({ default: m.MasterSetBinderView })));
 const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
 const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
 const SearchView = lazy(() => import('./views/app/SearchView').then(m => ({ default: m.SearchView })));
@@ -248,7 +247,7 @@ export default function App() {
       if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) {
         const params = new URLSearchParams(window.location.search);
         const tab = params.get('tab') as ActiveTab | null;
-        const validTabs: ActiveTab[] = ['collection', 'master_binder', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+        const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
         if (tab && validTabs.includes(tab)) return tab;
       }
     } catch (e) {}
@@ -260,7 +259,7 @@ export default function App() {
     if (location.pathname.startsWith('/app')) {
       const searchParams = new URLSearchParams(location.search);
       const tabParam = searchParams.get('tab') as ActiveTab | null;
-      const validTabs: ActiveTab[] = ['collection', 'master_binder', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
+      const validTabs: ActiveTab[] = ['collection', 'decks', 'search', 'sets', 'lists', 'sealed_vault', 'metrics', 'settings'];
       if (tabParam && validTabs.includes(tabParam) && tabParam !== activeTab) {
         setActiveTab(tabParam);
       }
@@ -1194,7 +1193,6 @@ export default function App() {
 
   const sectionMeta: Record<ActiveTab, { tag: string; title: string }> = {
     collection: { tag: 'Global Inventory', title: 'Global Collection' },
-    master_binder: { tag: 'Virtual Binder', title: 'Pokédex Master Set Engine' },
     metrics: { tag: 'Portfolio Analytics', title: 'Metrics & Performance' },
     decks: { tag: 'Deck Command', title: 'Decks & Binder Studio' },
     sealed_vault: { tag: 'Vault Inventory', title: 'Sealed Product Vault' },
@@ -1796,18 +1794,7 @@ export default function App() {
     return [...deckSolds, ...extraSolds];
   }, [decks, soldEntries]);
 
-  // Fast map of cardId -> quantity across active user decks
-  const userDecksCardsMap = useMemo(() => {
-    const map: Record<string, number> = {};
-    decks.forEach((deck) => {
-      (deck.entries || []).forEach((entry) => {
-        if (!entry.isSold && entry.cardId) {
-          map[entry.cardId] = (map[entry.cardId] || 0) + (entry.quantity || 1);
-        }
-      });
-    });
-    return map;
-  }, [decks]);
+
 
   const handleTogglePublicProfile = async (isPublic: boolean) => {
     if (!user) {
@@ -2009,23 +1996,7 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'master_binder' && (
-            <div className="app-view-container">
-              <MasterSetBinderView
-                sets={allSets}
-                allCards={effectiveCards}
-                userDecksCardsMap={userDecksCardsMap}
-                currency={displayCurrency}
-                currentTier={currentTier}
-                onSelectCard={(card) => setSelectedDetailCard(card)}
-                onTriggerUpgradeModal={(action) => setLimitModalConfig({ isOpen: true, action: action as any })}
-                onNavigateToSearch={(query) => {
-                  if (query) setSavedFilters((prev) => ({ ...prev, query }));
-                  setActiveTab('search');
-                }}
-              />
-            </div>
-          )}
+
 
           {activeTab === 'metrics' && (
             <MetricsView

@@ -13,7 +13,6 @@ interface MobileTopBarProps {
 
 const TAB_TITLES: Record<ActiveTab, { title: string; subtitle?: string }> = {
   collection: { title: 'Portfolio', subtitle: 'Live Holdings & Valuation' },
-  master_binder: { title: 'Master Binder', subtitle: 'Pokédex Virtual Binder' },
   sets: { title: 'Expansions', subtitle: 'Sets & Master Checklists' },
   decks: { title: 'Studio', subtitle: 'Deck Builder & Testing' },
   sealed_vault: { title: 'Sealed Vault', subtitle: 'Boxes, Cases & ETBs' },

@@ -26,7 +26,6 @@ import { DeckDividerBrand } from './DeckDividerBrand';
 
 export type ActiveTab =
   | 'collection'
-  | 'master_binder'
   | 'metrics'
   | 'decks'
   | 'sealed_vault'
@@ -90,7 +89,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = [
     { id: 'collection', label: 'Collection', icon: LayoutDashboard },
-    { id: 'master_binder', label: 'Master Binder', icon: BookOpen },
     { id: 'metrics', label: 'Metrics', icon: TrendingUp },
     { id: 'decks', label: 'Decks', icon: Layers },
     { id: 'sealed_vault', label: 'Sealed Vault', icon: Package },
