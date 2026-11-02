@@ -15,8 +15,8 @@ export interface CanonicalRouteMeta {
 export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/',
-    title: 'DECK / divider — Pokémon TCG Binder Tracker & Deck Builder',
-    description: 'Ad-free Pokémon TCG binder tracker, master set checklist, PSA slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.',
+    title: 'DECK / divider — Pokémon TCG Collection Studio & Decks',
+    description: 'The ultimate ad-free Pokémon TCG collection tracker and artistic deck studio. Track raw cards, PSA/BGS/CGC slabs, and sealed booster boxes with live TCGplayer market prices.',
     category: 'core',
     priority: '1.0',
     changefreq: 'daily',
@@ -40,7 +40,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/directory',
     title: 'Pokémon TCG Directory & Knowledge Base | DECK / divider',
-    description: 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.',
+    description: 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), artistic deck showcases, PSA/BGS slab valuations, and collection guide glossary.',
     category: 'directory',
     priority: '0.90',
     changefreq: 'daily',
@@ -55,8 +55,8 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/directory/decks-index',
-    title: 'Competitive 60-Card Meta Decks Index | Pokémon TCG Studio',
-    description: 'Standard format legal tournament deck lists with 2026 regulation marks H/I/J compliance and 1-click PTCGL export strings.',
+    title: 'Trending Art Decks & Showcases Index | Pokémon TCG Studio',
+    description: 'Hand-picked thematic decks and artistic binder showcases with real-time market value tracking and condition logs.',
     category: 'directory',
     priority: '0.85',
     changefreq: 'weekly',
@@ -111,16 +111,16 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/formats',
-    title: '2026 Standard Rotation & Regulation Marks | Pokémon TCG Studio',
-    description: 'Official rotation guide for Standard (Regulation H, I, J), Expanded, Gym Leader Challenge (GLC), and Retro formats.',
+    title: 'Set Eras & Regulation Marks | Pokémon TCG Studio',
+    description: 'Historical guide for Set Eras (Scarlet & Violet, Sword & Shield, Vintage), Regulation Marks, and artistic variants.',
     category: 'guide',
     priority: '0.85',
     changefreq: 'weekly',
   },
   {
     path: '/tools',
-    title: 'Pokémon TCG Collector & Tournament Tools | Pokémon TCG Studio',
-    description: 'PSA Grade Multiplier Calculator, 60-Card Standard Deck Legality Checker, and PTCGL export utilities.',
+    title: 'Pokémon TCG Collector Tools | Pokémon TCG Studio',
+    description: 'PSA Grade Multiplier Calculator, Collection Valuation Engine, and Bulk CSV Import utilities.',
     category: 'tool',
     priority: '0.90',
     changefreq: 'weekly',
@@ -135,8 +135,8 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   },
   {
     path: '/tools/deck-legality-checker',
-    title: 'Standard & Expanded 60-Card Deck Checker | Pokémon TCG Studio',
-    description: 'Validate standard format legal cards (H, I, J regulation marks; G rotated), 4-copy rule, Radiant limits, and ACE SPEC restrictions.',
+    title: 'Art Deck & Showcase Validator | Pokémon TCG Studio',
+    description: 'Check deck consistency, art variant alignment, and condition uniformity across your custom showcases.',
     category: 'tool',
     priority: '0.85',
     changefreq: 'weekly',
@@ -176,7 +176,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/data-methodology',
     title: 'Data & Valuation Methodology | DECK / divider Pokémon TCG Studio',
-    description: 'Comprehensive methodology breakdown for 218 catalogued sets, daily TCGplayer & eBay market pricing, condition formulas, and 2026 tournament legality rules.',
+    description: 'Comprehensive methodology breakdown for 218 catalogued sets, daily TCGplayer & eBay market pricing, and condition grading formulas.',
     category: 'core',
     priority: '0.80',
     changefreq: 'weekly',
@@ -184,7 +184,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/how-it-works',
     title: 'How DECK / divider Works — Features & Guide | Pokémon TCG Studio',
-    description: 'Step-by-step walkthrough of collection tracking, 60-card deck building, PSA slab logging, and backup synchronization.',
+    description: 'Step-by-step walkthrough of collection tracking, art deck building, PSA slab logging, and backup synchronization.',
     category: 'core',
     priority: '0.70',
     changefreq: 'monthly',
@@ -224,7 +224,7 @@ export const CANONICAL_CORE_ROUTES: CanonicalRouteMeta[] = [
   {
     path: '/faq',
     title: 'Frequently Asked Questions (FAQ) | DECK / divider Pokémon TCG Studio',
-    description: 'Common questions regarding pricing, offline mode, PSA slab tracking, PTCGL export, and data privacy.',
+    description: 'Common questions regarding pricing, offline mode, PSA slab tracking, and data privacy.',
     category: 'core',
     priority: '0.60',
     changefreq: 'monthly',

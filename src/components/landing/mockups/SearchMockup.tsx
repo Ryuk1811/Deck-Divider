@@ -69,7 +69,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by card name, illustrator, attack, set..."
+            placeholder="Search by card name, illustrator, artwork style, set..."
             className="w-full bg-white text-xs font-mono text-[#0F172A] pl-9 pr-20 py-2.5 rounded-lg border border-[#CBD5E1] focus:outline-none focus:border-[#DC143C] shadow-2xs"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -91,7 +91,7 @@ export const SearchMockup: React.FC<SearchMockupProps> = ({ currency = 'USD' }) 
             Rarity: Special Illustration / Secret
           </span>
           <span className="px-2 py-1 rounded-md bg-white text-[#0F172A] border border-[#E2E8F0] font-medium shadow-2xs">
-            Format: Standard Legal
+            Priority: Master Set
           </span>
         </div>
       </div>

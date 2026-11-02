@@ -340,12 +340,12 @@ export const BEST_OF_GUIDES: Record<string, BestOfGuide> = {
     ],
     faqs: [
       {
-        question: 'Which regulation marks are legal in Pokémon Standard for 2026?',
-        answer: 'For the 2026 tournament season, cards with regulation marks H, I, and J are legal in the Standard format. Cards with regulation mark G rotated out of Pokémon TCG Live on March 26, 2026, and in-person Play! Pokémon events on April 10, 2026 (joining marks E and F), unless they have been reprinted in an active expansion with the same name and effect.'
+        question: 'How do I build custom display decks in DECK / divider?',
+        answer: 'Navigate to the deck Studio tab, create a new deck with a custom name and color badge, and add cards directly from search or your global collection. Each deck calculates live TCGplayer market valuations automatically.'
       },
       {
-        question: 'How do I import a deck into Pokémon TCG Live (PTCGL)?',
-        answer: 'Copy the standard PTCGL text export code from DECK / divider, launch Pokémon TCG Live, navigate to Decks, click "Create a Deck", and select "Import Deck". The game will automatically populate all 60 cards.'
+        question: 'Can I share my collection or decks with others?',
+        answer: 'Yes! Every collection deck generates an encoded, shareable public link. Friends can view your card list, full artwork, market price breakdowns, and slab subgrades without needing an account.'
       }
     ]
   }

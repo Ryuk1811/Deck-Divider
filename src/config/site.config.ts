@@ -9,8 +9,8 @@ export const SITE_CONFIG = {
   shortBrandName: 'DECK / divider',
   alternateNames: ['DECK / divider', 'DeckDivider', 'The Deck Divider'],
   canonicalOrigin: 'https://deckdivider.app',
-  tagline: 'Pokémon TCG Collection Tracker, Graded Slab Registry & 60-Card Deckbuilder',
-  description: 'An ad-free digital software studio for Pokémon TCG collectors and tournament players. Log raw cards, track PSA slabs, verify 2026 Standard legal decks, and browse live market comps.',
+  tagline: 'Pokémon TCG Collection Tracker, Graded Slab Registry & Artistic deck Studio',
+  description: 'An ad-free digital software studio for Pokémon TCG collectors. Log raw cards, track PSA slabs, organize artistic decks, and browse live market comps.',
   
   // Organization Details
   organization: {
@@ -48,25 +48,13 @@ export const SITE_CONFIG = {
     marketDataSource: 'Market comps aggregated daily from verified public market sales and historical auction records',
   },
 
-  // Legality & Format Invariants
-  formats: {
-    standardSeason: '2026–2027 Season',
-    standardRotationDate: 'April 10, 2026',
-    standardMarks: ['H', 'I', 'J'] as const,
-    expandedSeriesRange: 'Black & White through modern Scarlet & Violet expansions',
-  },
-
   // Indexability Gate Rules
   seoGate: {
     edgeCacheTtlSeconds: 120,
     staleWhileRevalidateSeconds: 86400,
     disallowedBotPrefixes: ['/app', '/api', '/dashboard'],
     supportedAliases: {
-      '/formats/standard': '/format/standard',
-      '/formats/expanded': '/format/expanded',
-      '/formats/glc': '/format/glc',
       '/card/chien-pao-ex': '/card/pao-chien-ex',
-      '/deck/standard': '/format/standard',
     } as Record<string, string>,
   },
 };

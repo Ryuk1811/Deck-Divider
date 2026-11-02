@@ -216,8 +216,8 @@ export function AuthView({
         </h1>
         <p className="text-center text-xs text-[#64748B] mb-5">
           {isLogin 
-            ? 'Access your Pokemon TCG portfolio & deck builder.' 
-            : 'Join Deck Divider to manage your portfolio.'}
+            ? 'Access your Pokémon TCG portfolio & deck studio.' 
+            : 'Join DECK / divider to manage your portfolio.'}
         </p>
 
         {pendingPurchase && (

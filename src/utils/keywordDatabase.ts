@@ -1,9 +1,9 @@
 /**
  * Client-Side Keyword Database & Dynamic Meta Tag Engine
- * Maximizes search engine indexing and relevance for sets, meta decks, graded slabs, and collectors.
+ * Maximizes search engine indexing and relevance for sets, thematic decks, graded slabs, and collectors.
  */
 
-import { CardSet, PokemonCard, Deck } from '../types';
+import { CardSet, PokemonCard, deck } from '../types';
 
 export interface KeywordCluster {
   id: string;
@@ -42,29 +42,29 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
     ]
   },
   {
-    id: 'competitive-meta-decks',
-    category: 'Competitive 60-Card Meta Decks',
+    id: 'artistic-display-decks',
+    category: 'Artistic Collection decks',
     primaryKeywords: [
-      'Pokémon TCG standard format legal decks 2026',
-      'PTCGL import deck list copy paste',
-      'Charizard ex Pidgeot ex tournament deck list',
-      'Gardevoir ex standard 60-card deck list',
-      'Dragapult ex competitive deck list',
-      'Raging Bolt ex Ogerpon ex tournament deck'
+      'Pokémon TCG artistic display decks',
+      'curated Pokémon card showcases',
+      'thematic binder deck builder',
+      'luxury Pokémon card collection studio',
+      'art-style Pokémon binder layouts',
+      'master set display organization'
     ],
     secondaryKeywords: [
-      'Regulation mark H I J legality checker',
-      '60-card Pokémon deck builder with prices',
-      'Lugia VSTAR Archeops Expanded deck list (Rotated)',
-      'Regidrago VSTAR Expanded deck list (Rotated)',
-      'Budget competitive Pokémon TCG decks under $50',
-      'ACE SPEC Trainer card rules'
+      'Modern Mid-Era Vintage classification',
+      '60-item Pokémon showcase decks',
+      'thematic card arrangement guide',
+      'luxury asset Pokémon tracking',
+      'display deck capacity caps',
+      'high-fidelity card export'
     ],
     longTailQueries: [
-      'how to export deck list to Pokémon TCG Live text string',
-      'check if Pokémon deck is standard legal regulation marks',
-      'calculate total cost to buy 60-card tournament deck TCGplayer',
-      'top tier 1 Pokémon TCG meta decks tournament results'
+      'how to organize cards by artistic era',
+      'best way to display thematic Pokémon decks',
+      'calculate total market value of curated decks',
+      'top artistic collection showcases shared by trainers'
     ]
   },
   {
@@ -98,7 +98,7 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
       'Pokémon TCG collector reddit discussions',
       'DECK divider app reviews and ratings',
       'Pokémon card tracker reviews',
-      'best free Pokémon TCG deck builder review',
+      'best free Pokémon TCG deck studio review',
       'community feedback Pokémon TCG tracker'
     ],
     secondaryKeywords: [
@@ -206,29 +206,29 @@ export function generateSetSeoMetadata(set: CardSet | null, cards: PokemonCard[]
 }
 
 /**
- * Generates tailored, high-intent SEO keywords and metadata for a 60-card tournament deck.
+ * Generates tailored, high-intent SEO keywords and metadata for a curated display deck.
  */
-export function generateDeckSeoMetadata(deck: Deck | null, deckId?: string) {
+export function generatedeckSeoMetadata(deck: deck | null, deckId?: string) {
   if (!deck) {
     return {
-      title: 'Pokémon TCG Deck Roster & Legalities | DECK / divider',
-      description: 'View competitive 60-card standard tournament deck lists, regulation marks compliance, and PTCGL export strings.',
-      canonical: 'https://deckdivider.app/format/standard',
-      canonicalPath: '/format/standard',
+      title: 'Pokémon TCG deck Display & Curation | DECK / divider',
+      description: 'View curated display decks, era-based classifications, and premium collection showcases.',
+      canonical: 'https://deckdivider.app/decks',
+      canonicalPath: '/decks',
       keywords: [
         'pokemon tcg deck list',
-        'ptcgl import deck string',
-        'standard format tournament deck',
-        '60 card deck builder',
-        'regulation mark legality'
+        'curated card showcase',
+        'artistic display deck',
+        '60 item deck studio',
+        'era based collection guide'
       ]
     };
   }
 
-  const deckName = deck.name || 'Competitive Tournament Deck';
+  const deckName = deck.name || 'Artistic Display deck';
   const cardCount = deck.entries?.reduce((acc, c) => acc + (c.quantity || 1), 0) || 60;
   
-  // Extract key Pokémon and Ace Spec / Trainers
+  // Extract key Pokémon and Trainers
   const keyCards = (deck.entries || [])
     .map(e => e.card?.name)
     .filter(Boolean)
@@ -237,16 +237,15 @@ export function generateDeckSeoMetadata(deck: Deck | null, deckId?: string) {
   const keywords = Array.from(
     new Set([
       `${deckName} deck list`,
-      `${deckName} 60-card tournament build`,
-      `${deckName} PTCGL export string`,
-      `${deckName} Pokémon TCG Live list`,
-      `${deckName} standard format legal 2026`,
-      `${deckName} card counts and strategy`,
-      'Pokémon TCG standard format legal decks 2026',
-      'PTCGL import deck list copy paste',
-      'Regulation mark H I J legality checker',
-      '60-card Pokémon deck builder with prices',
-      'ACE SPEC Trainer card rules',
+      `${deckName} curated display build`,
+      `${deckName} collection showcase`,
+      `${deckName} Pokémon artistic list`,
+      `${deckName} era based curation`,
+      `${deckName} item counts and aesthetics`,
+      'Pokémon TCG display decks 2026',
+      'Artistic deck organization guide',
+      'Thematic binder arrangement rules',
+      '60-item Pokémon deck studio',
       ...keyCards.map(c => `${deckName} ${c}`)
     ])
   );
@@ -254,8 +253,8 @@ export function generateDeckSeoMetadata(deck: Deck | null, deckId?: string) {
   const targetId = deck.id || deckId || 'deck';
   const canonicalPath = `/deck/${targetId}`;
   const canonical = `https://deckdivider.app${canonicalPath}`;
-  const title = `${deckName} — Pokémon TCG Deck | DECK / divider`;
-  const description = `View ${deckName} (${cardCount} cards) with real-time TCGplayer deck pricing, full card counts, tournament legality checks, and 1-click PTCGL export.`;
+  const title = `${deckName} — Pokémon TCG deck | DECK / divider`;
+  const description = `View ${deckName} (${cardCount} items) with real-time TCGplayer deck pricing, full item counts, and artistic display layouts.`;
 
   return {
     title,

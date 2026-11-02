@@ -204,20 +204,15 @@ export const HolographicCard: React.FC<HolographicCardProps> = memo(({
             });
           })()}
 
-          {card.legalities?.standard && (
-            <span className="inline-flex items-center rounded-md px-1 py-0.5 text-[8px] font-mono font-bold bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]" title="Standard Format Legal">
-              STD
-            </span>
-          )}
         </div>
 
-        {deckName && (
+        {(deckName || deckName) && (
           <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#F8FAFC] border border-[#E2E8F0] text-[9px] font-mono text-[#64748B] max-w-[110px] truncate">
             <span
               className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: deckColor || '#0F172A' }}
+              style={{ backgroundColor: deckColor || deckColor || '#0F172A' }}
             />
-            <span className="truncate font-semibold">{deckName}</span>
+            <span className="truncate font-semibold">{deckName || deckName}</span>
           </div>
         )}
       </div>

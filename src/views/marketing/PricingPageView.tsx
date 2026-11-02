@@ -58,7 +58,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
   const pricingFaqs = [
     {
       q: "What's completely free, and do I need a credit card?",
-      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to card search across 218 catalogued sets & series (148+ master checklists), daily USD TCGplayer market prices, up to 6 custom decks (laddered 6-card mini, 30-card half & 60-card standard decks), 25 graded slabs, 15 sealed items, and 5 wishlists (100 items/list).",
+      a: "The Starter plan ($0) is free forever with no credit card required. You get full access to card search across 218 catalogued sets & series (148 mainline expansions, 70 promotional subsets), daily USD TCGplayer market prices, up to 6 custom decks (laddered 6-card mini, 30-card half & 60-card standard decks), 25 graded slabs, 15 sealed items, 5 wishlists (100 items/list), and unblocked CSV data export.",
     },
     {
       q: 'What happens right after I sign up or log in?',
@@ -133,7 +133,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
             transition={{ duration: 0.7, delay: 0.1, ease: easeCurve }}
             className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] font-heading"
           >
-            Predictable Pricing for Collectors &amp; Competitors
+            Predictable Pricing for Pokémon Card Collectors
           </motion.h1>
 
           <motion.p
@@ -142,7 +142,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
             transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
             className="text-base sm:text-lg lg:text-xl text-[#64748B] max-w-2xl mx-auto leading-relaxed"
           >
-            Start with our generous free Starter plan and scale as your collection grows. Live market valuations, 60-card tournament tools, and PSA slab tracking.
+            Start with our generous free Starter plan and scale as your collection grows. Live market valuations in 20 fiat currencies, curated theme decks, and certified slab tracking.
           </motion.p>
         </section>
 
@@ -152,7 +152,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="Is DECK / divider free to use?"
-            summary="Yes. DECK / divider offers a free forever Starter plan requiring no credit card. The Starter plan provides full access to instant card search across 218 catalogued sets & series (148+ master checklists), daily TCGplayer market prices in USD, up to 6 custom decks (full 60-card decks), 25 graded slabs, 15 sealed items, and 5 wishlists. Paid tiers expand capacity up to unlimited collections with multi-currency FX and CSV export."
+            summary="Yes. DECK / divider offers a free forever Starter plan requiring no credit card. The Starter plan provides full access to instant card search across 218 catalogued sets & series (148 mainline expansions, 70 promotional subsets), daily TCGplayer market prices in USD, up to 6 custom decks, 25 graded slabs, 15 sealed items, 5 wishlists (100 items/list), and unblocked CSV data export. Paid tiers expand capacity up to unlimited collections with multi-currency FX and advanced portfolio analytics."
             keyFacts={[
               { label: 'Free Plan', value: 'Starter ($0 Forever)' },
               { label: 'Credit Card', value: 'Not Required' },
@@ -386,7 +386,7 @@ export const PricingPageView: React.FC<PricingPageViewProps> = ({
               <span>Deck Capacity Explained</span>
             </div>
             <p className="text-[11px] leading-relaxed text-[#64748B]">
-              Standard tournaments require 60 cards. Laddered tiers allow 75 cards (60 + 15 testing sideboard), 100 cards (Gym Leader Challenge / Singleton), and 150 mega rosters.
+              Standard tournaments require 60 cards. Laddered tiers allow 75 cards (60 + 15 testing sideboard), 100 cards (Gym Leader Challenge / Singleton), and 150 mega decks.
             </p>
           </div>
         </section>

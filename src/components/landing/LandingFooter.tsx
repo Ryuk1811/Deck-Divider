@@ -56,7 +56,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
               <DeckDividerBrand size="md" />
             </Link>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
-              Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and 60-card tournament deck builder with live market pricing.
+              Pokémon TCG collection tracker, PSA/BGS/CGC slab registry, and art-style collection deck builder with live market pricing.
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  60-Card Deck Builder
+                  Art-Style deck Builder
                 </a>
               </li>
               <li>
@@ -246,7 +246,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  Format Legality
+                  Master Set Progression
                 </Link>
               </li>
               <li>
@@ -255,7 +255,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  Standard Format Hub
+                  Master Vault Hub
                 </Link>
               </li>
             </ul>
@@ -292,7 +292,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  Deck Builders Ranked
+                  Collection Tools Ranked
                 </Link>
               </li>
               <li>
@@ -319,7 +319,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({
                   className="text-slate-600 hover:text-[#DC143C] transition-colors py-2 sm:py-1 inline-flex items-center gap-2 w-full min-h-[40px] sm:min-h-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                  Format Legality Checker
+                  Master Set Completeness Tool
                 </Link>
               </li>
             </ul>

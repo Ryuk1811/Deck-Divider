@@ -524,7 +524,7 @@ export async function renderSsrRoute(
     // Format title strictly to 50-60 characters
     let pageTitle = `${deckName} — Pokémon TCG Deck | DECK / divider`;
     if (pageTitle.length < 50) {
-      pageTitle = `${deckName} Roster — Pokémon TCG Deck | DECK / divider`;
+      pageTitle = `${deckName} deck — Pokémon TCG Deck | DECK / divider`;
     }
     if (pageTitle.length > 60) {
       const maxLen = 60 - '... — Pokémon TCG Deck | DECK / divider'.length;
@@ -551,7 +551,7 @@ export async function renderSsrRoute(
       url: canonicalUrl,
       mainEntity: {
         '@type': 'ItemList',
-        name: `${deckName} Card Roster`,
+        name: `${deckName} Card deck`,
         numberOfItems: totalCards,
         itemListElement: hydratedEntries.map((e, idx) => ({
           '@type': 'ListItem',
@@ -575,7 +575,7 @@ export async function renderSsrRoute(
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="${escapeHtml(deckName)} — Pokémon TCG Deck Roster" />
+    <meta property="og:image:alt" content="${escapeHtml(deckName)} — Pokémon TCG Deck deck" />
     <meta property="og:url" content="${canonicalUrl}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DECK / divider" />
@@ -590,7 +590,7 @@ export async function renderSsrRoute(
     <header style="background:#0F172A;color:#FFFFFF;padding:16px 24px;border-bottom:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:12px;">
         ${renderSsrBrand()}
-        <span style="background:#1E293B;color:#94A3B8;padding:4px 8px;border-radius:4px;font-size:11px;font-family:monospace;">PUBLIC ROSTER</span>
+        <span style="background:#1E293B;color:#94A3B8;padding:4px 8px;border-radius:4px;font-size:11px;font-family:monospace;">PUBLIC deck</span>
       </div>
       <div>
         <a href="/" style="background:#DC143C;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Create Your Deck</a>
@@ -601,7 +601,7 @@ export async function renderSsrRoute(
       <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;">
           <div>
-            <span style="color:#DC143C;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">60-Card Tournament Roster</span>
+            <span style="color:#DC143C;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">60-Card Tournament deck</span>
             <h1 style="font-size:28px;font-weight:800;margin:4px 0;letter-spacing:-0.5px;">${escapeHtml(deckName)}</h1>
             <p style="color:${totalCards !== 60 ? '#DC2626' : (tournamentMatch ? (tournamentMatch.isStandardLegal ? '#16A34A' : '#D97706') : '#64748B')};font-size:14px;margin:0;font-weight:600;">
               ${totalCards !== 60
@@ -1397,7 +1397,7 @@ export async function renderSsrRoute(
     };
 
     const pageTitle = `${deckData.name} Tournament Decklist & Guide (Standard) | DECK / divider`;
-    const pageDesc = `60-card tournament roster for ${deckData.name} in Pokémon TCG. View full card list, market value ($${deckData.estPrice.toFixed(2)}), energy curve, and 1-click PTCGL export.`;
+    const pageDesc = `60-card tournament deck for ${deckData.name} in Pokémon TCG. View full card list, market value ($${deckData.estPrice.toFixed(2)}), energy curve, and 1-click PTCGL export.`;
     const canonicalUrl = `${canonicalOrigin}/deck/${archetype}`;
     const ogImageUrl = `${canonicalOrigin}/api/og/deck/${encodeURIComponent(archetype)}.png?title=${encodeURIComponent(deckData.name)}&count=60&value=${deckData.estPrice.toFixed(2)}`;
 
@@ -1446,7 +1446,7 @@ export async function renderSsrRoute(
     <main style="max-width:1100px;margin:32px auto;padding:0 20px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;">
       <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:28px;margin-bottom:24px;">
         <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">CHAMPIONSHIP DECK ARCHETYPE</span>
-        <h1 style="font-size:32px;font-weight:900;margin:8px 0;">${escapeHtml(deckData.name)} Deck Roster</h1>
+        <h1 style="font-size:32px;font-weight:900;margin:8px 0;">${escapeHtml(deckData.name)} Deck deck</h1>
         <p style="color:#64748B;font-size:15px;margin:0;">Format: ${escapeHtml(deckData.format)} • Est. Cost: $${deckData.estPrice.toFixed(2)}</p>
       </div>
       <section style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;">
@@ -2074,7 +2074,7 @@ export async function renderSsrRoute(
             { 
               '@type': 'ListItem', 
               position: 3, 
-              name: 'Sinnoh League Champion by @tournament_ace (Standard 2026 H/I/J Legal Roster, 360 Cards, NAV $6,940 USD, Verified September 2026)' 
+              name: 'Sinnoh League Champion by @tournament_ace (Standard 2026 H/I/J Legal deck, 360 Cards, NAV $6,940 USD, Verified September 2026)' 
             }
           ]
         }
@@ -2118,10 +2118,10 @@ export async function renderSsrRoute(
             <strong style="color:#0F172A;font-size:17px;">🥉 Sinnoh League Champion</strong>
             <span style="color:#16A34A;font-weight:900;font-family:monospace;font-size:18px;">$6,940 USD</span>
           </div>
-          <p style="color:#64748B;font-size:13px;margin:0 0 8px;font-family:monospace;">Owner: <strong>@tournament_ace</strong> • 360 Cards • 6 Meta Decks • Roster: <strong>Standard 2026 (Marks H, I, J Legal)</strong></p>
+          <p style="color:#64748B;font-size:13px;margin:0 0 8px;font-family:monospace;">Owner: <strong>@tournament_ace</strong> • 360 Cards • 6 Meta Decks • deck: <strong>Standard 2026 (Marks H, I, J Legal)</strong></p>
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-            <span style="font-size:11px;color:#15803D;background:#F0FDF4;border:1px solid #BBF7D0;padding:2px 8px;border-radius:6px;font-family:monospace;">Verified: September 2026 • Play! Pokémon Roster Compliant</span>
-            <a href="/deck/gardevoir-ex" style="color:#DC143C;font-size:12px;font-weight:700;text-decoration:none;font-family:monospace;">View Tournament Roster &rarr;</a>
+            <span style="font-size:11px;color:#15803D;background:#F0FDF4;border:1px solid #BBF7D0;padding:2px 8px;border-radius:6px;font-family:monospace;">Verified: September 2026 • Play! Pokémon deck Compliant</span>
+            <a href="/deck/gardevoir-ex" style="color:#DC143C;font-size:12px;font-weight:700;text-decoration:none;font-family:monospace;">View Tournament deck &rarr;</a>
           </div>
         </div>
       </div>`,
@@ -3282,7 +3282,7 @@ export async function renderSsrRoute(
           '@type': 'HowToStep',
           position: 3,
           name: 'Deck Construction & Championship Legality',
-          text: 'Architect competitive 60-card tournament decks with automated regulation legality verification, energy curve analytics, and printable roster sheets.',
+          text: 'Architect competitive 60-card tournament decks with automated regulation legality verification, energy curve analytics, and printable deck sheets.',
         },
         {
           '@type': 'HowToStep',
@@ -3376,7 +3376,7 @@ export async function renderSsrRoute(
             <div style="display:flex;flex-wrap:wrap;gap:8px;">
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">Play! Pokémon Rules</span>
               <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">ACE SPEC Audits</span>
-              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">PDF Roster Export</span>
+              <span style="background:#F1F5F9;color:#475569;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">PDF deck Export</span>
             </div>
           </div>
         </div>
@@ -3463,7 +3463,7 @@ export async function renderSsrRoute(
     <main style="max-width:480px;margin:60px auto;padding:32px 24px;font-family:system-ui,-apple-system,sans-serif;color:#0F172A;text-align:center;">
       <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:32px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
         <h1 style="font-size:24px;font-weight:800;margin:0 0 8px;letter-spacing:-0.5px;">Sign In to DECK / divider</h1>
-        <p style="color:#64748B;font-size:14px;margin:0 0 24px;">Manage your collection vault, 60-card tournament rosters, and sealed assets.</p>
+        <p style="color:#64748B;font-size:14px;margin:0 0 24px;">Manage your collection vault, 60-card tournament decks, and sealed assets.</p>
         
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div style="background:#0F172A;color:#FFFFFF;padding:12px;border-radius:8px;font-weight:600;font-size:14px;">Sign In with Google</div>
@@ -3740,7 +3740,7 @@ export async function renderSsrRoute(
         </div>
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
           <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:4px;">🎴 Deck Capacity Explained</div>
-          <p style="font-size:12px;color:#64748B;margin:0;line-height:1.5;">Standard tournaments require 60 cards. Laddered tiers allow 75 cards (60+15 sideboard), 100 cards (Gym Leader Challenge), and 150 mega rosters.</p>
+          <p style="font-size:12px;color:#64748B;margin:0;line-height:1.5;">Standard tournaments require 60 cards. Laddered tiers allow 75 cards (60+15 sideboard), 100 cards (Gym Leader Challenge), and 150 mega decks.</p>
         </div>
       </section>
 
@@ -4367,8 +4367,8 @@ export async function renderSsrRoute(
   }
 
   // 15. HOMEPAGE / LANDING ROUTE: /
-  const pageTitle = 'DECK / divider — Pokémon TCG Binder Tracker & Deck Builder | Pokémon TCG Studio';
-  const pageDesc = 'DECK / divider is an ad-free Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.';
+  const pageTitle = 'DECK / divider — Pokémon TCG Binder Tracker & deck Studio | Pokémon TCG Studio';
+  const pageDesc = 'DECK / divider is an ad-free Pokémon TCG binder tracker, slab registry, and thematic deck studio with live market prices. Try free as guest.';
   const canonicalUrl = `${canonicalOrigin}/`;
   const ogImageUrl = 'https://deckdivider.app/og-image.png?v=2';
 
@@ -4391,7 +4391,7 @@ export async function renderSsrRoute(
           caption: 'DECK / divider Logo',
         },
         image: 'https://deckdivider.app/og-image.png?v=2',
-        description: 'DECK / divider is an ad-free digital Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder. Digital software studio, not a physical plastic divider accessory.',
+        description: 'DECK / divider is an ad-free digital Pokémon TCG binder tracker, slab registry, and thematic deck studio. Digital software studio, not a physical plastic divider accessory.',
         sameAs: [
           'https://www.reddit.com/r/DeckDivider/',
           'https://www.instagram.com/deckdivider/',
@@ -4433,7 +4433,7 @@ export async function renderSsrRoute(
         sku: 'DD-SOFTWARE-2026',
         applicationCategory: 'Card Game Utility / Collector Tracker Software',
         operatingSystem: 'Web, iOS, Android, PWA, Desktop',
-        description: 'Digital web application and deck builder for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
+        description: 'Digital web application and thematic deck studio for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
         publisher: {
           '@id': 'https://deckdivider.app/#organization',
         },
@@ -4468,7 +4468,7 @@ export async function renderSsrRoute(
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="DECK / divider | Pokémon TCG Collection Tracker & Deck Builder" />
+    <meta property="og:image:alt" content="DECK / divider | Pokémon TCG Collection Tracker & deck Studio" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="DECK / divider — Pokémon TCG Studio" />
@@ -4502,12 +4502,12 @@ export async function renderSsrRoute(
   <main style="font-family:system-ui,-apple-system,sans-serif;color:#0F172A;line-height:1.6;">
     <!-- Hero Section -->
     <section style="max-width:1100px;margin:0 auto;padding:64px 20px 48px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">DIGITAL SOFTWARE STUDIO · POKÉMON TCG BINDER TRACKER &amp; DECK BUILDER</span>
+      <span style="display:inline-block;padding:4px 14px;background:#FFF0F3;color:#DC143C;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">DIGITAL SOFTWARE STUDIO · POKÉMON TCG BINDER TRACKER &amp; deck STUDIO</span>
       <h1 style="font-size:52px;font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin:0 0 24px;color:#0F172A;">
-        The Digital Pokémon TCG Binder Tracker, Slab Registry, and Deckbuilder
+        The Digital Pokémon TCG Binder Tracker, Slab Registry, and deck Studio
       </h1>
       <p style="font-size:20px;color:#64748B;max-width:820px;margin:0 auto 36px;line-height:1.5;">
-        A 100% digital web software application for Pokémon TCG collectors and competitive players. No physical plastic dividers—log raw cards and PSA certs, complete binder sets, track live TCGplayer prices, and build tournament-legal 60-card decks for PTCGL with zero ads.
+        A 100% digital web software application for Pokémon TCG collectors. No physical plastic dividers—log raw cards and PSA certs, complete binder sets, track live TCGplayer prices, and build curated display decks with zero ads.
       </p>
       <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:32px;">
         <a href="/app" style="background:#DC143C;color:#FFFFFF;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(220,20,60,0.25);display:inline-flex;align-items:center;gap:8px;">⚡ Try without an account (Instant Guest Demo) &rarr;</a>
@@ -4593,20 +4593,19 @@ export async function renderSsrRoute(
             </div>
           </div>
 
-          <!-- 3. Tournament Deck Checker Demo -->
+          <!-- 3. deck Studio Demo -->
           <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:18px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <span style="font-weight:800;font-size:15px;color:#0F172A;">3. Standard 60-Card Deck Checker</span>
-              <span style="background:#F0FDF4;color:#16A34A;font-size:11px;font-family:monospace;font-weight:700;padding:2px 6px;border-radius:4px;">H, I, J Legal</span>
+              <span style="font-weight:800;font-size:15px;color:#0F172A;">3. Curated Display deck Studio</span>
+              <span style="background:#F0FDF4;color:#16A34A;font-size:11px;font-family:monospace;font-weight:700;padding:2px 6px;border-radius:4px;">Live NAV</span>
             </div>
-            <p style="font-size:12px;color:#64748B;margin:0 0 14px;line-height:1.5;">Validates 60 cards, regulation marks (H, I, J; G rotated out), 1 ACE SPEC cap, and 1-click PTCGL export format.</p>
+            <p style="font-size:12px;color:#64748B;margin:0 0 14px;line-height:1.5;">Organizes cards into thematic showcases, artist ladders, and custom binder displays with shareable portfolio links.</p>
             <div style="background:#0F172A;color:#F8FAFC;border-radius:10px;padding:10px;font-family:monospace;font-size:11px;line-height:1.5;">
-              <div style="color:#4ADE80;font-weight:700;margin-bottom:4px;">✓ 60/60 Cards · Play! Pokémon 2026 Season</div>
-              <div style="color:#94A3B8;font-size:10px;margin-bottom:6px;">PTCGL Export Preview:</div>
-              <div style="color:#F1F5F9;">4 Buddy-Buddy Poffin TEF 144</div>
-              <div style="color:#F1F5F9;">2 Super Rod PAL 188</div>
-              <div style="color:#F1F5F9;">1 Unfair Stamp TWM 165</div>
-              <div style="color:#F1F5F9;">2 Arven SVI 166</div>
+              <div style="color:#4ADE80;font-weight:700;margin-bottom:4px;">✓ Charizard Art Evolution · 12 Cards</div>
+              <div style="color:#94A3B8;font-size:10px;margin-bottom:6px;">deck Highlights:</div>
+              <div style="color:#F1F5F9;">• Charizard ex SV03 223/197 (SIR)</div>
+              <div style="color:#F1F5F9;">• Charizard Gold Star 100/101 (PSA 9)</div>
+              <div style="color:#F1F5F9;">• Blaine's Charizard Gym Challenge 2/132</div>
             </div>
           </div>
         </div>
@@ -4648,9 +4647,9 @@ export async function renderSsrRoute(
 
         <!-- Feature 3 -->
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-          <div style="color:#DC143C;font-size:18px;font-weight:800;margin-bottom:8px;">03. Tournament Studio</div>
-          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;">60-Card Format Compliance</h3>
-          <p style="color:#64748B;font-size:14px;margin:0;">Standard &amp; Expanded format legality checks, regulation marks (H, I, J; G rotated), ACE SPEC audits, and one-click tournament registration-ready deck lists.</p>
+          <div style="color:#DC143C;font-size:18px;font-weight:800;margin-bottom:8px;">03. deck Studio</div>
+          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;">Thematic Display Binders</h3>
+          <p style="color:#64748B;font-size:14px;margin:0;">Build custom artwork decks, artist spotlights, era-classified binders, and shareable public collection links with live market comps.</p>
         </div>
 
         <!-- Feature 4 -->
@@ -4769,7 +4768,7 @@ export async function renderSsrRoute(
         <span style="color:#DC143C;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1px;text-transform:uppercase;">About DECK / divider</span>
         <h2 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin:8px 0 16px;">Built by Collectors, Engineered for Competitors</h2>
         <p style="color:#475569;font-size:15px;line-height:1.7;max-width:760px;margin:0 auto 20px;">
-          DECK / divider was created to replace slow spreadsheet templates, invasive ad networks, and clunky mobile apps with a fast, ad-free operating system for Pokémon TCG enthusiasts. From live market portfolio valuations across 20 global currencies to tournament-legal 60-card rosters and graded PSA cert audits, every feature is tailored for precision hobbyists.
+          DECK / divider was created to replace slow spreadsheet templates, invasive ad networks, and clunky mobile apps with a fast, ad-free operating system for Pokémon TCG enthusiasts. From live market portfolio valuations across 20 global currencies to tournament-legal 60-card decks and graded PSA cert audits, every feature is tailored for precision hobbyists.
         </p>
         <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
           <a href="/about" style="color:#DC143C;font-weight:600;text-decoration:none;font-size:14px;">Read Full Team &amp; Mission Story &rarr;</a>
@@ -4848,26 +4847,22 @@ export async function renderSsrRoute(
           <a href="/sets" style="background:#DC143C;color:#FFFFFF;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">All 218 Sets &amp; Expansions &rarr;</a>
         </div>
 
-        <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Tournament Deck Archetypes</h2>
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Curated Collection decks</h2>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;">
-          <a href="/deck/charizard-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Charizard ex (Dark)</a>
-          <a href="/deck/gardevoir-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Gardevoir ex (Psychic)</a>
-          <a href="/deck/dragapult-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Dragapult ex</a>
-          <a href="/deck/miraidon-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Miraidon ex</a>
-          <a href="/deck/raging-bolt-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Raging Bolt ex</a>
-          <a href="/deck/terapagos-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Terapagos ex</a>
-          <a href="/deck/gholdengo-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Gholdengo ex</a>
-          <a href="/deck/roaring-moon-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Roaring Moon ex</a>
-          <a href="/deck/regidrago-vstar" style="background:#F1F5F9;border:1px solid #CBD5E1;color:#475569;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Regidrago VSTAR (Expanded)</a>
-          <a href="/deck/lugia-vstar" style="background:#F1F5F9;border:1px solid #CBD5E1;color:#475569;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Lugia VSTAR (Expanded)</a>
+          <a href="/deck/charizard-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Charizard Art Showcase</a>
+          <a href="/deck/gardevoir-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Gardevoir Psychic Ladder</a>
+          <a href="/deck/dragapult-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Dragapult SIR Showcase</a>
+          <a href="/deck/miraidon-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Miraidon Electric Vault</a>
+          <a href="/deck/raging-bolt-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Raging Bolt Ancient deck</a>
+          <a href="/deck/terapagos-ex" style="background:#FFFFFF;border:1px solid #CBD5E1;color:#0F172A;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Terapagos Stellar Display</a>
         </div>
 
         <h2 style="font-size:22px;font-weight:800;margin:0 0 16px;color:#0F172A;">Collector Tools &amp; Resources</h2>
         <div style="display:flex;flex-wrap:wrap;gap:12px;color:#64748B;font-size:14px;">
           <a href="/cards" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon card database</a> •
           <a href="/sets" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon master set checklist</a> •
-          <a href="/tools" style="color:#0F172A;text-decoration:none;font-weight:600;">Pokémon deck builder</a> •
-          <a href="/format/standard" style="color:#0F172A;text-decoration:none;font-weight:600;">2026 Standard legality checker</a> •
+          <a href="/tools" style="color:#0F172A;text-decoration:none;font-weight:600;">deck studio tools</a> •
+          <a href="/directory/decks-index" style="color:#0F172A;text-decoration:none;font-weight:600;">Curated decks directory</a> •
           <a href="/pricing" style="color:#0F172A;text-decoration:none;font-weight:600;">Pricing &amp; Pro tiers</a> •
           <a href="/tools/psa-grade-calculator" style="color:#0F172A;text-decoration:none;font-weight:600;">PSA slab tracker</a> •
           <a href="/directory/slabs-index" style="color:#0F172A;text-decoration:none;font-weight:600;">Graded slab registry</a> •
@@ -4879,7 +4874,7 @@ export async function renderSsrRoute(
     </section>
   
   <footer style="background:#FFFFFF;border-top:1px solid #E2E8F0;padding:32px 20px;text-align:center;color:#64748B;font-size:14px;">
-    <p style="margin:0 0 12px;font-weight:600;color:#0F172A;">DECK / divider — Ad-free Pokémon TCG collection tracker and deckbuilder</p>
+    <p style="margin:0 0 12px;font-weight:600;color:#0F172A;">DECK / divider — Ad-free Pokémon TCG collection tracker and deck studio</p>
     <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:16px;">
       <a href="/" style="color:#64748B;text-decoration:none;">Home</a>
       <a href="/about" style="color:#64748B;text-decoration:none;">About</a>

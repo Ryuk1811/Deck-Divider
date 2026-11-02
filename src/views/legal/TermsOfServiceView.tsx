@@ -28,7 +28,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
         title="Terms of Service | DECK / divider"
-        description="Terms of service, subscription billing policies, valuation disclaimers, and acceptable use guidelines for DECK / divider collectors and deck builders."
+        description="Terms of service, subscription billing policies, valuation disclaimers, and acceptable use guidelines for DECK / divider collectors and showcase curators."
         canonicalPath="/terms"
         keywords={[
           'deck divider terms of service',
@@ -85,7 +85,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
           </h2>
           <div className="space-y-3 text-sm text-amber-900 leading-relaxed">
             <p>
-              <strong>DECK / divider is an informational cataloging and deckbuilding tool, NOT a licensed financial advisor, certified appraiser, or investment service.</strong>
+              <strong>DECK / divider is an informational cataloging and collection organization tool, NOT a licensed financial advisor, certified appraiser, or investment service.</strong>
             </p>
             <ul className="space-y-2 font-mono text-xs text-amber-900/90">
               <li>• <strong>Estimated Market Values:</strong> All card values, graded slab premiums, and sealed portfolio valuations are automated approximations calculated from third-party marketplace transaction feeds (including TCGplayer and eBay). Actual realized prices may vary widely based on individual buyer demand, localized market shifts, centering, surface condition, or grading turnaround times.</li>
@@ -104,11 +104,11 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
               DECK / divider offers free starter access, flexible pay-per-period subscription passes, and a permanent Founder Lifetime option:
             </p>
             <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 sm:p-5 font-mono text-xs space-y-2">
-              <div>• <strong>Starter Plan ($0/mo):</strong> 6 decks (full 60-card decks), 5 wishlists (100 items/list), 25 graded slabs, 15 sealed items. 100% free forever without payment information.</div>
-              <div>• <strong>Bunch Plan ($4/mo or $42/yr):</strong> 15 decks, 15 wishlists, 100 graded slabs, 50 sealed items, multi-currency live FX.</div>
-              <div>• <strong>Stack Plan ($7/mo or $75/yr):</strong> 30 decks, 30 wishlists, 300 graded slabs, 150 sealed items, GLC &amp; retro tournament specs.</div>
-              <div>• <strong>Deck Plan ($11/mo or $120/yr):</strong> 60 decks, 60 wishlists, 1,000 graded slabs, 500 sealed items, standardized CSV export.</div>
-              <div>• <strong>Collection Plan ($14/mo or $150/yr):</strong> Unlimited decks, cards, wishlists, slabs, and vault assets.</div>
+              <div>• <strong>Starter Plan ($0/mo):</strong> 6 decks (60 items/deck), 5 wishlists (100 items/list), 25 graded slabs, 15 sealed items. 100% free forever without payment information.</div>
+              <div>• <strong>Bunch Plan ($4/mo or $42/yr):</strong> 15 decks (100 items/deck), 15 wishlists, 100 graded slabs, 50 sealed items, multi-currency live FX.</div>
+              <div>• <strong>Stack Plan ($7/mo or $75/yr):</strong> 30 decks (140 items/deck), 30 wishlists, 300 graded slabs, 150 sealed items, premium art-style tools.</div>
+              <div>• <strong>deck Plan ($11/mo or $120/yr):</strong> 60 decks (220 items/deck), 60 wishlists, 1,000 graded slabs, 500 sealed items, standardized CSV export.</div>
+              <div>• <strong>Collection Plan ($14/mo or $150/yr):</strong> Unlimited decks, items, wishlists, slabs, and vault assets.</div>
               <div className="pt-2 border-t border-[#E2E8F0] text-[#DC143C] font-bold">• <strong>Founder Lifetime Pass ($250 One-Time):</strong> Permanent Collection Tier access with zero future renewal charges. Capped strictly at the first 100 purchasers with live registry slot tracking. Never expires.</div>
             </div>
             <ul className="space-y-2 font-mono text-xs text-[#334155] pt-2">
@@ -146,7 +146,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({
               <strong>DECK / divider is an independent fan-made cataloging application and is NOT affiliated with, sponsored by, endorsed by, or associated with Nintendo, Creatures Inc., GAME FREAK inc., or The Pokémon Company International.</strong>
             </p>
             <p className="text-xs text-[#64748B]">
-              Pokémon and Pokémon character names, card designs, artwork, and expansion logos are registered trademarks of Nintendo, Creatures Inc., and GAME FREAK inc. All card photography and illustrations are displayed for identification, review, and educational tournament organization purposes under Fair Use.
+              Pokémon and Pokémon character names, card designs, artwork, and expansion logos are registered trademarks of Nintendo, Creatures Inc., and GAME FREAK inc. All card photography and illustrations are displayed for identification, review, and educational collection review purposes under Fair Use.
             </p>
           </div>
         </section>

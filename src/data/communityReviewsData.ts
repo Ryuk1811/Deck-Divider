@@ -23,9 +23,9 @@ const HIGH_DETAIL_REVIEWS: CommunityReview[] = [
     authorName: 'Alex Thorne (KantoCards)',
     isAnonymous: false,
     rating: 5,
-    title: 'Hands down the cleanest PTCGL deck export workflow',
-    comment: 'Been playing competitive Pokémon TCG since Sword & Shield format. Most deck builders have bloated ads or broken text formatting when exporting to Pokémon TCG Live. DECK / divider copies standard 60-card lists cleanly without duplicate line errors. Rotation indicators also saved me from bringing outdated format cards to my local league challenge.',
-    category: 'Deck Studio & PTCGL',
+    title: 'Hands down the cleanest collection deck workflow',
+    comment: 'Been collecting Pokémon TCG cards for years. DECK / divider lets me build custom thematic display decks and binders cleanly without ad clutter or broken UI. The market valuation indicators also help me keep track of portfolio NAV.',
+    category: 'deck Studio & Displays',
     userRole: 'Regional Competitor',
     createdAt: '2026-09-18T14:22:10.000Z',
     likesCount: 38,
@@ -153,40 +153,40 @@ interface TemplateReview {
 }
 
 const TEMPLATES: TemplateReview[] = [
-  // 1. Deck Studio & PTCGL (5-star & 4-star)
+  // 1. deck Studio & Displays (5-star & 4-star)
   {
-    category: 'Deck Studio & PTCGL',
+    category: 'deck Studio & Displays',
     rating: 5,
     titles: [
-      'Export to PTCGL works on the first try every time',
-      'The rotation countdown marker saved my tournament list',
-      'Best 60-card simulator with instant card lookup',
-      'Flawless export formatting without syntax errors',
-      'Standard format card legality filter is a game changer',
-      'Super easy to tweak energy curves and trainer counts',
-      'No more broken clipboard exports in Pokémon TCG Live'
+      'Shareable portfolio links work on the first try',
+      'Thematic display decks look incredible on mobile',
+      'Best binder organization tool with live market pricing',
+      'Flawless deck builder without annoying ads',
+      'Artist and era filtering makes organizing fun',
+      'Super easy to tweak card quantities and conditions',
+      'No more messy spreadsheets for tracking binder sets'
     ],
     comments: [
-      'Building tournament deck rosters on mobile used to be frustrating. DECK / divider makes searching, adjusting quantities, and testing match legality completely seamless.',
-      'I build 3 to 4 decks a week for league play. The standard legality indicators and one-tap PTCGL text generator save so much time before tournament registration.',
-      'Love the breakdown of Pokémon, Trainer, and Energy counts. The visual card art makes it very easy to double-check alternate art variants.',
-      'Exporting directly into Pokémon TCG Live worked without a single missing card error. The deck price estimation is also super helpful for budget testing.',
-      'Cleanest deck builder on the web. No invasive ads, fast typeahead card search, and perfect clipboard format export.'
+      'Building thematic card decks on mobile used to be frustrating. DECK / divider makes searching, adjusting quantities, and creating shareable links completely seamless.',
+      'I curate 3 to 4 binder decks a week. The live TCGplayer market estimates save so much time before trade nights.',
+      'Love the breakdown of card conditions and foil types. The high-res card art makes it very easy to double-check alternate art variants.',
+      'Sharing my Charizard collection deck via public link worked smoothly. My collector friends were super impressed.',
+      'Cleanest deck studio on the web. No invasive ads, fast typeahead card search, and perfect CSV export.'
     ]
   },
   {
-    category: 'Deck Studio & PTCGL',
+    category: 'deck Studio & Displays',
     rating: 4,
     titles: [
-      'Great deck builder, would love custom sleeves preview',
-      'Super smooth PTCGL export, hoping for Expanded format soon',
-      'Very clean deck tester, waiting for prize card tracker',
+      'Great deck builder, would love custom binder covers',
+      'Super smooth portfolio sharing, hoping for Japanese promos',
+      'Very clean deck studio, fast and responsive',
       'Fast card search, minor suggestion for side-by-side card comparisons'
     ],
     comments: [
-      'The deck builder is exceptionally fast and the legality tags are spot-on. Would be awesome if there was a built-in prize card simulation tool, but overall top tier.',
-      'Exports to PTCGL with zero issues. Looking forward to expanded format filters and Japanese promo listings in upcoming versions.',
-      'Really polished tool for theory-crafting 60-card lists. The proxy printing was surprisingly crisp on standard cardstock.'
+      'The deck studio is exceptionally fast and card market prices are spot-on. Overall top tier software for collectors.',
+      'Generates shareable links with zero issues. Looking forward to Japanese promo listings in upcoming versions.',
+      'Really polished tool for theory-crafting custom binder displays.'
     ]
   },
 

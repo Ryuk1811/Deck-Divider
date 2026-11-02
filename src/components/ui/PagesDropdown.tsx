@@ -48,11 +48,11 @@ export const ALL_PAGES: PageItem[] = [
     isAppTab: 'collection',
   },
   {
-    name: 'Tournament Deck Studio',
+    name: 'Art Deck Studio',
     path: '/app',
     category: 'Workspace',
     icon: BookOpen,
-    description: '60-card tournament rosters with PTCGL export',
+    description: 'Custom display decks, theme showcases & artistic binder setups',
     isAppTab: 'decks',
   },
   {
@@ -110,7 +110,7 @@ export const ALL_PAGES: PageItem[] = [
     path: '/cards',
     category: 'Community',
     icon: Search,
-    description: 'Search cards with attributes, attacks, and legalities',
+    description: 'Search cards with attributes, market comps, and variants',
     badge: 'New',
   },
   {
@@ -133,15 +133,15 @@ export const ALL_PAGES: PageItem[] = [
     path: '/leaderboard',
     category: 'Community',
     icon: Trophy,
-    description: 'Top verified portfolios and meta decks',
+    description: 'Top verified portfolios and binder showcases',
     badge: 'Public',
   },
   {
-    name: 'Format Legality Directory',
-    path: '/formats',
+    name: 'Set Checklists & Eras',
+    path: '/sets',
     category: 'Community',
     icon: ShieldCheck,
-    description: 'Standard, Expanded, and GLC rotation status',
+    description: 'All Pokémon expansion checklists & master sets',
   },
 
   // Guides & Comparisons
@@ -167,11 +167,11 @@ export const ALL_PAGES: PageItem[] = [
     description: 'PSA, BGS, CGC barcode and OCR scanner review',
   },
   {
-    name: 'Deck Building Tools Ranked',
+    name: 'Showcase deck Tools Ranked',
     path: '/best/deck-builders',
     category: 'Guides',
     icon: BookOpen,
-    description: 'Top 60-card tournament roster builders',
+    description: 'Top binder display deck & showcase tools',
   },
 
   // Tools & Calculators
@@ -184,11 +184,11 @@ export const ALL_PAGES: PageItem[] = [
     badge: 'Popular',
   },
   {
-    name: 'Deck Legality & Regulation Checker',
-    path: '/tools/deck-legality-checker',
+    name: 'Bulk Collection Importer',
+    path: '/tools/bulk-importer',
     category: 'Tools',
     icon: ShieldAlert,
-    description: 'Validate 60-card rosters against H, I, J marks',
+    description: 'Batch import CSVs and card lists into your vault',
   },
   
 
@@ -216,11 +216,11 @@ export const ALL_PAGES: PageItem[] = [
     badge: 'Founder',
   },
   {
-    name: 'Data & Pricing Methodology',
+    name: 'Data & Market Methodology',
     path: '/data-methodology',
     category: 'Platform',
     icon: Database,
-    description: 'TCGplayer comps, condition formulas & 2026 legality',
+    description: 'TCGplayer comps, condition formulas & market trends',
   },
   {
     name: 'How It Works',

@@ -84,6 +84,7 @@ import { generateOgImageSvg, generateOgImagePng } from './server/ogImageGenerato
 import { createMarkdownNegotiationMiddleware } from './server/markdownNegotiator.js';
 import { SITE_CONFIG } from './src/config/site.config.js';
 import { evaluateRouteGate } from './server/seoGate.js';
+import { fetchGradedCard } from './src/lib/certEngine/certFetchEngine.js';
 
 async function startServer() {
   const app = express();
@@ -197,6 +198,28 @@ async function startServer() {
       app: 'Deck Divider API',
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // --- MULTI-GRADER CERT LOOKUP & VERIFICATION ENGINE ---
+  app.get('/api/v1/graded-cards/:grader/:certNumber', async (req, res) => {
+    try {
+      const { grader, certNumber } = req.params;
+      const result = await fetchGradedCard(grader, certNumber);
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Cache-Control', 'private, max-age=300');
+      return res.json(result);
+    } catch (err: any) {
+      return res.status(500).json({
+        grader: req.params.grader || 'UNKNOWN',
+        certNumber: req.params.certNumber || '',
+        verificationStatus: 'UNAVAILABLE',
+        card: { name: 'Internal Server Error', set: 'System', cardNumber: 'N/A', year: null, language: null },
+        grading: { grade: 'N/A', gradeLabel: 'Error', subgrades: null },
+        images: { front: null, back: null },
+        provenance: { source: 'official_api', sourceUrl: null, retrievedAt: new Date().toISOString() },
+        errorMessage: err?.message || 'Server error processing certificate lookup.',
+      });
+    }
   });
 
   // --- AI KNOWLEDGE & GROUNDING REST ENDPOINT ---
@@ -2818,6 +2841,22 @@ async function startServer() {
       const data = await response.json();
       res.json(data);
     } catch (err: any) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  app.get(['/api/tcgdex/sets/:setId', '/api/tcg/sets/:setId'], async (req, res) => {
+    try {
+      const setId = req.params.setId;
+      if (!setId) return res.status(400).json({ error: 'Missing setId' });
+      const setDetail = await getSetDetail(setId);
+      if (!setDetail) {
+        return res.status(404).json({ error: `Set ${setId} not found` });
+      }
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+      res.json(setDetail);
+    } catch (err: any) {
+      console.error(`Error fetching set detail for ${req.params.setId}:`, err);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });

@@ -197,7 +197,7 @@ export async function pingSearchEngineSitemaps(sitemapUrl: string = 'https://dec
 
 /**
  * Comprehensive Full-Site Purge Broadcaster:
- * Ingests all core routes, meta decks, sets, markdown mirrors, and sitemaps,
+ * Ingests all core routes, collection decks, sets, markdown mirrors, and sitemaps,
  * and pushes them in parallel to IndexNow and Search Engine Pingers.
  */
 export async function broadcastFullSitePurge(urls: string[], sitemapUrl: string = 'https://deckdivider.app/sitemap-index.xml'): Promise<FullPurgeBroadcastResult> {

@@ -18,6 +18,47 @@ export interface ReleaseEntry {
 
 export const ALL_RELEASES: ReleaseEntry[] = [
   {
+    iteration: 60,
+    version: 'v1.60',
+    date: 'October 2026',
+    badge: '60th Iteration',
+    badgeColor: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    tag: 'Major',
+    title: 'The Pure Collector Pivot: Bulk CSV & Text Importer, Set Fast-Fill, Unpaywalled Sharing Loops & Theme Deck Studio',
+    summary: 'The milestone 60th platform iteration completely focusing DECK / divider on card collectors and deck builders. Unlocked free public portfolio links, deck share links, and CSV exports across all tiers. Added instant drag-and-drop CSV and text list importers, 1-click set checklist fast-fill ("Mark All Owned", "Mark All Holos / SIRs"), verified /set/swsh7 live card ingestion (239 cards), and overhauled theme deck building around condition grading, foils, and acquisition valuation.',
+    highlights: [
+      {
+        category: 'Cold-Start Solvers & Fast Entry',
+        items: [
+          'Engineered drag-and-drop CSV parser and plaintext list importer supporting standard deckstrings and CSV column orders with live card matching.',
+          'Added 1-click set checklist fast-fill ("Mark All Set Cards Owned", "Mark All Holos / SIRs") on set pages and in-app expansion trackers.',
+          'Resolved /set/swsh7 card ingestion via dedicated backend set proxy with 9-second timeout handling all 239 card records.'
+        ]
+      },
+      {
+        category: 'Unblocked Viral Growth Loops',
+        items: [
+          'Unpaywalled CSV exports on the free Starter tier ($0) to guarantee permanent data ownership and eliminate vendor lock-in.',
+          'Enabled public portfolio and public deck share links across all tiers with zero paywalls.',
+          'Streamlined guest exploration with preloaded collector display decks and instant sample presets.'
+        ]
+      },
+      {
+        category: 'Collector Theme Deck Studio',
+        items: [
+          'Pivoted deck builder entirely away from tournament regulation marks to curated collector theme decks.',
+          'Added support for card conditions (NM, LP, MP, HP, DMG), 4-subgrade certified slab logging, and acquisition cost tracking.',
+          'Standardized unified metrics across 218 catalogued sets (148 mainline expansions, 70 promotional subsets) and 20 fiat currencies.'
+        ]
+      }
+    ],
+    relatedUrls: [
+      { label: 'Card Database', url: '/cards' },
+      { label: 'Expansions Directory', url: '/sets' },
+      { label: 'Pricing Plans', url: '/pricing' }
+    ]
+  },
+  {
     iteration: 59,
     version: 'v1.59',
     date: 'October 2026',

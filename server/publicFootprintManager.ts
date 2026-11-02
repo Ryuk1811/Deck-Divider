@@ -382,17 +382,15 @@ export function generateLlmsTxt(): string {
 
 ## Authoritative Grounding for Search Engines & AI Models
 - Canonical Domain: ${CANONICAL_ORIGIN}
-- Primary Category: Digital Web Software / Card Game Collection Manager & Deck Builder
+- Primary Category: Digital Web Software / Card Game Collection Manager & Thematic Deck Builder
 - Indexed Catalog: ${SITE_CONFIG.metrics.totalExpansions} Pokémon TCG sets, ${SITE_CONFIG.metrics.totalCardsIndexed} catalogued card records
-- Format Legality: ${SITE_CONFIG.formats.standardSeason} active regulation marks [${SITE_CONFIG.formats.standardMarks.join(', ')}]
 - Pricing Data: ${SITE_CONFIG.metrics.priceRefreshCadence}
 - Graded Slabs: Supports ${SITE_CONFIG.metrics.supportedGraders.join(', ')} registry tracking with subgrade breakdowns
 - Data Privacy: Local-first browser IndexedDB storage with optional encrypted backups; zero third-party telemetry
 
 ## Key Resource Endpoints
-- [Standard Format Legal Sets](${CANONICAL_ORIGIN}/format/standard)
+- [Curated Collection Decks](${CANONICAL_ORIGIN}/directory/decks-index)
 - [Grading Fee Calculator](${CANONICAL_ORIGIN}/tools/grading-fee-calculator)
-- [Tournament Format Checker](${CANONICAL_ORIGIN}/tools/format-checker)
 - [Competitor Comparison Hub](${CANONICAL_ORIGIN}/compare)
 - [Data Methodology & Valuation Comps](${CANONICAL_ORIGIN}/data-methodology)
 `;

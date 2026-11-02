@@ -2,12 +2,12 @@
  * Embed Badge & Backlink Generator Engine for DECK / divider
  * 
  * Programmatically generates embeddable SVGs, HTML snippets, Markdown, BBCode,
- * and live iFrame widgets for 60-card decks, graded slab portfolios, master sets, and collector profiles.
+ * and live iFrame widgets for curated decks, graded slab portfolios, master sets, and collector profiles.
  * Every embed creates a clean, fast-loading, zero-CLS backlink to deckdivider.app.
  */
 
 export interface EmbedBadgeOptions {
-  type: 'deck' | 'portfolio' | 'set' | 'slab';
+  type: 'deck' | 'portfolio' | 'set' | 'slab' | 'deck';
   title: string;
   subtitle?: string;
   count?: number;
@@ -80,7 +80,7 @@ export function generateBBCodeEmbedSnippet(options: EmbedBadgeOptions): string {
 }
 
 /**
- * Generates iFrame mini card widget snippet for webmasters and tournament organizers
+ * Generates iFrame mini card widget snippet for webmasters and community curators
  */
 export function generateIframeEmbedSnippet(options: EmbedBadgeOptions): string {
   const { type, idOrSlug, title } = options;

@@ -12,10 +12,12 @@ import {
   Award,
   ExternalLink,
   Loader2,
+  Lock,
 } from 'lucide-react';
 import {
   PokemonCard,
   Deck,
+  deck,
   CustomList,
   CardCondition,
   DisplayCurrency,
@@ -36,12 +38,12 @@ import { LimitAttemptedAction } from './LimitReachedModal';
 interface CardDetailModalProps {
   card: PokemonCard | null;
   onClose: () => void;
-  decks: Deck[];
+  decks: deck[];
   lists: CustomList[];
   currency: DisplayCurrency;
   currentTier?: AccountTier;
   onTriggerLimitModal?: (action: LimitAttemptedAction, details?: any) => void;
-  onAddCardToDeck: (
+  onAddCardTodeck: (
     deckId: string,
     entry: Omit<PortfolioCardEntry, 'id' | 'isSold'>,
     mode: 'increment' | 'separate'
@@ -57,7 +59,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   currency,
   currentTier,
   onTriggerLimitModal,
-  onAddCardToDeck,
+  onAddCardTodeck,
   onAddCardToList,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'prices' | 'raw' | 'grades'>('overview');
@@ -227,13 +229,6 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               retreatCost: data.retreat ? Array(data.retreat).fill('Colorless') : prev.retreatCost,
               dexId: data.dexId || prev.dexId,
               description: data.description || data.effect || prev.description,
-              regulationMark: data.regulationMark || prev.regulationMark,
-              legalities: data.legal ? {
-                standard: (data.regulationMark || prev.regulationMark)
-                  ? ['H', 'I', 'J'].includes(String(data.regulationMark || prev.regulationMark).toUpperCase())
-                  : Boolean(data.legal.standard),
-                expanded: Boolean(data.legal.expanded)
-              } : prev.legalities,
               variants: data.variants || prev.variants,
               cardmarket: cmData ? {
                 url: cmData.url,
@@ -300,7 +295,6 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   const spreadPercent = rawPrice > 0 ? ((spread / rawPrice) * 100).toFixed(1) : '0';
 
   const handleAddSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     trackFirstMeaningfulAction('first_card_added', { cardId: fullCardData.id });
     if (targetType === 'list') {
       if (selectedListId) {
@@ -346,7 +340,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
         entryData,
       });
     } else {
-      onAddCardToDeck(selectedDeckId, entryData, 'separate');
+      onAddCardTodeck(selectedDeckId, entryData, 'separate');
       onClose();
     }
   };
@@ -435,19 +429,30 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
+                  const isLocked = tab.id === 'grades' && (currentTier === 'Starter' || currentTier === 'Bunch');
+
                   return (
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all border rounded-md ${
+                      onClick={() => {
+                        if (isLocked) {
+                          onTriggerLimitModal?.('LIVE_GRADED_COMPS');
+                          return;
+                        }
+                        setActiveTab(tab.id as any);
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all border rounded-md relative ${
                         isActive
                           ? 'bg-[#0F172A] text-white border-[#0F172A]'
+                          : isLocked
+                          ? 'bg-slate-50 text-slate-400 border-slate-200 opacity-70 cursor-not-allowed'
                           : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A] hover:text-[#0F172A]'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                       <span>{tab.label}</span>
+                      {isLocked && <Lock className="w-2.5 h-2.5 ml-0.5" />}
                     </button>
                   );
                 })}
@@ -482,33 +487,24 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                       </div>
 
                       <div className="flex flex-col justify-center items-center py-1 border-t border-l sm:border-t-0 border-[#E2E8F0]">
-                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Regulation</div>
+                        <div className="font-mono text-[10px] text-[#64748B] font-bold uppercase">Condition</div>
                         <div className="font-mono font-bold text-xs text-[#0F172A] mt-1">
-                          {fullCardData.regulationMark ? `Mark ${fullCardData.regulationMark}` : 'Standard'}
+                          Collection Tracked
                         </div>
                       </div>
                     </div>
 
-                  {/* Format Legalities & Printings Showcase */}
+                {/* Format Legalities & Printings Showcase */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* Format Legalities */}
+                    {/* Collection Metadata */}
                     <div className="p-3 bg-white border border-[#E2E8F0] space-y-1.5 rounded-lg">
-                      <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Tournament Format Legalities</div>
+                      <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Artistic Ledger Details</div>
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border ${
-                          fullCardData.legalities?.standard
-                            ? 'bg-[#DCFCE7] text-[#15803D] border-[#86EFAC]'
-                            : 'bg-[#F1F5F9] text-[#94A3B8] border-[#E2E8F0]'
-                        }`}>
-                          <Check className="w-3.5 h-3.5" /> Standard Legal
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border bg-[#F8FAFC] text-[#0F172A] border-[#E2E8F0]">
+                          Master Set Tracker
                         </span>
-
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border ${
-                          fullCardData.legalities?.expanded
-                            ? 'bg-[#E0F2FE] text-[#0369A1] border-[#7DD3FC]'
-                            : 'bg-[#F1F5F9] text-[#94A3B8] border-[#E2E8F0]'
-                        }`}>
-                          <Check className="w-3.5 h-3.5" /> Expanded Legal
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border bg-[#FFF0F3] text-[#DC143C] border-[#DC143C]/20">
+                          Art Priority
                         </span>
                       </div>
                     </div>
@@ -539,7 +535,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                         )}
                         {fullCardData.variants?.wPrerelease && (
                           <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[#F3E8FF] text-[#7E22CE] border border-[#D8B4FE] rounded-md">
-                            Prerelease
+                            Promo
                           </span>
                         )}
                         {fullCardData.variants?.secret100 && (
@@ -720,7 +716,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
 
                   {/* Mandated Single Plain Line Text stating Raw vs Highest Graded Spread */}
                   <div className="p-3.5 bg-[#FFF0F3] border border-[#DC143C]/30 text-xs font-mono text-[#0F172A] rounded-lg">
-                    Raw market price is {formatCurrency(rawPrice, currency)}. The current spread to highest PSA 10 estimated tier ({formatCurrency(psa10Price, currency)}) is +{formatCurrency(spread, currency)} (+{spreadPercent}%).
+                    Current valuation is {formatCurrency(rawPrice, currency)}. The collection spread to Gem Mint estimated tier ({formatCurrency(psa10Price, currency)}) is +{formatCurrency(spread, currency)} (+{spreadPercent}%).
                   </div>
                 </div>
               )}
@@ -1020,7 +1016,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
                         : 'bg-white text-[#64748B] border-[#E2E8F0]'
                     }`}
                   >
-                    Deck
+                    deck
                   </button>
                   <button
                     type="button"
@@ -1039,7 +1035,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               {targetType === 'deck' ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="flex flex-col">
-                    <label className="font-mono text-[10px] text-[#64748B] mb-1">Deck Target</label>
+                    <label className="font-mono text-[10px] text-[#64748B] mb-1">deck Target</label>
                     <select
                       value={selectedDeckId}
                       onChange={(e) => setSelectedDeckId(e.target.value)}
@@ -1136,7 +1132,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  onAddCardToDeck(duplicateCheckPrompt.deckId, duplicateCheckPrompt.entryData, 'increment');
+                  onAddCardTodeck(duplicateCheckPrompt.deckId, duplicateCheckPrompt.entryData, 'increment');
                   setDuplicateCheckPrompt(null);
                   onClose();
                 }}
@@ -1148,7 +1144,7 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  onAddCardToDeck(duplicateCheckPrompt.deckId, duplicateCheckPrompt.entryData, 'separate');
+                  onAddCardTodeck(duplicateCheckPrompt.deckId, duplicateCheckPrompt.entryData, 'separate');
                   setDuplicateCheckPrompt(null);
                   onClose();
                 }}

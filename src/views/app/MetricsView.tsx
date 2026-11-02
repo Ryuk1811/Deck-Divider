@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import {
   Deck,
+  deck,
   PortfolioCardEntry,
   DisplayCurrency,
   RecentActivityItem,
@@ -29,7 +30,7 @@ import { formatCurrency, formatPercent, formatCompactCurrency } from '../../util
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface MetricsViewProps {
-  decks: Deck[];
+  decks: deck[];
   soldEntries: PortfolioCardEntry[];
   customLists: CustomList[];
   sealedEntries: PortfolioSealedEntry[];
@@ -37,24 +38,27 @@ interface MetricsViewProps {
   currency: DisplayCurrency;
   recentActivities: RecentActivityItem[];
   allCards: PokemonCard[];
-  onSelectDeck: (deckId: string) => void;
+  onSelectDeck?: (deckId: string) => void;
+  onSelectdeck?: (deckId: string) => void;
   onSelectCard: (card: PokemonCard) => void;
-  onNavigateToDecks: () => void;
+  onNavigateToDecks?: () => void;
+  onNavigateTodecks?: () => void;
 }
 
-export const MetricsView: React.FC<MetricsViewProps> = ({
-  decks,
-  soldEntries,
-  customLists,
-  sealedEntries,
-  liveSets,
-  currency,
-  recentActivities,
-  allCards,
-  onSelectDeck,
-  onSelectCard,
-  onNavigateToDecks,
-}) => {
+export const MetricsView: React.FC<MetricsViewProps> = (props) => {
+  const {
+    decks,
+    soldEntries,
+    customLists,
+    sealedEntries,
+    liveSets,
+    currency,
+    recentActivities,
+    allCards,
+    onSelectCard,
+  } = props;
+  const onSelectdeck = props.onSelectdeck || props.onSelectDeck || (() => {});
+  const onNavigateTodecks = props.onNavigateTodecks || props.onNavigateToDecks || (() => {});
   const [breakdownTab, setBreakdownTab] = useState<'type' | 'rarity' | 'set'>('type');
 
   // 1. Calculate Core Portfolio Financial Figures
@@ -214,7 +218,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
             {formatCurrency(totalHoldingsValue, currency)}
           </div>
           <p className="font-mono text-[10px] text-[#64748B]">
-            {totalCardsCount} cards across {decks.length} active decks
+            {totalCardsCount} items across {decks.length} active collection decks
           </p>
         </div>
 
@@ -438,7 +442,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
                     : 'text-[#64748B] hover:text-[#0F172A]'
                 }`}
               >
-                Set
+                Expansion
               </button>
             </div>
           </div>
@@ -565,18 +569,18 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
         </div>
       </div>
 
-      {/* DECKS VALUATION SUMMARY SHORTCUTS */}
+      {/* deckS VALUATION SUMMARY SHORTCUTS */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-4 py-3 glass-slab shadow-md">
           <h3 className="font-heading font-bold text-base text-[#0F172A]">
-            Deck Valuation Summaries
+            deck Valuation Summaries
           </h3>
           <button
             type="button"
-            onClick={onNavigateToDecks}
+            onClick={onNavigateTodecks}
             className="font-mono text-xs font-bold text-[#DC143C] flex items-center gap-1 hover:underline"
           >
-            <span>Deck Command</span>
+            <span>deck Studio</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -592,7 +596,7 @@ export const MetricsView: React.FC<MetricsViewProps> = ({
             return (
               <div
                 key={deck.id}
-                onClick={() => onSelectDeck(deck.id)}
+                onClick={() => onSelectdeck(deck.id)}
                 className="p-4 space-y-3 glass-slab cursor-pointer hover:border-[#DC143C] transition-all group shadow-md"
               >
                 <div className="flex items-center justify-between">

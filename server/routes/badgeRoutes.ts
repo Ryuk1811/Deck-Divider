@@ -77,16 +77,16 @@ badgeRouter.get(['/deck/:id', '/deck/:id.svg'], (req: Request, res: Response) =>
   const id = rawId.replace(/\.svg$/, '');
   const theme = (req.query.theme as string) === 'dark' ? 'dark' : 'light';
   let title = (req.query.title as string) || '';
-  let count = (req.query.count as string) || '60 Cards';
-  let value = (req.query.value as string) ? `$${req.query.value}` : 'Standard Legal';
+  let count = (req.query.count as string) || 'Curated Deck';
+  let value = (req.query.value as string) ? `$${req.query.value}` : 'Live Valuation';
 
   if (!title) {
     title = id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   }
 
   const svg = renderDynamicBadgeSvg({
-    title: title || 'Pokémon Deck',
-    subtitle: 'Verified Tournament Roster',
+    title: title || 'Pokémon Collection Deck',
+    subtitle: 'Curated Collection Deck',
     badgeLabel: 'DECK / DIVIDER',
     metricValue: value,
     theme

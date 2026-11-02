@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Copy, Check, Sparkles, Tag, ShoppingBag } from 'lucide-react';
 
-export type PtcBannerContext = 'general' | 'set' | 'decks' | 'slabs' | 'sealed' | 'format';
+export type PtcBannerContext = 'general' | 'set' | 'decks' | 'deck' | 'slabs' | 'sealed' | 'format' | 'era';
 
 interface PtcPartnerBannerProps {
   className?: string;

@@ -206,7 +206,7 @@ export const EmbedBadgeModal: React.FC<EmbedBadgeModalProps> = ({
           <p className="text-[11px] font-mono text-[#64748B] leading-normal flex items-start gap-1.5">
             <ExternalLink className="w-3.5 h-3.5 text-[#DC143C] flex-shrink-0 mt-0.5" />
             <span>
-              Embedding this live badge on your blog, GitHub, Reddit post, or forum signature generates a verifiable, real-time backlink to your showcase on DECK / divider.
+              Embedding this live badge on your blog, GitHub, Reddit post, or forum signature generates a verifiable, real-time backlink to your collection showcase on DECK / divider.
             </span>
           </p>
         </div>

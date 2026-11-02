@@ -40,12 +40,11 @@ export const DecksMockup: React.FC<DecksMockupProps> = ({ currency = 'USD' }) =>
             <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A] inline-block"></span>
           </div>
           <Layers className="w-4 h-4 text-[#DC143C] ml-1.5" />
-          <span className="text-xs font-semibold font-mono">Tournament Deck Builder</span>
+          <span className="text-xs font-semibold font-mono">Collector Art Deck Studio</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3 text-emerald-600" />
-            Standard Legal
+          <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1">
+            Display Showcase
           </span>
         </div>
       </div>
@@ -55,18 +54,18 @@ export const DecksMockup: React.FC<DecksMockupProps> = ({ currency = 'USD' }) =>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="text-base font-bold text-[#0F172A] font-heading">Charizard ex / Pidgeot Control</h4>
+              <h4 className="text-base font-bold text-[#0F172A] font-heading">Charizard 151 Master Showcase</h4>
               <span className="px-2 py-0.5 rounded-full bg-[#FFF0F3] border border-[#DC143C]/20 text-[#DC143C] text-[10px] font-bold font-mono">
-                Tier 1 Meta
+                Curated Theme
               </span>
             </div>
-            <p className="text-xs font-mono text-[#64748B] mt-0.5">Estimated Deck Value: $142.80 • 60 / 60 Cards Complete</p>
+            <p className="text-xs font-mono text-[#64748B] mt-0.5">Estimated Deck Value: $385.00 • 60 / 60 Cards Complete • Near Mint Foil</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-[#CBD5E1] text-[#0F172A] rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
               <Download className="w-3.5 h-3.5 text-[#64748B]" />
-              <span>Export PTCGL List</span>
+              <span>Export Deck Ledger</span>
             </button>
           </div>
         </div>

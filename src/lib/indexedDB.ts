@@ -1,5 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { PokemonCard, CardSet, Deck, PortfolioCardEntry, CustomList, PortfolioSealedEntry } from '../types';
+import { PokemonCard, CardSet, Deck, deck, PortfolioCardEntry, CustomList, PortfolioSealedEntry } from '../types';
 import { setEncryptedItem, getEncryptedItem } from './encryptedVault';
 
 interface DeckDividerDBSchema extends DBSchema {
@@ -31,9 +31,9 @@ interface DeckDividerDBSchema extends DBSchema {
       message?: string;
     };
   };
-  userDecks: {
+  userdecks: {
     key: string;
-    value: Deck;
+    value: deck;
   };
   userPortfolio: {
     key: string;
@@ -89,8 +89,8 @@ export async function getIndexedDB(): Promise<IDBPDatabase<DeckDividerDBSchema>>
             db.createObjectStore('syncMeta', { keyPath: 'key' });
           }
 
-          if (!db.objectStoreNames.contains('userDecks')) {
-            db.createObjectStore('userDecks', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('userdecks')) {
+            db.createObjectStore('userdecks', { keyPath: 'id' });
           }
           if (!db.objectStoreNames.contains('userPortfolio')) {
             db.createObjectStore('userPortfolio', { keyPath: 'id' });
@@ -250,11 +250,11 @@ export async function idbUpdateSyncMeta(metaPartial: Partial<Awaited<ReturnType<
 }
 
 // User Local Cache Sync with Encrypted Local Storage integration
-export async function idbSaveUserDecks(decks: Deck[], userId: string = 'guest_user'): Promise<void> {
+export async function idbSaveUserdecks(decks: deck[], userId: string = 'guest_user'): Promise<void> {
   // Store in encrypted vault
   await setEncryptedItem('user_decks', decks, userId);
   return execDB(async (db) => {
-    const tx = db.transaction('userDecks', 'readwrite');
+    const tx = db.transaction('userdecks', 'readwrite');
     // Clear and update
     await tx.store.clear();
     for (const deck of decks) {
@@ -264,9 +264,9 @@ export async function idbSaveUserDecks(decks: Deck[], userId: string = 'guest_us
   }, undefined);
 }
 
-export async function idbGetUserDecks(userId: string = 'guest_user'): Promise<Deck[]> {
+export async function idbGetUserdecks(userId: string = 'guest_user'): Promise<deck[]> {
   try {
-    const encrypted = await getEncryptedItem<Deck[]>('user_decks', userId);
+    const encrypted = await getEncryptedItem<deck[]>('user_decks', userId);
     if (encrypted && Array.isArray(encrypted) && encrypted.length > 0) {
       return encrypted;
     }
@@ -274,15 +274,19 @@ export async function idbGetUserDecks(userId: string = 'guest_user'): Promise<De
     console.warn('[IDB] Encrypted vault decks read warning, falling back to direct store:', e);
   }
 
-  // Resilient secondary fallback: read directly from userDecks store
-  const directDecks = await execDB(async (db) => db.getAll('userDecks'), []);
-  if (directDecks && directDecks.length > 0) {
+  // Resilient secondary fallback: read directly from userdecks store
+  const directdecks = await execDB(async (db) => db.getAll('userdecks'), []);
+  if (directdecks && directdecks.length > 0) {
     // Re-seed encrypted vault asynchronously to self-heal
-    setEncryptedItem('user_decks', directDecks, userId).catch(() => {});
-    return directDecks;
+    setEncryptedItem('user_decks', directdecks, userId).catch(() => {});
+    return directdecks;
   }
   return [];
 }
+
+// Backward-compatibility aliases
+export const idbSaveUserDecks = idbSaveUserdecks as any;
+export const idbGetUserDecks = idbGetUserdecks as any;
 
 export async function idbSaveUserPortfolio(items: PortfolioCardEntry[], userId: string = 'guest_user'): Promise<void> {
   await setEncryptedItem('user_portfolio', items, userId);

@@ -111,18 +111,18 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   return (
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative select-none">
       <PageHead
-        title="DECK / divider — Ad-Free Pokémon TCG Collection Tracker &amp; Deckbuilder"
-        description="The ultimate ad-free Pokémon TCG collection tracker and tournament deck studio. Track raw cards, PSA/BGS/CGC slabs, and sealed booster boxes with live TCGplayer market prices and offline-first privacy."
+        title="DECK / divider — Ad-Free Pokémon TCG Collection Studio &amp; Art decks"
+        description="The ultimate ad-free Pokémon TCG collection tracker and artistic deck studio. Track raw cards, PSA/BGS/CGC slabs, and sealed booster boxes with live TCGplayer market prices and offline-first privacy."
         canonicalPath="/"
         keywords={[
           'pokemon card tracker',
           'pokemon collection tracker',
           'pokemon card value app',
-          'pokemon deck builder',
+          'pokemon deck studio',
           'psa slab registry',
           'tcgplayer market prices',
           'pokemon sealed vault',
-          'ptcgl deck export',
+          'portfolio csv export',
           'master set tracker'
         ]}
         schema={getHomepageSchema()}
@@ -174,8 +174,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           id="how-it-works"
           index="02"
           badge="CORE MODULES"
-          title="Engineered for tournament play, binder organization & asset vaulting"
-          subtitle="Detailed breakdown of all 7 dedicated tools designed for competitive players and serious collectors."
+          title="Engineered for binder curation, thematic decks &amp; asset vaulting"
+          subtitle="Detailed breakdown of dedicated tools designed for card collectors who build decks and organize master collections."
         />
 
         {/* Detailed 7 Feature Panels */}
@@ -214,7 +214,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           index="02/07"
           badge="PORTFOLIO NAV"
           title="What's your binder worth right now?"
-          description="Live collection valuation. Automatic updates using verified TCGplayer market prices and recent eBay sales."
+          description="Live collection valuation. Automatic updates using verified TCGplayer market prices and recent eBay sales across 20 global fiat currencies."
           bulletPoints={[
             {
               title: 'Value History Charts',
@@ -226,7 +226,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             },
             {
               title: 'Currency Switcher',
-              desc: 'Switch prices between USD ($), EUR (€), GBP (£), JPY (¥), CAD, and AUD with current exchange rates.',
+              desc: 'Switch prices between 20 global fiat currencies (USD, EUR, GBP, JPY, CAD, AUD, CHF, and more) with real-time exchange rates.',
             },
           ]}
           mockup={<MetricsMockup currency={displayCurrency} />}
@@ -239,26 +239,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <ZigZagSection
           id="decks"
           index="03/07"
-          badge="60-CARD STUDIO"
-          title="Build a legal 60-card deck in minutes."
-          description="Tournament-ready deck lists. Verifies 2026 Standard regulation marks (H, I, J blocks; G rotated) based on published Play! Pokémon rules and enforces card limits."
+          badge="ART deckS"
+          title="Build & showcase curated card decks."
+          description="Assemble custom display decks, theme showcases, and color-coded binder setups. Track card conditions, art treatments, acquisition costs, and live market valuation."
           bulletPoints={[
             {
-              title: 'Standard & Expanded Format Checks',
-              desc: 'Flags expired rotation blocks and banned cards before you register for a tournament or league night.',
+              title: 'Custom deck Sizing',
+              desc: 'Scaling caps across tiers: 60, 100, 140, 220, or Unlimited cards per curated deck.',
             },
             {
-              title: 'Card Count Ratios',
-              desc: 'See your card splits at a glance — basic Pokémon, search items, draw supporters, stadium cards, and energy counts.',
+              title: 'Condition & Display Tracking',
+              desc: 'Log Near Mint to Damaged conditions, 1st Edition stamps, masterball holos, and special illustration finishes for every item in the collection.',
             },
             {
-              title: 'Export to PTCGL',
-              desc: 'Copy your deck list in the standard format ready to paste directly into Pokémon TCG Live or tournament registration sheets.',
+              title: 'Unblocked Sharing & Export',
+              desc: 'Generate public display links or download clean CSV backups and deck summaries with zero paywalls.',
             },
           ]}
           mockup={<DecksMockup currency={displayCurrency} />}
           reversed={false}
-          ctaText="Build 60-Card Deck"
+          ctaText="Build Theme deck"
           onCtaClick={onEnterApp}
         />
 
@@ -332,7 +332,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             },
             {
               title: 'Custom Wishlists',
-              desc: 'Keep your chase cards separate — make lists for Personal Collection grails, trade binder targets, and deck upgrades.',
+              desc: 'Keep your chase cards separate — make lists for Personal Collection grails, trade binder targets, and deck expansion.',
             },
             {
               title: 'Market Drops',
@@ -425,7 +425,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           index="05"
           badge="KNOWLEDGE"
           title="Frequently asked questions & collector guides"
-          subtitle="Common questions on pricing data, grading slabs, deck legality, and collection safety."
+          subtitle="Common questions on pricing data, grading slabs, art variants, and collection safety."
         />
 
         {/* FAQ & Collector Insights */}

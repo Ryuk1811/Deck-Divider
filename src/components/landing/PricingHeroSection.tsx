@@ -30,9 +30,9 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: false,
       features: [
         'Up to 6 custom decks',
-        'Laddered deck sizes (6-card mini, 30-card half & 60-card standard)',
-        'Max 60 cards per deck cap',
-        '1-click PTCGL text export',
+        'Laddered deck sizes (60 items per deck)',
+        'Max 60 items per deck cap',
+        'Full portfolio CSV export',
         'Up to 5 card wishlists',
         'Max 100 items per list',
         'Instant card search across 218 sets',
@@ -44,9 +44,9 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: false,
       features: [
         'Up to 15 custom decks',
-        'Laddered up to 75 cards per deck (with 15 sideboard)',
+        'Laddered up to 100 items per deck',
         'Up to 15 card wishlists',
-        'Max 300 items per list',
+        'Max 500 items per list',
         'PSA, BGS & CGC grade logging',
         'Multi-currency NAV converter',
       ],
@@ -56,9 +56,9 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: false,
       features: [
         'Up to 30 custom decks',
-        'Laddered up to 100 cards per deck (100-card GLC ready)',
+        'Laddered up to 140 items per deck',
         'Up to 30 card wishlists',
-        'Max 750 items per list',
+        'Max 1,000 items per list',
         'Shareable public deck links',
         'Master set checklist tracking',
       ],
@@ -68,9 +68,9 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: true,
       features: [
         'Up to 60 custom decks',
-        'Laddered up to 150 cards per deck (high-capacity mega lists)',
+        'Laddered up to 220 items per deck',
         'Up to 60 card wishlists',
-        'Max 1,500 items per list',
+        'Max 2,500 items per list',
         'Full portfolio CSV ledger export',
         'Sealed booster box tracker',
         'Price drop alerts',
@@ -81,7 +81,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
       popular: false,
       features: [
         'Unlimited custom decks (∞)',
-        'Exclusive Unlimited cards per deck (∞ across all sizes: 6, 30, 60, 100, ∞)',
+        'Unlimited items per deck (∞ across all decks)',
         'Unlimited card wishlists (∞)',
         'Unlimited items per list (∞)',
         'Shareable public deck links',
@@ -107,7 +107,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               Starter Plan ($0 Free Forever)
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Search all 218 catalogued sets &amp; series (148+ master checklists) with daily USD TCGplayer pricing, build up to 6 custom decks (laddered 6-card mini, 30-card half &amp; 60-card standard decks), log 25 slabs, and create 5 wishlists with no credit card required.
+              Search all 218 catalogued sets &amp; series (148+ master checklists) with daily USD TCGplayer pricing, build up to 6 custom decks (laddered 6-item mini, 30-item showcase &amp; 60-item decks), log 25 slabs, and create 5 wishlists with no credit card required.
             </p>
           </div>
 
@@ -122,7 +122,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               Instant Encrypted Cloud Sync
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Your binders, tournament lists, and slab registry automatically synchronize to the cloud across all your desktop and mobile devices with zero setup.
+              Your binders, collection decks, and slab registry automatically synchronize to the cloud across all your desktop and mobile devices with zero setup.
             </p>
           </div>
 
@@ -137,7 +137,7 @@ export const PricingHeroSection: React.FC<PricingHeroSectionProps> = ({
               Full Guest Exploration
             </h3>
             <p className="text-xs text-[#64748B] leading-relaxed">
-              Browse card catalogs, view daily market price trend graphs, test deckbuilders, and experiment with sample collections immediately without creating an account.
+              Browse card catalogs, view daily market price trend graphs, test collection decks, and experiment with sample collections immediately without creating an account.
             </p>
           </div>
         </div>

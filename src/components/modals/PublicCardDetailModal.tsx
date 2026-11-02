@@ -96,10 +96,6 @@ export const PublicCardDetailModal: React.FC<PublicCardDetailModalProps> = ({
               dexId: data.dexId || prev.dexId,
               description: data.description || data.effect || prev.description,
               regulationMark: data.regulationMark || prev.regulationMark,
-              legalities: data.legal ? {
-                standard: Boolean(data.legal.standard),
-                expanded: Boolean(data.legal.expanded),
-              } : prev.legalities,
             };
           });
         }
@@ -351,18 +347,14 @@ export const PublicCardDetailModal: React.FC<PublicCardDetailModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="p-3.5 bg-white border border-[#E2E8F0] space-y-1.5 rounded-xl shadow-2xs">
                       <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                        Format Legalities
+                        Collection Context
                       </div>
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border ${
-                          fullCardData.legalities?.standard ? 'bg-[#DCFCE7] text-[#15803D] border-[#86EFAC]' : 'bg-[#F1F5F9] text-[#94A3B8] border-[#E2E8F0]'
-                        }`}>
-                          <Check className="w-3.5 h-3.5" /> Standard Legal
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border bg-[#DCFCE7] text-[#15803D] border-[#86EFAC]">
+                          <Check className="w-3.5 h-3.5" /> Master Set Tracked
                         </span>
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border ${
-                          fullCardData.legalities?.expanded ? 'bg-[#E0F2FE] text-[#0369A1] border-[#7DD3FC]' : 'bg-[#F1F5F9] text-[#94A3B8] border-[#E2E8F0]'
-                        }`}>
-                          <Check className="w-3.5 h-3.5" /> Expanded Legal
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold rounded-md border bg-[#E0F2FE] text-[#0369A1] border-[#7DD3FC]">
+                          <Check className="w-3.5 h-3.5" /> Art Focus
                         </span>
                       </div>
                     </div>

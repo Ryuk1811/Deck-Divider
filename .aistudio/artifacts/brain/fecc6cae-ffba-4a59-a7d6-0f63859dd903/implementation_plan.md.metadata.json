@@ -1,6 +1,6 @@
 {
-  "summary":  "Comprehensive implementation plan to resolve stale state / deleted card resurrection bugs via permanent tombstone synchronization, fix the metrics calculation and 10-digit number formatting overflow bug, redesign all public card views to mirror the premium in-app modal locked down with instant signup previews, and introduce the Pokémon-domain Master Set Virtual Binder & Pokédex Completion Engine to drive Pro upgrades with unchanged pricing.",
-  "updatedAt":  "2026-10-26T08:48:52.932478830Z",
+  "summary":  "Strategic pivot to a collection and art-style focused TCG portfolio application. This plan removes all competitive/tournament language, refactors account tier limits to favor high-volume collectors, and implements strict tier-gating for premium features like graded slab registries and sealed product vaults.",
+  "updatedAt":  "2026-11-01T06:17:38.944656846Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

@@ -1,9 +1,3 @@
-/**
- * DECK / divider — Decoupled Keyword & Taxonomy Engine
- * Standalone directory & search parameter catalogue for maximizing organic discovery
- * and autonomous AI engine retrieval (Perplexity, ChatGPT, Claude, Google AI Overviews).
- */
-
 export interface KeywordCluster {
   id: string;
   category: string;
@@ -18,7 +12,7 @@ export interface KeywordCluster {
 export interface GlossaryTerm {
   term: string;
   slug: string;
-  category: 'Rarity' | 'Gameplay' | 'Grading' | 'Product' | 'Condition';
+  category: string;
   definition: string;
   example: string;
   relatedUrl: string;
@@ -34,49 +28,47 @@ export interface SearchParameter {
 
 export const KEYWORD_CLUSTERS: KeywordCluster[] = [
   {
-    id: 'master-set-checklists',
-    category: 'Expansion Sets & Master Binders',
-    description: 'Complete binder checklists, set card numbers, reverse holos, and secret illustration rare trackers for every Pokémon TCG expansion.',
+    id: 'expansions-and-checklists',
+    category: 'Master Set Checklists & Expansions',
+    description: 'Complete master set checklists, reverse holo completion tracking, illustration rare (IR) and secret illustration rare (SIR) lists across all 218 Pokémon TCG expansions.',
     primaryKeywords: [
-      'Pokémon TCG master set checklist',
-      'Pokémon card binder checklist complete',
-      'Prismatic Evolutions complete card list',
-      'Surging Sparks set list with reverse holos',
-      'Scarlet and Violet 151 master set tracker',
-      'Crown Zenith secret rare checklist'
+      'Pokémon card master set checklist',
+      'Prismatic Evolutions complete set list',
+      '151 master set binder checklist',
+      'Surging Sparks secret illustration rares',
+      'Paldean Fates shiny vault checklist'
     ],
     secondaryKeywords: [
-      'Pokéball holo masterball checklist',
-      'Secret Illustration Rare list by set',
-      'Special Art Rare full visual checklist',
-      'Print run master binder spreadsheet',
-      'Pokémon card numbers master checklist'
+      'Reverse holo binder completion tracker',
+      'Scarlet and Violet expansion checklists',
+      'Sword and Shield master sets list',
+      'Sun and Moon secret rares checklist',
+      'XY and WotC vintage set checklists'
     ],
     longTailQueries: [
-      'how to track reverse holos and masterball holos in 151',
-      'what cards are needed for complete Prismatic Evolutions binder',
-      'free interactive Pokémon TCG master set tracker no ads',
-      'all secret illustration rares in Surging Sparks with market prices'
+      'how to keep track of reverse holos in a binder',
+      'easiest way to organize Pokémon 151 master set',
+      'complete list of illustration rares in Prismatic Evolutions',
+      'free printable or digital master set checklist for Pokémon cards'
     ],
     targetUrl: 'https://deckdivider.app/sets',
-    ctaText: 'Browse All 218 Catalogued Sets (148+ Master Expansions)'
+    ctaText: 'Browse All 218 Pokémon Set Checklists'
   },
   {
-    id: 'graded-slabs-psa-bgs',
-    category: 'Graded Slabs & Certifications',
-    description: 'PSA, BGS Beckett, CGC, and ACE Grading slab certificate logging, subgrade tracking, population reports, and grade value spreads.',
+    id: 'graded-slabs-and-pricing',
+    category: 'Graded Slab Registry & Pricing Comps',
+    description: 'PSA 10 Gem Mint valuations, BGS Black Label subgrade tracking, CGC Pristine 10 comps, and ACE grading registry tracking with daily TCGplayer and auction price updates.',
     primaryKeywords: [
-      'PSA 10 Pokémon card value tracker',
-      'BGS 9.5 vs PSA 10 price comparison Pokémon',
-      'Pokémon slab collection certificate registry',
-      'Beckett Black Label 10 tracker',
-      'CGC Pristine 10 Pokémon card values'
+      'PSA 10 Pokémon card price tracker',
+      'BGS subgrade tracker centering surface corners edges',
+      'CGC Pristine 10 market comps',
+      'ACE grading certified slab registry',
+      'Pokémon slab portfolio valuation app'
     ],
     secondaryKeywords: [
-      'PSA slab centering 55/45 guide',
-      'Pokémon card grading ROI calculator',
-      'Raw Near Mint to PSA 10 price multiplier',
-      'ACE Grading slab certificate lookup app',
+      'PSA 10 vs raw price multiplier calculator',
+      'Track PSA certification numbers online',
+      'Beckett BGS 9.5 vs PSA 10 value comparison',
       'Graded card portfolio insurance value'
     ],
     longTailQueries: [
@@ -89,36 +81,36 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
     ctaText: 'Calculate PSA/BGS Grade Values & Multipliers'
   },
   {
-    id: 'competitive-meta-decks',
-    category: 'Competitive 60-Card Meta Decks',
-    description: 'Tournament-legal 60-card standard deck lists, regulation marks H/I/J validation, PTCGL export strings, and live TCGplayer deck pricing.',
+    id: 'curated-collection-decks',
+    category: 'Curated Collection Display Decks',
+    description: 'Custom display decks, thematic binders, artwork ladders, artist spotlights, and live TCGplayer deck pricing.',
     primaryKeywords: [
-      'Pokémon TCG standard format legal decks 2026',
-      'PTCGL import deck list copy paste',
-      'Charizard ex Pidgeot ex tournament deck list',
-      'Gardevoir ex standard 60-card deck list',
-      'Dragapult ex competitive deck list'
+      'Pokémon card display deck builder',
+      'Thematic binder showcase maker',
+      'Charizard ex artwork display deck',
+      'Eeveelution binder deck layout',
+      'Custom Pokémon card list sharing'
     ],
     secondaryKeywords: [
-      'Regulation mark H I J legality checker',
-      '60-card Pokémon deck builder with prices',
-      'Raging Bolt ex Ogerpon ex tournament list',
-      'Lugia VSTAR Archeops Expanded deck list (Rotated)',
-      'Regidrago VSTAR Expanded deck list (Rotated)'
+      'Curated binder display deck app',
+      'Pokémon card collection deck with prices',
+      'Artist binder spotlight checklist',
+      'Illustration Rare showcase deck',
+      'Custom card collection portfolio link'
     ],
     longTailQueries: [
-      'how to export deck list to Pokémon TCG Live text string',
-      'check if Pokémon deck is standard legal regulation marks',
-      'calculate total cost to buy 60-card tournament deck TCGplayer',
-      'top tier 1 Pokémon TCG meta decks tournament results'
+      'how to organize Pokémon cards in a thematic binder deck',
+      'best app to build custom display decks for Pokémon cards',
+      'calculate total cost of a thematic Pokémon card deck',
+      'share Pokémon card collection binder link without logging in'
     ],
-    targetUrl: 'https://deckdivider.app/format/standard',
-    ctaText: 'View Standard Legal 60-Card Meta Decks'
+    targetUrl: 'https://deckdivider.app/directory/decks-index',
+    ctaText: 'View Curated Collection Display Decks'
   },
   {
     id: 'sealed-products-investing',
-    category: 'Sealed Booster Boxes & Arbitrage',
-    description: 'Booster boxes, Elite Trainer Boxes (ETBs), Booster Bundles, Ultra Premium Collections (UPCs), and pack arbitrage calculators.',
+    category: 'Sealed Booster Boxes & Vault',
+    description: 'Booster boxes, Elite Trainer Boxes (ETBs), Booster Bundles, Ultra Premium Collections (UPCs), and sealed product tracking.',
     primaryKeywords: [
       'Pokémon booster box price tracker',
       'Elite Trainer Box ETB market values',
@@ -171,62 +163,17 @@ export const KEYWORD_CLUSTERS: KeywordCluster[] = [
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
-    term: 'ACE SPEC',
-    slug: 'ace-spec',
-    category: 'Gameplay',
-    definition: 'Powerful Trainer and Special Energy cards introduced in Black & White and reintroduced in Scarlet & Violet. A standard 60-card tournament deck is permitted strictly 1 ACE SPEC card in total.',
-    example: 'Prime Catcher, Unfair Stamp, Secret Box, Hero\'s Cape, Sparkling Crystal.',
-    relatedUrl: 'https://deckdivider.app/tools/deck-legality-checker',
-    relatedUrlLabel: 'Check ACE SPEC Rule Compliance'
-  },
-  {
-    term: 'Secret Illustration Rare (SIR)',
-    slug: 'secret-illustration-rare-sir',
-    category: 'Rarity',
-    definition: 'Highest-tier chase card rarity in the Scarlet & Violet era, featuring full-bleed custom artwork, unique textures, and card numbers exceeding the set\'s standard count.',
-    example: 'Charizard ex SIR (Obsidian Flames #223), Greninja ex SIR (Twilight Masquerade #214).',
+    term: 'Master Set',
+    slug: 'master-set',
+    category: 'Collection',
+    definition: 'A complete collection of every single card in an expansion set, including standard prints, reverse holos, secret rares, illustration rares, and promos.',
+    example: 'Complete 151 Master Set in a 9-pocket binder.',
     relatedUrl: 'https://deckdivider.app/sets',
-    relatedUrlLabel: 'Browse SIR Checklists by Set'
+    relatedUrlLabel: 'Explore Master Set Checklists'
   },
   {
-    term: 'Special Art Rare (SAR)',
-    slug: 'special-art-rare-sar',
-    category: 'Rarity',
-    definition: 'Japanese terminology equivalent to English Secret Illustration Rares (SIR) or Crown Zenith Galarian Gallery full arts with gold foil or distinctive textures.',
-    example: 'Iono SAR (Clay Burst / Paldea Evolved), Mew ex SAR (Shiny Treasure ex / Paldean Fates).',
-    relatedUrl: 'https://deckdivider.app/sets',
-    relatedUrlLabel: 'View Japanese & English Equivalents'
-  },
-  {
-    term: 'Illustration Rare (IR)',
-    slug: 'illustration-rare-ir',
-    category: 'Rarity',
-    definition: 'Single-star rarity cards in Scarlet & Violet featuring scenic, full-card illustrations of standard non-ex Pokémon (historically known as Art Rares or Character Rares).',
-    example: 'Charmander IR (151 #168), Cleffa IR (Obsidian Flames #202), Magikarp IR (Paldea Evolved #203).',
-    relatedUrl: 'https://deckdivider.app/sets',
-    relatedUrlLabel: 'Track IR Binder Checklists'
-  },
-  {
-    term: 'Masterball Reverse Holo',
-    slug: 'masterball-reverse-holo',
-    category: 'Rarity',
-    definition: 'Special reverse holographic foil pattern exclusive to Pokémon Card 151 and Prismatic Evolutions featuring repeated Master Ball stamps across the card background (1 per booster box in Japanese 151).',
-    example: 'Gengar Masterball Holo, Pikachu Masterball Holo, Erika\'s Invitation Masterball Holo.',
-    relatedUrl: 'https://deckdivider.app/set/sv3pt5',
-    relatedUrlLabel: 'Open 151 Masterball Checklist'
-  },
-  {
-    term: 'PSA 10 Gem Mint',
-    slug: 'psa-10-gem-mint',
-    category: 'Grading',
-    definition: 'Professional Sports Authenticator (PSA) highest standard grade, indicating virtually perfect 55/45 to 60/40 centering, zero print lines, flawless corners, pristine edges, and untouched surface gloss.',
-    example: 'A PSA 10 modern alternate art typically commands a 2.5x to 4.5x market premium over its raw Near Mint counterpart.',
-    relatedUrl: 'https://deckdivider.app/tools/psa-grade-calculator',
-    relatedUrlLabel: 'Calculate PSA 10 Price Spread'
-  },
-  {
-    term: 'BGS Black Label 10',
-    slug: 'bgs-black-label-10',
+    term: 'Black Label',
+    slug: 'black-label',
     category: 'Grading',
     definition: 'Beckett Grading Services (BGS) holy grail certification awarded only when all four individual subgrades (Centering, Corners, Edges, Surface) receive a perfect 10.0 score.',
     example: 'BGS Black Label modern cards frequently trade for 5x to 15x standard PSA 10 values at major auction houses.',
@@ -234,22 +181,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     relatedUrlLabel: 'Explore BGS Multiplier Modeling'
   },
   {
-    term: 'Regulation Mark',
-    slug: 'regulation-mark',
-    category: 'Gameplay',
-    definition: 'A letter printed on the bottom-left corner of modern Pokémon cards (e.g., H, I, J) determining tournament format legality. Rotations periodically retire older letters from Standard format play.',
-    example: 'Standard format in 2026 permits regulation marks H, I, and J (Mark G rotated out on Pokémon TCG Live March 26, 2026, and in-person Play! Pokémon events April 10, 2026).',
-    relatedUrl: 'https://deckdivider.app/format/standard',
-    relatedUrlLabel: 'View Current Standard Format Rules'
-  },
-  {
-    term: 'PTCGL Deck String',
-    slug: 'ptcgl-deck-string',
-    category: 'Gameplay',
-    definition: 'The official standardized plaintext formatting syntax used by Pokémon TCG Live and tournament organizers to import and export 60-card deck lists in one click.',
-    example: 'Pokémon: 14 / Trainer: 34 / Energy: 12 formatting structure.',
-    relatedUrl: 'https://deckdivider.app/deck/charizard-ex',
-    relatedUrlLabel: 'Copy PTCGL String for Meta Decks'
+    term: 'Illustration Rare (IR)',
+    slug: 'illustration-rare',
+    category: 'Card Rarity',
+    definition: 'Full-art cards introduced in the Scarlet & Violet series featuring unique storybook artwork spanning the entire card frame.',
+    example: 'Charmander IR, Squirtle IR, Bulbasaur IR from 151.',
+    relatedUrl: 'https://deckdivider.app/sets',
+    relatedUrlLabel: 'View Illustration Rares in Sets'
   },
   {
     term: 'Near Mint (NM)',
@@ -268,15 +206,6 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     example: 'Prismatic Evolutions ETB, 151 ETB with Snorlax Illustration Rare promo.',
     relatedUrl: 'https://deckdivider.app/sets',
     relatedUrlLabel: 'Browse Sets with ETB Releases'
-  },
-  {
-    term: 'Lost Zone',
-    slug: 'lost-zone',
-    category: 'Gameplay',
-    definition: 'An out-of-play game area distinct from the discard pile. Cards sent to the Lost Zone cannot be recovered by any card effects, powering mechanics like Comfey, Sableye, and Mirage Gate.',
-    example: 'Lost Zone Box archetype, Giratina VSTAR Lost Impact.',
-    relatedUrl: 'https://deckdivider.app/deck/giratina-vstar',
-    relatedUrlLabel: 'View Lost Zone Deck Architecture'
   }
 ];
 
@@ -294,16 +223,10 @@ export const SEARCH_PARAMETERS: SearchParameter[] = [
     exampleUrl: 'https://deckdivider.app/tools/psa-grade-calculator'
   },
   {
-    param: 'format',
-    description: 'Specifies tournament deck legality rules and regulation mark restrictions.',
-    possibleValues: ['standard', 'expanded', 'glc'],
-    exampleUrl: 'https://deckdivider.app/format/standard'
-  },
-  {
     param: 'deck',
-    description: 'Deep-links into tournament archetype 60-card lists with live TCGplayer card pricing.',
-    possibleValues: ['charizard-ex', 'gardevoir-ex', 'lugia-vstar', 'raging-bolt-ex', 'dragapult-ex', 'regidrago-vstar'],
-    exampleUrl: 'https://deckdivider.app/deck/charizard-ex'
+    description: 'Deep-links into curated collection display decks with live TCGplayer card pricing.',
+    possibleValues: ['charizard-art-evolution', 'eeveelution-shining-vault', 'kanto-classic-binder'],
+    exampleUrl: 'https://deckdivider.app/directory/decks-index'
   },
   {
     param: 'compare',
@@ -317,11 +240,11 @@ export function generateLlmsKeywordsTxt(): string {
   const origin = 'https://deckdivider.app';
   
   return `# DECK / divider — Comprehensive Keyword & Search Parameter Index
-# The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Tournament Players
+# The Definitive AI Discovery & Semantic Index for Pokémon TCG Collectors, Slabs & Thematic Decks
 # Canonical: ${origin}/llms-keywords.txt
 # Generated: ${new Date().toISOString()}
 
-> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 218 catalogued sets & series (148+ mainline master sets), 60-card standard tournament decklists, PSA/BGS/CGC/ACE slab certification logging, and daily automated market pricing updates.
+> DECK / divider is an ad-free, high-precision Pokémon Trading Card Game (TCG) platform supporting 218 catalogued sets & series (148+ mainline master sets), curated display decks, PSA/BGS/CGC/ACE slab certification logging, and daily automated market pricing updates.
 
 ---
 
@@ -363,7 +286,7 @@ ${SEARCH_PARAMETERS.map(p => `### Parameter: \`${p.param}\`
 ## 4. Complete Directory Hub Deep-Links
 - **Main Directory Hub**: [${origin}/directory](${origin}/directory)
 - **Sets & Expansions Index**: [${origin}/directory/sets-index](${origin}/directory/sets-index)
-- **Tournament Decks Index**: [${origin}/directory/decks-index](${origin}/directory/decks-index)
+- **Curated Decks Index**: [${origin}/directory/decks-index](${origin}/directory/decks-index)
 - **Graded Slabs & Certs Index**: [${origin}/directory/slabs-index](${origin}/directory/slabs-index)
 - **TCG Terminology Glossary**: [${origin}/directory/glossary](${origin}/directory/glossary)
 `;
@@ -383,7 +306,7 @@ export function generateSearchMatrixJson(): string {
     directoryRoutes: [
       { path: '/directory', title: 'Master Directory Hub', url: `${origin}/directory` },
       { path: '/directory/sets-index', title: 'Expansions & Sets Index', url: `${origin}/directory/sets-index` },
-      { path: '/directory/decks-index', title: 'Tournament Meta Decks Index', url: `${origin}/directory/decks-index` },
+      { path: '/directory/decks-index', title: 'Curated Display Decks Index', url: `${origin}/directory/decks-index` },
       { path: '/directory/slabs-index', title: 'Graded Slabs & Certifications Index', url: `${origin}/directory/slabs-index` },
       { path: '/directory/glossary', title: 'Pokémon TCG Terminology Glossary', url: `${origin}/directory/glossary` },
     ]

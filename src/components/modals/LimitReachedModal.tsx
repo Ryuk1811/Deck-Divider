@@ -5,14 +5,13 @@ import { AccountTier, TIER_LIMITS } from '../../types';
 export type LimitAttemptedAction =
   | 'CREATE_DECK'
   | 'ADD_CARD_TO_DECK'
-  | 'UNLIMITED_ROSTER'
+  | 'UNLIMITED_deck'
   | 'SHARE_PUBLIC_LINK'
   | 'CREATE_LIST'
   | 'ADD_TO_LIST'
   | 'LOG_CERT_SLAB'
   | 'ADD_SEALED_VAULT'
   | 'MULTI_CURRENCY'
-  | 'GLC_FORMAT'
   | 'EXPORT_CSV'
   | 'CLOUD_BACKUP'
   | 'LIVE_GRADED_COMPS';
@@ -46,14 +45,17 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
   const currentLimit = TIER_LIMITS[currentTier];
 
   const getNextTier = (tier: AccountTier, action: LimitAttemptedAction): AccountTier => {
-    if (action === 'UNLIMITED_ROSTER') {
+    if (action === 'UNLIMITED_deck') {
       return 'Collection';
     }
     if (action === 'EXPORT_CSV') {
       return (tier === 'Deck' || tier === 'Collection') ? 'Collection' : 'Deck';
     }
-    if (action === 'GLC_FORMAT') {
-      return (tier === 'Stack' || tier === 'Deck' || tier === 'Collection') ? 'Deck' : 'Stack';
+    if (action === 'LOG_CERT_SLAB') {
+      return (tier === 'Starter' || tier === 'Bunch') ? 'Stack' : 'Deck';
+    }
+    if (action === 'CREATE_LIST' || action === 'ADD_TO_LIST' || action === 'ADD_SEALED_VAULT') {
+      return tier === 'Starter' ? 'Bunch' : 'Stack';
     }
     if (action === 'MULTI_CURRENCY' || action === 'CLOUD_BACKUP' || action === 'LIVE_GRADED_COMPS') {
       return tier === 'Starter' ? 'Bunch' : 'Stack';
@@ -81,59 +83,56 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({
   let unlockHighlight = '';
 
   if (attemptedAction === 'CREATE_DECK') {
-    title = `Deck Creation Limit Hit (${currentLimit.maxDecks} Decks)`;
-    description = `You attempted to create deck #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxDecks} decks.`;
-    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) instantly unlocks ${nextLimit.maxDecks === Infinity ? 'Unlimited' : nextLimit.maxDecks} total decks!`;
-  } else if (attemptedAction === 'UNLIMITED_ROSTER') {
-    title = 'Unlimited Deck Rosters Require Collection Tier';
-    description = `Unlimited cards per deck (∞) and open freeform rosters are exclusively accessible on the Collection tier ($14/mo) and Lifetime Founder Pass. Your current ${currentTier} plan allows up to ${currentLimit.maxCardsPerDeck === Infinity ? 'Unlimited' : `${currentLimit.maxCardsPerDeck} cards`} per deck.`;
-    unlockHighlight = `Upgrade to Collection ($14/mo) or Lifetime Founder Pass to build unlimited-capacity rosters without any card caps!`;
+    title = `Deck Creation Limit Hit (${currentLimit.maxdecks} Decks)`;
+    description = `You attempted to create deck #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxdecks} decks.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) instantly unlocks ${nextLimit.maxdecks === Infinity ? 'Unlimited' : nextLimit.maxdecks} total collection decks!`;
+  } else if (attemptedAction === 'UNLIMITED_deck') {
+    title = 'Unlimited Collection Decks Require Collection Tier';
+    description = `Unlimited items per deck (∞) and open-format master vaults are exclusively accessible on the Collection tier ($14/mo). Your current ${currentTier} plan allows up to ${currentLimit.maxItemsPerdeck === Infinity ? 'Unlimited' : `${currentLimit.maxItemsPerdeck} items`} per deck.`;
+    unlockHighlight = `Upgrade to Collection ($14/mo) to build unlimited-capacity artistic decks without any caps!`;
   } else if (attemptedAction === 'ADD_CARD_TO_DECK') {
-    const currentLimitDisplay = currentLimit.maxCardsPerDeck === Infinity ? 'Unlimited' : `${currentLimit.maxCardsPerDeck} Cards`;
-    const nextLimitDisplay = nextLimit.maxCardsPerDeck === Infinity ? 'Unlimited cards per deck (∞)' : `up to ${nextLimit.maxCardsPerDeck} cards per deck`;
-    title = `Per-Deck Card Limit Hit (${currentLimitDisplay})`;
-    description = `You attempted to add a card to "${attemptedDetails?.deckName || 'Deck'}". Your current ${currentTier} plan caps cards per deck at ${currentLimitDisplay}.`;
+    const currentLimitDisplay = currentLimit.maxItemsPerdeck === Infinity ? 'Unlimited' : `${currentLimit.maxItemsPerdeck} Items`;
+    const nextLimitDisplay = nextLimit.maxItemsPerdeck === Infinity ? 'Unlimited items per deck (∞)' : `up to ${nextLimit.maxItemsPerdeck} items per deck`;
+    title = `Per-Deck Capacity Limit Hit (${currentLimitDisplay})`;
+    description = `You attempted to add an item to "${attemptedDetails?.deckName || 'Deck'}". Your current ${currentTier} plan caps items per deck at ${currentLimitDisplay}.`;
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your per-deck capacity to ${nextLimitDisplay}!`;
   } else if (attemptedAction === 'SHARE_PUBLIC_LINK') {
     title = 'Custom Link Slugs & Watermark Removal';
-    description = `Your ${currentTier} plan includes public share links with standard DECK / divider badges. Custom handles and ad-free branding are unlocked on Stack tier ($7/mo) and above.`;
-    unlockHighlight = 'Upgrade to Stack tier ($7/mo) to unlock custom share handles and premium branding!';
+    description = `Your ${currentTier} plan includes public share links with standard badge branding. Custom handles and ad-free branding are unlocked on Stack tier ($7/mo) and above.`;
+    unlockHighlight = 'Upgrade to Stack tier ($7/mo) to unlock custom share handles and premium collection branding!';
   } else if (attemptedAction === 'CREATE_LIST') {
-    title = `Custom List Limit Hit (${currentLimit.maxLists} Lists)`;
-    description = `You attempted to create list #${(attemptedDetails?.currentCount || 0) + 1}. Your current ${currentTier} plan allows up to ${currentLimit.maxLists} custom lists.`;
-    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your limit to ${nextLimit.maxLists === Infinity ? 'Unlimited' : nextLimit.maxLists} lists!`;
+    title = `Binder List Limit Hit (${currentLimit.maxLists} Lists)`;
+    description = `Custom binder lists and wishlists are premium features. Your current ${currentTier} plan allows up to ${currentLimit.maxLists} lists.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) unlocks ${nextLimit.maxLists === Infinity ? 'Unlimited' : nextLimit.maxLists} custom binder lists!`;
   } else if (attemptedAction === 'ADD_TO_LIST') {
     title = `Per-List Item Limit Hit (${currentLimit.maxItemsPerList} Cards)`;
     description = `You attempted to add a card to "${attemptedDetails?.listName || 'List'}". Your current ${currentTier} plan caps items per list at ${currentLimit.maxItemsPerList}.`;
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands capacity to ${nextLimit.maxItemsPerList === Infinity ? 'Unlimited' : nextLimit.maxItemsPerList} cards per list!`;
   } else if (attemptedAction === 'LOG_CERT_SLAB') {
-    title = `Certified Graded Slab Limit Hit (${currentLimit.maxGradedSlabs} Slabs)`;
-    description = `You currently have ${attemptedDetails?.currentCount || currentLimit.maxGradedSlabs} verified slabs. Your ${currentTier} tier supports up to ${currentLimit.maxGradedSlabs} certified slabs across PSA, BGS, CGC, and ACE.`;
-    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your slab registry to ${nextLimit.maxGradedSlabs === Infinity ? 'Unlimited' : nextLimit.maxGradedSlabs} certified slabs!`;
+    title = `Certified Graded Slab Registry Required`;
+    description = `Logging PSA, BGS, and CGC certified slabs with verified authentication numbers is exclusive to the Stack tier ($7/mo) and above.`;
+    unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands your registry to ${nextLimit.maxGradedSlabs === Infinity ? 'Unlimited' : nextLimit.maxGradedSlabs} certified slabs!`;
   } else if (attemptedAction === 'ADD_SEALED_VAULT') {
     title = `Sealed Product Vault Limit Hit (${currentLimit.maxSealedItems} Items)`;
-    description = `Your ${currentTier} plan supports up to ${currentLimit.maxSealedItems} sealed boxes, ETBs, and blisters in your private vault.`;
+    description = `Your ${currentTier} plan supports up to ${currentLimit.maxSealedItems} sealed boxes and ETBs in your private vault.`;
     unlockHighlight = `Upgrading to ${nextTierName} ($${nextLimit.priceMonthly}/mo) expands vault capacity to ${nextLimit.maxSealedItems === Infinity ? 'Unlimited' : nextLimit.maxSealedItems} sealed items!`;
   } else if (attemptedAction === 'MULTI_CURRENCY') {
     title = 'Multi-Currency Conversion Required';
-    description = `Displaying real-time valuations in ${attemptedDetails?.currencyCode || 'foreign currencies'} (EUR, GBP, JPY, AUD, CAD) with automatic FX rate conversion requires the Bunch tier ($4/mo) or above.`;
+    description = `Displaying real-time valuations in ${attemptedDetails?.currencyCode || 'foreign currencies'} with automatic FX rate conversion requires the Bunch tier ($4/mo) or above.`;
     unlockHighlight = `Upgrade to Bunch ($4/mo) to unlock instant multi-currency conversion across all your decks, binders, and analytics!`;
-  } else if (attemptedAction === 'GLC_FORMAT') {
-    title = `${attemptedDetails?.formatName || 'Gym Leader Challenge'} Legality Engine`;
-    description = `Specialized tournament format rule validation (Gym Leader Challenge singleton rules, Retro formats, and vintage rotation marks) is unlocked on the Stack tier ($7/mo) and above.`;
-    unlockHighlight = `Upgrade to Stack ($7/mo) for full GLC singleton validation and classic retro tournament specs!`;
+
   } else if (attemptedAction === 'EXPORT_CSV') {
-    title = 'Portfolio CSV Export for Tax & Insurance';
-    description = `Generating one-click CSV inventory spreadsheets formatted for tax schedules, CPA audits, and insurance appraisal schedules is available on the Deck tier ($11/mo) and above.`;
-    unlockHighlight = `Upgrade to Deck ($11/mo) to download comprehensive CSV records with cert numbers, purchase basis, and live market comps!`;
+    title = 'Portfolio CSV Export for Insurance';
+    description = `Generating one-click CSV inventory spreadsheets for insurance appraisal schedules is available on the deck tier ($11/mo) and above.`;
+    unlockHighlight = `Upgrade to deck ($11/mo) to download comprehensive CSV records with cert numbers and purchase basis!`;
   } else if (attemptedAction === 'CLOUD_BACKUP') {
     title = 'Encrypted Cloud Snapshots & Cross-Device Restore';
-    description = `Point-in-time cloud snapshots and multi-device automated restore are available starting on the Bunch tier ($4/mo). Starter plan includes unlimited local browser backups.`;
+    description = `Point-in-time cloud snapshots and multi-device automated restore are available starting on the Bunch tier ($4/mo).`;
     unlockHighlight = `Upgrade to Bunch ($4/mo) for automated encrypted cloud backups synchronized across all your devices!`;
   } else if (attemptedAction === 'LIVE_GRADED_COMPS') {
     title = 'Live Verified Graded Auction Comps';
-    description = `Fetching real-time verified eBay and PWCC auction sales comps for PSA 10, BGS 9.5, and CGC slabs is available on Bunch tier ($4/mo) and above.`;
-    unlockHighlight = `Upgrade to Bunch ($4/mo) to fetch real-time slab sales records and population comps!`;
+    description = `Fetching real-time verified auction sales comps for graded slabs is available on Bunch tier ($4/mo) and above.`;
+    unlockHighlight = `Upgrade to Bunch ($4/mo) to fetch real-time slab sales records and market benchmarks!`;
   }
 
   return (

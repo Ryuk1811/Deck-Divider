@@ -1,6 +1,6 @@
 {
   "name": "DECK / divider",
-  "description": "DECK / divider is an ad-free Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder with live market prices. Try free as guest.",
+  "description": "DECK / divider is an ad-free Pokémon TCG collection showcase, artistic deck studio, and slab registry with live market prices. Try free as guest.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

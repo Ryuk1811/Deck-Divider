@@ -10,8 +10,8 @@ import { db, safeSetDoc } from './firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
 
 export interface Tombstone {
-  id: string; // Key e.g. "deck:deck-123", "entry:deck-123:entry-456", "list:list-789", "sealed:sealed-101"
-  type: 'deck' | 'card_entry' | 'list' | 'sealed';
+  id: string; // Key e.g. "deck:123", "deck:deck-123", "entry:deck-123:entry-456", "list:list-789", "sealed:sealed-101"
+  type: 'deck' | 'deck' | 'card_entry' | 'list' | 'sealed';
   deletedAt: string;
 }
 

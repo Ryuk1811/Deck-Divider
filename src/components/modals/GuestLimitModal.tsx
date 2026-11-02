@@ -15,7 +15,7 @@ export const GuestLimitModal: React.FC<GuestLimitModalProps> = ({
   onClose,
   onOpenAuth,
   actionTitle = 'Feature Restricted in Guest / Demo Mode',
-  actionDescription = 'To create custom decks, log certified graded slabs, save custom lists, or sync your collection across devices, please sign in or create a free account.',
+  actionDescription = 'To create custom collection decks, track certified graded slabs, save wishlists, or sync your collection across devices, please sign in or create a free account.',
 }) => {
   if (!isOpen) return null;
 
@@ -66,15 +66,15 @@ export const GuestLimitModal: React.FC<GuestLimitModalProps> = ({
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]" />
-                Full 60-card tournament deck builder
+                Thematic collection decks (up to 60 cards)
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]" />
-                PSA, BGS, CGC certified slab cert logging
+                Card catalog browsing & value tracking
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DC143C]" />
-                Export tournament decks to Pokémon TCG Live format
+                Curated visual art showcase & print breakdown
               </li>
             </ul>
           </div>

@@ -75,7 +75,7 @@ export const PayPalSuccessModal: React.FC<PayPalSuccessModalProps> = ({
               <div className="p-2 bg-white border border-[#E2E8F0] rounded flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-[#DC143C]" />
                 <span>
-                  <strong>{limits.maxCardsPerDeck === Infinity ? 'Unlimited' : limits.maxCardsPerDeck}</strong> Cards/Deck
+                  <strong>{limits.maxItemsPerDeck === Infinity ? 'Unlimited' : limits.maxItemsPerDeck}</strong> Items/Deck
                 </span>
               </div>
             </div>

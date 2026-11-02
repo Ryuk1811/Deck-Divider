@@ -38,19 +38,23 @@ import { formatCurrency } from '../../utils/formatters';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { DropdownMenu } from '../../components/ui/DropdownMenu';
 import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoader';
-import { encodeDeckToUrlParam } from '../../utils/deckUrlEncoder';
+import { encodedeckToUrlParam } from '../../utils/deckUrlEncoder';
 import { PublicShareLinkBox } from '../../components/ui/PublicShareLinkBox';
 import { LimitAttemptedAction } from '../../components/modals/LimitReachedModal';
 
 interface DecksViewProps {
-  decks: Deck[];
+  decks?: Deck[];
   currentTier: AccountTier;
   currency: DisplayCurrency;
   userEmail?: string;
-  onCreateDeck: (deck: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => void;
-  onUpdateDeck: (deck: Deck) => void;
-  onDeleteDeck: (deckId: string) => void;
-  onSplitDeckGroup: (sourceDeckId: string, cardIdsToSplit: string[], newDeckName: string) => void;
+  onCreateDeck?: (deck: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => void;
+  onCreatedeck?: (deck: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => void;
+  onUpdateDeck?: (deck: Deck) => void;
+  onUpdatedeck?: (deck: Deck) => void;
+  onDeleteDeck?: (deckId: string) => void;
+  onDeletedeck?: (deckId: string) => void;
+  onSplitDeckGroup?: (sourceDeckId: string, cardIdsToSplit: string[], newDeckName: string) => void;
+  onSplitdeckGroup?: (sourcedeckId: string, cardIdsToSplit: string[], newdeckName: string) => void;
   onMarkCardSold: (
     deckId: string,
     entryId: string,
@@ -63,25 +67,28 @@ interface DecksViewProps {
     details?: any
   ) => void;
   initialSelectedDeckId?: string;
+  initialSelecteddeckId?: string;
   createDeckSignal?: number;
+  createdeckSignal?: number;
 }
 
-export const DecksView: React.FC<DecksViewProps> = ({
-  decks,
-  currentTier,
-  currency,
-  userEmail,
-  onCreateDeck,
-  onUpdateDeck,
-  onDeleteDeck,
-  onSplitDeckGroup,
-  onMarkCardSold,
-  onSelectCard,
-  onQuickLookCard,
-  onTriggerLimitModal,
-  initialSelectedDeckId,
-  createDeckSignal,
-}) => {
+export const DecksView: React.FC<DecksViewProps> = (props) => {
+  const decks = props.decks || props.decks || [];
+  const onCreateDeck = props.onCreatedeck || props.onCreateDeck || (() => {});
+  const onUpdateDeck = props.onUpdatedeck || props.onUpdateDeck || (() => {});
+  const onDeleteDeck = props.onDeletedeck || props.onDeleteDeck || (() => {});
+  const onSplitDeckGroup = props.onSplitdeckGroup || props.onSplitDeckGroup || (() => {});
+  const initialSelectedDeckId = props.initialSelecteddeckId || props.initialSelectedDeckId;
+  const createDeckSignal = props.createdeckSignal ?? props.createDeckSignal;
+  const {
+    currentTier,
+    currency,
+    userEmail,
+    onMarkCardSold,
+    onSelectCard,
+    onQuickLookCard,
+    onTriggerLimitModal,
+  } = props;
   const isSuperUser = userEmail?.toLowerCase() === 'deckdivider@outlook.com' || userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     initialSelectedDeckId || decks[0]?.id || ''
@@ -96,7 +103,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const [newDeckDesc, setNewDeckDesc] = useState('');
   const [newDeckColor, setNewDeckColor] = useState('#DC143C');
   const [newDeckTargetSize, setNewDeckTargetSize] = useState<number>(60);
-  const [newDeckFormat, setNewDeckFormat] = useState<string>('60-Card Tournament Deck');
   const [newDeckIsPublic, setNewDeckIsPublic] = useState(false);
 
   // Edit Deck Properties Modal
@@ -105,7 +111,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const [editDeckDesc, setEditDeckDesc] = useState('');
   const [editDeckColor, setEditDeckColor] = useState('#DC143C');
   const [editDeckTargetSize, setEditDeckTargetSize] = useState<number>(60);
-  const [editDeckFormat, setEditDeckFormat] = useState<string>('60-Card Tournament Deck');
 
   // Split Group State
   const [splitGroupSetId, setSplitGroupSetId] = useState<string | null>(null);
@@ -137,10 +142,10 @@ export const DecksView: React.FC<DecksViewProps> = ({
   }, [initialSelectedDeckId, decks, selectedDeckId]);
 
   const handleOpenCreateModal = () => {
-    if (decks.length >= tierLimit.maxDecks) {
+    if (decks.length >= tierLimit.maxdecks) {
       onTriggerLimitModal('CREATE_DECK', {
         currentCount: decks.length,
-        limitCount: tierLimit.maxDecks,
+        limitCount: tierLimit.maxdecks,
       });
       return;
     }
@@ -148,7 +153,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
     setNewDeckDesc('');
     setNewDeckColor('#DC143C');
     setNewDeckTargetSize(60);
-    setNewDeckFormat('60-Card Tournament Deck');
     setNewDeckIsPublic(false);
     setIsCreateModalOpen(true);
   };
@@ -159,7 +163,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
     setEditDeckDesc(currentDeck.description || '');
     setEditDeckColor(currentDeck.colorHex || '#DC143C');
     setEditDeckTargetSize(currentDeck.targetSize || 60);
-    setEditDeckFormat(currentDeck.deckFormat || '60-Card Tournament Deck');
     setIsEditModalOpen(true);
   };
 
@@ -202,11 +205,11 @@ export const DecksView: React.FC<DecksViewProps> = ({
     if (!newDeckName.trim()) return;
 
     if (newDeckTargetSize === Infinity && currentTier !== 'Collection' && !isSuperUser) {
-      onTriggerLimitModal('UNLIMITED_ROSTER');
+      onTriggerLimitModal('UNLIMITED_deck');
       return;
     }
 
-    if (newDeckTargetSize !== Infinity && newDeckTargetSize > tierLimit.maxCardsPerDeck) {
+    if (newDeckTargetSize !== Infinity && newDeckTargetSize > tierLimit.maxItemsPerdeck) {
       onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: newDeckName.trim() });
       return;
     }
@@ -221,7 +224,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
       description: newDeckDesc.trim(),
       colorHex: newDeckColor,
       targetSize: newDeckTargetSize,
-      deckFormat: newDeckFormat,
       isPublic: newDeckIsPublic,
       publicShareCode: newDeckIsPublic
         ? `DD-${Math.floor(1000 + Math.random() * 9000)}`
@@ -238,11 +240,11 @@ export const DecksView: React.FC<DecksViewProps> = ({
     if (!currentDeck || !editDeckName) return;
 
     if (editDeckTargetSize === Infinity && currentTier !== 'Collection' && !isSuperUser) {
-      onTriggerLimitModal('UNLIMITED_ROSTER');
+      onTriggerLimitModal('UNLIMITED_deck');
       return;
     }
 
-    if (editDeckTargetSize !== Infinity && editDeckTargetSize > tierLimit.maxCardsPerDeck) {
+    if (editDeckTargetSize !== Infinity && editDeckTargetSize > tierLimit.maxItemsPerdeck) {
       onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: editDeckName.trim() });
       return;
     }
@@ -253,7 +255,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
       description: editDeckDesc,
       colorHex: editDeckColor,
       targetSize: editDeckTargetSize,
-      deckFormat: editDeckFormat,
       updatedAt: new Date().toISOString(),
     });
 
@@ -278,7 +279,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
     const isProd = window.location.hostname.includes('deckdivider.app');
     const origin = window.location.origin;
     
-    const encoded = encodeDeckToUrlParam(currentDeck);
+    const encoded = encodedeckToUrlParam(currentDeck);
     const link = isProd
       ? `https://deckdivider.app/deck/${currentDeck.id}?d=${encoded}`
       : `${origin}/deck/${currentDeck.id}?d=${encoded}`;
@@ -297,10 +298,10 @@ export const DecksView: React.FC<DecksViewProps> = ({
   const handleConfirmSplit = () => {
     if (!currentDeck || !splitGroupSetId || !splitNewDeckName) return;
 
-    if (decks.length >= tierLimit.maxDecks) {
+    if (decks.length >= tierLimit.maxdecks) {
       onTriggerLimitModal('CREATE_DECK', {
         currentCount: decks.length,
-        limitCount: tierLimit.maxDecks,
+        limitCount: tierLimit.maxdecks,
       });
       return;
     }
@@ -356,52 +357,56 @@ export const DecksView: React.FC<DecksViewProps> = ({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-heading font-bold text-lg sm:text-xl text-[#0F172A] truncate">
-                  {currentDeck?.name || 'Decks Studio'}
+                  {currentDeck?.name || 'Collection Studio'}
                 </h2>
                 <span className="font-mono text-[10px] sm:text-xs font-bold bg-[#0F172A] text-white px-2 py-0.5 rounded flex-shrink-0">
-                  {decks.length} Active Decks
+                  {decks.length} Active decks
                 </span>
                 {currentDeck && (
                   <span className={`font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 border ${
-                    currentDeck.targetSize === 6
+                    currentDeck.targetSize === 60
                       ? 'bg-purple-50 text-purple-700 border-purple-200'
-                      : currentDeck.targetSize === 30
-                      ? 'bg-blue-50 text-blue-700 border-blue-200'
                       : currentDeck.targetSize === 100
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : currentDeck.targetSize === 140
                       ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                      : currentDeck.targetSize === 220
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : currentDeck.targetSize === Infinity
                       ? 'bg-slate-900 text-white border-slate-900'
                       : 'bg-rose-50 text-rose-700 border-rose-200'
                   }`}>
-                    {currentDeck.targetSize === 6
-                      ? '6-Card Mini'
-                      : currentDeck.targetSize === 30
-                      ? '30-Card Half'
+                    {currentDeck.targetSize === 60
+                      ? 'Starter (60)'
                       : currentDeck.targetSize === 100
-                      ? '100-Card GLC'
+                      ? 'Bunch (100)'
+                      : currentDeck.targetSize === 140
+                      ? 'Stack (140)'
+                      : currentDeck.targetSize === 220
+                      ? 'Deck (220)'
                       : currentDeck.targetSize === Infinity
-                      ? 'Unlimited ∞'
-                      : '60-Card Standard'}
+                      ? 'Collection (∞)'
+                      : `${currentDeck.targetSize || 60}-Card Display`}
                   </span>
                 )}
               </div>
               <p className="font-mono text-[11px] sm:text-xs text-[#64748B] mt-0.5 max-w-xl truncate">
-                {currentDeck?.description || 'Manage deck structures, custom colors, and binder pages'}
+                {currentDeck?.description || 'Manage artistic collection decks, custom colors, and binder pages'}
               </p>
             </div>
           </div>
 
           {/* Function Actions Toolbar - Clean wrapping flex row on all screens */}
           <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2 w-full lg:w-auto">
-            {/* New Deck Button */}
+            {/* New deck Button */}
             <button
               type="button"
               onClick={handleOpenCreateModal}
               className="h-9 px-4 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-lg hover:bg-[#B01030] transition-colors flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
-              title="Configure New Deck"
+              title="Configure New deck"
             >
               <Plus className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">New Deck</span>
+              <span className="truncate">New deck</span>
             </button>
 
             {currentDeck && (
@@ -423,7 +428,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 title={`Delete ${currentDeck.name}`}
               >
                 <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">Delete Deck</span>
+                <span className="truncate">Delete deck</span>
               </button>
             )}
 
@@ -438,7 +443,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC143C]/20 ${
                   currentDeck?.isPublic ? 'bg-[#16A34A]' : 'bg-slate-300'
                 }`}
-                aria-label="Toggle Public Deck"
+                aria-label="Toggle Public deck"
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -451,7 +456,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
             {currentDeck?.isPublic && (
               <PublicShareLinkBox
                 isPublic={Boolean(currentDeck.isPublic)}
-                url={`${window.location.origin}/deck/${currentDeck.id}?d=${encodeDeckToUrlParam(currentDeck)}`}
+                url={`${window.location.origin}/deck/${currentDeck.id}?d=${encodedeckToUrlParam(currentDeck)}`}
               />
             )}
           </div>
@@ -461,12 +466,12 @@ export const DecksView: React.FC<DecksViewProps> = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs font-bold text-[#64748B]">
-              Select Active Deck Location:
+              Select Active Collection Location:
             </span>
             <div className="flex items-center gap-2 px-2.5 py-1 bg-[#F1F5F9] rounded-md border border-[#E2E8F0]">
-              <span className="font-mono text-[11px] text-[#64748B]">Decks Usage:</span>
+              <span className="font-mono text-[11px] text-[#64748B]">decks Usage:</span>
               <span className="font-mono text-[11px] font-bold text-[#0F172A]">
-                {decks.length} / {tierLimit.maxDecks === Infinity ? '∞' : tierLimit.maxDecks}
+                {decks.length} / {tierLimit.maxdecks === Infinity ? '∞' : tierLimit.maxdecks}
               </span>
             </div>
           </div>
@@ -516,7 +521,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                   <div className="mt-2 flex items-center justify-between font-mono text-[11px] pt-1.5 border-t border-[#E2E8F0]">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-[#64748B] truncate">
-                        {totalCards}{deck.targetSize && deck.targetSize !== Infinity ? `/${deck.targetSize}` : ''} cards
+                        {totalCards}{deck.targetSize && deck.targetSize !== Infinity ? `/${deck.targetSize}` : ''} items
                       </span>
                       {deck.targetSize === 6 && (
                         <span className="text-[9px] font-bold px-1 rounded bg-purple-100 text-purple-700 flex-shrink-0">
@@ -542,14 +547,14 @@ export const DecksView: React.FC<DecksViewProps> = ({
           const isComplete = !isUnlimited && cardCount === targetSize;
           const isOver = !isUnlimited && cardCount > targetSize;
           const pct = isUnlimited ? 100 : Math.min(100, Math.round((cardCount / targetSize) * 100));
-          const tierDeckCap = tierLimit.maxCardsPerDeck;
+          const tierdeckCap = tierLimit.maxItemsPerdeck;
 
           return (
             <div className="p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-bold text-[#0F172A]">
-                    Ladder Format: {targetSize === Infinity ? 'Unlimited / Custom Roster' : `${targetSize}-Card Deck`}
+                    Capacity: {targetSize === Infinity ? 'Unlimited Collection' : `${targetSize}-Item deck`}
                   </span>
                   {isComplete ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
@@ -564,13 +569,13 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       Open Unlimited ({cardCount} Cards)
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-semibold">
-                      {targetSize - cardCount} card{targetSize - cardCount === 1 ? '' : 's'} to target ({cardCount}/{targetSize})
+                    <span className="font-mono text-[10px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+                      {targetSize - cardCount} space{targetSize - cardCount === 1 ? '' : 's'} remaining ({cardCount}/{targetSize})
                     </span>
                   )}
                 </div>
                 <div className="text-[#64748B] text-[11px] font-mono">
-                  Plan Deck Capacity: <strong className="text-[#0F172A]">{tierDeckCap === Infinity ? 'Unlimited (∞)' : `${tierDeckCap} Cards Max`}</strong>
+                  deck Limit: <strong className="text-[#0F172A]">{tierdeckCap === Infinity ? 'Unlimited (∞)' : `${tierdeckCap} Items Max`}</strong>
                 </div>
               </div>
 
@@ -637,9 +642,9 @@ export const DecksView: React.FC<DecksViewProps> = ({
             <Layers className="w-8 h-8" />
           </div>
           <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="font-heading font-extrabold text-lg text-[#0F172A]">No Decks or Binders Created Yet</h3>
+            <h3 className="font-heading font-extrabold text-lg text-[#0F172A]">No Collection decks or Showcases Yet</h3>
             <p className="font-mono text-xs text-[#64748B] leading-relaxed">
-              Construct tournament-grade 60-card decks or organized binder segregations with custom colors, labels, and market valuations.
+              Build curated art-style decks, binder showcases, and track item conditions, foil variants, and market valuations.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
@@ -649,7 +654,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DC143C] text-white font-mono text-xs font-bold rounded-xl hover:bg-[#B01030] transition-all shadow-xs cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Create First Deck</span>
+              <span>Create First deck</span>
             </button>
           </div>
         </div>
@@ -662,7 +667,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
           {viewMode === 'binder' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs font-mono text-[#64748B]">
-                <span>Showing {activeEntries.length} active cards in "{currentDeck.name}"</span>
+                <span>Showing {activeEntries.length} items in "{currentDeck.name}"</span>
                 <span>3D Holographic Canvas</span>
               </div>
 
@@ -716,7 +721,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
               <table className="w-full text-left font-mono text-xs">
                 <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B]">
                   <tr>
-                    <th className="p-3">Card Name</th>
+                    <th className="p-3">Item Name</th>
                     <th className="p-3">Set</th>
                     <th className="p-3">Condition</th>
                     <th className="p-3">Qty</th>
@@ -786,7 +791,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       className="px-3 py-1.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono font-bold text-[#0F172A] hover:bg-[#FFF0F3] hover:text-[#DC143C] hover:border-[#DC143C] flex items-center gap-1.5 transition-colors"
                     >
                       <Scissors className="w-3 h-3" />
-                      <span>Split Group into New Deck</span>
+                      <span>Split Group into New deck</span>
                     </button>
                   </div>
 
@@ -813,18 +818,18 @@ export const DecksView: React.FC<DecksViewProps> = ({
           {viewMode === 'sold' && (
             <div className="p-3 sm:p-4 md:p-5 glass-slab shadow-md space-y-4">
               <h3 className="font-heading font-bold text-base text-[#0F172A]">
-                Marked Sold Cards
+                Sales Registry
               </h3>
               {soldEntries.length === 0 ? (
                 <p className="font-mono text-xs text-[#64748B]">
-                  No cards have been marked sold in this deck yet.
+                  No items have been marked sold in this deck yet.
                 </p>
               ) : (
                 <div className="overflow-x-auto border border-[#E2E8F0] rounded-lg">
                   <table className="w-full text-left font-mono text-xs">
                     <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                       <tr>
-                        <th className="p-3">Card Name</th>
+                        <th className="p-3">Item Name</th>
                         <th className="p-3">Sale Date</th>
                         <th className="p-3">Platform</th>
                         <th className="p-3">Sale Price</th>
@@ -875,10 +880,10 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-base sm:text-lg text-[#0F172A] leading-tight">
-                    Configure New Deck
+                    Configure New deck
                   </h3>
                   <p className="font-mono text-[11px] text-[#64748B]">
-                    Define format rule, size cap, and color styling
+                    Define artistic theme, size cap, and color styling
                   </p>
                 </div>
               </div>
@@ -897,14 +902,14 @@ export const DecksView: React.FC<DecksViewProps> = ({
               <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
                 <div>
                   <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
-                    Deck Name <span className="text-[#DC143C]">*</span>
+                    deck Name <span className="text-[#DC143C]">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={newDeckName}
                     onChange={(e) => setNewDeckName(e.target.value)}
-                    placeholder="e.g. Lost Zone Box or Binder #1"
+                    placeholder="e.g. Vintage Holo Vault or Binder #1"
                     className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors"
                   />
                 </div>
@@ -929,7 +934,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       Deck Size &amp; Format Ladder
                     </label>
                     <span className="text-[10px] font-mono text-[#64748B]">
-                      Plan Cap: {tierLimit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxCardsPerDeck} Cards`}
+                      Plan Cap: {tierLimit.maxItemsPerdeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxItemsPerdeck} Items`}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -939,7 +944,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       const canAccessUnlimited = currentTier === 'Collection' || isSuperUser;
                       const isLocked = isUnlimitedOpt
                         ? !canAccessUnlimited
-                        : opt.size > tierLimit.maxCardsPerDeck;
+                        : opt.size > tierLimit.maxItemsPerdeck;
 
                       return (
                         <button
@@ -948,16 +953,13 @@ export const DecksView: React.FC<DecksViewProps> = ({
                           onClick={() => {
                             if (isLocked) {
                               if (isUnlimitedOpt) {
-                                onTriggerLimitModal('UNLIMITED_ROSTER');
-                              } else if (opt.size === 100) {
-                                onTriggerLimitModal('GLC_FORMAT');
+                                onTriggerLimitModal('UNLIMITED_deck');
                               } else {
-                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: newDeckName || 'New Deck' });
+                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: newDeckName || 'New deck' });
                               }
                               return;
                             }
                             setNewDeckTargetSize(opt.size);
-                            setNewDeckFormat(opt.label);
                           }}
                           className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer relative ${
                             isSelected
@@ -1063,7 +1065,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                   className="px-5 py-2 bg-[#DC143C] text-white hover:bg-[#B01030] text-xs font-mono font-bold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Create Deck</span>
+                  <span>Create deck</span>
                 </button>
               </div>
             </form>
@@ -1071,7 +1073,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
         </div>
       )}
 
-      {/* EDIT DECK PROPERTIES MODAL */}
+      {/* EDIT deck PROPERTIES MODAL */}
       {isEditModalOpen && currentDeck && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in overflow-y-auto">
           <div className="w-full max-w-lg bg-white border border-[#E2E8F0] shadow-2xl rounded-2xl flex flex-col max-h-[90vh] overflow-hidden my-auto">
@@ -1086,7 +1088,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                     Assign Custom Name & Color
                   </h3>
                   <p className="font-mono text-[11px] text-[#64748B]">
-                    Modify deck label, format rules, and marker color
+                    Modify deck label, display capacity, and marker color
                   </p>
                 </div>
               </div>
@@ -1105,14 +1107,14 @@ export const DecksView: React.FC<DecksViewProps> = ({
               <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
                 <div>
                   <label className="block font-mono text-xs font-semibold text-[#0F172A] mb-1">
-                    Custom Deck Name <span className="text-[#DC143C]">*</span>
+                    Custom deck Name <span className="text-[#DC143C]">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={editDeckName}
                     onChange={(e) => setEditDeckName(e.target.value)}
-                    placeholder="e.g. Master Tournament Deck"
+                    placeholder="e.g. Vintage Showcase"
                     className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs font-semibold text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors"
                   />
                 </div>
@@ -1124,20 +1126,20 @@ export const DecksView: React.FC<DecksViewProps> = ({
                   <textarea
                     value={editDeckDesc}
                     onChange={(e) => setEditDeckDesc(e.target.value)}
-                    placeholder="Strategy notes..."
+                    placeholder="Collection notes or theme details..."
                     rows={2}
                     className="w-full p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] focus:bg-white transition-colors resize-none"
                   />
                 </div>
 
-                {/* Deck Size & Format Ladder Selector */}
+                {/* deck Size & Format Ladder Selector */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <label className="block font-mono text-xs font-semibold text-[#0F172A]">
-                      Deck Size &amp; Format Ladder
+                      deck Size &amp; Theme Ladder
                     </label>
                     <span className="text-[10px] font-mono text-[#64748B]">
-                      Plan Cap: {tierLimit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxCardsPerDeck} Cards`}
+                      Plan Cap: {tierLimit.maxItemsPerdeck === Infinity ? 'Unlimited (∞)' : `${tierLimit.maxItemsPerdeck} Items`}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1147,7 +1149,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                       const canAccessUnlimited = currentTier === 'Collection' || isSuperUser;
                       const isLocked = isUnlimitedOpt
                         ? !canAccessUnlimited
-                        : opt.size > tierLimit.maxCardsPerDeck;
+                        : opt.size > tierLimit.maxItemsPerdeck;
 
                       return (
                         <button
@@ -1156,16 +1158,13 @@ export const DecksView: React.FC<DecksViewProps> = ({
                           onClick={() => {
                             if (isLocked) {
                               if (isUnlimitedOpt) {
-                                onTriggerLimitModal('UNLIMITED_ROSTER');
-                              } else if (opt.size === 100) {
-                                onTriggerLimitModal('GLC_FORMAT');
+                                onTriggerLimitModal('UNLIMITED_deck');
                               } else {
-                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: editDeckName || 'Deck' });
+                                onTriggerLimitModal('ADD_CARD_TO_DECK', { deckName: editDeckName || 'deck' });
                               }
                               return;
                             }
                             setEditDeckTargetSize(opt.size);
-                            setEditDeckFormat(opt.label);
                           }}
                           className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer relative ${
                             isSelected
@@ -1201,7 +1200,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
 
                 {/* Color Swatches Palette & Hex Input */}
                 <div className="space-y-2">
-                  <label className="block font-mono text-xs font-semibold text-[#0F172A]">Deck Marker Color</label>
+                  <label className="block font-mono text-xs font-semibold text-[#0F172A]">deck Marker Color</label>
                   <div className="flex flex-wrap gap-2">
                     {[
                       { name: 'Crimson', hex: '#DC143C' },
@@ -1259,7 +1258,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                   className="px-5 py-2 neo-btn-primary text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Save Deck Customizations</span>
+                  <span>Save deck Customizations</span>
                 </button>
               </div>
             </form>
@@ -1282,7 +1281,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
             </p>
 
             <div>
-              <label className="font-mono text-xs text-[#64748B]">New Split Deck Name</label>
+              <label className="font-mono text-xs text-[#64748B]">New Split deck Name</label>
               <input
                 type="text"
                 value={splitNewDeckName}
@@ -1408,7 +1407,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
               </div>
               <div>
                 <h3 className="font-heading font-bold text-base text-[#0F172A]">
-                  Delete Deck Structure
+                  Delete deck Structure
                 </h3>
                 <p className="font-mono text-xs text-[#64748B]">
                   Confirm deletion for "{deckPendingDelete.name}"
@@ -1417,7 +1416,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
             </div>
 
             <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0] font-mono text-xs text-[#64748B] leading-relaxed">
-              <span className="font-bold text-[#0F172A]">Notice:</span> Deleting this deck will remove the binder categorization and list structure ({deckPendingDelete.entries?.length || 0} card slots). All cards and logs remain securely preserved in your primary vault.
+              <span className="font-bold text-[#0F172A]">Notice:</span> Deleting this deck will remove the binder categorization and list structure ({deckPendingDelete.entries?.length || 0} items). All cards and logs remain securely preserved in your primary vault.
             </div>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
@@ -1434,7 +1433,7 @@ export const DecksView: React.FC<DecksViewProps> = ({
                 className="px-5 py-2 bg-[#EF4444] hover:bg-[#DC2626] text-white font-mono text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Yes, Delete Deck</span>
+                <span>Yes, Delete deck</span>
               </button>
             </div>
           </div>
@@ -1443,3 +1442,6 @@ export const DecksView: React.FC<DecksViewProps> = ({
     </div>
   );
 };
+
+export const decksView = DecksView;
+export default DecksView;

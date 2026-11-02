@@ -75,9 +75,9 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
     'name': 'DECK / divider',
     'operatingSystem': 'Web, iOS, Android',
     'applicationCategory': 'UtilitiesApplication',
-    'softwareVersion': '1.59',
+    'softwareVersion': '1.60',
     'releaseNotes': 'https://deckdivider.app/changelog',
-    'description': 'Continuous release log and iteration history of DECK / divider from v1.01 to the landmark 59th release v1.59.',
+    'description': 'Continuous release log and iteration history of DECK / divider from v1.01 to the landmark 60th release v1.60.',
     'offers': {
       '@type': 'Offer',
       'price': '0',
@@ -88,17 +88,17 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
   return (
     <div className="min-h-screen bg-dot-grid flex flex-col font-sans text-[#0F172A]">
       <PageHead
-        title="Changelog & Platform Iterations (v1.01 – v1.59) — DECK / divider"
-        description="Comprehensive changelog tracking all 59 product iterations of DECK / divider. Explore feature releases from v1.01 Genesis to v1.59 Universal Canonical SEO Metadata & Dynamic Provisioning."
+        title="Changelog & Platform Iterations (v1.01 – v1.60) — DECK / divider"
+        description="Comprehensive changelog tracking all 60 product iterations of DECK / divider. Explore feature releases from v1.01 Genesis to v1.60 Pure Collector Overhaul, Bulk CSV Importer & Unlocked Growth Loops."
         canonicalPath="/changelog"
         keywords={[
           'pokemon card changelog',
           'deck divider release notes',
           'tcg platform updates',
-          'iteration 59',
-          'v1.59 release',
-          'pokemon card catalogue updates',
-          'ptcgl export updates'
+          'iteration 60',
+          'v1.60 release',
+          'bulk csv pokemon importer',
+          'set checklist fast fill'
         ]}
         schema={changelogSchema}
       />
@@ -111,7 +111,7 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
           <GeoBreadcrumbs
             items={[
               { label: 'Home', path: '/' },
-              { label: 'Changelog (59 Iterations)', path: '/changelog' }
+              { label: 'Changelog (60 Iterations)', path: '/changelog' }
             ]}
           />
 
@@ -119,9 +119,9 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
           <div className="text-center max-w-3xl mx-auto mt-6 mb-12">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-xs mb-4">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-              <span>Current Release: Version 1.59 (59th Iteration)</span>
+              <span>Current Release: Version 1.60 (60th Iteration)</span>
               <span className="text-emerald-300">•</span>
-              <span className="font-mono text-emerald-600">All 59 Versions Archived</span>
+              <span className="font-mono text-emerald-600">All 60 Versions Archived</span>
             </div>
             
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 leading-tight">
@@ -129,18 +129,18 @@ export const ChangelogPageView: React.FC<ChangelogPageViewProps> = ({
             </h1>
             
             <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-              Every single deployment, architectural enhancement, card engine upgrade, and rule validation improvement from <span className="font-semibold text-slate-900">v1.01 Genesis</span> to the <span className="font-semibold text-emerald-600">59th Iteration (v1.59)</span>.
+              Every single deployment, architectural enhancement, card engine upgrade, and rule validation improvement from <span className="font-semibold text-slate-900">v1.01 Genesis</span> to the <span className="font-semibold text-emerald-600">60th Iteration (v1.60)</span>.
             </p>
 
             {/* Quick Metrics Bar */}
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs text-left">
               <div className="p-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Total Iterations</span>
-                <span className="text-2xl font-black text-slate-900 font-mono">59</span>
+                <span className="text-2xl font-black text-slate-900 font-mono">60</span>
               </div>
               <div className="p-2 border-l border-slate-100">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Active Release</span>
-                <span className="text-2xl font-black text-emerald-600 font-mono">v1.59</span>
+                <span className="text-2xl font-black text-emerald-600 font-mono">v1.60</span>
               </div>
               <div className="p-2 border-l border-slate-100">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Public Page Web</span>

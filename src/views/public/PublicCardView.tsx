@@ -349,17 +349,7 @@ export const PublicCardView: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Legalities */}
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    Standard: <strong className="text-slate-900">{card.legalities?.standard ? 'Legal' : 'Rotated'}</strong>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700">
-                    <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    Expanded: <strong className="text-slate-900">{card.legalities?.expanded ? 'Legal' : 'Banned'}</strong>
-                  </div>
-                </div>
+
 
                 {/* Attacks & Abilities */}
                 {card.attacks && card.attacks.length > 0 && (

@@ -205,7 +205,7 @@ export const PtcPartnerHubView: React.FC = () => {
               Featured Pokémon TCG Categories Eligible for 5% Off
             </h2>
             <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-              Whether you are completing a master set binder, building a Standard format tournament deck, or acquiring investment-grade graded slabs, the DECKDIVIDER promo code applies across these categories:
+              Whether you are completing a master set binder, organizing a curated display deck, or acquiring investment-grade graded slabs, the DECKDIVIDER promo code applies across these categories:
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4">

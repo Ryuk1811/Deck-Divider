@@ -41,7 +41,7 @@ export const PublicPortfoliosDirectoryView: React.FC = () => {
     },
     {
       id: 'competitive-tourney-deck-vault',
-      title: 'Championship Play! Roster Vault',
+      title: 'Championship Play! Deck Vault',
       collector: 'Marcus V.',
       cardsCount: 360,
       slabsCount: 15,

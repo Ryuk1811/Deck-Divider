@@ -44,7 +44,7 @@ import { PortfolioSealedEntry } from '../../types';
 import { LimitAttemptedAction } from '../../components/modals/LimitReachedModal';
 
 interface CollectionViewProps {
-  decks: Deck[];
+  decks?: Deck[];
   allCards: PokemonCard[];
   currency: DisplayCurrency;
   customLists: CustomList[];
@@ -57,7 +57,8 @@ interface CollectionViewProps {
   onTogglePublicProfile?: (isPublic: boolean) => void;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
-  onSelectDeck: (deckId: string) => void;
+  onSelectDeck?: (deckId: string) => void;
+  onSelectdeck?: (deckId: string) => void;
   onAddCardToList?: (listId: string, cardId: string) => void;
   onNavigateToSearch?: () => void;
   onNavigateToTab?: (tab: ActiveTab) => void;
@@ -91,26 +92,27 @@ const ALL_TYPES: EnergyType[] = [
 
 const COLLECTION_CHUNK_SIZE = 40;
 
-export const CollectionView: React.FC<CollectionViewProps> = ({
-  decks,
-  allCards,
-  currency,
-  customLists,
-  sealedEntries = [],
-  userEmail,
-  userId,
-  currentTier = 'Starter',
-  onTriggerLimitModal,
-  isPublicProfile,
-  onTogglePublicProfile,
-  onSelectCard,
-  onQuickLookCard,
-  onSelectDeck,
-  onAddCardToList,
-  onNavigateToSearch,
-  onNavigateToTab,
-  onExportCSV,
-}) => {
+export const CollectionView: React.FC<CollectionViewProps> = (props) => {
+  const decks = props.decks || props.decks || [];
+  const onSelectDeck = props.onSelectdeck || props.onSelectDeck || (() => {});
+  const {
+    allCards,
+    currency,
+    customLists,
+    sealedEntries = [],
+    userEmail,
+    userId,
+    currentTier = 'Starter',
+    onTriggerLimitModal,
+    isPublicProfile,
+    onTogglePublicProfile,
+    onSelectCard,
+    onQuickLookCard,
+    onAddCardToList,
+    onNavigateToSearch,
+    onNavigateToTab,
+    onExportCSV,
+  } = props;
   const isSuperUser = userEmail?.toLowerCase() === 'deckdivider@outlook.com' || userEmail?.toLowerCase() === 'gurutvamurdia@gmail.com';
 
   // View & Grouping Controls State
@@ -243,7 +245,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
         if (card.set.id !== selectedSetId) return false;
       }
 
-      // Deck Filter
+      // deck Filter
       if (selectedDeckFilter !== 'all') {
         if (item.deckId !== selectedDeckFilter) return false;
       }
@@ -428,7 +430,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 </span>
               </div>
               <p className="font-mono text-xs text-[#64748B] mt-0.5">
-                {totalQuantity} total cards across {decks.length} active decks & binders
+                {totalQuantity} items across {decks.length} active collection decks
               </p>
             </div>
           </div>
@@ -441,7 +443,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 className="h-9 px-4 bg-[#DC143C] text-white hover:bg-[#B01030] flex items-center justify-center gap-1.5 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer shadow-xs whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 flex-shrink-0" />
-                <span>Add Cards to Portfolio</span>
+                <span>Add Items to Portfolio</span>
               </button>
             )}
 
@@ -551,7 +553,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                   { id: 'type', label: 'Energy Type' },
                   { id: 'rarity', label: 'Rarity Tier' },
                   { id: 'set', label: 'Expansion Set' },
-                  { id: 'deck', label: 'Assigned Deck' },
+                  { id: 'deck', label: 'Collection deck' },
                   { id: 'supertype', label: 'Supertype' },
                 ].map((g) => (
                   <button
@@ -662,10 +664,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 }}
                 className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-mono text-[#0F172A] p-1.5 rounded-md focus:border-[#DC143C] focus:outline-none"
               >
-                <option value="all">All Decks & Binders</option>
+                <option value="all">All decks & Showcases</option>
                 {decks.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.name} ({d.entries.length} cards)
+                    {d.name} ({d.entries.length} items)
                   </option>
                 ))}
               </select>
@@ -751,7 +753,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
               Portfolio Collection is Ready
             </h3>
             <p className="font-mono text-xs sm:text-sm text-[#64748B] leading-relaxed">
-              No cards are currently assigned to your decks or binders. Search the Pokémon card catalog to add singles, slabs, or build new tournament decks.
+              No cards are currently assigned to your decks or binders. Search the Pokémon card catalog to add singles, slabs, or build curated art-style collections.
             </p>
           </div>
 

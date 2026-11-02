@@ -73,7 +73,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#DC143C;text-decoration:none;font-weight:700;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>
-          <a href="/directory/decks-index" style="color:#64748B;text-decoration:none;font-weight:500;">Meta Decks</a>
+          <a href="/directory/decks-index" style="color:#64748B;text-decoration:none;font-weight:500;">decks</a>
           <a href="/directory/slabs-index" style="color:#64748B;text-decoration:none;font-weight:500;">Graded Slabs</a>
           <a href="/directory/glossary" style="color:#64748B;text-decoration:none;font-weight:500;">Glossary</a>
         </nav>
@@ -87,7 +87,7 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
       <div style="margin-bottom:40px;text-align:center;">
         <span style="background:#FFF0F3;color:#DC143C;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Knowledge Base &amp; Discovery Hub</span>
         <h1 style="font-size:36px;font-weight:800;color:#0F172A;margin:16px 0 12px;letter-spacing:-0.8px;">Pokémon TCG Knowledge &amp; Directory</h1>
-        <p style="font-size:16px;color:#64748B;max-width:700px;margin:0 auto;line-height:1.6;">Explore structured indices of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA slab certificate guides, and game mechanics.</p>
+        <p style="font-size:16px;color:#64748B;max-width:700px;margin:0 auto;line-height:1.6;">Explore structured indices of 218 catalogued sets (148+ master expansions), curated collection decks, PSA slab certificate guides, and game mechanics.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;margin-bottom:48px;">
@@ -99,10 +99,10 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-          <div style="font-size:24px;margin-bottom:12px;">⚔️</div>
-          <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">60-Card Meta Decks</h2>
-          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Standard (Marks H/I/J) and Expanded 60-card tournament meta deck rosters with 1-click PTCGL export strings and legality checks.</p>
-          <a href="/directory/decks-index" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">View Meta Decks &rarr;</a>
+          <div style="font-size:24px;margin-bottom:12px;">🖼️</div>
+          <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">Curated Collection Decks</h2>
+          <p style="font-size:14px;color:#64748B;line-height:1.5;margin-bottom:16px;">Thematic display decks, binder ladders, and artist showcases with live TCGplayer market valuations and shareable public links.</p>
+          <a href="/directory/decks-index" style="color:#DC143C;font-weight:600;font-size:14px;text-decoration:none;">View Collection Decks &rarr;</a>
         </div>
 
         <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
@@ -242,8 +242,8 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
 
   // 3. DECKS INDEX: /directory/decks-index
   if (cleanPath === '/directory/decks-index') {
-    const pageTitle = 'Competitive 60-Card Pokémon Meta Decks Index — DECK / divider';
-    const pageDesc = 'Tournament 60-card Standard and Expanded meta deck lists with card counts, PTCGL import text strings, and live TCGplayer market prices.';
+    const pageTitle = 'Curated Collection Display decks Index — DECK / divider';
+    const pageDesc = 'Curated collection display decks, thematic binders, artwork ladders, and live TCGplayer market prices.';
     const canonicalUrl = `${CANONICAL_ORIGIN}/directory/decks-index`;
 
     const jsonLd = {
@@ -293,13 +293,13 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         <nav style="display:flex;gap:12px;margin-left:24px;font-size:14px;">
           <a href="/directory" style="color:#64748B;text-decoration:none;font-weight:500;">Directory Hub</a>
           <a href="/directory/sets-index" style="color:#64748B;text-decoration:none;font-weight:500;">Sets</a>
-          <a href="/directory/decks-index" style="color:#DC143C;text-decoration:none;font-weight:700;">Meta Decks</a>
+          <a href="/directory/decks-index" style="color:#DC143C;text-decoration:none;font-weight:700;">decks</a>
           <a href="/directory/slabs-index" style="color:#64748B;text-decoration:none;font-weight:500;">Graded Slabs</a>
           <a href="/directory/glossary" style="color:#64748B;text-decoration:none;font-weight:500;">Glossary</a>
         </nav>
       </div>
       <div>
-        <a href="/tools/deck-legality-checker" style="background:#0F172A;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Deck Legality Checker</a>
+        <a href="/" style="background:#0F172A;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Open App</a>
       </div>
     </header>
 
@@ -308,34 +308,29 @@ export async function renderDirectoryPage(pathname: string): Promise<{ bodyHtml:
         <nav style="font-size:13px;color:#94A3B8;margin-bottom:12px;">
           <a href="/" style="color:#64748B;text-decoration:none;">Home</a> &gt; 
           <a href="/directory" style="color:#64748B;text-decoration:none;">Directory</a> &gt; 
-          <span style="color:#0F172A;font-weight:600;">Tournament Meta Decks</span>
+          <span style="color:#0F172A;font-weight:600;">Curated Collection decks</span>
         </nav>
-        <h1 style="font-size:32px;font-weight:800;color:#0F172A;margin-bottom:8px;">Standard &amp; Expanded Meta Decks Index</h1>
-        <p style="font-size:15px;color:#64748B;line-height:1.5;">Browse championship-level 60-card tournament deck lists with card counts, energy distributions, match-up strategies, and 1-click PTCGL copy strings.</p>
+        <h1 style="font-size:32px;font-weight:800;color:#0F172A;margin-bottom:8px;">Curated Collection Display decks Index</h1>
+        <p style="font-size:15px;color:#64748B;line-height:1.5;">Browse thematic collection decks with card counts, artwork breakdowns, market valuations, and shareable public links.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;margin-bottom:48px;">
         ${DECK_SLUGS.map(slug => {
           const deckName = slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-          const isRotated = ['regidrago-vstar', 'lugia-vstar', 'dialga-vstar', 'giratina-vstar', 'pao-chien-ex', 'snorlax-stall'].includes(slug);
-          const formatBadge = isRotated
-            ? '<span style="font-size:11px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:999px;font-weight:700;">Expanded (Rotated)</span>'
-            : '<span style="font-size:11px;background:#F0FDF4;color:#16A34A;padding:2px 8px;border-radius:999px;font-weight:700;">Standard Legal</span>';
-          const formatDesc = isRotated
-            ? 'Championship Expanded roster featuring Mark F/G archetypes rotated from 2026 Standard. Full 60-card list.'
-            : 'Verified 2026 Standard tournament build complying with Regulation Marks H, I, and J. Full 60-card list.';
+          const formatBadge = '<span style="font-size:11px;background:#F0FDF4;color:#16A34A;padding:2px 8px;border-radius:999px;font-weight:700;">Curated Showcase</span>';
+          const formatDesc = 'Thematic display deck featuring art-selected cards and live market price valuations.';
 
           return `
           <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:10px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                 ${formatBadge}
-                <span style="font-size:12px;color:#64748B;font-weight:600;">60 Cards</span>
+                <span style="font-size:12px;color:#64748B;font-weight:600;">Collection deck</span>
               </div>
               <h2 style="font-size:18px;font-weight:700;color:#0F172A;margin:0 0 8px;">${escapeHtml(deckName)}</h2>
               <p style="font-size:13px;color:#64748B;line-height:1.4;margin-bottom:16px;">${escapeHtml(formatDesc)}</p>
             </div>
-            <a href="/deck/${slug}" style="background:#0F172A;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;text-align:center;">View 60-Card List &amp; PTCGL String &rarr;</a>
+            <a href="/deck/${slug}" style="background:#0F172A;color:#FFFFFF;padding:10px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;text-align:center;">View Display deck &rarr;</a>
           </div>
           `;
         }).join('')}

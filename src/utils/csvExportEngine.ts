@@ -8,13 +8,14 @@ function escapeCsvField(val: unknown): string {
 }
 
 export function exportPortfolioToCsv(params: {
-  decks: Deck[];
+  decks?: Deck[];
   customLists: CustomList[];
   sealedEntries: PortfolioSealedEntry[];
   soldEntries: PortfolioCardEntry[];
   currency: DisplayCurrency;
 }): void {
-  const { decks, sealedEntries, soldEntries, currency } = params;
+  const decks = params.decks || [];
+  const { sealedEntries, soldEntries, currency } = params;
 
   const rows: string[][] = [];
 

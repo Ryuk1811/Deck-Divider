@@ -19,7 +19,7 @@ import {
 
 interface FaqItem {
   id: string;
-  category: 'General' | 'Pricing & Data' | 'Security & Cloud' | 'Decks & Tournaments';
+  category: 'General' | 'Pricing & Data' | 'Security & Cloud' | 'Collection & decks';
   question: string;
   answer: string;
   highlight?: string;
@@ -27,7 +27,7 @@ interface FaqItem {
 
 interface BlogPost {
   id: string;
-  category: 'Market Trends' | 'Deck Meta' | 'Grading & Slabs' | 'Security';
+  category: 'Market Trends' | 'Art & Theme decks' | 'Grading & Slabs' | 'Security';
   title: string;
   excerpt: string;
   content: string[];
@@ -44,7 +44,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'Pricing & Data',
     question: 'Where do the card market prices come from?',
     answer: 'Verified TCGplayer market prices and recent completed eBay sales. Automatic updates for collection and deck values.',
-    highlight: 'Real-time conversions for USD, EUR, GBP, JPY, CAD, and AUD.',
+    highlight: 'Real-time conversions across 20 global fiat currencies.',
   },
   {
     id: 'faq-2',
@@ -55,10 +55,10 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'faq-3',
-    category: 'Decks & Tournaments',
-    question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
-    answer: 'Yes. Deck lists export directly for 1-click PTCGL import. Built-in verification for standard format legality and regulation marks.',
-    highlight: 'Compatible with PTCGL, LimitlessTCG, and official Play! Pokémon events.',
+    category: 'Collection & decks',
+    question: 'How do custom theme display decks work?',
+    answer: 'Construct custom theme decks across 6-card mini, 30-card half, 60-card display, 100-card, 140-card, 220-card, or unlimited collection decks with condition tracking, foil treatments, and real-time market comps.',
+    highlight: 'Export clean deck lists and CSV backups or share public showcase links with zero paywalls.',
   },
   {
     id: 'faq-4',
@@ -72,7 +72,7 @@ const FAQ_ITEMS: FaqItem[] = [
     category: 'Security & Cloud',
     question: 'How is my collection data saved and kept private?',
     answer: 'Data is synced to your private account. Collections are completely private and never sold to third parties.',
-    highlight: 'Export your complete card list and purchase logs to JSON anytime.',
+    highlight: 'Export your complete card list and purchase logs to CSV anytime with zero paywalls.',
   },
   {
     id: 'faq-6',
@@ -102,19 +102,19 @@ const BLOG_POSTS: BlogPost[] = [
   },
   {
     id: 'blog-2',
-    category: 'Deck Meta',
-    title: 'Building Consistent 60-Card Standard Decks for League Nights',
+    category: 'Art & Theme decks',
+    title: 'Curating Thematic Art-Style decks & Collection Showcases',
     excerpt:
-      'Balancing search items, supporter draw engines, and energy counts for standard format tournaments.',
+      'Balancing visual themes, rare foil treatments, and illustrator spotlights across your collection showcases.',
     content: [
-      'A consistent Pokémon deck needs reliable search items like Nest Ball, Ultra Ball, and Buddy-Buddy Poffin to find basic Pokémon on turn one.',
-      'Our built-in deck checker tests your list against standard rotation blocks and confirms card count splits before you bring your deck box to a local event.',
-      'Check your energy counts and average prize-card trade before trading for the singles needed to finish your deck.',
+      'An artistic collection deck brings together thematic storytelling, character lineages, and cohesive art styles across eras.',
+      'Our built-in showcase curator helps you organize cards into thematic display spreads, visual timelines, and rarity-graded showcases.',
+      'Review your foil rarities, illustrator distributions, and market valuations before displaying your curated deck.',
     ],
     readTime: '5 min read',
     date: 'August 2026',
-    author: 'Tournament Players Group',
-    tags: ['Standard Format', '60 Cards', 'PTCGL'],
+    author: 'Collection Curator Guild',
+    tags: ['Thematic decks', 'Art Showcases', 'Visual Curation'],
     featuredCard: 'Charizard ex (#054)',
   },
   {
@@ -182,8 +182,8 @@ export const LandingFaqAndBlogs: React.FC = () => {
     return blogCategory === 'All' || post.category === blogCategory;
   });
 
-  const faqCategories = ['All', 'Pricing & Data', 'Security & Cloud', 'Decks & Tournaments', 'General'];
-  const blogCategories = ['All', 'Market Trends', 'Deck Meta', 'Grading & Slabs', 'Security'];
+  const faqCategories = ['All', 'Pricing & Data', 'Security & Cloud', 'Collection & decks', 'General'];
+  const blogCategories = ['All', 'Market Trends', 'Art & Theme decks', 'Grading & Slabs', 'Security'];
 
   return (
     <section id="faq-and-insights" className="py-6 sm:py-8 md:py-10 relative overflow-hidden">

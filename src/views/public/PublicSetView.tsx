@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check, Clock, Shield } from 'lucide-react';
-import { CardSet, PokemonCard } from '../../types';
+import { ArrowLeft, Search, Layers, Calendar, ChevronLeft, ChevronRight, TrendingUp, Share2, Check, Clock, Shield, Sparkles, Plus, CheckCircle2 } from 'lucide-react';
+import { CardSet, PokemonCard, PortfolioCardEntry, Deck } from '../../types';
 import { LandingNav } from '../../components/landing/LandingNav';
 import { LandingFooter } from '../../components/landing/LandingFooter';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getExpansionsCatalog, getCardsBySetCatalog } from '../../lib/dataSyncEngine';
+import { idbGetUserDecks, idbSaveUserDecks } from '../../lib/indexedDB';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock } from '../../components/seo/PageHead';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getSetDetailSchema } from '../../components/seo/schemaData';
 import { generateSetSeoMetadata, updateDocumentMetaTags } from '../../utils/keywordDatabase';
 import { formatSetReleaseDate } from '../../utils/setCategorizer';
-import { getSetLegality } from '../../config/setLegality';
+import { getSetEraInfo } from '../../config/setLegality';
 
 const PAGE_SIZE = 60;
 
@@ -52,6 +53,68 @@ export const PublicSetView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [addedToast, setAddedToast] = useState<{ count: number; name: string } | null>(null);
+
+  const handleQuickAddSet = async (onlyHolos = false) => {
+    if (!cards.length || !set) return;
+    const cardsToAdd = onlyHolos
+      ? cards.filter((c) => {
+          const r = (c.rarity || '').toLowerCase();
+          return (
+            r.includes('holo') ||
+            r.includes('ultra') ||
+            r.includes('secret') ||
+            r.includes('illustration') ||
+            r.includes('rare') ||
+            r.includes('ace spec') ||
+            r.includes('promo')
+          );
+        })
+      : cards;
+
+    if (!cardsToAdd.length) return;
+
+    try {
+      const activeUid = localStorage.getItem('dd_guest_mode') === 'true' ? 'guest_user' : 'guest_user';
+      const existingDecks = (await idbGetUserDecks(activeUid)) || [];
+      const newDeckId = `deck-${Date.now()}`;
+      const newDeckName = `${set.name} ${onlyHolos ? 'Holos & SIRs' : 'Complete Set'}`;
+      
+      const newEntries: PortfolioCardEntry[] = cardsToAdd.map((card, idx) => ({
+        id: `set-fast-${Date.now()}-${idx}`,
+        cardId: card.id,
+        card,
+        condition: 'NM',
+        quantity: 1,
+        purchasePrice: card.prices?.raw || 0,
+        purchaseCurrency: 'USD',
+        purchaseDate: new Date().toISOString().split('T')[0],
+        deckId: newDeckId,
+        ownerId: activeUid,
+        isSold: false,
+      }));
+
+      const newDeck: Deck = {
+        id: newDeckId,
+        ownerId: activeUid,
+        name: newDeckName,
+        description: `Imported from ${set.name} expansion checklist`,
+        colorHex: '#DC143C',
+        targetSize: newEntries.length > 60 ? Infinity : 60,
+        isPublic: false,
+        entries: newEntries,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await idbSaveUserDecks([newDeck, ...existingDecks], activeUid);
+      localStorage.setItem('dd_guest_mode', 'true');
+      setAddedToast({ count: newEntries.length, name: newDeckName });
+      setTimeout(() => setAddedToast(null), 5000);
+    } catch (e) {
+      console.warn('Fast-fill set error:', e);
+    }
+  };
 
   const handleCopyLink = async () => {
     try {
@@ -116,8 +179,8 @@ export const PublicSetView: React.FC = () => {
   const totalPages = Math.ceil(filteredCards.length / PAGE_SIZE);
   const paginatedCards = filteredCards.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const legalityInfo = useMemo(() => {
-    return set ? getSetLegality(set.id, set.series) : null;
+  const eraInfo = useMemo(() => {
+    return set ? getSetEraInfo(set.id, set.series) : null;
   }, [set]);
 
   const seoMetadata = useMemo(() => {
@@ -200,17 +263,17 @@ export const PublicSetView: React.FC = () => {
                       <Layers className="w-3.5 h-3.5 text-[#DC143C]" />
                       {set.series} Series
                     </span>
-                    {legalityInfo && (
+                    {eraInfo && (
                       <span
                         className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-bold transition-colors shadow-2xs ${
-                          legalityInfo.isStandardLegal
+                          eraInfo.isModernEra
                             ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-                            : 'bg-rose-50 border border-rose-200 text-rose-800'
+                            : 'bg-slate-50 border border-slate-200 text-slate-800'
                         }`}
-                        title={legalityInfo.tournamentLegality}
+                        title={eraInfo.eraDescription}
                       >
                         <Shield className="w-3.5 h-3.5" />
-                        {legalityInfo.regulationMark} • {legalityInfo.isStandardLegal ? 'Standard Legal (2026: H, I, J)' : 'Rotated (Expanded/GLC)'}
+                        {eraInfo.regulationMark} • {eraInfo.eraDescription}
                       </span>
                     )}
                     <span className="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full text-[#0F172A]">
@@ -231,6 +294,24 @@ export const PublicSetView: React.FC = () => {
                       <TrendingUp className="w-3.5 h-3.5" />
                       Top 20 Chase Cards
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAddSet(false)}
+                      className="inline-flex items-center gap-1.5 bg-[#DC143C] hover:bg-[#B01030] text-white px-3.5 py-1 rounded-full text-xs font-mono font-bold transition-colors shadow-2xs cursor-pointer"
+                      title="Add all cards in this set to your local collection deck"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Mark All Owned</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAddSet(true)}
+                      className="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 px-3.5 py-1 rounded-full text-xs font-mono font-bold transition-colors shadow-2xs cursor-pointer"
+                      title="Add Holos, Ultra Rares, and Secret Rares from this set to your collection"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Mark Holos / SIRs</span>
+                    </button>
                     <button
                       type="button"
                       onClick={handleCopyLink}
@@ -256,8 +337,8 @@ export const PublicSetView: React.FC = () => {
                 keyFacts={[
                   { label: 'Expansion Name', value: set.name },
                   { label: 'Series', value: `${set.series} Era` },
-                  { label: 'Regulation Mark', value: legalityInfo?.regulationMark || 'Play! Pokémon' },
-                  { label: 'Tournament Legality', value: legalityInfo?.tournamentLegality || 'Official Play! Pokémon' },
+                  { label: 'Regulation Mark', value: eraInfo?.regulationMark || 'Collection Era' },
+                  { label: 'Era Classification', value: eraInfo?.eraDescription || 'General Collection' },
                   { label: 'Total Cards', value: `${set.total || cards.length} Cards` },
                   { label: 'Release Date', value: set.releaseDate || 'Official' },
                 ]}
@@ -390,6 +471,22 @@ export const PublicSetView: React.FC = () => {
           )}
 
         </div>
+
+        {addedToast && (
+          <div className="fixed bottom-6 right-6 z-50 bg-[#0F172A] text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 font-mono text-xs animate-fade-in max-w-md">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div className="flex-1">
+              <p className="font-bold text-white">Added {addedToast.count} cards to "{addedToast.name}"!</p>
+              <p className="text-slate-400 text-[11px]">Saved in your local collection workspace.</p>
+            </div>
+            <Link
+              to="/app?tab=decks"
+              className="px-3 py-1.5 bg-[#DC143C] hover:bg-[#B01030] text-white rounded-lg font-bold text-[11px] whitespace-nowrap transition-colors"
+            >
+              View in Studio &rarr;
+            </Link>
+          </div>
+        )}
       </main>
 
       <PublicInterlinkMesh currentPath={setId ? `/set/${setId}` : '/sets'} />

@@ -1,4 +1,4 @@
-import { PokemonCard, Deck, CustomList, PortfolioSealedEntry, PortfolioCardEntry } from '../types';
+import { PokemonCard, deck, CustomList, PortfolioSealedEntry, PortfolioCardEntry } from '../types';
 
 /**
  * Mock data detection helpers
@@ -14,13 +14,10 @@ export function isMockDeck(deck?: { id?: string; name?: string } | null): boolea
     id.startsWith('starter-') ||
     id.startsWith('sample-') ||
     id.startsWith('demo-') ||
-    name === 'charizard ex 151 master deck' ||
-    name === 'gardevoir ex championship 60' ||
-    name === 'lugia vstar archeops turbo' ||
-    name === 'starter sample binder' ||
-    name === 'charizard ex / pidgeot ex championship 60' ||
+    name === 'charizard ex 151 master collection showcase' ||
     name === 'grail slabs & modern alternate arts vault' ||
-    name === '151 special illustration rare binder complete'
+    name === 'kanto 151 master starter showcase' ||
+    name === 'starter sample binder'
   );
 }
 
@@ -573,8 +570,8 @@ const IONO_PALDEA_SIR: PokemonCard = {
   },
 };
 
-// 2. Build Showcase Decks
-export function generateShowcaseDecks(ownerUid: string): Deck[] {
+// 2. Build Showcase decks
+export function generateShowcaseDecks(ownerUid: string): deck[] {
   const pidgeotSir: PokemonCard = {
     id: 'sv3-225',
     name: 'Pidgeot ex (Special Illustration Rare)',
@@ -700,7 +697,7 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
       purchasePrice: 110.0,
       purchaseCurrency: 'USD',
       purchaseDate: '2026-05-15',
-      notes: 'Main attacker for Championship Tier list',
+      notes: 'Main collection piece for 151 Master deck',
       isSold: false,
     },
     {
@@ -902,13 +899,12 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
     {
       id: 'showcase-deck-1',
       ownerId: ownerUid,
-      name: 'Charizard ex / Pidgeot ex Championship 60',
-      description: 'Standard format competitive powerhouse equipped with Max Rare SIR supporters, ACE SPEC Prime Catcher, and Turbo Dark fire acceleration.',
+      name: 'Charizard ex 151 Master Collection Showcase',
+      description: 'Curated collector display deck featuring Special Illustration Rare Charizard ex, Arven, and Pidgeot ex in Near Mint foil condition.',
       colorHex: '#DC143C',
       targetSize: 60,
-      deckFormat: '60-Card Tournament Deck',
       isPublic: true,
-      publicShareCode: 'CHARIZARD-CHAMP-2026',
+      publicShareCode: 'CHARIZARD-151-VAULT',
       entries: deck1Entries,
       createdAt: '2026-05-15T10:00:00.000Z',
       updatedAt: '2026-08-20T14:30:00.000Z',
@@ -920,7 +916,6 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
       description: 'High-grade collection centerpiece featuring BGS 9.5 Moonbreon, PSA 10 Grey Felt Hat Pikachu, CGC 10 Giratina V, and Fusion Strike Gengar.',
       colorHex: '#7E22CE',
       targetSize: 30,
-      deckFormat: '30-Card Half Deck',
       isPublic: true,
       publicShareCode: 'GRAIL-SLABS-VAULT-2026',
       entries: deck2Entries,
@@ -930,11 +925,10 @@ export function generateShowcaseDecks(ownerUid: string): Deck[] {
     {
       id: 'showcase-deck-3',
       ownerId: ownerUid,
-      name: 'Kanto 151 Master Starter Showcase (6-Card Mini)',
-      description: 'Special Illustration Rare starter trio collection featuring Akira Egawa Charizard, Mitsuhiro Arita Blastoise, and Yuu Nishida Venusaur (6-Card Mini Deck).',
+      name: 'Kanto 151 Master Starter Showcase',
+      description: 'Special Illustration Rare starter trio collection featuring Akira Egawa Charizard, Mitsuhiro Arita Blastoise, and Yuu Nishida Venusaur.',
       colorHex: '#7C3AED',
       targetSize: 6,
-      deckFormat: '6-Card Mini Deck',
       isPublic: true,
       publicShareCode: 'KANTO-151-TRIO',
       entries: deck3Entries,

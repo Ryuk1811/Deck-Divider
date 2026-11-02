@@ -9,11 +9,12 @@ interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   cards: PokemonCard[];
-  decks: Deck[];
+  decks?: Deck[];
   sets: CardSet[];
   onSelectCard: (card: PokemonCard) => void;
-  onSelectDeck: (deckId: string) => void;
-  onNavigate: (tab: 'collection' | 'metrics' | 'decks' | 'sealed_vault' | 'search' | 'sets' | 'lists' | 'settings') => void;
+  onSelectDeck?: (deckId: string) => void;
+  onSelectdeck?: (deckId: string) => void;
+  onNavigate: (tab: any) => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -24,9 +25,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   sets,
   onSelectCard,
   onSelectDeck,
+  onSelectdeck,
   onNavigate,
 }) => {
   const [query, setQuery] = useState('');
+  const activedecks = decks || decks || [];
+  const handleSelectdeck = onSelectdeck || onSelectDeck || (() => {});
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -52,8 +56,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     : cards.slice(0, 4);
 
   const filteredDecks = query
-    ? decks.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()))
-    : decks.slice(0, 3);
+    ? activedecks.filter((d) => d.name.toLowerCase().includes(query.toLowerCase()))
+    : activedecks.slice(0, 3);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 px-4 bg-slate-900/50 backdrop-blur-md animate-fade-in">
@@ -164,14 +168,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             {filteredDecks.length > 0 && (
               <div>
                 <div className="font-mono text-[10px] font-bold text-[#64748B] uppercase tracking-wider mb-2 px-2">
-                  Decks ({filteredDecks.length})
+                  decks ({filteredDecks.length})
                 </div>
                 <div className="space-y-1">
                   {filteredDecks.map((deck) => (
                     <div
                       key={deck.id}
                       onClick={() => {
-                        onSelectDeck(deck.id);
+                        handleSelectdeck(deck.id);
                         onClose();
                       }}
                       className="flex items-center justify-between p-2.5 rounded-md bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] cursor-pointer transition-all"

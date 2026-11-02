@@ -388,7 +388,7 @@ export interface SearchFilters {
   setId?: string;
   regulationMark?: string;
   variant?: string;
-  legality?: 'standard' | 'expanded';
+  legality?: 'standard' | 'expanded' | string;
 }
 
 export const getCardByIdFromEngine = (id: string): TCGdexCard | null => {

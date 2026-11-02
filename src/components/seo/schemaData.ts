@@ -53,7 +53,7 @@ export const getBaseOrganizationSchema = () => ({
   logo: 'https://deckdivider.app/logo.png',
   image: STANDARD_IMAGE,
   email: 'deckdivider@outlook.com',
-  description: 'DECK / divider is an ad-free digital Pokémon TCG binder tracker, slab registry, and 60-card tournament deck builder with live market prices. Digital software studio, not a physical plastic divider accessory.',
+  description: 'DECK / divider is an ad-free digital Pokémon TCG binder tracker, slab registry, and artistic collection decks with live market prices. Digital software studio, not a physical plastic divider accessory.',
   sameAs: [
     'https://www.reddit.com/r/DeckDivider/',
     'https://www.instagram.com/deckdivider/',
@@ -71,8 +71,8 @@ export const getBaseOrganizationSchema = () => ({
     'Pokémon Trading Card Game',
     'TCGplayer Market Pricing',
     'PSA, BGS, CGC Grading Services',
-    'Standard Format Legality & Rotation',
-    'Deck Building and PTCGL Export'
+    'Historical Eras & Curation',
+    'Artistic deck Organization'
   ],
   sponsor: {
     '@type': 'Organization',
@@ -124,7 +124,7 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
       image: STANDARD_IMAGE,
       brand: STANDARD_BRAND,
       sku: 'DD-COMMUNITY-2026',
-      description: 'Digital web application and deck builder for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
+      description: 'Digital web application and deck studio for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
       applicationCategory: 'Card Game Utility / Collector Tracker Software',
       operatingSystem: 'All (Web, iOS, Android, PWA, Desktop)',
       offers: {
@@ -157,7 +157,7 @@ export const getSocialsPageSchema = (stats?: { total: number; average: number },
           name: r.isAnonymous ? 'Anonymous Trainer' : r.authorName
         },
         datePublished: r.createdAt ? r.createdAt.slice(0, 10) : '2026-01-01',
-        reviewBody: r.comment || 'Outstanding Pokémon TCG binder tracking and deck building platform.',
+        reviewBody: r.comment || 'Outstanding Pokémon TCG binder tracking and deck organization platform.',
         reviewRating: {
           '@type': 'Rating',
           ratingValue: r.rating || 5,
@@ -193,7 +193,7 @@ export const getHomepageSchema = () => ({
       '@id': 'https://deckdivider.app/#website',
       url: 'https://deckdivider.app',
       name: 'DECK / divider',
-      description: 'The Ultimate Pokémon TCG Collection Tracker, Graded Slab Vault, and Tournament Deck Studio.',
+      description: 'The Ultimate Pokémon TCG Collection Tracker, Graded Slab Vault, and Artistic deck Studio.',
       publisher: {
         '@id': 'https://deckdivider.app/#organization'
       },
@@ -212,10 +212,10 @@ export const getHomepageSchema = () => ({
       image: STANDARD_IMAGE,
       brand: STANDARD_BRAND,
       sku: 'DD-SOFTWARE-2026',
-      description: 'Digital web application and deck builder for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
+      description: 'Digital web application and deck studio for the Pokémon Trading Card Game (TCG). Not a physical plastic deck divider accessory.',
       operatingSystem: 'Any (Web App, PWA, iOS, Android, Desktop)',
       applicationCategory: 'Card Game Utility / Collector Tracker Software',
-      applicationSubCategory: 'Pokémon TCG Collection Management & Deck Studio',
+      applicationSubCategory: 'Pokémon TCG Collection Management & deck Studio',
       offers: {
         '@type': 'Offer',
         price: '0.00',
@@ -225,7 +225,7 @@ export const getHomepageSchema = () => ({
         priceValidUntil: '2027-12-31',
         shippingDetails: STANDARD_SHIPPING_DETAILS,
         hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY,
-        description: 'Free tier with unlimited local storage, master set checklists, and tournament deck builder.'
+        description: 'Free tier with unlimited local storage, master set checklists, and artistic deck organization.'
       },
       sameAs: [
         'https://www.producthunt.com/products/deck-divider',
@@ -268,10 +268,10 @@ export const getHomepageSchema = () => ({
         {
           '@type': 'Review',
           itemReviewed: { '@id': 'https://deckdivider.app/#software' },
-          name: 'Tournament Player Review',
+          name: 'Advanced Collector Review',
           author: { '@type': 'Person', name: 'Marcus V. (SlabTrader99)' },
           datePublished: '2026-02-01',
-          reviewBody: 'Instant PTCGL deck exports and real-time TCGplayer portfolio valuations make this an indispensable app.',
+          reviewBody: 'Artistic deck layouts and real-time TCGplayer portfolio valuations make this an indispensable app.',
           reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' }
         },
         {
@@ -304,7 +304,7 @@ export const getSetsDirectorySchema = (setCount: number = 218) => ({
   }
 });
 
-export const getFormatLegalitySchema = () => ({
+export const getEraCurationSchema = () => ({
   '@context': 'https://schema.org',
   '@graph': [
     {
@@ -404,7 +404,7 @@ export const getPsaCalculatorSchema = () => ({
   ]
 });
 
-export const getDeckLegalityCheckerSchema = () => ({
+export const getdeckEraCheckerSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Pokémon TCG Deck Legality & Regulation Mark Checker',
@@ -426,6 +426,8 @@ export const getDeckLegalityCheckerSchema = () => ({
     hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
   }
 });
+
+export const getDeckLegalityCheckerSchema = getdeckEraCheckerSchema;
 
 export const getAppComparisonsSchema = () => ({
   '@context': 'https://schema.org',
@@ -449,7 +451,7 @@ export const getBestTrackersSchema = () => ({
     {
       '@type': 'ListItem',
       position: 1,
-      name: 'DECK / divider - Best Overall for Power Collectors & Competitive Players',
+      name: 'DECK / divider - Best Overall for Power Collectors & Showcase Curators',
       url: 'https://deckdivider.app'
     },
     {
@@ -497,10 +499,10 @@ export const getFaqPageSchema = () => ({
     },
     {
       '@type': 'Question',
-      name: 'Can I export decks directly to Pokémon TCG Live (PTCGL)?',
+      name: 'Can I export decks to high-fidelity layouts?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes! The Deck Studio features a 1-click PTCGL export button that copies standard clipboard formatting with exact set abbreviations and card numbers.'
+        text: 'Yes! The deck Studio features a 1-click export button that copies standard clipboard formatting with exact set abbreviations and card numbers.'
       }
     },
     {
@@ -526,8 +528,8 @@ export const getAboutPageSchema = () => ({
 export const getHowItWorksSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: 'How to Track Your Pokémon Card Collection and Build Tournament Decks',
-  description: 'Step-by-step guide to tracking Pokémon TCG cards, logging PSA slabs, calculating live market NAV, and exporting 60-card tournament rosters with DECK / divider.',
+  name: 'How to Track Your Pokémon Card Collection and Build Artistic decks',
+  description: 'Step-by-step guide to tracking Pokémon TCG cards, logging PSA slabs, calculating live market NAV, and organizing curated display decks with DECK / divider.',
   url: 'https://deckdivider.app/how-it-works',
   step: [
     {
@@ -542,8 +544,8 @@ export const getHowItWorksSchema = () => ({
     },
     {
       '@type': 'HowToStep',
-      name: 'Verify Format Legality and Export to PTCGL',
-      text: 'Build standard 60-card decks with automated regulation mark validation (H, I, J; G rotated) and export 1-click clipboard text for Pokémon TCG Live.'
+      name: 'Organize Showcase decks and Art Displays',
+      text: 'Build curated display decks with flexible card caps (60 to Unlimited) and customized binder layout themes.'
     },
     {
       '@type': 'HowToStep',
@@ -557,7 +559,7 @@ export const getPricingSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'DECK / divider Flexible Membership Tiers',
-  description: 'Flexible pay-per-period pricing options for DECK / divider: Starter ($0 free), Bunch ($4/mo), Stack ($7/mo), Deck ($11/mo), Collection ($14/mo), and Founder Lifetime Pass ($250).',
+  description: 'Flexible pay-per-period pricing options for DECK / divider: Starter ($0 free), Bunch ($4/mo), Stack ($7/mo), deck ($11/mo), Collection ($14/mo), and Founder Lifetime Pass ($250).',
   url: 'https://deckdivider.app/pricing',
   image: STANDARD_IMAGE,
   brand: STANDARD_BRAND,
@@ -576,7 +578,7 @@ export const getPricingSchema = () => ({
         priceCurrency: 'USD',
         unitCode: 'MONTH'
       },
-      description: 'Free forever Starter plan with 6 custom 60-card decks, card catalog search across 218+ sets, and daily USD pricing.',
+      description: 'Free forever Starter plan with 6 custom display decks, card catalog search across 218+ sets, and daily USD pricing.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',
@@ -612,7 +614,7 @@ export const getPricingSchema = () => ({
         priceCurrency: 'USD',
         unitCode: 'MONTH'
       },
-      description: 'Flexible monthly or annual pay-per-period subscription with 30 decks, public share links, and GLC tournament legality rules.',
+      description: 'Flexible monthly or annual pay-per-period subscription with 30 decks, public share links, and premium art-style tools.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',
@@ -621,7 +623,7 @@ export const getPricingSchema = () => ({
     },
     {
       '@type': 'Offer',
-      name: 'Deck Tier (Popular)',
+      name: 'deck Tier (Popular)',
       price: '11.00',
       priceCurrency: 'USD',
       priceSpecification: {
@@ -630,7 +632,7 @@ export const getPricingSchema = () => ({
         priceCurrency: 'USD',
         unitCode: 'MONTH'
       },
-      description: 'Flexible monthly or annual pay-per-period subscription with 60 tournament decks, market comps engine, 1,000 slabs, and CSV exports.',
+      description: 'Flexible monthly or annual pay-per-period subscription with 60 display decks, market comps engine, 1,000 slabs, and CSV exports.',
       availability: 'https://schema.org/InStock',
       url: 'https://deckdivider.app/pricing',
       priceValidUntil: '2027-12-31',
@@ -703,7 +705,7 @@ export const getCommunityLeaderboardSchema = () => ({
   url: 'https://deckdivider.app/leaderboard'
 });
 
-export const getPublicDeckSchema = (
+export const getPublicdeckSchema = (
   nameOrDeck?: any,
   cardCount?: number,
   totalValue?: number
@@ -716,12 +718,12 @@ export const getPublicDeckSchema = (
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemPage',
-    name: `${name} — Pokémon TCG 60-Card Tournament Deck`,
-    description: `Complete 60-card tournament decklist (${count || 60} cards) with legality validation and 1-click PTCGL export.`,
+    name: `${name} — Pokémon TCG deck Display`,
+    description: `Complete curated card deck (${count || 60} items) with art-style curation and premium display options.`,
     url: isObj && nameOrDeck.id ? `https://deckdivider.app/deck/${nameOrDeck.id}` : 'https://deckdivider.app/decks',
     mainEntity: {
       '@type': 'ItemList',
-      name: `${name} Card Roster`,
+      name: `${name} Card deck`,
       numberOfItems: count || 60
     },
     about: value ? {

@@ -21,7 +21,7 @@ import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
 import { getExpansionsCatalog } from '../../lib/dataSyncEngine';
 import { CardSet } from '../../types';
-import { TOURNAMENT_DECKS } from '../../data/tournamentDecks';
+import { CollectionDeck, COLLECTION_DECKS } from '../../data/collectionDecks';
 import { GLOSSARY_TERMS, KEYWORD_CLUSTERS } from '../../../server/keywordCatalogManager';
 
 type DirectorySection = 'overview' | 'sets-index' | 'decks-index' | 'slabs-index' | 'glossary';
@@ -65,7 +65,7 @@ export const DirectoryHubView: React.FC = () => {
   const getSectionTitle = () => {
     switch (currentSection) {
       case 'sets-index': return 'All Pokémon TCG Expansion Sets & Master Checklists Index';
-      case 'decks-index': return 'Competitive 60-Card Tournament Meta Decks Index';
+      case 'decks-index': return 'Curated Collection decks & Thematic Showcases Index';
       case 'slabs-index': return 'Graded Slab Registry & Valuation Multipliers Guide';
       case 'glossary': return 'Pokémon TCG Terminology & Card Mechanics Glossary';
       default: return 'Pokémon TCG Directory & Knowledge Base';
@@ -75,10 +75,10 @@ export const DirectoryHubView: React.FC = () => {
   const getSectionDesc = () => {
     switch (currentSection) {
       case 'sets-index': return 'Complete catalog of 218 catalogued sets (148+ master expansions) across Scarlet & Violet, Sword & Shield, and Vintage eras with master set completion checklists.';
-      case 'decks-index': return 'Standard format legal tournament decklists with 2026 regulation marks H/I/J compliance, energy curves, and 1-click PTCGL export strings.';
+      case 'decks-index': return 'High-synergy thematic Pokémon collection decks showcasing character evolutions, art styles, and foil treatments with visual print breakdowns.';
       case 'slabs-index': return 'PSA, BGS Beckett, CGC, and ACE condition standards, centering ratio rules, certificate registry tracking, and grade value spreads.';
       case 'glossary': return 'Definitive dictionary of Pokémon TCG terminology: ACE SPEC, Secret Illustration Rares, Regulation Marks, Lost Zone, and more.';
-      default: return 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), competitive 60-card meta decks, PSA/BGS slab valuations, and game mechanics glossary.';
+      default: return 'Comprehensive Pokémon TCG index of 218 catalogued sets (148+ master expansions), curated thematic decks, PSA/BGS slab valuations, and game mechanics glossary.';
     }
   };
 
@@ -131,7 +131,7 @@ export const DirectoryHubView: React.FC = () => {
               to="/directory/decks-index"
               className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap ${currentSection === 'decks-index' ? 'bg-[#DC143C] text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
             >
-              Meta Decks ({Object.keys(TOURNAMENT_DECKS).length})
+              Curated decks ({Object.keys(COLLECTION_DECKS).length})
             </Link>
             <Link
               to="/directory/slabs-index"
@@ -169,12 +169,12 @@ export const DirectoryHubView: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
                   <BookOpen className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">60-Card Meta Decks</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Thematic Art decks</h3>
                 <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-                  Standard format legal tournament deck lists with 2026 regulation marks H/I/J compliance and 1-click PTCGL export strings.
+                  Thematic collection decks showcasing character evolution lines, rare foils, and artist spotlights with complete visual spreads.
                 </p>
                 <Link to="/directory/decks-index" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#DC143C] hover:underline">
-                  View Meta Decks <ChevronRight className="w-4 h-4" />
+                  View Curated decks <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
 
@@ -270,22 +270,22 @@ export const DirectoryHubView: React.FC = () => {
           </div>
         )}
 
-        {/* 3. META DECKS INDEX */}
+        {/* 3. CURATED deckS INDEX */}
         {currentSection === 'decks-index' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.values(TOURNAMENT_DECKS).map(deck => (
+              {(Object.values(COLLECTION_DECKS) as CollectionDeck[]).map(deck => (
                 <div key={deck.slug} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs hover:border-[#DC143C]/40 transition-colors flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-red-50 text-[#DC143C] font-mono">{deck.tier}</span>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-red-50 text-[#DC143C] font-mono">{deck.era}</span>
                       <span className="text-xs font-bold text-emerald-600 font-mono">Est. ${deck.estPrice.toFixed(2)}</span>
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 mb-1">{deck.name}</h3>
-                    <p className="text-xs font-semibold text-slate-500 mb-3">{deck.format}</p>
+                    <p className="text-xs font-semibold text-slate-500 mb-3">{deck.source || 'Thematic Collection'}</p>
                     <p className="text-sm text-slate-600 mb-4 leading-relaxed">{deck.description}</p>
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600 mb-4">
-                      <strong className="text-slate-900 block mb-0.5">Key Engine:</strong> {deck.keyPokemon}
+                      <strong className="text-slate-900 block mb-0.5">Featured Art Highlights:</strong> {deck.keyPokemon}
                     </div>
                   </div>
                   <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
@@ -293,13 +293,13 @@ export const DirectoryHubView: React.FC = () => {
                       to={`/deck/${deck.slug}`}
                       className="flex-1 py-2 px-4 bg-[#DC143C] hover:bg-red-700 text-white rounded-xl text-xs font-bold text-center transition-colors shadow-xs"
                     >
-                      View 60-Card Decklist
+                      View Collection deck
                     </Link>
                     <Link
-                      to="/tools/deck-legality-checker"
+                      to="/cards"
                       className="py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold text-center transition-colors"
                     >
-                      Test Legality
+                      Browse Catalog
                     </Link>
                   </div>
                 </div>

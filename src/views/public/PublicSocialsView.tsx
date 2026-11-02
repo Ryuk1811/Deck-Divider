@@ -50,8 +50,8 @@ import {
 
 const REVIEW_CATEGORIES: ReviewCategory[] = [
   'General & UI',
-  'Master Set Checklist',
-  'Deck Builder & PTCGL',
+  'Collection Checklist',
+  'Deck Studio',
   'Graded Slabs & Pricing',
   'Sealed Vault',
   'Feature Request'

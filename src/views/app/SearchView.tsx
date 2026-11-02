@@ -160,9 +160,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
       rarities: [],
       category: '',
       stage: '',
-      regulationMark: '',
       variant: '',
-      legality: undefined,
       illustrator: '',
       sortBy: 'price-desc',
     };
@@ -347,37 +345,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </select>
             </div>
 
-            {/* Format Legality & Regulation Mark & Illustrator */}
-            <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">Format Legality</label>
-              <select
-                value={activeFilters.legality || ''}
-                onChange={(e) => updateStructuredFilters({ ...activeFilters, legality: (e.target.value as any) || undefined })}
-                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
-              >
-                <option value="">All Formats</option>
-                <option value="standard">Standard Format Legal</option>
-                <option value="expanded">Expanded Format Legal</option>
-              </select>
-            </div>
 
-            <div className="space-y-2">
-              <label className="block font-mono text-xs font-bold text-[#0F172A]">Regulation Mark</label>
-              <select
-                value={activeFilters.regulationMark || ''}
-                onChange={(e) => updateStructuredFilters({ ...activeFilters, regulationMark: e.target.value })}
-                className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
-              >
-                <option value="">All Regulation Marks</option>
-                <option value="D">Regulation D</option>
-                <option value="E">Regulation E</option>
-                <option value="F">Regulation F</option>
-                <option value="G">Regulation G</option>
-                <option value="H">Regulation H</option>
-                <option value="I">Regulation I</option>
-                <option value="J">Regulation J</option>
-              </select>
-            </div>
 
             <div className="space-y-2">
               <label className="block font-mono text-xs font-bold text-[#0F172A]">Illustrator / Artist</label>
@@ -400,7 +368,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 }
                 className="w-full p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] font-mono text-xs text-[#0F172A] rounded-md focus:border-[#DC143C] focus:outline-none"
               >
-                <option value="">All Pokemon Sets</option>
+                <option value="">All Expansion Sets</option>
                 {sets.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name} ({s.series})

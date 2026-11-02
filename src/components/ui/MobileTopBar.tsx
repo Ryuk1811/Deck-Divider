@@ -14,7 +14,7 @@ interface MobileTopBarProps {
 const TAB_TITLES: Record<ActiveTab, { title: string; subtitle?: string }> = {
   collection: { title: 'Portfolio', subtitle: 'Live Holdings & Valuation' },
   sets: { title: 'Expansions', subtitle: 'Sets & Master Checklists' },
-  decks: { title: 'Studio', subtitle: 'Deck Builder & Testing' },
+  decks: { title: 'Studio', subtitle: 'Deck Builder & Curation' },
   sealed_vault: { title: 'Sealed Vault', subtitle: 'Boxes, Cases & ETBs' },
   search: { title: 'Card Database', subtitle: 'Live Price & Card Search' },
   metrics: { title: 'Performance', subtitle: 'ROI & Analytics' },

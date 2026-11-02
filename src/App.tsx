@@ -8,6 +8,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation, Link, useParams, use
 import {
   AccountTier,
   DisplayCurrency,
+  deck,
   Deck,
   CustomList,
   PortfolioCardEntry,
@@ -47,7 +48,7 @@ import { PortfolioSealedEntry, GradingInfo } from './types';
 import { useAuth } from './lib/AuthContext';
 import { initSearchEngine, searchCards, mapToPokemonCard, getAvailableSets } from './lib/searchEngine';
 import { startFullCatalogBackgroundSync, getExpansionsCatalog } from './lib/dataSyncEngine';
-import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists, idbGetUserDecks, idbSaveUserDecks } from './lib/indexedDB';
+import { idbGetSealedVault, idbSaveSealedVault, idbGetCustomLists, idbSaveCustomLists, idbGetUserdecks, idbSaveUserdecks, idbSaveUserDecks } from './lib/indexedDB';
 import { safeGetItem, safeSetItem } from './utils/safeStorage';
 import { packageUserSnapshot, unpackUserSnapshot, CompressedSnapshotDoc, UserCompressedSnapshotState } from './lib/snapshotEngine';
 import { createCloudBackupPoint } from './lib/backupEngine';
@@ -72,6 +73,7 @@ import { doc, setDoc, getDoc, deleteDoc, updateDoc, collection, getDocs, onSnaps
 const CollectionView = lazy(() => import('./views/app/CollectionView').then(m => ({ default: m.CollectionView })));
 const MetricsView = lazy(() => import('./views/app/MetricsView').then(m => ({ default: m.MetricsView })));
 const DecksView = lazy(() => import('./views/app/DecksView').then(m => ({ default: m.DecksView })));
+const decksView = DecksView;
 const SearchView = lazy(() => import('./views/app/SearchView').then(m => ({ default: m.SearchView })));
 const SetsView = lazy(() => import('./views/app/SetsView').then(m => ({ default: m.SetsView })));
 const PublicCardsCatalogueView = lazy(() => import('./views/public/PublicCardsCatalogueView').then(m => ({ default: m.PublicCardsCatalogueView })));
@@ -79,8 +81,8 @@ const PublicExpansionsAndSetsView = lazy(() => import('./views/public/PublicExpa
 const PublicSetView = lazy(() => import('./views/public/PublicSetView').then(m => ({ default: m.PublicSetView })));
 const PublicSetTopCardsView = lazy(() => import('./views/public/PublicSetTopCardsView').then(m => ({ default: m.PublicSetTopCardsView })));
 const PublicSocialsView = lazy(() => import('./views/public/PublicSocialsView').then(m => ({ default: m.PublicSocialsView })));
-const FormatLegalityDirectoryView = lazy(() => import('./views/public/FormatLegalityDirectoryView').then(m => ({ default: m.FormatLegalityDirectoryView })));
-const FormatLegalityView = lazy(() => import('./views/public/FormatLegalityView').then(m => ({ default: m.FormatLegalityView })));
+const EraDirectoryView = lazy(() => import('./views/public/EraDirectoryView').then(m => ({ default: m.EraDirectoryView })));
+const EraDetailView = lazy(() => import('./views/public/EraDetailView').then(m => ({ default: m.EraDetailView })));
 const CompetitorComparisonView = lazy(() => import('./views/marketing/CompetitorComparisonView').then(m => ({ default: m.CompetitorComparisonView })));
 const CommunityLeaderboardView = lazy(() => import('./views/public/CommunityLeaderboardView').then(m => ({ default: m.CommunityLeaderboardView })));
 const BestOfGuidesView = lazy(() => import('./views/marketing/BestOfGuidesView').then(m => ({ default: m.BestOfGuidesView })));
@@ -122,6 +124,7 @@ const PayPalLifetimeCheckoutModal = lazy(() => import('./components/modals/PayPa
 const PayPalSuccessModal = lazy(() => import('./components/modals/PayPalSuccessModal').then(m => ({ default: m.PayPalSuccessModal })));
 const PayPalCancelModal = lazy(() => import('./components/modals/PayPalCancelModal').then(m => ({ default: m.PayPalCancelModal })));
 const BackupRecoveryModal = lazy(() => import('./components/modals/BackupRecoveryModal').then(m => ({ default: m.BackupRecoveryModal })));
+const BulkCollectionImporterModal = lazy(() => import('./components/modals/BulkCollectionImporterModal').then(m => ({ default: m.BulkCollectionImporterModal })));
 
 const RouteLoadingFallback = () => (
   <div className="min-h-[60vh] w-full flex items-center justify-center py-24 bg-dot-grid bg-[#F8FAFC]">
@@ -133,14 +136,15 @@ const RouteLoadingFallback = () => (
 );
 
 const PublicDeckViewRoute = ({ displayCurrency, setDisplayCurrency }: { displayCurrency: string, setDisplayCurrency: (c: string) => void }) => {
-  const { deckId } = useParams<{ deckId: string }>();
+  const { deckId } = useParams<{ deckId?: string }>();
+  const id = deckId;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
   return (
     <PublicDeckView 
-      deckId={deckId}
-      encodedData={searchParams.get('d') || undefined}
+      deckId={id}
+      encodedData={searchParams.get('r') || searchParams.get('d') || undefined}
       onOpenFullApp={() => navigate('/')}
       activeCurrency={displayCurrency}
       onCurrencyChange={setDisplayCurrency}
@@ -183,7 +187,7 @@ export default function App() {
     setSoldEntries([]);
     try {
       await Promise.all([
-        idbSaveUserDecks([], 'guest_user'),
+        idbSaveUserdecks([], 'guest_user'),
         idbSaveCustomLists([], 'guest_user'),
         idbSaveSealedVault([], 'guest_user'),
       ]);
@@ -698,7 +702,7 @@ export default function App() {
 
   // Push compressed single-document snapshot to Firestore (overwriting existing)
   const saveCompressedCloudSnapshot = React.useCallback(async (overrideState?: {
-    decks?: Deck[];
+    decks?: deck[];
     customLists?: CustomList[];
     sealedEntries?: PortfolioSealedEntry[];
     isPublicProfile?: boolean;
@@ -710,18 +714,18 @@ export default function App() {
         ? overrideState.isPublicProfile
         : Boolean(stateRef.current.profile?.isPublicProfile ?? localStorage.getItem('dd_guest_is_public') === 'true');
 
-      const rawDecks = overrideState?.decks ?? stateRef.current.decks;
+      const rawdecks = overrideState?.decks ?? stateRef.current.decks;
       const rawLists = overrideState?.customLists ?? stateRef.current.customLists;
       const rawSealed = overrideState?.sealedEntries ?? stateRef.current.sealedEntries;
 
-      const sanitizedDecks = (curUser
-        ? rawDecks
+      const sanitizeddecks = (curUser
+        ? rawdecks
             .filter((d) => !isMockDeck(d))
             .map((deck) => ({
               ...deck,
               entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
             }))
-        : rawDecks).map((d) => cleanFirestoreData(d));
+        : rawdecks).map((d) => cleanFirestoreData(d));
       const sanitizedLists = (curUser ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists).map((l) => cleanFirestoreData(l));
       const sanitizedSealed = (curUser ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed).map((s) => cleanFirestoreData(s));
 
@@ -734,7 +738,7 @@ export default function App() {
       if (
         curUser &&
         hasKnownRemoteDataRef.current &&
-        sanitizedDecks.length === 0 &&
+        sanitizeddecks.length === 0 &&
         sanitizedLists.length === 0 &&
         sanitizedSealed.length === 0 &&
         !overrideState
@@ -742,7 +746,7 @@ export default function App() {
         return;
       }
 
-      if (sanitizedDecks.length > 0 || sanitizedLists.length > 0 || sanitizedSealed.length > 0) {
+      if (sanitizeddecks.length > 0 || sanitizedLists.length > 0 || sanitizedSealed.length > 0) {
         hasKnownRemoteDataRef.current = true;
       }
 
@@ -758,7 +762,7 @@ export default function App() {
           isPublicProfile: isPublicProfile,
           publicProfileShareCode: stateRef.current.profile?.publicProfileShareCode || '',
         },
-        decks: sanitizedDecks,
+        decks: sanitizeddecks, // Legacy key 'decks' in storage for compatibility, or I could change it if I'm brave. Let's keep 'decks' key in cloud snapshot to avoid migration issues, but use sanitizeddecks.
         customLists: sanitizedLists,
         sealedEntries: sanitizedSealed,
         soldEntries: cleanFirestoreData(stateRef.current.soldEntries || []),
@@ -777,7 +781,7 @@ export default function App() {
 
       // Async multi-tier subcollection redundancy sync (guarantees cross-device durability)
       await Promise.all([
-        ...sanitizedDecks.map((d) => safeSetDoc(doc(db, 'users', curUser.uid, 'decks', d.id), d).catch(() => {})),
+        ...sanitizeddecks.map((d) => safeSetDoc(doc(db, 'users', curUser.uid, 'decks', d.id), d).catch(() => {})),
         ...sanitizedLists.map((l) => safeSetDoc(doc(db, 'users', curUser.uid, 'customLists', l.id), l).catch(() => {})),
         ...sanitizedSealed.map((s) => safeSetDoc(doc(db, 'users', curUser.uid, 'sealedVault', s.id), s).catch(() => {})),
       ]).catch(() => {});
@@ -798,36 +802,36 @@ export default function App() {
   // Restore state from a point-in-time cloud or local backup
   const handleRestoreState = React.useCallback(async (restoredState: UserCompressedSnapshotState) => {
     const targetUid = user?.uid || 'guest_user';
-    const rawDecks = restoredState.decks || [];
+    const rawdecks = restoredState.decks || []; // Cloud snapshot still uses 'decks' key
     const rawLists = restoredState.customLists || [];
     const rawSealed = restoredState.sealedEntries || [];
     const newSold = restoredState.soldEntries || [];
 
-    const newDecks = user
-      ? rawDecks
+    const newdecks = user
+      ? rawdecks
           .filter((d) => !isMockDeck(d))
           .map((deck) => ({
             ...deck,
             entries: (deck.entries || []).filter((e) => !isMockCardEntry(e)),
           }))
-      : rawDecks;
+      : rawdecks;
     const newLists = user ? rawLists.filter((l) => !isMockCustomList(l)) : rawLists;
     const newSealed = user ? rawSealed.filter((s) => !isMockSealedEntry(s)) : rawSealed;
 
-    setDecks(newDecks);
+    setDecks(newdecks);
     setCustomLists(newLists);
     setSealedEntries(newSealed);
     setSoldEntries(newSold);
 
     await Promise.all([
-      idbSaveUserDecks(newDecks, targetUid),
+      idbSaveUserdecks(newdecks, targetUid),
       idbSaveCustomLists(newLists, targetUid),
       idbSaveSealedVault(newSealed, targetUid),
     ]);
 
     if (user) {
       await saveCompressedCloudSnapshot({
-        decks: newDecks,
+        decks: newdecks,
         customLists: newLists,
         sealedEntries: newSealed,
       });
@@ -848,7 +852,7 @@ export default function App() {
           localStorage.removeItem('dd_guest_mode');
           localStorage.removeItem('dd_guest_is_public');
           await Promise.all([
-            idbSaveUserDecks([], 'guest_user'),
+            idbSaveUserdecks([], 'guest_user'),
             idbSaveCustomLists([], 'guest_user'),
             idbSaveSealedVault([], 'guest_user'),
           ]);
@@ -864,14 +868,14 @@ export default function App() {
       }
 
       try {
-        const [savedDecks, savedLists, savedSealed, localTombstones] = await Promise.all([
-          idbGetUserDecks(activeUid),
+        const [saveddecks, savedLists, savedSealed, localTombstones] = await Promise.all([
+          idbGetUserdecks(activeUid),
           idbGetCustomLists(activeUid),
           idbGetSealedVault(activeUid),
           getLocalTombstones(activeUid),
         ]);
 
-        let currentDecks = savedDecks || [];
+        let currentdecks = saveddecks || [];
         let currentLists = savedLists || [];
         let currentSealed = savedSealed || [];
         const tombstonesList: Tombstone[] = [...localTombstones];
@@ -880,7 +884,7 @@ export default function App() {
         if (user) {
           let remoteSnapshotState: UserCompressedSnapshotState | null = null;
           try {
-            const [snapDoc, subDecksSnap, subListsSnap, subSealedSnap, tombstonesSnap] = await Promise.all([
+            const [snapDoc, subdecksSnap, subListsSnap, subSealedSnap, tombstonesSnap] = await Promise.all([
               getDoc(doc(db, 'users', user.uid, 'snapshot', 'current')).catch(() => null),
               getDocs(collection(db, 'users', user.uid, 'decks')).catch((e) => {
                 handleFirestoreError(e, OperationType.LIST, `users/${user.uid}/decks`);
@@ -924,11 +928,11 @@ export default function App() {
 
             const tombstoneSet = buildTombstoneSet(tombstonesList);
 
-            const subDecks = subDecksSnap && !subDecksSnap.empty ? (subDecksSnap.docs.map((d) => d.data() as Deck)) : [];
+            const subdecks = subdecksSnap && !subdecksSnap.empty ? (subdecksSnap.docs.map((d) => d.data() as deck)) : [];
             const subLists = subListsSnap && !subListsSnap.empty ? (subListsSnap.docs.map((d) => d.data() as CustomList)) : [];
             const subSealed = subSealedSnap && !subSealedSnap.empty ? (subSealedSnap.docs.map((d) => d.data() as PortfolioSealedEntry)) : [];
 
-            if (subDecks.length > 0 || subLists.length > 0 || subSealed.length > 0) {
+            if (subdecks.length > 0 || subLists.length > 0 || subSealed.length > 0) {
               hasKnownRemoteDataRef.current = true;
             }
 
@@ -941,7 +945,7 @@ export default function App() {
                 soldEntries: remoteSnapshotState?.soldEntries || [],
               },
               {
-                decks: subDecks,
+                decks: subdecks,
                 customLists: subLists,
                 sealedEntries: subSealed,
                 soldEntries: [],
@@ -953,7 +957,7 @@ export default function App() {
             // Now reconcile local IDB state with the remote consolidated state
             const reconciled = reconcileFullCollectionState(
               {
-                decks: currentDecks,
+                decks: currentdecks,
                 customLists: currentLists,
                 sealedEntries: currentSealed,
                 soldEntries: [],
@@ -963,7 +967,7 @@ export default function App() {
               tombstoneSet
             );
 
-            currentDecks = reconciled.decks;
+            currentdecks = reconciled.decks;
             currentLists = reconciled.customLists;
             currentSealed = reconciled.sealedEntries;
             if (reconciled.soldEntries && reconciled.soldEntries.length > 0) {
@@ -974,7 +978,7 @@ export default function App() {
           }
 
           // Strict user account purification: eliminate all mock/showcase/sample data from user accounts
-          const cleanedDecks = currentDecks
+          const cleaneddecks = currentdecks
             .filter((d) => !isMockDeck(d))
             .map((deck) => ({
               ...deck,
@@ -983,13 +987,13 @@ export default function App() {
           const cleanedLists = currentLists.filter((l) => !isMockCustomList(l));
           const cleanedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
 
-          currentDecks = cleanedDecks;
+          currentdecks = cleaneddecks;
           currentLists = cleanedLists;
           currentSealed = cleanedSealed;
 
           // Save sanitized collection to local user storage
           await Promise.all([
-            idbSaveUserDecks(currentDecks, user.uid),
+            idbSaveUserdecks(currentdecks, user.uid),
             idbSaveCustomLists(currentLists, user.uid),
             idbSaveSealedVault(currentSealed, user.uid),
           ]);
@@ -998,9 +1002,9 @@ export default function App() {
           isDataInitializedRef.current = true;
 
           // Only sync back if there is actual content, preventing race condition overwrite
-          if (currentDecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
+          if (currentdecks.length > 0 || currentLists.length > 0 || currentSealed.length > 0) {
             await saveCompressedCloudSnapshot({
-              decks: currentDecks,
+              decks: currentdecks,
               customLists: currentLists,
               sealedEntries: currentSealed,
             });
@@ -1009,7 +1013,7 @@ export default function App() {
 
         if (user) {
           // Strictly sanitize authenticated user accounts: eliminate any mock or showcase data
-          const sanitizedDecks = currentDecks
+          const sanitizeddecks = currentdecks
             .filter((d) => !isMockDeck(d))
             .map((deck) => ({
               ...deck,
@@ -1018,19 +1022,19 @@ export default function App() {
           const sanitizedLists = currentLists.filter((l) => !isMockCustomList(l));
           const sanitizedSealed = currentSealed.filter((s) => !isMockSealedEntry(s));
 
-          setDecks(sanitizedDecks);
+          setDecks(sanitizeddecks);
           setCustomLists(sanitizedLists);
           setSealedEntries(sanitizedSealed);
         } else {
           // GUEST / DEMO VIEW ONLY:
           // Automatically load the showcase data set so guests immediately experience a rich, realistic portfolio
-          let guestDecks = currentDecks;
+          let guestdecks = currentdecks;
           let guestLists = currentLists;
           let guestSealed = currentSealed;
           let guestSold = soldEntries;
 
-          if (guestDecks.length === 0) {
-            guestDecks = generateShowcaseDecks('guest_user');
+          if (guestdecks.length === 0) {
+            guestdecks = generateShowcaseDecks('guest_user');
             guestLists = generateShowcaseCustomLists('guest_user');
             guestSealed = generateShowcaseSealed('guest_user');
             guestSold = generateShowcaseSoldEntries('guest_user');
@@ -1038,13 +1042,13 @@ export default function App() {
             setRecentActivities(guestActivities);
 
             await Promise.all([
-              idbSaveUserDecks(guestDecks, 'guest_user'),
+              idbSaveUserdecks(guestdecks, 'guest_user'),
               idbSaveCustomLists(guestLists, 'guest_user'),
               idbSaveSealedVault(guestSealed, 'guest_user'),
             ]);
           }
 
-          setDecks(guestDecks);
+          setDecks(guestdecks);
           setCustomLists(guestLists);
           setSealedEntries(guestSealed);
           if (guestSold && guestSold.length > 0) {
@@ -1090,7 +1094,7 @@ export default function App() {
             if (unpacked.decks && Array.isArray(unpacked.decks)) {
               const cleaned = unpacked.decks.filter((d) => !isMockDeck(d));
               setDecks(cleaned);
-              idbSaveUserDecks(cleaned, user.uid);
+              idbSaveUserdecks(cleaned, user.uid);
             }
             if (unpacked.customLists && Array.isArray(unpacked.customLists)) {
               const cleaned = unpacked.customLists.filter((l) => !isMockCustomList(l));
@@ -1194,7 +1198,7 @@ export default function App() {
   const sectionMeta: Record<ActiveTab, { tag: string; title: string }> = {
     collection: { tag: 'Global Inventory', title: 'Global Collection' },
     metrics: { tag: 'Portfolio Analytics', title: 'Metrics & Performance' },
-    decks: { tag: 'Deck Command', title: 'Decks & Binder Studio' },
+    decks: { tag: 'Deck Studio', title: 'Artistic Decks & Binders' },
     sealed_vault: { tag: 'Vault Inventory', title: 'Sealed Product Vault' },
     search: { tag: 'Card Discovery', title: 'Global Search' },
     sets: { tag: 'Expansion Index', title: 'Sets & Trackers' },
@@ -1232,7 +1236,7 @@ export default function App() {
     setGuestModalConfig({
       isOpen: true,
       title: title || 'Authentication Required',
-      description: description || 'Guest / Demo mode is read-only. Please create a free account or sign in to build tournament decks, add graded slabs, and customize lists.',
+      description: description || 'Guest / Demo mode is read-only. Please create a free account or sign in to build curated decks, add graded slabs, and customize lists.',
     });
   };
 
@@ -1248,58 +1252,191 @@ export default function App() {
     setTimeout(() => setIsSyncing(false), 1200);
   };
 
-  // Deck Management Handlers
-  const handleCreateDeck = async (deckData: Omit<Deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
+  // Bulk Collection Importer Modal State & Event Listener
+  const [isBulkImporterOpen, setIsBulkImporterOpen] = useState(false);
+
+  React.useEffect(() => {
+    const handleOpenImporter = () => setIsBulkImporterOpen(true);
+    window.addEventListener('deckdivider:open-bulk-importer', handleOpenImporter);
+    return () => window.removeEventListener('deckdivider:open-bulk-importer', handleOpenImporter);
+  }, []);
+
+  const handleImportBulkCards = async (
+    entries: PortfolioCardEntry[],
+    targetDeckId?: string,
+    newDeckName?: string
+  ) => {
+    if (!entries || entries.length === 0) return;
+    triggerSyncPulse();
+    const activeUid = user?.uid || 'guest_user';
+
+    let updateddecks = [...decks];
+
+    if (newDeckName) {
+      // Create a new deck with these entries
+      const newdeckId = `deck-${Date.now()}`;
+      const newdeck: deck = {
+        id: newdeckId,
+        ownerId: activeUid,
+        name: newDeckName,
+        description: `Imported collection deck (${entries.length} items)`,
+        colorHex: '#DC143C',
+        targetSize: entries.length > 60 ? Infinity : 60,
+        isPublic: false,
+        entries: entries.map((e, idx) => ({
+          ...e,
+          id: `entry-${Date.now()}-${idx}`,
+          deckId: newdeckId,
+          ownerId: activeUid,
+        })),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      updateddecks = [newdeck, ...updateddecks];
+      setTargetDeckIdForView(newdeckId);
+      if (user) {
+        try {
+          await safeSetDoc(doc(db, 'users', user.uid, 'decks', newdeckId), newdeck);
+        } catch (e) {
+          console.warn('Firestore bulk import new deck error:', e);
+        }
+      }
+    } else if (targetDeckId) {
+      // Append entries to target deck
+      updateddecks = updateddecks.map((d) => {
+        if (d.id !== targetDeckId) return d;
+        const newEntries = entries.map((e, idx) => ({
+          ...e,
+          id: `entry-${Date.now()}-${idx}`,
+          deckId: targetDeckId,
+          ownerId: activeUid,
+        }));
+        return {
+          ...d,
+          entries: [...d.entries, ...newEntries],
+          updatedAt: new Date().toISOString(),
+        };
+      });
+      const targetdeck = updateddecks.find((d) => d.id === targetDeckId);
+      if (user && targetdeck) {
+        try {
+          await safeSetDoc(doc(db, 'users', user.uid, 'decks', targetdeck.id), targetdeck);
+        } catch (e) {
+          console.warn('Firestore bulk import target deck error:', e);
+        }
+      }
+    } else {
+      // Default: If decks exist, append to the first one, or create 'Main Collection Portfolio'
+      if (updateddecks.length > 0) {
+        const firstdeck = updateddecks[0];
+        const newEntries = entries.map((e, idx) => ({
+          ...e,
+          id: `entry-${Date.now()}-${idx}`,
+          deckId: firstdeck.id,
+          ownerId: activeUid,
+        }));
+        updateddecks[0] = {
+          ...firstdeck,
+          entries: [...firstdeck.entries, ...newEntries],
+          updatedAt: new Date().toISOString(),
+        };
+        if (user) {
+          try {
+            await safeSetDoc(doc(db, 'users', user.uid, 'decks', firstdeck.id), updateddecks[0]);
+          } catch (e) {
+            console.warn('Firestore bulk import default deck error:', e);
+          }
+        }
+      } else {
+        const newdeckId = `deck-${Date.now()}`;
+        const newdeck: deck = {
+          id: newdeckId,
+          ownerId: activeUid,
+          name: 'Main Collection Portfolio',
+          description: `Imported collection (${entries.length} items)`,
+          colorHex: '#DC143C',
+          targetSize: entries.length > 60 ? Infinity : 60,
+          isPublic: false,
+          entries: entries.map((e, idx) => ({
+            ...e,
+            id: `entry-${Date.now()}-${idx}`,
+            deckId: newdeckId,
+            ownerId: activeUid,
+          })),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        updateddecks = [newdeck];
+        setTargetDeckIdForView(newdeckId);
+        if (user) {
+          try {
+            await safeSetDoc(doc(db, 'users', user.uid, 'decks', newdeckId), newdeck);
+          } catch (e) {
+            console.warn('Firestore bulk import primary deck error:', e);
+          }
+        }
+      }
+    }
+
+    setDecks(updateddecks);
+    idbSaveUserdecks(updateddecks, activeUid);
+    if (user) {
+      saveCompressedCloudSnapshot({ decks: updateddecks });
+    }
+  };
+
+  // deck Management Handlers
+  const handleCreateDeck = async (deckData: Omit<deck, 'id' | 'createdAt' | 'updatedAt' | 'entries'>) => {
     const isLifetimeUser = Boolean(
       (subscription as any)?.isLifetime ||
       (user as any)?.isLifetime ||
       currentTier === 'Collection'
     );
-    const maxDecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxDecks;
-    if (maxDecks !== Infinity && decks.length >= maxDecks) {
+    const maxdecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxdecks;
+    if (maxdecks !== Infinity && decks.length >= maxdecks) {
       setLimitModalConfig({
         isOpen: true,
         action: 'CREATE_DECK',
-        details: { currentCount: decks.length, limitCount: maxDecks },
+        details: { currentCount: decks.length, limitCount: maxdecks },
       });
       return;
     }
 
     triggerSyncPulse();
-    const newDeckId = `deck-${Date.now()}`;
-    const newDeck: Deck = {
-      id: newDeckId,
+    const newdeckId = `deck-${Date.now()}`;
+    const newdeck: deck = {
+      id: newdeckId,
       ...deckData,
       entries: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    const newDecks = [newDeck, ...decks];
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
-    setTargetDeckIdForView(newDeckId);
+    const newdecks = [newdeck, ...decks];
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
+    setTargetDeckIdForView(newdeckId);
 
     if (user) {
       try {
-        await safeSetDoc(doc(db, 'users', user.uid, 'decks', newDeckId), newDeck);
-        saveCompressedCloudSnapshot({ decks: newDecks });
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', newdeckId), newdeck);
+        saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck save notice:', err);
       }
     }
   };
 
-  const handleUpdateDeck = async (updatedDeck: Deck) => {
+  const handleUpdateDeck = async (updateddeck: deck) => {
     triggerSyncPulse();
-    const newDecks = decks.map((d) => (d.id === updatedDeck.id ? updatedDeck : d));
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
+    const newdecks = decks.map((d) => (d.id === updateddeck.id ? updateddeck : d));
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
-        await safeSetDoc(doc(db, 'users', user.uid, 'decks', updatedDeck.id), updatedDeck, { merge: true });
-        saveCompressedCloudSnapshot({ decks: newDecks });
+        await safeSetDoc(doc(db, 'users', user.uid, 'decks', updateddeck.id), updateddeck, { merge: true });
+        saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck update notice:', err);
       }
@@ -1309,14 +1446,14 @@ export default function App() {
   const handleDeleteDeck = async (deckId: string) => {
     triggerSyncPulse();
     await recordTombstone('deck', deckId, undefined, user?.uid || 'guest_user');
-    const newDecks = decks.filter((d) => d.id !== deckId);
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
+    const newdecks = decks.filter((d) => d.id !== deckId);
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await deleteDoc(doc(db, 'users', user.uid, 'decks', deckId));
-        await saveCompressedCloudSnapshot({ decks: newDecks });
+        await saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck delete notice:', err);
       }
@@ -1333,12 +1470,12 @@ export default function App() {
       (user as any)?.isLifetime ||
       currentTier === 'Collection'
     );
-    const maxDecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxDecks;
-    if (maxDecks !== Infinity && decks.length >= maxDecks) {
+    const maxdecks = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxdecks;
+    if (maxdecks !== Infinity && decks.length >= maxdecks) {
       setLimitModalConfig({
         isOpen: true,
         action: 'CREATE_DECK',
-        details: { currentCount: decks.length, limitCount: maxDecks },
+        details: { currentCount: decks.length, limitCount: maxdecks },
       });
       return;
     }
@@ -1350,7 +1487,7 @@ export default function App() {
     const entriesToMove = sourceDeck.entries.filter((e) => cardIdsToSplit.includes(e.cardId));
     const remainingEntries = sourceDeck.entries.filter((e) => !cardIdsToSplit.includes(e.cardId));
     const newSplitDeckId = `deck-split-${Date.now()}`;
-    const newSplitDeck: Deck = {
+    const newSplitDeck: deck = {
       id: newSplitDeckId,
       name: newDeckName,
       description: `Split group from ${sourceDeck.name}`,
@@ -1360,24 +1497,24 @@ export default function App() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    const updatedSourceDeck: Deck = {
+    const updatedSourceDeck: deck = {
       ...sourceDeck,
       entries: remainingEntries,
       updatedAt: new Date().toISOString(),
     };
 
-    const newDecks = [
+    const newdecks = [
       ...decks.map((d) => (d.id === sourceDeckId ? updatedSourceDeck : d)),
       newSplitDeck,
     ];
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
 
     if (user) {
       try {
         await safeSetDoc(doc(db, 'users', user.uid, 'decks', updatedSourceDeck.id), updatedSourceDeck);
         await safeSetDoc(doc(db, 'users', user.uid, 'decks', newSplitDeckId), newSplitDeck);
-        saveCompressedCloudSnapshot({ decks: newDecks });
+        saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck split save notice:', err);
       }
@@ -1395,7 +1532,7 @@ export default function App() {
       (user as any)?.isLifetime ||
       currentTier === 'Collection'
     );
-    const maxCards = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxCardsPerDeck;
+    const maxCards = isLifetimeUser ? Infinity : TIER_LIMITS[currentTier].maxItemsPerdeck;
     const currentCardCount = targetDeckRef ? targetDeckRef.entries.reduce((a, b) => a + b.quantity, 0) : 0;
     if (maxCards !== Infinity && currentCardCount + entryData.quantity > maxCards) {
       setLimitModalConfig({
@@ -1431,7 +1568,7 @@ export default function App() {
     triggerSyncPulse();
     let targetDeck: Deck | undefined;
 
-    const newDecks = decks.map((deck) => {
+    const newdecks = decks.map((deck) => {
       if (deck.id !== deckId) return deck;
 
       if (mode === 'increment') {
@@ -1465,13 +1602,13 @@ export default function App() {
       return targetDeck;
     });
 
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
 
     if (user && targetDeck) {
       try {
         await safeSetDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
-        saveCompressedCloudSnapshot({ decks: newDecks });
+        saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck add-card notice:', err);
       }
@@ -1506,7 +1643,7 @@ export default function App() {
     let soldItem: PortfolioCardEntry | null = null;
     let targetDeck: Deck | undefined;
 
-    const newDecks = decks.map((deck) => {
+    const newdecks = decks.map((deck) => {
       if (deck.id !== deckId) return deck;
       targetDeck = {
         ...deck,
@@ -1525,13 +1662,13 @@ export default function App() {
       return targetDeck;
     });
 
-    setDecks(newDecks);
-    idbSaveUserDecks(newDecks, user?.uid || 'guest_user');
+    setDecks(newdecks);
+    idbSaveUserdecks(newdecks, user?.uid || 'guest_user');
 
     if (user && targetDeck) {
       try {
         await safeSetDoc(doc(db, 'users', user.uid, 'decks', targetDeck.id), targetDeck);
-        saveCompressedCloudSnapshot({ decks: newDecks });
+        saveCompressedCloudSnapshot({ decks: newdecks });
       } catch (err) {
         console.warn('Firestore deck mark-sold notice:', err);
       }
@@ -1926,8 +2063,8 @@ export default function App() {
               {activeTab === 'settings' && <Layers className="w-4 h-4 text-[#DC143C] shrink-0" />}
               
               <span className="truncate">
-                {activeTab === 'collection' && `Portfolio: ${decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Cards`}
-                {activeTab === 'decks' && `Decks: ${decks.length}`}
+                {activeTab === 'collection' && `Portfolio: ${decks.reduce((acc, d) => acc + (d.entries || []).reduce((sum, c) => sum + (c.quantity || 1), 0), 0)} Items`}
+                {activeTab === 'decks' && `decks: ${decks.length}`}
                 {activeTab === 'sets' && `${allSets.length} Expansions`}
                 {activeTab === 'lists' && `Lists: ${customLists.length}`}
                 {activeTab === 'sealed_vault' && `Vault: ${sealedEntries.length}`}
@@ -2079,6 +2216,7 @@ export default function App() {
                 setQuickLookCard(card);
                 setQuickLookCardList(effectiveCards);
               }}
+              onImportCards={handleImportBulkCards}
             />
           )}
 
@@ -2234,9 +2372,9 @@ export default function App() {
         <Route path="/sets" element={<PublicExpansionsAndSetsView />} />
         <Route path="/expansions" element={<Navigate to="/sets" replace />} />
         <Route path="/expansions/sets" element={<Navigate to="/sets" replace />} />
-        <Route path="/formats" element={<FormatLegalityDirectoryView />} />
-        <Route path="/rules/standard-2026" element={<Navigate to="/format/standard" replace />} />
-        <Route path="/format/standard-2026" element={<Navigate to="/format/standard" replace />} />
+        <Route path="/formats" element={<Navigate to="/sets" replace />} />
+        <Route path="/rules/standard-2026" element={<Navigate to="/sets" replace />} />
+        <Route path="/format/standard-2026" element={<Navigate to="/sets" replace />} />
         <Route path="/tools" element={<HighIntentToolsView />} />
         <Route path="/compare" element={<CompetitorComparisonView />} />
         <Route path="/best" element={<BestOfGuidesView />} />
@@ -2253,13 +2391,15 @@ export default function App() {
         <Route path="/set/:setId/top-cards" element={<PublicSetTopCardsView />} />
         <Route path="/set/:setId/checklist" element={<Navigate to="/set/:setId" replace />} />
         <Route path="/expansions/:setId" element={<Navigate to="/set/:setId" replace />} />
-        <Route path="/format/:formatId" element={<FormatLegalityView />} />
-        <Route path="/formats/:formatId" element={<Navigate to="/format/:formatId" replace />} />
+        <Route path="/format/:formatId" element={<Navigate to="/sets" replace />} />
+        <Route path="/formats/:formatId" element={<Navigate to="/sets" replace />} />
         <Route path="/tools/:toolId" element={<HighIntentToolsView />} />
         <Route path="/tool/:toolId" element={<Navigate to="/tools/:toolId" replace />} />
         <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
+        <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
+        <Route path="/deck/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/portfolios/:shareId" element={<Navigate to="/portfolio/:shareId" replace />} />
@@ -2315,7 +2455,7 @@ export default function App() {
         onTriggerLimitModal={(action, details) =>
           setLimitModalConfig({ isOpen: true, action, details })
         }
-        onAddCardToDeck={handleAddCardToDeck}
+        onAddCardTodeck={handleAddCardToDeck}
         onAddCardToList={handleAddCardToList}
       />
 
@@ -2405,7 +2545,7 @@ export default function App() {
             tier: currentTier,
             currency: displayCurrency,
           },
-          decks,
+          decks: decks,
           customLists,
           sealedEntries,
           soldEntries: allSoldEntries,
@@ -2413,6 +2553,14 @@ export default function App() {
         }}
         onRestoreState={handleRestoreState}
         onTriggerNewBackup={() => saveCompressedCloudSnapshot()}
+      />
+
+      <BulkCollectionImporterModal
+        isOpen={isBulkImporterOpen}
+        onClose={() => setIsBulkImporterOpen(false)}
+        allCards={effectiveCards}
+        decks={decks}
+        onImportCards={handleImportBulkCards}
       />
     </Suspense>
     </>

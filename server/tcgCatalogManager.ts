@@ -376,7 +376,7 @@ export async function getSetDetail(setId: string): Promise<any> {
 
   try {
     const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`, {
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(9000)
     });
     if (!res.ok) return null;
     const setDetail = await res.json();

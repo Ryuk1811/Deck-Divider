@@ -8,19 +8,23 @@ export type AccountTier = 'Starter' | 'Bunch' | 'Stack' | 'Deck' | 'Collection';
 
 export interface TierLimit {
   name: AccountTier;
-  priceMonthly: number; // 0, 4, 7, 11, 14
-  maxDecks: number; // Infinity for Collection
-  maxCardsPerDeck: number; // Laddered per tier: 60, 75, 100, 150, Infinity for Collection/Lifetime
-  maxLists: number; // Infinity for Collection
-  maxItemsPerList: number; // Infinity for Collection
+  priceMonthly: number;
+  maxDecks: number;
+  maxdecks: number; // alias
+  maxItemsPerDeck: number;
+  maxItemsPerdeck: number; // alias
+  maxLists: number;
+  maxItemsPerList: number;
   canSharePublicLinks: boolean;
-  maxGradedSlabs: number; // Max certified slabs logged
-  maxSealedItems: number; // Max sealed items in vault
-  hasMultiCurrency: boolean; // Multi-currency display beyond USD
-  hasGlcAndRetroLegality: boolean; // GLC & Retro format legality engine
-  hasCsvExport: boolean; // Full portfolio & sales CSV export
-  hasCloudBackups: boolean; // Encrypted multi-device cloud snapshot restore
-  hasGradedMarketComps: boolean; // Live verified PSA/BGS/CGC auction comps
+  maxGradedSlabs: number;
+  maxSealedItems: number;
+  hasMultiCurrency: boolean;
+  hasCustomDecks: boolean;
+  hasCustomdecks: boolean; // alias
+  hasCsvExport: boolean;
+  hasCloudBackups: boolean;
+  hasGradedMarketComps: boolean;
+  hasCertLookup: boolean;
   tagline: string;
   priceYearly: number;
   yearlyDiscountPercent: number;
@@ -35,17 +39,21 @@ export const TIER_LIMITS: Record<AccountTier, TierLimit> = Object.fromEntries(
       priceYearly: t.pricing.yearly,
       yearlyDiscountPercent: t.pricing.yearlyDiscountPercent,
       maxDecks: t.limits.decks,
-      maxCardsPerDeck: t.limits.cardsPerDeck,
+      maxdecks: t.limits.decks,
+      maxItemsPerDeck: t.limits.itemsPerDeck,
+      maxItemsPerdeck: t.limits.itemsPerDeck,
       maxLists: t.limits.wishlists,
       maxItemsPerList: t.limits.itemsPerList,
       canSharePublicLinks: t.capabilities.canSharePublicLinks,
       maxGradedSlabs: t.limits.gradedSlabs,
       maxSealedItems: t.limits.sealedItems,
       hasMultiCurrency: t.capabilities.hasMultiCurrency,
-      hasGlcAndRetroLegality: t.capabilities.hasGlcAndRetroLegality,
+      hasCustomDecks: t.capabilities.hasCustomDecks,
+      hasCustomdecks: t.capabilities.hasCustomDecks,
       hasCsvExport: t.capabilities.hasCsvExport,
       hasCloudBackups: t.capabilities.hasCloudBackups,
       hasGradedMarketComps: t.capabilities.hasGradedMarketComps,
+      hasCertLookup: t.capabilities.hasCertLookup || false,
       tagline: t.tagline,
     },
   ])
@@ -128,10 +136,7 @@ export interface CardVariants {
   [key: string]: boolean | undefined;
 }
 
-export interface CardLegalities {
-  standard?: boolean;
-  expanded?: boolean;
-}
+
 
 export interface CardMarketLink {
   url?: string;
@@ -168,7 +173,7 @@ export interface PokemonCard {
   description?: string;
   dexId?: number[];
   regulationMark?: string;
-  legalities?: CardLegalities;
+  legalities?: Record<string, any>;
   variants?: CardVariants;
   cardmarket?: CardMarketLink;
   tcgplayer?: CardMarketLink;
@@ -223,7 +228,7 @@ export type GradingCompany =
 export interface GradingInfo {
   company: GradingCompany;
   grade: string;
-  certNumber: string;
+  certNumber?: string;
   subgrades?: {
     centering?: number;
     corners?: number;
@@ -278,9 +283,9 @@ export interface PortfolioSealedEntry {
 export interface PortfolioCardEntry {
   id: string;
   ownerId?: string; // Firebase Owner UID
-  deckId?: string; // Associated Deck ID
+  deckId?: string; // Associated deck ID
   cardId: string;
-  card: PokemonCard;
+  card?: PokemonCard;
   condition: CardCondition;
   quantity: number;
   purchasePrice: number;
@@ -303,12 +308,15 @@ export interface Deck {
   colorHex: string;
   isPublic: boolean;
   publicShareCode?: string;
-  targetSize?: number; // Target ladder size: 6 (Mini Deck), 30 (Half Deck), 60 (Standard), 100 (GLC), or Infinity/undefined for custom
-  deckFormat?: string; // e.g. '6-Card Mini', '30-Card Half', '60-Card Standard', '100-Card GLC', 'Custom / Unlimited'
+  coverCardId?: string;
+  tags?: string[];
+  targetSize?: number; // Target ladder size: 60, 100, 140, 220, or Infinity
   entries: PortfolioCardEntry[];
   createdAt: string;
   updatedAt: string;
 }
+
+export type deck = Deck;
 
 export interface DeckSizeOption {
   size: number;
@@ -319,12 +327,14 @@ export interface DeckSizeOption {
 }
 
 export const DECK_SIZE_LADDER: DeckSizeOption[] = [
-  { size: 6, label: '6-Card Mini Deck', badge: '6-Card Mini', description: 'Fast casual & prize rush pocket mini roster' },
-  { size: 30, label: '30-Card Half Deck', badge: '30-Card Half', description: 'Learn-to-Play, theme half-deck & sealed starter' },
-  { size: 60, label: '60-Card Tournament Deck', badge: '60-Card Standard', description: 'Official Standard / Expanded championship roster' },
-  { size: 100, label: '100-Card GLC / Singleton', badge: '100-Card GLC', description: 'Gym Leader Challenge & singleton 100-card roster', requiredTier: 'Stack' },
-  { size: Infinity, label: 'Unlimited / Custom Roster', badge: 'Unlimited ∞', description: 'Open format roster without card count restrictions (Collection Tier Only)', requiredTier: 'Collection' },
+  { size: 60, label: 'Starter (60)', badge: '60 Items', description: 'Personal collection display and theme showcase' },
+  { size: 100, label: 'Bunch (100)', badge: '100 Items', description: 'Expanded artistic deck for high-detail themes', requiredTier: 'Bunch' },
+  { size: 140, label: 'Stack (140)', badge: '140 Items', description: 'Massive thematic vault display', requiredTier: 'Stack' },
+  { size: 220, label: 'Deck (220)', badge: '220 Items', description: 'Maximum capacity grand display deck', requiredTier: 'Deck' },
+  { size: Infinity, label: 'Collection (Unlimited)', badge: 'Unlimited ∞', description: 'Open-format master set collection without restrictions', requiredTier: 'Collection' },
 ];
+
+export const deck_SIZE_LADDER = DECK_SIZE_LADDER;
 
 export interface CustomList {
   id: string;
@@ -361,7 +371,7 @@ export interface SharedPortfolioSnapshot {
     isPublicProfile?: boolean;
     publicProfileShareCode?: string;
   };
-  decks: Deck[];
+  decks: deck[];
   customLists: CustomList[];
   sealedEntries: PortfolioSealedEntry[];
   soldEntries: PortfolioCardEntry[];
@@ -413,7 +423,7 @@ export interface SearchFilters {
   illustrator?: string;
   regulationMark?: string;
   variant?: string;
-  legality?: 'standard' | 'expanded';
+  legality?: 'standard' | 'expanded' | string;
   priceMin?: number;
   priceMax?: number;
   sortBy: 'price-desc' | 'price-asc' | 'name' | 'name-desc' | 'set' | 'hp' | 'number';
@@ -421,7 +431,7 @@ export interface SearchFilters {
 
 export interface RecentActivityItem {
   id: string;
-  type: 'ADDED' | 'SOLD' | 'DECK_CREATED' | 'LIST_CREATED' | 'GRADED';
+  type: 'ADDED' | 'SOLD' | 'deck_CREATED' | 'LIST_CREATED' | 'GRADED';
   title: string;
   subtitle: string;
   timestamp: string;
@@ -478,8 +488,8 @@ export const CURRENCY_RATES: Record<string, number> = {
 
 export type ReviewCategory = 
   | 'General & UI'
-  | 'Master Set Checklist'
-  | 'Deck Builder & PTCGL'
+  | 'Collection Checklist'
+  | 'Deck Studio'
   | 'Graded Slabs & Pricing'
   | 'Sealed Vault'
   | 'Feature Request';

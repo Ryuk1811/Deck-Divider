@@ -67,13 +67,13 @@ const FAQ_COLLECTION: FaqData[] = [
   {
     id: 'faq-3',
     category: 'Decks & Formats',
-    question: 'Can I export deck lists directly into Pokémon TCG Live (PTCGL)?',
+    question: 'How do custom theme display decks work?',
     answer:
-      'Yes. The deck builder checks 2026 Standard 60-card format legality based on published Play! Pokémon rules (including regulation marks H, I, J; G rotated out) and the 4-card copy rule, letting you copy standard text formatted for 1-click import into PTCGL or tournament deck sheets.',
+      'You can construct custom theme decks across multiple sizing options: 6-card mini showcases, 30-card half decks, 60-card display decks, or open unlimited decks. Track card conditions (NM to DMG), foil variants, and break-even acquisition costs with real-time TCGplayer market valuation.',
     highlights: [
-      'Format compliance audits for Standard (regulation marks H, I, J; G rotated) and Expanded formats.',
-      'ACE SPEC single-card limit enforcement (and Expanded format Radiant Pokémon limits).',
-      'One-click export string compatible with PTCGL, Limitless TCG, and tournament sheets.',
+      'Multi-ladder sizing options (6-card mini, 30-card half, 60-card display, and unlimited decks).',
+      'Individual card condition tagging (Near Mint, Lightly Played, Moderately Played, Heavily Played, Damaged).',
+      'One-click export string compatible with CSV backups, text lists, and shareable public links.',
     ],
   },
   {
@@ -134,16 +134,16 @@ const FAQ_COLLECTION: FaqData[] = [
   {
     id: 'faq-8',
     category: 'Decks & Formats',
-    question: 'Does DECK / divider calculate deck costs and energy ratios?',
+    question: 'Does DECK / divider calculate deck valuations and acquisition costs?',
     answer:
-      'Yes. When constructing a deck, DECK / divider displays the total market cost to acquire all 60 cards, splits by Pokémon / Trainer / Energy percentages, and provides draw probability distributions for opening turn hands.',
+      'Yes. When constructing a deck or binder section, DECK / divider calculates the total real-time market value to assemble all cards, tracks condition grades, logs purchase costs for break-even analysis, and provides live comps across 20 fiat currencies.',
   },
   {
     id: 'faq-9',
     category: 'Security & Sync',
-    question: 'Can I share my decks with friends or social media?',
+    question: 'Can I share my collection decks with friends or social media?',
     answer:
-      'Yes! Every deck in DECK / divider generates an encoded, shareable public link. Friends can view the card list, full card art, market price breakdown, and PTCGL import string without needing to log in.',
+      'Yes! Every deck in DECK / divider generates an encoded, shareable public link. Friends can view your card list, full card art, market price breakdowns, and certified slab subgrades without needing to log in.',
   },
 ];
 
@@ -177,7 +177,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
         title="Frequently Asked Questions (FAQ) | DECK / divider"
-        description="Got questions about DECK / divider? Discover answers regarding real-time TCGplayer market prices, PSA/BGS slab tracking, 60-card tournament deck rules, and data privacy."
+        description="Got questions about DECK / divider? Discover answers regarding real-time TCGplayer market prices, PSA/BGS slab tracking, thematic display decks, and data privacy."
         canonicalPath="/faq"
         keywords={[
           'pokemon card tracker faq',
@@ -225,7 +225,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
             transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
             className="text-base sm:text-lg text-[#64748B] max-w-2xl mx-auto"
           >
-            Everything you need to know about tracking your cards, evaluating PSA/BGS slabs, building tournament-ready decks, and securing your collection.
+            Everything you need to know about tracking your cards, evaluating PSA/BGS slabs, organizing thematic display decks, and securing your collection.
           </motion.p>
         </section>
 
@@ -234,12 +234,12 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
 
         <GeoExtractableBlock
           heading="Frequently Asked Questions: Key Facts & Platform Overview"
-          summary="DECK / divider is an ad-free Pokémon TCG collection manager and tournament deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 20 global fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck builder provides 1-click PTCGL export and published Play! Pokémon regulation mark legality verification."
+          summary="DECK / divider is an ad-free Pokémon TCG collection manager and thematic deck studio. It updates card valuations daily from verified TCGplayer market data and completed eBay sales across 20 global fiat currencies. Collections operate offline-first with AES-256 encrypted cloud backup, while the deck studio provides custom binder layouts and shareable portfolio links."
           keyFacts={[
             { label: 'Market Comps', value: 'TCGplayer & eBay Daily Sync' },
             { label: 'Supported Grading', value: 'PSA, BGS, CGC, ACE, ARS' },
-            { label: 'Deck Legality', value: 'Standard & Expanded (H, I, J)' },
-            { label: 'Export Target', value: 'Pokémon TCG Live (PTCGL)' },
+            { label: 'deck Studio', value: 'Thematic Binders & Displays' },
+            { label: 'Export Support', value: 'CSV & Encrypted Backup' },
           ]}
         />
 
@@ -249,7 +249,7 @@ export const FaqPageView: React.FC<FaqPageViewProps> = ({
               <Search className="w-4 h-4 text-[#94A3B8] absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search questions (e.g. market prices, PSA slabs, PTCGL export)..."
+                placeholder="Search questions (e.g. market prices, PSA slabs, thematic decks)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 bg-white border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#DC143C] shadow-xs"

@@ -6,12 +6,12 @@
 
 export const PLATFORM_TRUTH = {
   // Brand & Identity
-  brandName: 'DECK / divider — Pokémon TCG Studio',
+  brandName: 'DECK / divider — Pokémon TCG Collection Studio',
   shortBrandName: 'DECK / divider',
-  tagline: 'Pokémon TCG Collection Tracker, Graded Slab Registry & 60-Card Deckbuilder',
+  tagline: 'Pokémon TCG Collection Tracker, Graded Slab Registry & Artistic Deck Studio',
   founder: 'Alex Thorne',
   founderTitle: 'Founder & Lead Architect',
-  founderBio: 'Competitive Pokémon TCG player and collector who built DECK / divider to replace ad-bloated spreadsheets with a fast, private operating system.',
+  founderBio: 'Lifelong Pokémon collector who built DECK / divider to replace ad-bloated spreadsheets with a fast, private collection operating system.',
 
   // Quantitative Stats (Single Source of Truth across all pages)
   totalExpansions: 218,
@@ -25,12 +25,9 @@ export const PLATFORM_TRUTH = {
   supportedCurrenciesList: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SEK', 'NOK', 'DKK', 'NZD', 'SGD', 'HKD', 'BRL', 'MXN', 'INR', 'CNY', 'KRW', 'PLN', 'TRY'],
   priceRefreshCadence: 'Daily automatic sync from verified public market sales',
   
-  // Format Legality Constants
-  standardRotationDate: 'April 10, 2026',
-  standardSeason: '2026–2027 Season',
-  standardMarks: ['H', 'I', 'J'] as const,
-  standardMarksLabel: 'Regulation Marks H, I, J',
-  expandedSeriesRange: 'Black & White through modern Scarlet & Violet expansions',
+  // Historical Eras & Curation
+  collectionCycle: '2026 Collection Cycle',
+  eraRange: 'Historical series from Base Set through Modern',
 
   // Pricing & Tier Limits (Synchronized with CENTRAL_ENTITLEMENTS & PayPal)
   tiers: {
@@ -41,12 +38,12 @@ export const PLATFORM_TRUTH = {
       maxDecks: 6,
       maxWishlists: 5,
       wishlistsLabel: '5 Custom Want Lists',
-      maxBinderCards: 100,
+      maxItemsPerDeck: 60,
       publicShareLinks: true,
       publicShareLabel: 'Public Portfolio & Deck Share Links',
       csvExport: false,
-      slabCertLogging: 25,
-      slabCertLabel: 'Log up to 25 graded slabs',
+      slabCertLogging: 0,
+      slabCertLabel: 'Graded slabs available after Stack',
       encryptionLabel: 'Local-First IndexedDB Browser Vault',
     },
     Bunch: {
@@ -56,12 +53,12 @@ export const PLATFORM_TRUTH = {
       maxDecks: 15,
       maxWishlists: 15,
       wishlistsLabel: '15 Custom Want Lists',
-      maxBinderCards: 300,
+      maxItemsPerDeck: 100,
       publicShareLinks: true,
       publicShareLabel: 'Public Portfolio & Deck Share Links',
       csvExport: false,
-      slabCertLogging: 100,
-      slabCertLabel: 'Log up to 100 graded slabs',
+      slabCertLogging: 0,
+      slabCertLabel: 'Graded slabs available after Stack',
       encryptionLabel: 'Encrypted Multi-Device Cloud Sync',
     },
     Stack: {
@@ -71,22 +68,22 @@ export const PLATFORM_TRUTH = {
       maxDecks: 30,
       maxWishlists: 30,
       wishlistsLabel: '30 Custom Want Lists',
-      maxBinderCards: 1000,
+      maxItemsPerDeck: 140,
       publicShareLinks: true,
       publicShareLabel: 'Public Portfolio & Deck Share Links',
       csvExport: true,
-      slabCertLogging: 250,
-      slabCertLabel: 'Log up to 250 graded slabs',
+      slabCertLogging: 300,
+      slabCertLabel: 'Log up to 300 graded slabs',
       encryptionLabel: 'Encrypted Multi-Device Cloud Sync',
     },
     Deck: {
       name: 'Deck',
       priceMonthly: 11,
       priceAnnual: 110,
-      maxDecks: 50,
-      maxWishlists: 100,
-      wishlistsLabel: '100 Custom Want Lists',
-      maxBinderCards: 5000,
+      maxDecks: 60,
+      maxWishlists: 60,
+      wishlistsLabel: '60 Custom Want Lists',
+      maxItemsPerDeck: 220,
       publicShareLinks: true,
       publicShareLabel: 'Public Portfolio & Deck Share Links',
       csvExport: true,
@@ -98,11 +95,11 @@ export const PLATFORM_TRUTH = {
     Collection: {
       name: 'Collection / Pro',
       priceMonthly: 14,
-      priceAnnual: 140,
+      priceAnnual: 150,
       maxDecks: Infinity,
       maxWishlists: Infinity,
       wishlistsLabel: 'Unlimited Custom Want Lists',
-      maxBinderCards: Infinity,
+      maxItemsPerDeck: Infinity,
       publicShareLinks: true,
       publicShareLabel: 'Public Portfolio & Deck Share Links + Custom Slugs',
       csvExport: true,

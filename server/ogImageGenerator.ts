@@ -71,26 +71,26 @@ function wrapTitle(text: string, maxCharsPerLine: number = 32): string[] {
  */
 export function generateOgImageSvg(options: OgImageOptions): string {
   const type = options.type || 'deck';
-  const rawTitle = options.title || (type === 'deck' ? 'Tournament Deck' : type === 'set' ? 'Pokémon Expansion' : 'Collector Vault');
+  const rawTitle = options.title || (type === 'deck' ? 'Collection Deck' : type === 'set' ? 'Pokémon Expansion' : 'Collector Vault');
   const subtitle = options.subtitle || (
     type === 'deck'
-      ? 'Standard Format Legal • 60-Card Competitive Roster'
+      ? 'Curated Display Deck • Visual Binder & Market Prices'
       : type === 'set'
       ? 'Pokémon TCG Expansion Checklist & Live Market Prices'
       : 'Verified Pokémon TCG Collection Showcase & Slab Vault'
   );
 
-  const breadcrumbTag = type === 'deck' ? 'DECK COMMAND' : type === 'set' ? 'EXPANSION DIRECTORY' : 'PORTFOLIO VAULT';
+  const breadcrumbTag = type === 'deck' ? 'DECK STUDIO' : type === 'set' ? 'EXPANSION DIRECTORY' : 'PORTFOLIO VAULT';
   const breadcrumbSub = type === 'deck' ? 'Decks & Binder Studio' : type === 'set' ? 'Set Checklist' : 'Public Showcase';
 
   const m1Label = options.metric1Label || (type === 'deck' ? 'TOTAL CARDS' : type === 'set' ? 'TOTAL CARDS' : 'VAULT CARDS');
-  const m1Value = options.metric1Value || (type === 'deck' ? '60 / 60' : type === 'set' ? 'Master Set' : 'Verified');
+  const m1Value = options.metric1Value || (type === 'deck' ? 'Display Deck' : type === 'set' ? 'Master Set' : 'Verified');
 
   const m2Label = options.metric2Label || (type === 'deck' ? 'ESTIMATED VALUE' : type === 'set' ? 'TCGPLAYER' : 'PORTFOLIO NAV');
   const m2Value = options.metric2Value || (type === 'deck' ? 'Market Value' : type === 'set' ? 'Live Prices' : 'Live Sync');
 
-  const m3Label = options.metric3Label || (type === 'deck' ? 'FORMAT LEGALITY' : type === 'set' ? 'SERIES' : 'COLLECTOR STATUS');
-  const m3Value = options.metric3Value || (type === 'deck' ? 'Standard Legal' : type === 'set' ? 'Pokémon TCG' : 'Public Showcase');
+  const m3Label = options.metric3Label || (type === 'deck' ? 'DECK STATUS' : type === 'set' ? 'SERIES' : 'COLLECTOR STATUS');
+  const m3Value = options.metric3Value || (type === 'deck' ? 'Curated Display' : type === 'set' ? 'Pokémon TCG' : 'Public Showcase');
 
   const lines = wrapTitle(rawTitle, rawTitle.length > 36 ? 30 : 34);
   const isMultiLine = lines.length > 1;

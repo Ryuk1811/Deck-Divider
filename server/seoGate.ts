@@ -139,11 +139,11 @@ export async function evaluateRouteGate(
       title = `PSA, BGS & CGC Grading Fee Calculator 2026${BRAND_TITLE_SUFFIX}`;
       description = 'Calculate exact submission fees, shipping costs, turnaround times, and estimated ROI across PSA, Beckett, CGC, and ACE grading services.';
     } else if (normalized === '/tools/format-checker') {
-      title = `2026 Standard Legality Checker (H, I, J Marks)${BRAND_TITLE_SUFFIX}`;
-      description = 'Check 60-card tournament deck legality against official 2026 Pokémon Standard rotation marks H, I, and J.';
+      title = `Collection Deck Era & Set Checker${BRAND_TITLE_SUFFIX}`;
+      description = 'Check collection deck sets, card expansion origins, and thematic deck completion.';
     } else if (normalized === '/format/standard') {
-      title = `Standard Format Legal Sets & Meta Decks (2026)${BRAND_TITLE_SUFFIX}`;
-      description = 'Official Standard format regulation marks H, I, and J legal card list, rotated card rules, and competitive meta archetypes.';
+      title = `Curated Collection Display Decks Index${BRAND_TITLE_SUFFIX}`;
+      description = 'Curated display decks, thematic binder showcases, artwork ladders, and market value breakdowns.';
     }
 
     return {
@@ -270,14 +270,14 @@ export async function evaluateRouteGate(
     };
   }
 
-  // 8. Dynamic Tournament Deck Route (/deck/:slug)
-  if (normalized.startsWith('/deck/')) {
-    const slug = normalized.replace('/deck/', '').trim();
+  // 8. Dynamic Curated Deck Route (/deck/:slug or /deck/:slug)
+  if (normalized.startsWith('/deck/') || normalized.startsWith('/deck/')) {
+    const slug = normalized.replace(/^\/(deck|deck)\//, '').trim();
     const tournamentDeck = getTournamentDeckBySlug(slug);
 
     if (tournamentDeck) {
-      const title = `${tournamentDeck.name} — Standard Tournament Deck List${BRAND_TITLE_SUFFIX}`;
-      const description = `${tournamentDeck.name} 60-card tournament list. Regulation mark legality, estimated deck build price ($${tournamentDeck.estPrice}), and PTCGL export text.`;
+      const title = `${tournamentDeck.name} — Curated Collection Deck${BRAND_TITLE_SUFFIX}`;
+      const description = `${tournamentDeck.name} curated collection display deck. Card artwork breakdown, estimated acquisition price ($${tournamentDeck.estPrice}), and binder layout.`;
 
       return {
         statusCode: 200,
@@ -291,7 +291,7 @@ export async function evaluateRouteGate(
         ogImage: `${CANONICAL_ORIGIN}/og-image.png?v=2`,
         breadcrumbs: [
           { name: 'Home', item: CANONICAL_ORIGIN },
-          { name: 'Tournament Decks', item: `${CANONICAL_ORIGIN}/format/standard` },
+          { name: 'Collection Decks', item: `${CANONICAL_ORIGIN}/directory/decks-index` },
           { name: tournamentDeck.name, item: `${CANONICAL_ORIGIN}/deck/${tournamentDeck.slug}` },
         ],
       };

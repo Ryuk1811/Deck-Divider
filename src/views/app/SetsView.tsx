@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown, RefreshCw, Sparkles } from 'lucide-react';
-import { CardSet, PokemonCard, Deck, DisplayCurrency } from '../../types';
+import { BookOpen, CheckCircle2, Search, Loader2, ChevronDown, RefreshCw, Sparkles, Upload } from 'lucide-react';
+import { CardSet, PokemonCard, Deck, DisplayCurrency, PortfolioCardEntry } from '../../types';
 import { HolographicCard } from '../../components/ui/HolographicCard';
 import { getCardsBySetCatalog, getExpansionsCatalog, forceRefreshExpansions } from '../../lib/dataSyncEngine';
 import { getDynamicSeriesCategories, normalizeSet, sortSetsChronologically, formatSetReleaseDate } from '../../utils/setCategorizer';
@@ -9,22 +9,25 @@ import { queueCardsForProgressivePrewarm } from '../../utils/progressiveImageLoa
 interface SetsViewProps {
   sets: CardSet[];
   cards: PokemonCard[];
-  decks: Deck[];
+  decks?: Deck[];
   currency: DisplayCurrency;
   onSelectCard: (card: PokemonCard) => void;
   onQuickLookCard: (card: PokemonCard) => void;
+  onImportCards?: (entries: PortfolioCardEntry[], targetDeckId?: string, newDeckName?: string) => void;
 }
 
 const SET_PAGE_SIZE = 40;
 
-export const SetsView: React.FC<SetsViewProps> = ({
-  sets: propSets,
-  cards: propCards,
-  decks,
-  currency,
-  onSelectCard,
-  onQuickLookCard,
-}) => {
+export const SetsView: React.FC<SetsViewProps> = (props) => {
+  const {
+    sets: propSets,
+    cards: propCards,
+    currency,
+    onSelectCard,
+    onQuickLookCard,
+    onImportCards,
+  } = props;
+  const decks = props.decks || props.decks || [];
   const [allExpansions, setAllExpansions] = useState<CardSet[]>(
     propSets.length > 0 ? sortSetsChronologically(propSets.map(normalizeSet)) : []
   );
@@ -147,8 +150,57 @@ export const SetsView: React.FC<SetsViewProps> = ({
   const setCompletionPercent =
     setCards.length > 0 ? Math.round((ownedInSet / setCards.length) * 100) : 0;
 
+  const [fastFillToast, setFastFillToast] = useState<string | null>(null);
+
+  const handleMarkAllSetCards = (onlyHolos = false) => {
+    if (!setCards.length || !activeSet) return;
+    const cardsToAdd = onlyHolos
+      ? setCards.filter((c) => {
+          const r = (c.rarity || '').toLowerCase();
+          return (
+            r.includes('holo') ||
+            r.includes('ultra') ||
+            r.includes('secret') ||
+            r.includes('illustration') ||
+            r.includes('rare') ||
+            r.includes('ace spec') ||
+            r.includes('promo')
+          );
+        })
+      : setCards;
+
+    if (!cardsToAdd.length) return;
+
+    const entries: PortfolioCardEntry[] = cardsToAdd.map((card, idx) => ({
+      id: `fast-${Date.now()}-${idx}`,
+      cardId: card.id,
+      card,
+      condition: 'NM',
+      quantity: 1,
+      purchasePrice: card.prices?.raw || 0,
+      purchaseCurrency: 'USD',
+      purchaseDate: new Date().toISOString().split('T')[0],
+      isSold: false,
+    }));
+
+    if (onImportCards) {
+      onImportCards(entries, undefined, `${activeSet.name} ${onlyHolos ? 'Holos & SIRs' : 'Complete Set'}`);
+    } else {
+      window.dispatchEvent(new CustomEvent('deckdivider:open-bulk-importer'));
+    }
+
+    setFastFillToast(`Added ${entries.length} cards from ${activeSet.name} to your collection!`);
+    setTimeout(() => setFastFillToast(null), 3500);
+  };
+
   return (
-    <div className="app-view-container space-y-8">
+    <div className="app-view-container space-y-8 relative">
+      {fastFillToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0F172A] text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-slate-700 font-mono text-xs animate-fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{fastFillToast}</span>
+        </div>
+      )}
       {/* EXPANSIONS HEADER & SEARCH BAR */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-6">
         <div>
@@ -177,6 +229,17 @@ export const SetsView: React.FC<SetsViewProps> = ({
               className="w-full pl-9 pr-4 py-2.5 glass-slab font-mono text-xs text-[#0F172A] focus:outline-none focus:border-[#DC143C] transition-all shadow-xs"
             />
           </div>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('deckdivider:open-bulk-importer'))}
+            className="h-10 px-3.5 bg-white hover:bg-[#FFF0F3] border border-[#E2E8F0] hover:border-[#DC143C] text-[#0F172A] hover:text-[#DC143C] rounded-lg font-mono text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+            title="Import collection via CSV or plaintext deckstring list"
+          >
+            <Upload className="w-4 h-4 text-[#DC143C]" />
+            <span className="hidden sm:inline">Import Collection</span>
+            <span className="sm:hidden">Import</span>
+          </button>
 
           <button
             type="button"
@@ -293,10 +356,28 @@ export const SetsView: React.FC<SetsViewProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 font-mono text-xs">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
               <span className="px-3 py-1.5 rounded-md bg-[#FFF0F3] border border-[#DC143C] text-[#DC143C] font-bold">
                 Completion: {setCompletionPercent}% ({ownedInSet}/{setCards.length || activeSet.total})
               </span>
+              <button
+                type="button"
+                onClick={() => handleMarkAllSetCards(false)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#DC143C] text-white font-bold hover:bg-[#B01030] transition-colors shadow-xs cursor-pointer"
+                title="Add 1 of every card in this set to your collection"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Mark All Owned in Set</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMarkAllSetCards(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] hover:border-[#DC143C] hover:text-[#DC143C] font-bold transition-colors shadow-xs cursor-pointer"
+                title="Add Holos, Ultra Rares, and Secret Rares to collection"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Mark Holos / SIRs</span>
+              </button>
             </div>
           </div>
 

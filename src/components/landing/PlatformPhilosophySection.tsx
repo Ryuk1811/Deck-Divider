@@ -16,7 +16,7 @@ export const PlatformPhilosophySection: React.FC = () => {
             Built for speed and clarity. Designed for Pokémon card collectors.
           </h3>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            DECK / divider is a clean, ad-free tool for Pokémon TCG collectors and tournament players. Search cards, build legal 60-card decks, track graded slabs, and monitor market values without clutter.
+            DECK / divider is a clean, ad-free tool for Pokémon TCG collectors and art enthusiasts. Search cards, curate thematic collection decks, track certified graded slabs, and monitor market values without clutter.
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export const PlatformPhilosophySection: React.FC = () => {
               Who It's For
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Competitive players building format-legal decks, master set collectors tracking every card variant, and graded slab collectors organizing their binders and boxes.
+              Passionate art collectors curating thematic decks, master set builders tracking every card variant, and certified slab collectors organizing their vaults and binders.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export const PlatformPhilosophySection: React.FC = () => {
               Our Goal
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              To bring fast card search, live price estimates, and tournament deck building together in a simple, reliable app that works on any device.
+              To bring fast card search, live price estimates, and art-focused collection deck curation together in a simple, reliable app that works on any device.
             </p>
           </div>
 

@@ -70,21 +70,21 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
     },
     {
       stepNumber: '03',
-      title: 'Build Tournament Decks',
-      subtitle: 'Regulation Mark & Format Checking',
-      description: 'Build 60-card tournament decks with automatic standard legality checks, energy balance insights, and 1-click export to Pokémon TCG Live.',
-      tags: ['Play! Pokémon Rules', 'ACE SPEC Checking', 'PTCGL Export'],
+      title: 'Build Display & Theme decks',
+      subtitle: 'Custom Capacity & Showcase decks',
+      description: 'Organize cards into theme display decks, binder showcases, and custom card decks with card caps matching your subscription tier (60, 100, 140, or Unlimited).',
+      tags: ['Theme Showcase', 'Card Capacity Caps', 'Shareable Links'],
       details: [
-        'Automatic checks for regulation marks (H, I, J for 2026 Standard format; G rotated out) and banlists.',
-        'Validates 4-copy card limits, Radiant rules, and ACE SPEC limits.',
-        'Export deck lists directly to Pokémon TCG Live or save for tournaments.',
+        'Organize decks for showcase display, theme collections, and binder pages.',
+        'Supports 60, 100, 140, and Unlimited card decks based on your plan.',
+        'Share clean public view links for your showcase decks with fellow collectors.',
       ],
       previewContent: {
-        badge: 'TOURNAMENT DECK STUDIO',
-        title: 'Gardevoir ex Championship 60',
-        certNumber: 'Standard Format (2026 - Marks H, I, J)',
-        estValue: '60 / 60 Legal Cards',
-        status: 'Tournament Ready',
+        badge: 'DISPLAY deck STUDIO',
+        title: 'Charizard Line Master Showcase',
+        certNumber: '60 / 60 Cards Logged',
+        estValue: '$1,240.00 USD',
+        status: 'Showcase Complete',
       },
     },
     {
@@ -114,16 +114,16 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
       a: 'Card prices are updated daily using verified market sales and completed transactions so you always have an accurate estimate of your collection value.',
     },
     {
-      q: 'How does tournament legality checking work?',
-      a: 'The deck builder checks each card’s regulation mark based on published Play! Pokémon rules (Marks H, I, J legal; G rotated out), flagging illegal cards or duplicate limits instantly.',
+      q: 'How do deck capacity caps work?',
+      a: 'deck capacity scales with your plan: Starter allows 60 items per deck, Bunch allows 100, Stack allows 140, and deck & Collection tiers unlock Unlimited items per deck.',
     },
     {
-      q: 'Can I export my cards and deck rosters?',
-      a: 'Yes. You can export your full collection to CSV anytime, and export deck lists directly into Pokémon TCG Live format with a single click.',
+      q: 'Can I export my cards and display decks?',
+      a: 'Yes. You can export your full collection and display decks to CSV anytime on supported tiers.',
     },
     {
       q: 'How do the different tier limits work?',
-      a: 'DECK / divider offers five tiers (Starter, Bunch, Stack, Deck, and Collection) to fit casual collectors, active tournament players, and large binder collections alike.',
+      a: 'DECK / divider offers five tiers (Starter, Bunch, Stack, deck, and Collection) to fit casual collectors and large binder collections alike.',
     },
   ];
 
@@ -131,13 +131,13 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
     <div className="min-h-screen w-full bg-dot-grid text-[#0F172A] flex flex-col font-sans overflow-x-hidden relative selection:bg-[#DC143C] selection:text-white">
       <PageHead
         title="How DECK / divider Works — Features & Guide | Pokémon TCG Studio"
-        description="Learn how DECK / divider streamlines rapid card intake, PSA/BGS slab certification logging, real-time TCGplayer market NAV valuation, and 60-card tournament deck building."
+        description="Learn how DECK / divider streamlines rapid card intake, PSA/BGS slab certification logging, real-time TCGplayer market NAV valuation, and curated display deck organization."
         canonicalPath="/how-it-works"
         keywords={[
           'how deck divider works',
           'pokemon card cataloging workflow',
           'track psa slabs online',
-          'pokemon deck builder tutorial',
+          'pokemon deck organization guide',
           'calculate pokemon collection value'
         ]}
         schema={getHowItWorksSchema()}
@@ -194,7 +194,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
               transition={{ duration: 0.7, delay: 0.2, ease: easeCurve }}
               className="text-xs sm:text-base md:text-lg lg:text-xl text-[#64748B] leading-relaxed max-w-3xl mx-auto text-balance px-2"
             >
-              See how easy it is to add cards and slabs, monitor live market values, build tournament-legal decks, and manage your sealed collection.
+              See how easy it is to add cards and slabs, monitor live market values, organize display decks, and manage your sealed collection.
             </motion.p>
           </div>
         </section>
@@ -205,11 +205,11 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
         <div className="max-w-5xl mx-auto w-full">
           <GeoExtractableBlock
             heading="How does DECK / divider organize Pokémon collections?"
-            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 218 catalogued sets & series (148+ master checklists) with ⌘K search, 2) Automatic market valuation calculated from daily TCGplayer comps in 20 global currencies, 3) 60-card tournament deck construction with 2026 standard legality rules (H, I, J; G rotated) and PTCGL export, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
+            summary="DECK / divider follows a 4-step workflow: 1) Rapid card cataloging across 218 catalogued sets & series (148+ master checklists) with ⌘K search, 2) Automatic market valuation calculated from daily TCGplayer comps in 20 global currencies, 3) Curated display deck organization with flexible card caps (60 to Unlimited) and art-style binder layouts, and 4) Sealed vault asset tracking with optional encrypted cloud synchronization."
             keyFacts={[
               { label: 'Step 1', value: 'Card Intake & Cert Tracking' },
               { label: 'Step 2', value: 'Daily Pricing & Currency Sync' },
-              { label: 'Step 3', value: 'Format Legality & PTCGL Export' },
+              { label: 'Step 3', value: 'Showcase decks & Art Displays' },
               { label: 'Step 4', value: 'Sealed Vault & Cloud Sync' },
             ]}
           />
@@ -399,7 +399,7 @@ export const HowItWorksPageView: React.FC<HowItWorksPageViewProps> = ({
                       Frequently Asked Questions
                     </h2>
                     <p className="text-xs sm:text-sm text-[#64748B]">
-                      Everything you need to know about cataloging, valuation data feeds, and championship rules.
+                      Everything you need to know about cataloging, valuation data feeds, and tier capabilities.
                     </p>
                   </div>
 

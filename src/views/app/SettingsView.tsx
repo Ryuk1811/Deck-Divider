@@ -41,11 +41,11 @@ interface SettingsViewProps {
   currency: DisplayCurrency;
   onSelectCurrency: (c: DisplayCurrency) => void;
   currentTier: AccountTier;
-  onChangeTier: (tier: AccountTier) => void;
+  onChangeTier: (tier: AccountTier, cycle?: 'monthly' | 'yearly') => void | Promise<void>;
   onSelectLifetime?: () => void;
   isLifetime?: boolean;
   onTriggerLimitModal?: (action: LimitAttemptedAction, details?: any) => void;
-  decks: Deck[];
+  decks?: Deck[];
   soldEntries: PortfolioCardEntry[];
   exportDataSignal?: number;
   customLists?: any[];
@@ -87,14 +87,15 @@ const SUPPORTED_CURRENCIES = [
   { code: 'TRY', name: 'Turkish Lira', symbol: '₺', flag: '🇹🇷' },
 ];
 
-export const SettingsView: React.FC<SettingsViewProps> = ({
-  currency,
-  onSelectCurrency,
-  currentTier,
-  onChangeTier,
-  onSelectLifetime,
+export const SettingsView: React.FC<SettingsViewProps> = (props) => {
+  const decks = props.decks || props.decks || [];
+  const {
+    currency,
+    onSelectCurrency,
+    currentTier,
+    onChangeTier,
+    onSelectLifetime,
   isLifetime = false,
-  decks,
   soldEntries,
   customLists = [],
   exportDataSignal,
@@ -110,7 +111,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onSignOut,
   onOpenAuth,
   onExportCSV,
-}) => {
+} = props;
   const { user, profile, subscription } = useAuth();
   const [isSnapshotting, setIsSnapshotting] = useState(false);
   const [snapshotSuccess, setSnapshotSuccess] = useState(false);
@@ -187,7 +188,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     )}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `deck-divider-export-${new Date().toISOString().split('T')[0]}.json`);
+    downloadAnchor.setAttribute('download', `tcg-studio-export-${new Date().toISOString().split('T')[0]}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -394,13 +395,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       onExportCSV();
                     }}
                     className="h-10 px-4 neo-btn-secondary text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-lg cursor-pointer shadow-xs"
-                    title={TIER_LIMITS[currentTier]?.hasCsvExport ? 'Export portfolio to CSV' : 'Export CSV (Deck Tier required)'}
+                    title={TIER_LIMITS[currentTier]?.hasCsvExport ? 'Export portfolio to CSV' : 'Export CSV (deck Tier required)'}
                   >
                     <Download className="w-3.5 h-3.5 text-[#DC143C]" />
                     <span>Export CSV</span>
                     {!TIER_LIMITS[currentTier]?.hasCsvExport && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded font-mono font-bold flex items-center gap-0.5">
-                        <Lock className="w-2.5 h-2.5" /> Deck
+                        <Lock className="w-2.5 h-2.5" /> deck
                       </span>
                     )}
                   </button>
@@ -745,16 +746,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <div className="space-y-2 pt-1 font-mono text-xs">
                       <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                        <span className="text-[#64748B]">Decks</span>
+                        <span className="text-[#64748B]">decks</span>
                         <span className="font-bold text-[#0F172A]">
-                          {limit.maxDecks === Infinity ? 'Unlimited' : limit.maxDecks}
+                          {limit.maxdecks === Infinity ? 'Unlimited' : limit.maxdecks}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                        <span className="text-[#64748B]">Cards / Deck</span>
+                        <span className="text-[#64748B]">Items / deck</span>
                         <span className="font-bold text-[#0F172A]">
-                          {limit.maxCardsPerDeck === Infinity ? 'Unlimited (∞)' : `${limit.maxCardsPerDeck} Cards`}
+                          {limit.maxItemsPerdeck === Infinity ? 'Unlimited (∞)' : `${limit.maxItemsPerdeck} Items`}
                         </span>
                       </div>
 
