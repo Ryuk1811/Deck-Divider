@@ -133,6 +133,27 @@ async function prerenderAllRoutes() {
     { route: '/tools', outputPath: path.join(distDir, 'tools', 'index.html') },
     { route: '/tools/psa-grade-calculator', outputPath: path.join(distDir, 'tools', 'psa-grade-calculator', 'index.html') },
     { route: '/tools/deck-legality-checker', outputPath: path.join(distDir, 'tools', 'deck-legality-checker', 'index.html') },
+    { route: '/tools/trade-fairness-calculator', outputPath: path.join(distDir, 'tools', 'trade-fairness-calculator', 'index.html') },
+    { route: '/tools/binder-layout-planner', outputPath: path.join(distDir, 'tools', 'binder-layout-planner', 'index.html') },
+
+    // Pokémon Species Hubs (Programmatic Hubs)
+    { route: '/pokemon', outputPath: path.join(distDir, 'pokemon', 'index.html') },
+    { route: '/pokemon/charizard', outputPath: path.join(distDir, 'pokemon', 'charizard', 'index.html') },
+    { route: '/pokemon/pikachu', outputPath: path.join(distDir, 'pokemon', 'pikachu', 'index.html') },
+    { route: '/pokemon/eevee', outputPath: path.join(distDir, 'pokemon', 'eevee', 'index.html') },
+    { route: '/pokemon/umbreon', outputPath: path.join(distDir, 'pokemon', 'umbreon', 'index.html') },
+    { route: '/pokemon/mewtwo', outputPath: path.join(distDir, 'pokemon', 'mewtwo', 'index.html') },
+    { route: '/pokemon/gengar', outputPath: path.join(distDir, 'pokemon', 'gengar', 'index.html') },
+    { route: '/pokemon/lugia', outputPath: path.join(distDir, 'pokemon', 'lugia', 'index.html') },
+    { route: '/pokemon/rayquaza', outputPath: path.join(distDir, 'pokemon', 'rayquaza', 'index.html') },
+
+    // Card Rarity Category Hubs
+    { route: '/rarity', outputPath: path.join(distDir, 'rarity', 'index.html') },
+    { route: '/rarity/special-illustration-rare', outputPath: path.join(distDir, 'rarity', 'special-illustration-rare', 'index.html') },
+    { route: '/rarity/illustration-rare', outputPath: path.join(distDir, 'rarity', 'illustration-rare', 'index.html') },
+    { route: '/rarity/hyper-rare-gold', outputPath: path.join(distDir, 'rarity', 'hyper-rare-gold', 'index.html') },
+    { route: '/rarity/trainer-gallery', outputPath: path.join(distDir, 'rarity', 'trainer-gallery', 'index.html') },
+    { route: '/rarity/ultra-rare-ex', outputPath: path.join(distDir, 'rarity', 'ultra-rare-ex', 'index.html') },
 
     // Programmatic Tournament Deck Archetypes (Singular)
     { route: '/deck/gardevoir-ex', outputPath: path.join(distDir, 'deck', 'gardevoir-ex', 'index.html') },
@@ -169,6 +190,10 @@ async function prerenderAllRoutes() {
           publicRoutes.push({
             route: `/set/${set.id}/top-cards`,
             outputPath: path.join(distDir, 'set', set.id, 'top-cards', 'index.html')
+          });
+          publicRoutes.push({
+            route: `/set/${set.id}/checklist`,
+            outputPath: path.join(distDir, 'set', set.id, 'checklist', 'index.html')
           });
         }
       });

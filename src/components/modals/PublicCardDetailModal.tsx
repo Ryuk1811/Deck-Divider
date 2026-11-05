@@ -155,11 +155,11 @@ export const PublicCardDetailModal: React.FC<PublicCardDetailModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl overflow-hidden font-sans text-[#0F172A]"
+        className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-white border border-[#E2E8F0] rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden font-sans text-[#0F172A]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}

@@ -429,6 +429,86 @@ export const getdeckEraCheckerSchema = () => ({
 
 export const getDeckLegalityCheckerSchema = getdeckEraCheckerSchema;
 
+export const getTradeCalculatorSchema = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Pokémon Card Trade Fairness Calculator',
+  description: 'Instant multi-card trade equity calculator evaluating market pricing delta, trade balance percentages, and fair-trade status for in-person and online Pokémon TCG swaps.',
+  url: 'https://deckdivider.app/tools/trade-fairness-calculator',
+  image: STANDARD_IMAGE,
+  brand: STANDARD_BRAND,
+  sku: 'DD-TRADE-CALCULATOR',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0.00',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+    url: 'https://deckdivider.app/tools/trade-fairness-calculator',
+    priceValidUntil: '2027-12-31',
+    shippingDetails: STANDARD_SHIPPING_DETAILS,
+    hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+  }
+});
+
+export const getBinderPlannerSchema = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Pokémon Master Set Binder Layout Planner',
+  description: 'Interactive 9-pocket, 12-pocket, and 4-pocket binder sheet visualizer to plan master sets, eliminate blank pockets, and map secret rares seamlessly.',
+  url: 'https://deckdivider.app/tools/binder-layout-planner',
+  image: STANDARD_IMAGE,
+  brand: STANDARD_BRAND,
+  sku: 'DD-BINDER-PLANNER',
+  applicationCategory: 'DesignApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0.00',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+    url: 'https://deckdivider.app/tools/binder-layout-planner',
+    priceValidUntil: '2027-12-31',
+    shippingDetails: STANDARD_SHIPPING_DETAILS,
+    hasMerchantReturnPolicy: STANDARD_MERCHANT_RETURN_POLICY
+  }
+});
+
+export const getDatasetSchema = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'DECK / divider — Pokémon TCG Historical Card Market Index & Master Set Database',
+  description: 'Structured database of over 18,400+ Pokémon cards across 218 catalogued expansions, tracking daily verified USD market sales, PSA/BGS/CGC slab comps, and tournament legalities.',
+  url: 'https://deckdivider.app/data-methodology',
+  sameAs: 'https://deckdivider.app/cards',
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  isAccessibleForFree: true,
+  creator: {
+    '@id': 'https://deckdivider.app/#organization'
+  },
+  distribution: [
+    {
+      '@type': 'DataDownload',
+      encodingFormat: 'text/csv',
+      contentUrl: 'https://deckdivider.app/api/export/csv'
+    },
+    {
+      '@type': 'DataDownload',
+      encodingFormat: 'application/json',
+      contentUrl: 'https://deckdivider.app/search-matrix.json'
+    }
+  ],
+  temporalCoverage: '1996/2026',
+  spatialCoverage: 'Global',
+  variableMeasured: [
+    'Card Market Price (USD)',
+    'PSA 10 Gem Mint Multiplier',
+    'Expansion Set Completion Rate',
+    'Standard Format Legality (Marks H, I, J)'
+  ]
+});
+
 export const getAppComparisonsSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'TechArticle',

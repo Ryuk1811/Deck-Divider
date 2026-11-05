@@ -26,7 +26,14 @@ import { LandingFooter } from '../../components/landing/LandingFooter';
 import { PageHead, GeoBreadcrumbs, GeoExtractableBlock, updatePageSeo } from '../../components/seo/PageHead';
 import { PtcPartnerBanner } from '../../components/common/PtcPartnerBanner';
 import { PublicInterlinkMesh } from '../../components/seo/PublicInterlinkMesh';
-import { getPsaCalculatorSchema, getDeckLegalityCheckerSchema } from '../../components/seo/schemaData';
+import { 
+  getPsaCalculatorSchema, 
+  getDeckLegalityCheckerSchema,
+  getTradeCalculatorSchema,
+  getBinderPlannerSchema
+} from '../../components/seo/schemaData';
+import { TradeFairnessCalculator } from '../../components/tools/TradeFairnessCalculator';
+import { BinderLayoutPlanner } from '../../components/tools/BinderLayoutPlanner';
 
 export const HighIntentToolsView: React.FC = () => {
   const { toolId } = useParams<{ toolId?: string }>();
@@ -40,122 +47,28 @@ export const HighIntentToolsView: React.FC = () => {
         title: 'Standard & Expanded 60-Card Deck Checker | Pokémon TCG Studio',
         description: 'Verify Pokémon TCG regulation marks (H, I, J) and tournament legality across Standard, Expanded, and GLC formats with official deck construction rules.',
         canonicalPath: '/tools/deck-legality-checker',
-        jsonLd: {
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: 'Pokémon TCG Regulation Mark & Legality Checker',
-          description: 'Tournament legality inspector for Pokémon TCG regulation marks and competitive formats.',
-          applicationCategory: 'UtilitiesApplication',
-          operatingSystem: 'All',
-          url: 'https://deckdivider.app/tools/deck-legality-checker',
-          image: 'https://deckdivider.app/og-image.png?v=2',
-          brand: {
-            '@type': 'Brand',
-            name: 'DECK / divider'
-          },
-          sku: 'DD-LEGALITY-CHECKER',
-          offers: {
-            '@type': 'Offer',
-            price: '0.00',
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-            url: 'https://deckdivider.app/tools/deck-legality-checker',
-            priceValidUntil: '2027-12-31',
-            shippingDetails: {
-              '@type': 'OfferShippingDetails',
-              shippingRate: {
-                '@type': 'MonetaryAmount',
-                value: '0.00',
-                currency: 'USD'
-              },
-              shippingDestination: {
-                '@type': 'DefinedRegion',
-                addressCountry: 'US'
-              },
-              deliveryTime: {
-                '@type': 'ShippingDeliveryTime',
-                handlingTime: {
-                  '@type': 'QuantitativeValue',
-                  minValue: 0,
-                  maxValue: 0,
-                  unitCode: 'DAY'
-                },
-                transitTime: {
-                  '@type': 'QuantitativeValue',
-                  minValue: 0,
-                  maxValue: 0,
-                  unitCode: 'DAY'
-                }
-              }
-            },
-            hasMerchantReturnPolicy: {
-              '@type': 'MerchantReturnPolicy',
-              applicableCountry: 'US',
-              returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
-            }
-          },
-        },
+        jsonLd: getDeckLegalityCheckerSchema(),
+      });
+    } else if (currentTool === 'trade-fairness-calculator') {
+      updatePageSeo({
+        title: 'Pokémon Card Trade Fairness Calculator | Market Equity & Trade Value',
+        description: 'Compare side-by-side market value, calculate trade balance delta, and generate fair trade receipts with real-time TCGplayer market prices.',
+        canonicalPath: '/tools/trade-fairness-calculator',
+        jsonLd: getTradeCalculatorSchema(),
+      });
+    } else if (currentTool === 'binder-layout-planner') {
+      updatePageSeo({
+        title: 'Pokémon Binder Layout Planner | 4, 9, 12, 16-Pocket Master Set Grid Calculator',
+        description: 'Calculate exact binder sheets, eliminate trailing blank pockets, and simulate 4-pocket, 9-pocket, 12-pocket, and 16-pocket master set collections.',
+        canonicalPath: '/tools/binder-layout-planner',
+        jsonLd: getBinderPlannerSchema(),
       });
     } else {
       updatePageSeo({
         title: 'PSA & BGS Slab Grade Calculator | Pokémon TCG Studio',
         description: 'Calculate expected value (EV), grading fees, and net profit before submitting cards to PSA, BGS, or CGC. Live grade multipliers and probability simulator.',
         canonicalPath: '/tools/psa-grade-calculator',
-        jsonLd: {
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: 'Pokémon Card Grading ROI & Value Calculator',
-          description: 'Calculates expected return and grading profitability for PSA, BGS, and CGC submissions.',
-          applicationCategory: 'FinanceApplication',
-          operatingSystem: 'All',
-          url: 'https://deckdivider.app/tools/psa-grade-calculator',
-          image: 'https://deckdivider.app/og-image.png?v=2',
-          brand: {
-            '@type': 'Brand',
-            name: 'DECK / divider'
-          },
-          sku: 'DD-PSA-CALC',
-          offers: {
-            '@type': 'Offer',
-            price: '0.00',
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-            url: 'https://deckdivider.app/tools/psa-grade-calculator',
-            priceValidUntil: '2027-12-31',
-            shippingDetails: {
-              '@type': 'OfferShippingDetails',
-              shippingRate: {
-                '@type': 'MonetaryAmount',
-                value: '0.00',
-                currency: 'USD'
-              },
-              shippingDestination: {
-                '@type': 'DefinedRegion',
-                addressCountry: 'US'
-              },
-              deliveryTime: {
-                '@type': 'ShippingDeliveryTime',
-                handlingTime: {
-                  '@type': 'QuantitativeValue',
-                  minValue: 0,
-                  maxValue: 0,
-                  unitCode: 'DAY'
-                },
-                transitTime: {
-                  '@type': 'QuantitativeValue',
-                  minValue: 0,
-                  maxValue: 0,
-                  unitCode: 'DAY'
-                }
-              }
-            },
-            hasMerchantReturnPolicy: {
-              '@type': 'MerchantReturnPolicy',
-              applicableCountry: 'US',
-              returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
-            }
-          },
-        },
+        jsonLd: getPsaCalculatorSchema(),
       });
     }
   }, [currentTool]);
@@ -304,13 +217,19 @@ export const HighIntentToolsView: React.FC = () => {
       />
 
       <main className="flex-grow pt-10 sm:pt-14 pb-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <GeoBreadcrumbs 
             items={[
               { label: 'Tools & Calculators', path: '/tools/psa-grade-calculator' },
               { 
-                label: isDeckChecker ? 'Regulation Mark Checker' : 'PSA Grade ROI Calculator', 
-                path: isDeckChecker ? '/tools/deck-legality-checker' : '/tools/psa-grade-calculator' 
+                label: currentTool === 'deck-legality-checker' 
+                  ? 'Regulation Mark Checker' 
+                  : currentTool === 'trade-fairness-calculator'
+                  ? 'Trade Fairness Calculator'
+                  : currentTool === 'binder-layout-planner'
+                  ? 'Binder Layout Planner'
+                  : 'PSA Grade ROI Calculator', 
+                path: `/tools/${currentTool}` 
               }
             ]} 
           />
@@ -319,25 +238,47 @@ export const HighIntentToolsView: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6 bg-white border border-[#E2E8F0] p-1.5 rounded-2xl shadow-xs inline-flex">
             <Link
               to="/tools/psa-grade-calculator"
-              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
                 currentTool === 'psa-grade-calculator'
                   ? 'bg-[#DC143C] text-white shadow-2xs'
                   : 'bg-transparent text-[#64748B] hover:text-[#0F172A]'
               }`}
             >
-              <Calculator className="w-4 h-4" />
-              PSA / BGS Grade ROI Calculator
+              <Calculator className="w-3.5 h-3.5" />
+              PSA / BGS ROI
             </Link>
             <Link
               to="/tools/deck-legality-checker"
-              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
                 currentTool === 'deck-legality-checker'
                   ? 'bg-[#DC143C] text-white shadow-2xs'
                   : 'bg-transparent text-[#64748B] hover:text-[#0F172A]'
               }`}
             >
-              <ShieldAlert className="w-4 h-4" />
-              Regulation Mark &amp; Legality Checker
+              <ShieldAlert className="w-3.5 h-3.5" />
+              Regulation Marks
+            </Link>
+            <Link
+              to="/tools/trade-fairness-calculator"
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+                currentTool === 'trade-fairness-calculator'
+                  ? 'bg-[#DC143C] text-white shadow-2xs'
+                  : 'bg-transparent text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              <DollarSign className="w-3.5 h-3.5" />
+              Trade Fairness
+            </Link>
+            <Link
+              to="/tools/binder-layout-planner"
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
+                currentTool === 'binder-layout-planner'
+                  ? 'bg-[#DC143C] text-white shadow-2xs'
+                  : 'bg-transparent text-[#64748B] hover:text-[#0F172A]'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Binder Planner
             </Link>
           </div>
 
@@ -346,34 +287,36 @@ export const HighIntentToolsView: React.FC = () => {
             <PtcPartnerBanner />
           </div>
 
-          <GeoExtractableBlock
-            className="mb-8"
-            heading={
-              isDeckChecker
-                ? 'Standard Format Rotation 2026: Regulation Marks H, I & J Legal'
-                : 'Formula: When Is It Mathematically Profitable to Grade Pokémon Cards?'
-            }
-            summary={
-              isDeckChecker
-                ? 'Based on published 2026 Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark H, I, or J (found in the lower-left corner). Regulation Mark G rotated out on Pokémon TCG Live on March 26, 2026, and for in-person Play! Pokémon events on April 10, 2026. Cards printed with Mark G or older are prohibited unless reprinted in an active H/I/J set with the exact same card title and mechanic text.'
-                : 'Submitting a raw Pokémon card to PSA or CGC is profitable only when Expected Value (EV) exceeds the total cost (Raw Card Purchase Price + Grading Tier Fee + Roundtrip Shipping/Insurance). Standard modern raw cards have a 35% to 55% PSA 10 gem mint rate based on population reports.'
-            }
-            keyFacts={
-              isDeckChecker
-                ? [
-                    { label: 'Active Marks', value: 'Marks H, I & J' },
-                    { label: 'Rotated', value: 'Mark G & Older' },
-                    { label: 'Banned Cards', value: 'Zero in Standard' },
-                    { label: 'Deck Limit', value: 'Strictly 60 Cards' },
-                  ]
-                : [
-                    { label: 'PSA 10 Rate', value: '35% - 55% Avg' },
-                    { label: 'Value Tier', value: '$15 - $25 / Card' },
-                    { label: 'Break-Even EV', value: 'Net Profit > $15' },
-                    { label: 'Major Slabs', value: 'PSA, BGS, CGC' },
-                  ]
-            }
-          />
+          {(currentTool === 'psa-grade-calculator' || currentTool === 'deck-legality-checker') && (
+            <GeoExtractableBlock
+              className="mb-8"
+              heading={
+                isDeckChecker
+                  ? 'Standard Format Rotation 2026: Regulation Marks H, I & J Legal'
+                  : 'Formula: When Is It Mathematically Profitable to Grade Pokémon Cards?'
+              }
+              summary={
+                isDeckChecker
+                  ? 'Based on published 2026 Play! Pokémon tournament rules, Standard format legal cards must display Regulation Mark H, I, or J (found in the lower-left corner). Regulation Mark G rotated out on Pokémon TCG Live on March 26, 2026, and for in-person Play! Pokémon events on April 10, 2026. Cards printed with Mark G or older are prohibited unless reprinted in an active H/I/J set with the exact same card title and mechanic text.'
+                  : 'Submitting a raw Pokémon card to PSA or CGC is profitable only when Expected Value (EV) exceeds the total cost (Raw Card Purchase Price + Grading Tier Fee + Roundtrip Shipping/Insurance). Standard modern raw cards have a 35% to 55% PSA 10 gem mint rate based on population reports.'
+              }
+              keyFacts={
+                isDeckChecker
+                  ? [
+                      { label: 'Active Marks', value: 'Marks H, I & J' },
+                      { label: 'Rotated', value: 'Mark G & Older' },
+                      { label: 'Banned Cards', value: 'Zero in Standard' },
+                      { label: 'Deck Limit', value: 'Strictly 60 Cards' },
+                    ]
+                  : [
+                      { label: 'PSA 10 Rate', value: '35% - 55% Avg' },
+                      { label: 'Value Tier', value: '$15 - $25 / Card' },
+                      { label: 'Break-Even EV', value: 'Net Profit > $15' },
+                      { label: 'Major Slabs', value: 'PSA, BGS, CGC' },
+                    ]
+              }
+            />
+          )}
 
           {/* TOOL 1: PSA Grade ROI Calculator */}
           {currentTool === 'psa-grade-calculator' && (
@@ -964,6 +907,20 @@ Energy: 10
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TOOL 3: Card Trade Fairness Calculator */}
+          {currentTool === 'trade-fairness-calculator' && (
+            <div className="mb-12">
+              <TradeFairnessCalculator />
+            </div>
+          )}
+
+          {/* TOOL 4: Master Set Binder Layout Planner */}
+          {currentTool === 'binder-layout-planner' && (
+            <div className="mb-12">
+              <BinderLayoutPlanner />
             </div>
           )}
 

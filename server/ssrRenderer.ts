@@ -1180,7 +1180,7 @@ export async function renderSsrRoute(
           ? `${setData.name} (${setId.toUpperCase()}): ${setData.totalCards} Cards Checklist | DECK / divider`
           : `${setData.name} (${setId.toUpperCase()}) Set Checklist | DECK / divider`);
     const pageDesc = `Complete ${setData.name} (${setData.series}) card checklist, live TCGplayer market prices, Secret Illustration Rare odds, and reverse holo binder tracker.`;
-    const canonicalUrl = `${canonicalOrigin}/set/${setId}`;
+    const canonicalUrl = isChecklistPath ? `${canonicalOrigin}/set/${setId}/checklist` : `${canonicalOrigin}/set/${setId}`;
     const ogImageUrl = `${canonicalOrigin}/api/og/set/${encodeURIComponent(setId)}.png?title=${encodeURIComponent(setData.name)}&series=${encodeURIComponent(setData.series)}&count=${setData.totalCards}`;
 
     const jsonLd = {

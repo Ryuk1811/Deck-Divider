@@ -4,6 +4,8 @@ import { getExpansions, getAllCardsSummary, TCGSet } from './tcgCatalogManager.j
 import { generateLlmsKeywordsTxt, generateSearchMatrixJson } from './keywordCatalogManager.js';
 import { SITE_CONFIG } from '../src/config/site.config.js';
 import { TOURNAMENT_DECKS } from '../src/data/tournamentDecks.js';
+import { POPULAR_POKEMON_SPECIES } from '../src/data/popularPokemonSpecies.js';
+import { POPULAR_RARITIES } from '../src/data/popularRarities.js';
 
 export let BUILD_TIMESTAMP = new Date().toISOString();
 export let BUILD_DATE = BUILD_TIMESTAMP.split('T')[0]; // YYYY-MM-DD
@@ -31,6 +33,8 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/', lastmod: BUILD_DATE },
   { path: '/cards', lastmod: BUILD_DATE },
   { path: '/sets', lastmod: BUILD_DATE },
+  { path: '/pokemon', lastmod: BUILD_DATE },
+  { path: '/rarity', lastmod: BUILD_DATE },
   { path: '/directory', lastmod: BUILD_DATE },
   { path: '/directory/sets-index', lastmod: BUILD_DATE },
   { path: '/directory/decks-index', lastmod: BUILD_DATE },
@@ -41,6 +45,10 @@ export const CORE_PAGES: RouteEntry[] = [
   { path: '/compare', lastmod: BUILD_DATE },
   { path: '/best', lastmod: BUILD_DATE },
   { path: '/tools', lastmod: BUILD_DATE },
+  { path: '/tools/psa-grade-calculator', lastmod: BUILD_DATE },
+  { path: '/tools/deck-legality-checker', lastmod: BUILD_DATE },
+  { path: '/tools/trade-fairness-calculator', lastmod: BUILD_DATE },
+  { path: '/tools/binder-layout-planner', lastmod: BUILD_DATE },
   { path: '/tools/grading-fee-calculator', lastmod: BUILD_DATE },
   { path: '/tools/format-checker', lastmod: BUILD_DATE },
   { path: '/tools/lot-calculator', lastmod: BUILD_DATE },
@@ -72,6 +80,10 @@ export const COMPETITOR_SLUGS = [
 ];
 
 export const TOOL_SLUGS = [
+  'psa-grade-calculator',
+  'deck-legality-checker',
+  'trade-fairness-calculator',
+  'binder-layout-planner',
   'grading-fee-calculator',
   'format-checker',
   'lot-calculator',
@@ -119,6 +131,10 @@ export async function getAllPublicUrls(origin: string = CANONICAL_ORIGIN): Promi
 export function generateSitemapIndexXml(): string {
   const subSitemaps = [
     '/sitemap-core.xml',
+    '/sitemap-pokemon.xml',
+    '/sitemap-rarities.xml',
+    '/sitemap-checklists.xml',
+    '/sitemap-images.xml',
     '/sitemap-sets.xml',
     '/sitemap-cards.xml',
     '/sitemap-decks.xml',
@@ -282,6 +298,82 @@ export function generatePortfoliosSitemapXml(): string {
 }
 
 /**
+ * Pokémon Species Hubs Sitemap
+ */
+export function generatePokemonSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/pokemon</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </url>\n`;
+  POPULAR_POKEMON_SPECIES.forEach(species => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/pokemon/${species.slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
+  return xml;
+}
+
+/**
+ * Card Rarity Category Hubs Sitemap
+ */
+export function generateRaritiesSitemapXml(): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/rarity</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </url>\n`;
+  POPULAR_RARITIES.forEach(rarity => {
+    xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/rarity/${rarity.slug}</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </url>\n`;
+  });
+  xml += `</urlset>`;
+  return xml;
+}
+
+/**
+ * Master Set Binder Checklists Sitemap
+ */
+export async function generateChecklistsSitemapXml(): Promise<string> {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  try {
+    const sets = await getExpansions();
+    if (sets && sets.length > 0) {
+      sets.forEach(set => {
+        if (set && set.id && (set.cardCount?.total || 0) > 0) {
+          xml += `  <url>\n    <loc>${CANONICAL_ORIGIN}/set/${set.id.toLowerCase()}/checklist</loc>\n    <lastmod>${BUILD_DATE}</lastmod>\n  </url>\n`;
+        }
+      });
+    }
+  } catch (e) {}
+  xml += `</urlset>`;
+  return xml;
+}
+
+/**
+ * Dedicated Google Image XML Sitemap with xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+ */
+export async function generateImagesSitemapXml(): Promise<string> {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+  try {
+    const cards = await getAllCardsSummary();
+    const primaryCards = (cards && cards.length > 0) ? cards.slice(0, 1000) : [];
+    primaryCards.forEach(card => {
+      if (card && card.id && card.image) {
+        xml += `  <url>\n`;
+        xml += `    <loc>${CANONICAL_ORIGIN}/card/${card.id}</loc>\n`;
+        xml += `    <image:image>\n`;
+        xml += `      <image:loc>${card.image}</image:loc>\n`;
+        xml += `      <image:title><![CDATA[${card.name} - ${card.setName || 'Pokémon TCG'} #${card.number || ''}]]></image:title>\n`;
+        xml += `      <image:caption><![CDATA[${card.name} holographic card scan, card #${card.number || ''} from ${card.setName || ''}. Track live market values on DECK / divider.]]></image:caption>\n`;
+        xml += `    </image:image>\n`;
+        xml += `  </url>\n`;
+      }
+    });
+  } catch (e) {}
+
+  xml += `</urlset>`;
+  return xml;
+}
+
+/**
  * Unified combined sitemap.xml fallback
  */
 export async function generateUnifiedSitemapXml(): Promise<string> {
@@ -307,6 +399,7 @@ export function generateRobotsTxt(): string {
 User-agent: *
 Allow: /
 Allow: /llms.txt
+Allow: /llms-mini.txt
 Allow: /llms-full.txt
 Allow: /feed.xml
 Allow: /api/og/
@@ -335,12 +428,15 @@ User-agent: PerplexityBot
 User-agent: ClaudeBot
 Allow: /
 Allow: /llms.txt
+Allow: /llms-mini.txt
+Allow: /llms-full.txt
 Allow: /feed.xml
 Disallow: /app
 Disallow: /api/
 
 Sitemap: ${CANONICAL_ORIGIN}/sitemap-index.xml
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
+Sitemap: ${CANONICAL_ORIGIN}/sitemap-images.xml
 `;
 }
 
@@ -416,6 +512,18 @@ ${Object.values(TOURNAMENT_DECKS).map(d => `- [${d.name}](${CANONICAL_ORIGIN}/de
 `;
 }
 
+export function generateLlmsMiniTxt(): string {
+  return `# DECK / divider
+> The authoritative modern Pokémon TCG collection manager, deck builder, and card market intelligence platform.
+
+- Canonical URL: ${CANONICAL_ORIGIN}
+- Database: 18,400+ indexed cards across ${SITE_CONFIG.metrics.totalExpansions} Pokémon TCG sets with live market pricing
+- Interactive Tools: Trade fairness calculator, master set binder layout planner, PSA/BGS grading ROI simulator, Regulation mark (H, I, J) legality validator
+- Storage: 100% private, local-first browser IndexedDB storage; zero third-party telemetry
+- Dedicated Hubs: Species hubs (${CANONICAL_ORIGIN}/pokemon), Rarity hubs (${CANONICAL_ORIGIN}/rarity), Master binder checklists (${CANONICAL_ORIGIN}/sets)
+`;
+}
+
 export async function writeAllFootprintFiles(targetDir: string) {
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
@@ -424,6 +532,10 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const sitemapIndex = generateSitemapIndexXml();
   const unifiedSitemap = await generateUnifiedSitemapXml();
   const coreSitemap = generateCoreSitemapXml();
+  const pokemonSitemap = generatePokemonSitemapXml();
+  const raritiesSitemap = generateRaritiesSitemapXml();
+  const checklistsSitemap = await generateChecklistsSitemapXml();
+  const imagesSitemap = await generateImagesSitemapXml();
   const setsSitemap = await generateSetsSitemapXml();
   const cardsSitemap = await generateCardsSitemapXml();
   const decksSitemap = generateDecksSitemapXml();
@@ -436,6 +548,7 @@ export async function writeAllFootprintFiles(targetDir: string) {
   const robots = generateRobotsTxt();
   const rssFeed = generateRssFeedXml();
   const llms = generateLlmsTxt();
+  const llmsMini = generateLlmsMiniTxt();
   const llmsFull = await generateLlmsFullTxt();
   const llmsKeywords = generateLlmsKeywordsTxt();
   const searchMatrix = generateSearchMatrixJson();
@@ -443,6 +556,10 @@ export async function writeAllFootprintFiles(targetDir: string) {
   fs.writeFileSync(path.join(targetDir, 'sitemap-index.xml'), sitemapIndex, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap.xml'), unifiedSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-core.xml'), coreSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-pokemon.xml'), pokemonSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-rarities.xml'), raritiesSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-checklists.xml'), checklistsSitemap, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'sitemap-images.xml'), imagesSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-sets.xml'), setsSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-cards.xml'), cardsSitemap, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'sitemap-decks.xml'), decksSitemap, 'utf-8');
@@ -456,6 +573,7 @@ export async function writeAllFootprintFiles(targetDir: string) {
   fs.writeFileSync(path.join(targetDir, 'feed.xml'), rssFeed, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'rss.xml'), rssFeed, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms.txt'), llms, 'utf-8');
+  fs.writeFileSync(path.join(targetDir, 'llms-mini.txt'), llmsMini, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms-full.txt'), llmsFull, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'llms-keywords.txt'), llmsKeywords, 'utf-8');
   fs.writeFileSync(path.join(targetDir, 'search-matrix.json'), searchMatrix, 'utf-8');

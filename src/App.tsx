@@ -41,6 +41,7 @@ import { CommandPalette } from './components/ui/CommandPalette';
 import { PagesDropdown } from './components/ui/PagesDropdown';
 import { MobileBottomNav } from './components/ui/MobileBottomNav';
 import { MobileTopBar } from './components/ui/MobileTopBar';
+import { PublicMobileNav } from './components/navigation/PublicMobileNav';
 
 import { trackDashboardView, trackFirstMeaningfulAction } from './lib/analytics';
 import { SealedPortfolioManager } from './components/app/SealedPortfolioManager';
@@ -110,6 +111,10 @@ const PublicPortfolioView = lazy(() => import('./views/public/PublicPortfolioVie
 const DirectoryHubView = lazy(() => import('./views/public/DirectoryHubView').then(m => ({ default: m.DirectoryHubView })));
 const PublicPortfoliosDirectoryView = lazy(() => import('./views/public/PublicPortfoliosDirectoryView').then(m => ({ default: m.PublicPortfoliosDirectoryView })));
 const PublicCardView = lazy(() => import('./views/public/PublicCardView').then(m => ({ default: m.PublicCardView })));
+const PublicPokemonDirectoryView = lazy(() => import('./views/public/PublicPokemonDirectoryView').then(m => ({ default: m.PublicPokemonDirectoryView })));
+const PublicPokemonHubView = lazy(() => import('./views/public/PublicPokemonHubView').then(m => ({ default: m.PublicPokemonHubView })));
+const PublicRarityHubView = lazy(() => import('./views/public/PublicRarityHubView').then(m => ({ default: m.PublicRarityHubView })));
+const PublicSetChecklistView = lazy(() => import('./views/public/PublicSetChecklistView').then(m => ({ default: m.PublicSetChecklistView })));
 
 // Lazy-loaded Modals
 import type { LimitAttemptedAction } from './components/modals/LimitReachedModal';
@@ -2369,6 +2374,10 @@ export default function App() {
         <Route path="/directory/:section" element={<DirectoryHubView />} />
         <Route path="/cards" element={<PublicCardsCatalogueView />} />
         <Route path="/Cards" element={<Navigate to="/cards" replace />} />
+        <Route path="/pokemon" element={<PublicPokemonDirectoryView />} />
+        <Route path="/species" element={<Navigate to="/pokemon" replace />} />
+        <Route path="/rarity" element={<PublicRarityHubView />} />
+        <Route path="/rarities" element={<Navigate to="/rarity" replace />} />
         <Route path="/sets" element={<PublicExpansionsAndSetsView />} />
         <Route path="/expansions" element={<Navigate to="/sets" replace />} />
         <Route path="/expansions/sets" element={<Navigate to="/sets" replace />} />
@@ -2385,11 +2394,15 @@ export default function App() {
         <Route path="/reviews" element={<Navigate to="/socials" replace />} />
 
         {/* === PUBLIC CANONICAL ENTITIES === */}
+        <Route path="/pokemon/:species" element={<PublicPokemonHubView />} />
+        <Route path="/species/:species" element={<Navigate to="/pokemon/:species" replace />} />
+        <Route path="/rarity/:raritySlug" element={<PublicRarityHubView />} />
+        <Route path="/rarities/:raritySlug" element={<Navigate to="/rarity/:raritySlug" replace />} />
         <Route path="/card/:cardId" element={<PublicCardView />} />
         <Route path="/cards/:cardId" element={<PublicCardView />} />
         <Route path="/set/:setId" element={<PublicSetView />} />
         <Route path="/set/:setId/top-cards" element={<PublicSetTopCardsView />} />
-        <Route path="/set/:setId/checklist" element={<Navigate to="/set/:setId" replace />} />
+        <Route path="/set/:setId/checklist" element={<PublicSetChecklistView />} />
         <Route path="/expansions/:setId" element={<Navigate to="/set/:setId" replace />} />
         <Route path="/format/:formatId" element={<Navigate to="/sets" replace />} />
         <Route path="/formats/:formatId" element={<Navigate to="/sets" replace />} />
@@ -2398,8 +2411,6 @@ export default function App() {
         <Route path="/compare/:competitorId" element={<CompetitorComparisonView />} />
         <Route path="/best/:slug" element={<BestOfGuidesView />} />
         <Route path="/deck/:deckId" element={<PublicDeckViewRoute displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} />} />
-        <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
-        <Route path="/deck/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/decks/:deckId" element={<Navigate to="/deck/:deckId" replace />} />
         <Route path="/portfolio/:shareId" element={<PublicPortfolioView />} />
         <Route path="/portfolios/:shareId" element={<Navigate to="/portfolio/:shareId" replace />} />
@@ -2424,6 +2435,9 @@ export default function App() {
         <Route path="*" element={<NotFoundView />} />
       </Routes>
     </Suspense>
+
+    {/* Sticky Bottom Navigation for Public Mobile Views */}
+    <PublicMobileNav />
 
       {/* Global Modals & Overlays */}
       <Suspense fallback={null}>
